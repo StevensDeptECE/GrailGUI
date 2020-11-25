@@ -1,0 +1,35 @@
+/*
+ ignore comments!
+
+*/
+
+// ignore comment
+
+typedef mynum u128;
+typedef strict UserId u128; // strict values are typesafe
+typedef strict BigNum u128;
+
+
+regex8 Email /\w+@(?\w+\.)(?\w+)/;
+
+typedef strict Phone u64;
+
+struct ContactInfo {
+  string8 address;
+  Phone phone;
+  Email email;
+}
+
+// example of error
+struct ContactInfo {
+  string8 address;
+  Phone phone;
+  Email email;
+}
+
+struct User {
+  UserId userid;
+  string8 firstname;
+  string8 lastname;
+  ContactInfo contact;
+}

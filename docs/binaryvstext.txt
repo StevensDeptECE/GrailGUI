@@ -1,0 +1,28 @@
+1. Explain the advantages and disadvantages of human-readble text for data transmission. Explain XML which has tags around every data, and JSON.
+
+2. Explain the difficulties with binary (not immediately obvious what any given byte means). Either the receiver must know the structure of the data, or metadata must somehow be encoded.
+
+3. Explain the comparative efficiency of sending ASCII text to encode a number v. binary Give two examples (int and double) for the following values:
+
+-2
+-1234567890
+4123567890
+1.2
+-1.5
+-1.23456789012345
+6.0231092411215e+23
+1.23456789012345e+308
+
+discuss:
+fixed vs. variable size (difficult to index the nth number)
+time to take binary representation and turn it into text
+increased size of text
+
+4. Describe comparative efficiency of the server or the client converting binary to text
+   The server is a shared resource
+   The faster it can respond, the better
+   Data size is reduced
+   formatting can be done in parallel with getting more data
+   server needs less CPU power, reducing electricity in server farms?
+   	  Is this true? The operation has to happen somewhere
+	  

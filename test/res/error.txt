@@ -1,0 +1,1506 @@
+make: *** No rule to make target 'libgrail.a'.  Stop.
+In file included from GLWin.cc:6:
+/home/pho/Grail/src/opengl/Queue.hh:19:20: error: ‘std::queue<Shape*> Queue::q’ conflicts with a previous declaration
+   19 | std::queue<Shape*> q;
+      |                    ^
+/home/pho/Grail/src/opengl/Queue.hh:6:29: note: previous declaration ‘std::queue<Shape*> Queue::q’
+    6 |   static std::queue<Shape*> q;
+      |                             ^
+In file included from /usr/include/c++/9.1.0/map:60,
+                 from GLWin.cc:10:
+/usr/include/c++/9.1.0/bits/stl_tree.h:75:1: error: expected unqualified-id before ‘namespace’
+   75 | namespace std _GLIBCXX_VISIBILITY(default)
+      | ^~~~~~~~~
+In file included from /usr/include/c++/9.1.0/map:61,
+                 from GLWin.cc:10:
+/usr/include/c++/9.1.0/bits/stl_map.h:66:1: error: expected unqualified-id before ‘namespace’
+   66 | namespace std _GLIBCXX_VISIBILITY(default)
+      | ^~~~~~~~~
+In file included from /usr/include/c++/9.1.0/map:62,
+                 from GLWin.cc:10:
+/usr/include/c++/9.1.0/bits/stl_multimap.h:64:1: error: expected unqualified-id before ‘namespace’
+   64 | namespace std _GLIBCXX_VISIBILITY(default)
+      | ^~~~~~~~~
+In file included from /usr/include/c++/9.1.0/bits/random.h:35,
+                 from /usr/include/c++/9.1.0/random:49,
+                 from GLWin.cc:15:
+/usr/include/c++/9.1.0/bits/uniform_int_dist.h:37:1: error: expected unqualified-id before ‘namespace’
+   37 | namespace std _GLIBCXX_VISIBILITY(default)
+      | ^~~~~~~~~
+In file included from /usr/include/c++/9.1.0/random:49,
+                 from GLWin.cc:15:
+/usr/include/c++/9.1.0/bits/random.h:37:1: error: expected unqualified-id before ‘namespace’
+   37 | namespace std _GLIBCXX_VISIBILITY(default)
+      | ^~~~~~~~~
+In file included from /usr/include/c++/9.1.0/random:50,
+                 from GLWin.cc:15:
+/usr/include/c++/9.1.0/x86_64-pc-linux-gnu/bits/opt_random.h:41:1: error: expected unqualified-id before ‘namespace’
+   41 | namespace std _GLIBCXX_VISIBILITY(default)
+      | ^~~~~~~~~
+In file included from /usr/include/c++/9.1.0/numeric:62,
+                 from /usr/include/c++/9.1.0/bits/random.tcc:33,
+                 from /usr/include/c++/9.1.0/random:51,
+                 from GLWin.cc:15:
+/usr/include/c++/9.1.0/bits/stl_numeric.h:65:1: error: expected unqualified-id before ‘namespace’
+   65 | namespace std _GLIBCXX_VISIBILITY(default)
+      | ^~~~~~~~~
+/usr/include/c++/9.1.0/bits/stl_numeric.h:103:1: error: expected unqualified-id before ‘namespace’
+  103 | namespace std _GLIBCXX_VISIBILITY(default)
+      | ^~~~~~~~~
+In file included from /usr/include/c++/9.1.0/bits/random.tcc:33,
+                 from /usr/include/c++/9.1.0/random:51,
+                 from GLWin.cc:15:
+/usr/include/c++/9.1.0/numeric:80:1: error: expected unqualified-id before ‘namespace’
+   80 | namespace std _GLIBCXX_VISIBILITY(default)
+      | ^~~~~~~~~
+In file included from /usr/include/c++/9.1.0/random:51,
+                 from GLWin.cc:15:
+/usr/include/c++/9.1.0/bits/random.tcc:35:1: error: expected unqualified-id before ‘namespace’
+   35 | namespace std _GLIBCXX_VISIBILITY(default)
+      | ^~~~~~~~~
+In file included from GLWin.cc:18:
+/home/pho/Grail/include/glad/glad.h:51:8: error: expected unqualified-id before string constant
+   51 | extern "C" {
+      |        ^~~
+In file included from GLWin.cc:21:
+/home/pho/Grail/include/GLFW/glfw3.h:33:8: error: expected unqualified-id before string constant
+   33 | extern "C" {
+      |        ^~~
+GLWin.cc:33:7: error: expected nested-name-specifier before ‘namespace’
+   33 | using namespace std;
+      |       ^~~~~~~~~
+GLWin.cc:35:8: error: ‘default_random_engine’ does not name a type
+   35 | static default_random_engine gen;
+      |        ^~~~~~~~~~~~~~~~~~~~~
+GLWin.cc:36:8: error: ‘uniform_real_distribution’ does not name a type
+   36 | static uniform_real_distribution<double> u01(0.0,1.0);
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~
+GLWin.cc:37:18: error: invalid use of qualified-name ‘GLWin::projection’
+   37 | glm::mat4 GLWin::projection;
+      |                  ^~~~~~~~~~
+GLWin.cc:38:52: error: invalid use of qualified-name ‘GLWin::pathByName’
+   38 | std::unordered_map<std::string,std::string> GLWin::pathByName;
+      |                                                    ^~~~~~~~~~
+GLWin.cc:40:26: error: invalid use of qualified-name ‘GLWin::win’
+   40 | GLFWwindow* GLWin::win = nullptr;
+      |                          ^~~~~~~
+GLWin.cc:43:32: error: invalid use of qualified-name ‘GLWin::block_render’
+   43 | uint32_t GLWin::block_render = 0;
+      |                                ^
+GLWin.cc:44:31: error: invalid use of qualified-name ‘GLWin::render_done’
+   44 | uint32_t GLWin::render_done = 0;
+      |                               ^
+GLWin.cc:46:24: error: invalid use of qualified-name ‘GLWin::m_xpos’
+   46 | double GLWin::m_xpos = 0;
+      |                        ^
+GLWin.cc:47:24: error: invalid use of qualified-name ‘GLWin::m_ypos’
+   47 | double GLWin::m_ypos = 0;
+      |                        ^
+GLWin.cc:49:21: error: invalid use of qualified-name ‘GLWin::w_xpos’
+   49 | int GLWin::w_xpos = 0;
+      |                     ^
+GLWin.cc:50:21: error: invalid use of qualified-name ‘GLWin::w_ypos’
+   50 | int GLWin::w_ypos = 0;
+      |                     ^
+GLWin.cc:52:33: error: invalid use of qualified-name ‘GLWin::mouse_entered’
+   52 | uint32_t GLWin::mouse_entered = 0;
+      |                                 ^
+GLWin.cc:53:32: error: invalid use of qualified-name ‘GLWin::mouse_leaved’
+   53 | uint32_t GLWin::mouse_leaved = 1;
+      |                                ^
+GLWin.cc:54:34: error: invalid use of qualified-name ‘GLWin::window_focused’
+   54 | uint32_t GLWin::window_focused = 0;
+      |                                  ^
+GLWin.cc:74:25: error: cannot define member function ‘GLWin::enableMouse’ within ‘Queue’
+   74 | void GLWin::enableMouse() {
+      |                         ^
+GLWin.cc:94:101: error: cannot define member function ‘GLWin::GLWin’ within ‘Queue’
+   94 | GLWin::GLWin(uint32_t width, uint32_t height, uint32_t bgColor, uint32_t fgColor, const char title[])
+      |                                                                                                     ^
+GLWin.cc:137:59: error: cannot define member function ‘GLWin::addFontPath’ within ‘Queue’
+  137 | void GLWin::addFontPath(std::string path, std::string name){
+      |                                                           ^
+GLWin.cc:144:22: error: cannot define member function ‘GLWin::mainLoop’ within ‘Queue’
+  144 | void GLWin::mainLoop() {
+      |                      ^
+GLWin.cc:179:61: error: cannot define member function ‘GLWin::resize’ within ‘Queue’
+  179 | void GLWin::resize(GLFWwindow* window, int width, int height) {
+      |                                                             ^
+GLWin.cc:185:32: error: cannot define member function ‘GLWin::random’ within ‘Queue’
+  185 | void GLWin::random(glm::vec3& v) {
+      |                                ^
+GLWin.cc:189:25: error: invalid use of qualified-name ‘GLWin::Width’
+  189 | uint32_t GLWin::Width = 0;
+      |                         ^
+GLWin.cc:190:26: error: invalid use of qualified-name ‘GLWin::Height’
+  190 | uint32_t GLWin::Height = 0;
+      |                          ^
+GLWin.cc:190:27: error: expected ‘}’ at end of input
+  190 | uint32_t GLWin::Height = 0;
+      |                           ^
+In file included from GLWin.cc:6:
+/home/pho/Grail/src/opengl/Queue.hh:4:13: note: to match this ‘{’
+    4 | class Queue {
+      |             ^
+GLWin.cc: In member function ‘void Queue::cursor_enter_callback(GLFWwindow*, int)’:
+GLWin.cc:60:5: error: ‘glfwGetCursorPos’ was not declared in this scope
+   60 |     glfwGetCursorPos(window, &GLWin::m_xpos, &GLWin::m_ypos);
+      |     ^~~~~~~~~~~~~~~~
+GLWin.cc:63:5: error: ‘glfwSetInputMode’ was not declared in this scope
+   63 |     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+      |     ^~~~~~~~~~~~~~~~
+GLWin.cc:69:5: error: ‘glfwSetInputMode’ was not declared in this scope
+   69 |     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+      |     ^~~~~~~~~~~~~~~~
+GLWin.cc: In member function ‘void Queue::window_focus_callback(GLFWwindow*, int)’:
+GLWin.cc:85:5: error: ‘glfwSetInputMode’ was not declared in this scope
+   85 |     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+      |     ^~~~~~~~~~~~~~~~
+GLWin.cc:89:5: error: ‘glfwSetInputMode’ was not declared in this scope
+   89 |     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+      |     ^~~~~~~~~~~~~~~~
+GLWin.cc: In member function ‘void Queue::processInput(GLFWwindow*)’:
+GLWin.cc:175:6: error: ‘glfwGetKey’ was not declared in this scope
+  175 |   if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+      |      ^~~~~~~~~~
+GLWin.cc:176:5: error: ‘glfwSetWindowShouldClose’ was not declared in this scope
+  176 |     glfwSetWindowShouldClose(window, true);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~
+GLWin.cc: At global scope:
+GLWin.cc:177:1: error: expected unqualified-id at end of input
+  177 | }
+      | ^
+make[1]: *** [Makefile:61: GLWin.o] Error 1
+make: *** [Makefile:12: /home/pho/Grail/libs/libgrail.a] Error 2
+In file included from /home/pho/Grail/src/opengl/Canvas.hh:6,
+                 from /home/pho/Grail/src/grail/CompiledWeb.hh:8,
+                 from /home/pho/Grail/src/grail/CompiledWebWindow.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:4,
+                 from testCursors3.cc:1:
+/home/pho/Grail/src/opengl/Queue.hh:19:20: error: ‘std::queue<Shape*> Queue::q’ conflicts with a previous declaration
+   19 | std::queue<Shape*> q;
+      |                    ^
+/home/pho/Grail/src/opengl/Queue.hh:6:29: note: previous declaration ‘std::queue<Shape*> Queue::q’
+    6 |   static std::queue<Shape*> q;
+      |                             ^
+In file included from /home/pho/Grail/src/opengl/primitivesV2/MultiShape2D.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:5,
+                 from testCursors3.cc:1:
+/home/pho/Grail/src/opengl/primitivesV2/MultiShape.hh:20:8: error: ‘void Queue::MultiShape::process_input(Queue::Inputs*, float)’ marked ‘override’, but does not override
+   20 |   void process_input(Inputs* in,float dt) override {}
+      |        ^~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/grail/Grail.hh:7,
+                 from testCursors3.cc:1:
+/home/pho/Grail/src/opengl/primitivesV2/Shape2D.hh:58:16: error: ‘virtual void Queue::Shape2D::process_input(Queue::Inputs*, float)’ marked ‘override’, but does not override
+   58 |   virtual void process_input(Inputs* in,float dt) override {}
+      |                ^~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:341:8: error: expected unqualified-id before string constant
+  341 | extern "C" {
+      |        ^~~
+In file included from /home/pho/Grail/include/stb/stb_image.h:537,
+                 from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/usr/include/c++/9.1.0/math.h:38:12: error: using-declaration for non-member at class scope
+   38 | using std::abs;
+      |            ^~~
+/usr/include/c++/9.1.0/math.h:39:12: error: using-declaration for non-member at class scope
+   39 | using std::acos;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:40:12: error: using-declaration for non-member at class scope
+   40 | using std::asin;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:41:12: error: using-declaration for non-member at class scope
+   41 | using std::atan;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:42:12: error: using-declaration for non-member at class scope
+   42 | using std::atan2;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:43:12: error: using-declaration for non-member at class scope
+   43 | using std::cos;
+      |            ^~~
+/usr/include/c++/9.1.0/math.h:44:12: error: using-declaration for non-member at class scope
+   44 | using std::sin;
+      |            ^~~
+/usr/include/c++/9.1.0/math.h:45:12: error: using-declaration for non-member at class scope
+   45 | using std::tan;
+      |            ^~~
+/usr/include/c++/9.1.0/math.h:46:12: error: using-declaration for non-member at class scope
+   46 | using std::cosh;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:47:12: error: using-declaration for non-member at class scope
+   47 | using std::sinh;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:48:12: error: using-declaration for non-member at class scope
+   48 | using std::tanh;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:49:12: error: using-declaration for non-member at class scope
+   49 | using std::exp;
+      |            ^~~
+/usr/include/c++/9.1.0/math.h:50:12: error: using-declaration for non-member at class scope
+   50 | using std::frexp;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:51:12: error: using-declaration for non-member at class scope
+   51 | using std::ldexp;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:52:12: error: using-declaration for non-member at class scope
+   52 | using std::log;
+      |            ^~~
+/usr/include/c++/9.1.0/math.h:53:12: error: using-declaration for non-member at class scope
+   53 | using std::log10;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:54:12: error: using-declaration for non-member at class scope
+   54 | using std::modf;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:55:12: error: using-declaration for non-member at class scope
+   55 | using std::pow;
+      |            ^~~
+/usr/include/c++/9.1.0/math.h:56:12: error: using-declaration for non-member at class scope
+   56 | using std::sqrt;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:57:12: error: using-declaration for non-member at class scope
+   57 | using std::ceil;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:58:12: error: using-declaration for non-member at class scope
+   58 | using std::fabs;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:59:12: error: using-declaration for non-member at class scope
+   59 | using std::floor;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:60:12: error: using-declaration for non-member at class scope
+   60 | using std::fmod;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:63:12: error: using-declaration for non-member at class scope
+   63 | using std::fpclassify;
+      |            ^~~~~~~~~~
+/usr/include/c++/9.1.0/math.h:64:12: error: using-declaration for non-member at class scope
+   64 | using std::isfinite;
+      |            ^~~~~~~~
+/usr/include/c++/9.1.0/math.h:65:12: error: using-declaration for non-member at class scope
+   65 | using std::isinf;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:66:12: error: using-declaration for non-member at class scope
+   66 | using std::isnan;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:67:12: error: using-declaration for non-member at class scope
+   67 | using std::isnormal;
+      |            ^~~~~~~~
+/usr/include/c++/9.1.0/math.h:68:12: error: using-declaration for non-member at class scope
+   68 | using std::signbit;
+      |            ^~~~~~~
+/usr/include/c++/9.1.0/math.h:69:12: error: using-declaration for non-member at class scope
+   69 | using std::isgreater;
+      |            ^~~~~~~~~
+/usr/include/c++/9.1.0/math.h:70:12: error: using-declaration for non-member at class scope
+   70 | using std::isgreaterequal;
+      |            ^~~~~~~~~~~~~~
+/usr/include/c++/9.1.0/math.h:71:12: error: using-declaration for non-member at class scope
+   71 | using std::isless;
+      |            ^~~~~~
+/usr/include/c++/9.1.0/math.h:72:12: error: using-declaration for non-member at class scope
+   72 | using std::islessequal;
+      |            ^~~~~~~~~~~
+/usr/include/c++/9.1.0/math.h:73:12: error: using-declaration for non-member at class scope
+   73 | using std::islessgreater;
+      |            ^~~~~~~~~~~~~
+/usr/include/c++/9.1.0/math.h:74:12: error: using-declaration for non-member at class scope
+   74 | using std::isunordered;
+      |            ^~~~~~~~~~~
+/usr/include/c++/9.1.0/math.h:78:12: error: using-declaration for non-member at class scope
+   78 | using std::acosh;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:79:12: error: using-declaration for non-member at class scope
+   79 | using std::asinh;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:80:12: error: using-declaration for non-member at class scope
+   80 | using std::atanh;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:81:12: error: using-declaration for non-member at class scope
+   81 | using std::cbrt;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:82:12: error: using-declaration for non-member at class scope
+   82 | using std::copysign;
+      |            ^~~~~~~~
+/usr/include/c++/9.1.0/math.h:83:12: error: using-declaration for non-member at class scope
+   83 | using std::erf;
+      |            ^~~
+/usr/include/c++/9.1.0/math.h:84:12: error: using-declaration for non-member at class scope
+   84 | using std::erfc;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:85:12: error: using-declaration for non-member at class scope
+   85 | using std::exp2;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:86:12: error: using-declaration for non-member at class scope
+   86 | using std::expm1;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:87:12: error: using-declaration for non-member at class scope
+   87 | using std::fdim;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:88:12: error: using-declaration for non-member at class scope
+   88 | using std::fma;
+      |            ^~~
+/usr/include/c++/9.1.0/math.h:89:12: error: using-declaration for non-member at class scope
+   89 | using std::fmax;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:90:12: error: using-declaration for non-member at class scope
+   90 | using std::fmin;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:91:12: error: using-declaration for non-member at class scope
+   91 | using std::hypot;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:92:12: error: using-declaration for non-member at class scope
+   92 | using std::ilogb;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:93:12: error: using-declaration for non-member at class scope
+   93 | using std::lgamma;
+      |            ^~~~~~
+/usr/include/c++/9.1.0/math.h:94:12: error: using-declaration for non-member at class scope
+   94 | using std::llrint;
+      |            ^~~~~~
+/usr/include/c++/9.1.0/math.h:95:12: error: using-declaration for non-member at class scope
+   95 | using std::llround;
+      |            ^~~~~~~
+/usr/include/c++/9.1.0/math.h:96:12: error: using-declaration for non-member at class scope
+   96 | using std::log1p;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:97:12: error: using-declaration for non-member at class scope
+   97 | using std::log2;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:98:12: error: using-declaration for non-member at class scope
+   98 | using std::logb;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:99:12: error: using-declaration for non-member at class scope
+   99 | using std::lrint;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:100:12: error: using-declaration for non-member at class scope
+  100 | using std::lround;
+      |            ^~~~~~
+/usr/include/c++/9.1.0/math.h:101:12: error: using-declaration for non-member at class scope
+  101 | using std::nearbyint;
+      |            ^~~~~~~~~
+/usr/include/c++/9.1.0/math.h:102:12: error: using-declaration for non-member at class scope
+  102 | using std::nextafter;
+      |            ^~~~~~~~~
+/usr/include/c++/9.1.0/math.h:103:12: error: using-declaration for non-member at class scope
+  103 | using std::nexttoward;
+      |            ^~~~~~~~~~
+/usr/include/c++/9.1.0/math.h:104:12: error: using-declaration for non-member at class scope
+  104 | using std::remainder;
+      |            ^~~~~~~~~
+/usr/include/c++/9.1.0/math.h:105:12: error: using-declaration for non-member at class scope
+  105 | using std::remquo;
+      |            ^~~~~~
+/usr/include/c++/9.1.0/math.h:106:12: error: using-declaration for non-member at class scope
+  106 | using std::rint;
+      |            ^~~~
+/usr/include/c++/9.1.0/math.h:107:12: error: using-declaration for non-member at class scope
+  107 | using std::round;
+      |            ^~~~~
+/usr/include/c++/9.1.0/math.h:108:12: error: using-declaration for non-member at class scope
+  108 | using std::scalbln;
+      |            ^~~~~~~
+/usr/include/c++/9.1.0/math.h:109:12: error: using-declaration for non-member at class scope
+  109 | using std::scalbn;
+      |            ^~~~~~
+/usr/include/c++/9.1.0/math.h:110:12: error: using-declaration for non-member at class scope
+  110 | using std::tgamma;
+      |            ^~~~~~
+/usr/include/c++/9.1.0/math.h:111:12: error: using-declaration for non-member at class scope
+  111 | using std::trunc;
+      |            ^~~~~
+In file included from /usr/include/features.h:450,
+                 from /usr/include/c++/9.1.0/x86_64-pc-linux-gnu/bits/os_defines.h:39,
+                 from /usr/include/c++/9.1.0/x86_64-pc-linux-gnu/bits/c++config.h:524,
+                 from /usr/include/c++/9.1.0/iostream:38,
+                 from /home/pho/Grail/src/grail/Grail.hh:1,
+                 from testCursors3.cc:1:
+/usr/include/assert.h:64:1: error: expected unqualified-id before string constant
+   64 | __BEGIN_DECLS
+      | ^~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:729:12: error: ‘stbi_io_callbacks’ does not name a type
+  729 |            stbi_io_callbacks io;
+      |            ^~~~~~~~~~~~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:753:53: error: ‘stbi_io_callbacks’ has not been declared
+  753 | static void stbi__start_callbacks(stbi__context *s, stbi_io_callbacks *c, void *user)
+      |                                                     ^~~~~~~~~~~~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:781:8: error: ‘stbi_io_callbacks’ does not name a type
+  781 | static stbi_io_callbacks stbi__stdio_callbacks =
+      |        ^~~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_failure_reason’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:879:1: note: in expansion of macro ‘STBIDEF’
+  879 | STBIDEF const char *stbi_failure_reason(void)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_image_free’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:985:1: note: in expansion of macro ‘STBIDEF’
+  985 | STBIDEF void stbi_image_free(void *retval_from_stbi_load)
+      | ^~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:998:12: error: ISO C++ forbids in-class initialization of non-const static member ‘Queue::stbi__vertically_flip_on_load’
+  998 | static int stbi__vertically_flip_on_load = 0;
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_set_flip_vertically_on_load’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1000:1: note: in expansion of macro ‘STBIDEF’
+ 1000 | STBIDEF void stbi_set_flip_vertically_on_load(int flag_true_if_should_flip)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_load’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1222:1: note: in expansion of macro ‘STBIDEF’
+ 1222 | STBIDEF stbi_uc *stbi_load(char const *filename, int *x, int *y, int *comp, int req_comp)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_load_from_file’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1232:1: note: in expansion of macro ‘STBIDEF’
+ 1232 | STBIDEF stbi_uc *stbi_load_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_load_from_file_16’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1245:1: note: in expansion of macro ‘STBIDEF’
+ 1245 | STBIDEF stbi__uint16 *stbi_load_from_file_16(FILE *f, int *x, int *y, int *comp, int req_comp)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_load_16’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1258:1: note: in expansion of macro ‘STBIDEF’
+ 1258 | STBIDEF stbi_us *stbi_load_16(char const *filename, int *x, int *y, int *comp, int req_comp)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_load_16_from_memory’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1271:1: note: in expansion of macro ‘STBIDEF’
+ 1271 | STBIDEF stbi_us *stbi_load_16_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *channels_in_file, int desired_channels)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_load_16_from_callbacks’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1278:1: note: in expansion of macro ‘STBIDEF’
+ 1278 | STBIDEF stbi_us *stbi_load_16_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *channels_in_file, int desired_channels)
+      | ^~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:1278:18: error: expected ‘;’ at end of member declaration
+ 1278 | STBIDEF stbi_us *stbi_load_16_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *channels_in_file, int desired_channels)
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                             ;
+/home/pho/Grail/include/stb/stb_image.h:1278:63: error: expected ‘)’ before ‘const’
+ 1278 | STBIDEF stbi_us *stbi_load_16_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *channels_in_file, int desired_channels)
+      |                                             ~                 ^~~~~~
+      |                                                               )
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_load_from_memory’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1285:1: note: in expansion of macro ‘STBIDEF’
+ 1285 | STBIDEF stbi_uc *stbi_load_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_load_from_callbacks’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1292:1: note: in expansion of macro ‘STBIDEF’
+ 1292 | STBIDEF stbi_uc *stbi_load_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp)
+      | ^~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:1292:18: error: expected ‘;’ at end of member declaration
+ 1292 | STBIDEF stbi_uc *stbi_load_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp)
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~
+      |                                          ;
+/home/pho/Grail/include/stb/stb_image.h:1292:60: error: expected ‘)’ before ‘const’
+ 1292 | STBIDEF stbi_uc *stbi_load_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp)
+      |                                          ~                 ^~~~~~
+      |                                                            )
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_load_gif_from_memory’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1300:1: note: in expansion of macro ‘STBIDEF’
+ 1300 | STBIDEF stbi_uc *stbi_load_gif_from_memory(stbi_uc const *buffer, int len, int **delays, int *x, int *y, int *z, int *comp, int req_comp)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_loadf_from_memory’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1334:1: note: in expansion of macro ‘STBIDEF’
+ 1334 | STBIDEF float *stbi_loadf_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_loadf_from_callbacks’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1341:1: note: in expansion of macro ‘STBIDEF’
+ 1341 | STBIDEF float *stbi_loadf_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp)
+      | ^~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:1341:16: error: expected ‘;’ at end of member declaration
+ 1341 | STBIDEF float *stbi_loadf_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp)
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                         ;
+/home/pho/Grail/include/stb/stb_image.h:1341:59: error: expected ‘)’ before ‘const’
+ 1341 | STBIDEF float *stbi_loadf_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp)
+      |                                         ~                 ^~~~~~
+      |                                                           )
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_loadf’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1349:1: note: in expansion of macro ‘STBIDEF’
+ 1349 | STBIDEF float *stbi_loadf(char const *filename, int *x, int *y, int *comp, int req_comp)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_loadf_from_file’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1359:1: note: in expansion of macro ‘STBIDEF’
+ 1359 | STBIDEF float *stbi_loadf_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_is_hdr_from_memory’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1373:1: note: in expansion of macro ‘STBIDEF’
+ 1373 | STBIDEF int stbi_is_hdr_from_memory(stbi_uc const *buffer, int len)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_is_hdr’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1387:1: note: in expansion of macro ‘STBIDEF’
+ 1387 | STBIDEF int      stbi_is_hdr          (char const *filename)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_is_hdr_from_file’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1398:1: note: in expansion of macro ‘STBIDEF’
+ 1398 | STBIDEF int stbi_is_hdr_from_file(FILE *f)
+      | ^~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:1415:45: error: ‘stbi_io_callbacks’ has not been declared
+ 1415 | STBIDEF int      stbi_is_hdr_from_callbacks(stbi_io_callbacks const *clbk, void *user)
+      |                                             ^~~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_is_hdr_from_callbacks’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1415:1: note: in expansion of macro ‘STBIDEF’
+ 1415 | STBIDEF int      stbi_is_hdr_from_callbacks(stbi_io_callbacks const *clbk, void *user)
+      | ^~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:1429:14: error: ‘constexpr’ needed for in-class initialization of static data member ‘float Queue::stbi__l2h_gamma’ of non-integral type [-fpermissive]
+ 1429 | static float stbi__l2h_gamma=2.2f, stbi__l2h_scale=1.0f;
+      |              ^~~~~~~~~~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1429:36: error: ‘constexpr’ needed for in-class initialization of static data member ‘float Queue::stbi__l2h_scale’ of non-integral type [-fpermissive]
+ 1429 | static float stbi__l2h_gamma=2.2f, stbi__l2h_scale=1.0f;
+      |                                    ^~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_ldr_to_hdr_gamma’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1431:1: note: in expansion of macro ‘STBIDEF’
+ 1431 | STBIDEF void   stbi_ldr_to_hdr_gamma(float gamma) { stbi__l2h_gamma = gamma; }
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_ldr_to_hdr_scale’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1432:1: note: in expansion of macro ‘STBIDEF’
+ 1432 | STBIDEF void   stbi_ldr_to_hdr_scale(float scale) { stbi__l2h_scale = scale; }
+      | ^~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:1435:14: error: ‘constexpr’ needed for in-class initialization of static data member ‘float Queue::stbi__h2l_gamma_i’ of non-integral type [-fpermissive]
+ 1435 | static float stbi__h2l_gamma_i=1.0f/2.2f, stbi__h2l_scale_i=1.0f;
+      |              ^~~~~~~~~~~~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1435:43: error: ‘constexpr’ needed for in-class initialization of static data member ‘float Queue::stbi__h2l_scale_i’ of non-integral type [-fpermissive]
+ 1435 | static float stbi__h2l_gamma_i=1.0f/2.2f, stbi__h2l_scale_i=1.0f;
+      |                                           ^~~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_hdr_to_ldr_gamma’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1437:1: note: in expansion of macro ‘STBIDEF’
+ 1437 | STBIDEF void   stbi_hdr_to_ldr_gamma(float gamma) { stbi__h2l_gamma_i = 1/gamma; }
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_hdr_to_ldr_scale’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1438:1: note: in expansion of macro ‘STBIDEF’
+ 1438 | STBIDEF void   stbi_hdr_to_ldr_scale(float scale) { stbi__h2l_scale_i = 1/scale; }
+      | ^~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:1453:13: error: ‘static void Queue::stbi__refill_buffer(Queue::stbi__context*)’ cannot be overloaded with ‘static void Queue::stbi__refill_buffer(Queue::stbi__context*)’
+ 1453 | static void stbi__refill_buffer(stbi__context *s)
+      |             ^~~~~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:741:13: note: previous declaration ‘static void Queue::stbi__refill_buffer(Queue::stbi__context*)’
+  741 | static void stbi__refill_buffer(stbi__context *s);
+      |             ^~~~~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:1676:17: error: ‘static float* Queue::stbi__ldr_to_hdr(Queue::stbi_uc*, int, int, int)’ cannot be overloaded with ‘static float* Queue::stbi__ldr_to_hdr(Queue::stbi_uc*, int, int, int)’
+ 1676 | static float   *stbi__ldr_to_hdr(stbi_uc *data, int x, int y, int comp)
+      |                 ^~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:991:17: note: previous declaration ‘static float* Queue::stbi__ldr_to_hdr(Queue::stbi_uc*, int, int, int)’
+  991 | static float   *stbi__ldr_to_hdr(stbi_uc *data, int x, int y, int comp);
+      |                 ^~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:1702:17: error: ‘static Queue::stbi_uc* Queue::stbi__hdr_to_ldr(float*, int, int, int)’ cannot be overloaded with ‘static Queue::stbi_uc* Queue::stbi__hdr_to_ldr(float*, int, int, int)’
+ 1702 | static stbi_uc *stbi__hdr_to_ldr(float   *data, int x, int y, int comp)
+      |                 ^~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:995:17: note: previous declaration ‘static Queue::stbi_uc* Queue::stbi__hdr_to_ldr(float*, int, int, int)’
+  995 | static stbi_uc *stbi__hdr_to_ldr(float   *data, int x, int y, int comp);
+      |                 ^~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:1909:27: error: ‘constexpr’ needed for in-class initialization of static data member ‘const stbi__uint32 Queue::stbi__bmask [17]’ of non-integral type [-fpermissive]
+ 1909 | static const stbi__uint32 stbi__bmask[17]={0,1,3,7,15,31,63,127,255,511,1023,2047,4095,8191,16383,32767,65535};
+      |                           ^~~~~~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:1962:18: error: ‘constexpr’ needed for in-class initialization of static data member ‘const int Queue::stbi__jbias [16]’ of non-integral type [-fpermissive]
+ 1962 | static const int stbi__jbias[16] = {0,-1,-3,-7,-15,-31,-63,-127,-255,-511,-1023,-2047,-4095,-8191,-16383,-32767};
+      |                  ^~~~~~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:2005:22: error: ‘constexpr’ needed for in-class initialization of static data member ‘const stbi_uc Queue::stbi__jpeg_dezigzag [79]’ of non-integral type [-fpermissive]
+ 2005 | static const stbi_uc stbi__jpeg_dezigzag[64+15] =
+      |                      ^~~~~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:3799:14: error: ‘static void* Queue::stbi__jpeg_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’ cannot be overloaded with ‘static void* Queue::stbi__jpeg_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+ 3799 | static void *stbi__jpeg_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri)
+      |              ^~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:821:17: note: previous declaration ‘static void* Queue::stbi__jpeg_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+  821 | static void    *stbi__jpeg_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri);
+      |                 ^~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:3811:12: error: ‘static int Queue::stbi__jpeg_test(Queue::stbi__context*)’ cannot be overloaded with ‘static int Queue::stbi__jpeg_test(Queue::stbi__context*)’
+ 3811 | static int stbi__jpeg_test(stbi__context *s)
+      |            ^~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:820:17: note: previous declaration ‘static int Queue::stbi__jpeg_test(Queue::stbi__context*)’
+  820 | static int      stbi__jpeg_test(stbi__context *s);
+      |                 ^~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:3835:12: error: ‘static int Queue::stbi__jpeg_info(Queue::stbi__context*, int*, int*, int*)’ cannot be overloaded with ‘static int Queue::stbi__jpeg_info(Queue::stbi__context*, int*, int*, int*)’
+ 3835 | static int stbi__jpeg_info(stbi__context *s, int *x, int *y, int *comp)
+      |            ^~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:822:17: note: previous declaration ‘static int Queue::stbi__jpeg_info(Queue::stbi__context*, int*, int*, int*)’
+  822 | static int      stbi__jpeg_info(stbi__context *s, int *x, int *y, int *comp);
+      |                 ^~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:4031:18: error: ‘constexpr’ needed for in-class initialization of static data member ‘const int Queue::stbi__zlength_base [31]’ of non-integral type [-fpermissive]
+ 4031 | static const int stbi__zlength_base[31] = {
+      |                  ^~~~~~~~~~~~~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4036:18: error: ‘constexpr’ needed for in-class initialization of static data member ‘const int Queue::stbi__zlength_extra [31]’ of non-integral type [-fpermissive]
+ 4036 | static const int stbi__zlength_extra[31]=
+      |                  ^~~~~~~~~~~~~~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4039:18: error: ‘constexpr’ needed for in-class initialization of static data member ‘const int Queue::stbi__zdist_base [32]’ of non-integral type [-fpermissive]
+ 4039 | static const int stbi__zdist_base[32] = { 1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,
+      |                  ^~~~~~~~~~~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4042:18: error: ‘constexpr’ needed for in-class initialization of static data member ‘const int Queue::stbi__zdist_extra [32]’ of non-integral type [-fpermissive]
+ 4042 | static const int stbi__zdist_extra[32] =
+      |                  ^~~~~~~~~~~~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4178:22: error: ‘constexpr’ needed for in-class initialization of static data member ‘const stbi_uc Queue::stbi__zdefault_length [288]’ of non-integral type [-fpermissive]
+ 4178 | static const stbi_uc stbi__zdefault_length[288] =
+      |                      ^~~~~~~~~~~~~~~~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4190:22: error: ‘constexpr’ needed for in-class initialization of static data member ‘const stbi_uc Queue::stbi__zdefault_distance [32]’ of non-integral type [-fpermissive]
+ 4190 | static const stbi_uc stbi__zdefault_distance[32] =
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_zlib_decode_malloc_guesssize’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4245:1: note: in expansion of macro ‘STBIDEF’
+ 4245 | STBIDEF char *stbi_zlib_decode_malloc_guesssize(const char *buffer, int len, int initial_size, int *outlen)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_zlib_decode_malloc’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4261:1: note: in expansion of macro ‘STBIDEF’
+ 4261 | STBIDEF char *stbi_zlib_decode_malloc(char const *buffer, int len, int *outlen)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_zlib_decode_malloc_guesssize_headerflag’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4266:1: note: in expansion of macro ‘STBIDEF’
+ 4266 | STBIDEF char *stbi_zlib_decode_malloc_guesssize_headerflag(const char *buffer, int len, int initial_size, int *outlen, int parse_header)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_zlib_decode_buffer’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4282:1: note: in expansion of macro ‘STBIDEF’
+ 4282 | STBIDEF int stbi_zlib_decode_buffer(char *obuffer, int olen, char const *ibuffer, int ilen)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_zlib_decode_noheader_malloc’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4293:1: note: in expansion of macro ‘STBIDEF’
+ 4293 | STBIDEF char *stbi_zlib_decode_noheader_malloc(char const *buffer, int len, int *outlen)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_zlib_decode_noheader_buffer’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4309:1: note: in expansion of macro ‘STBIDEF’
+ 4309 | STBIDEF int stbi_zlib_decode_noheader_buffer(char *obuffer, int olen, const char *ibuffer, int ilen)
+      | ^~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:4374:16: error: ‘constexpr’ needed for in-class initialization of static data member ‘Queue::stbi_uc Queue::first_row_filter [5]’ of non-integral type [-fpermissive]
+ 4374 | static stbi_uc first_row_filter[5] =
+      |                ^~~~~~~~~~~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4394:22: error: ‘constexpr’ needed for in-class initialization of static data member ‘const stbi_uc Queue::stbi__depth_scale_table [9]’ of non-integral type [-fpermissive]
+ 4394 | static const stbi_uc stbi__depth_scale_table[9] = { 0, 0xff, 0x55, 0, 0x11, 0,0,0, 0x01 };
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4740:12: error: ISO C++ forbids in-class initialization of non-const static member ‘Queue::stbi__unpremultiply_on_load’
+ 4740 | static int stbi__unpremultiply_on_load = 0;
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4741:12: error: ISO C++ forbids in-class initialization of non-const static member ‘Queue::stbi__de_iphone_flag’
+ 4741 | static int stbi__de_iphone_flag = 0;
+      |            ^~~~~~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_set_unpremultiply_on_load’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4743:1: note: in expansion of macro ‘STBIDEF’
+ 4743 | STBIDEF void stbi_set_unpremultiply_on_load(int flag_true_if_should_unpremultiply)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_convert_iphone_png_to_rgb’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:4748:1: note: in expansion of macro ‘STBIDEF’
+ 4748 | STBIDEF void stbi_convert_iphone_png_to_rgb(int flag_true_if_should_convert)
+      | ^~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:5000:14: error: ‘static void* Queue::stbi__png_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’ cannot be overloaded with ‘static void* Queue::stbi__png_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+ 5000 | static void *stbi__png_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri)
+      |              ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:827:17: note: previous declaration ‘static void* Queue::stbi__png_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+  827 | static void    *stbi__png_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:5007:12: error: ‘static int Queue::stbi__png_test(Queue::stbi__context*)’ cannot be overloaded with ‘static int Queue::stbi__png_test(Queue::stbi__context*)’
+ 5007 | static int stbi__png_test(stbi__context *s)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:826:17: note: previous declaration ‘static int Queue::stbi__png_test(Queue::stbi__context*)’
+  826 | static int      stbi__png_test(stbi__context *s);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:5027:12: error: ‘static int Queue::stbi__png_info(Queue::stbi__context*, int*, int*, int*)’ cannot be overloaded with ‘static int Queue::stbi__png_info(Queue::stbi__context*, int*, int*, int*)’
+ 5027 | static int stbi__png_info(stbi__context *s, int *x, int *y, int *comp)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:828:17: note: previous declaration ‘static int Queue::stbi__png_info(Queue::stbi__context*, int*, int*, int*)’
+  828 | static int      stbi__png_info(stbi__context *s, int *x, int *y, int *comp);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:5034:12: error: ‘static int Queue::stbi__png_is16(Queue::stbi__context*)’ cannot be overloaded with ‘static int Queue::stbi__png_is16(Queue::stbi__context*)’
+ 5034 | static int stbi__png_is16(stbi__context *s)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:829:17: note: previous declaration ‘static int Queue::stbi__png_is16(Queue::stbi__context*)’
+  829 | static int      stbi__png_is16(stbi__context *s);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:5066:12: error: ‘static int Queue::stbi__bmp_test(Queue::stbi__context*)’ cannot be overloaded with ‘static int Queue::stbi__bmp_test(Queue::stbi__context*)’
+ 5066 | static int stbi__bmp_test(stbi__context *s)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:833:17: note: previous declaration ‘static int Queue::stbi__bmp_test(Queue::stbi__context*)’
+  833 | static int      stbi__bmp_test(stbi__context *s);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:5210:14: error: ‘static void* Queue::stbi__bmp_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’ cannot be overloaded with ‘static void* Queue::stbi__bmp_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+ 5210 | static void *stbi__bmp_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri)
+      |              ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:834:17: note: previous declaration ‘static void* Queue::stbi__bmp_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+  834 | static void    *stbi__bmp_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:5408:12: error: ‘static int Queue::stbi__tga_info(Queue::stbi__context*, int*, int*, int*)’ cannot be overloaded with ‘static int Queue::stbi__tga_info(Queue::stbi__context*, int*, int*, int*)’
+ 5408 | static int stbi__tga_info(stbi__context *s, int *x, int *y, int *comp)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:841:17: note: previous declaration ‘static int Queue::stbi__tga_info(Queue::stbi__context*, int*, int*, int*)’
+  841 | static int      stbi__tga_info(stbi__context *s, int *x, int *y, int *comp);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:5473:12: error: ‘static int Queue::stbi__tga_test(Queue::stbi__context*)’ cannot be overloaded with ‘static int Queue::stbi__tga_test(Queue::stbi__context*)’
+ 5473 | static int stbi__tga_test(stbi__context *s)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:839:17: note: previous declaration ‘static int Queue::stbi__tga_test(Queue::stbi__context*)’
+  839 | static int      stbi__tga_test(stbi__context *s);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:5524:14: error: ‘static void* Queue::stbi__tga_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’ cannot be overloaded with ‘static void* Queue::stbi__tga_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+ 5524 | static void *stbi__tga_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri)
+      |              ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:840:17: note: previous declaration ‘static void* Queue::stbi__tga_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+  840 | static void    *stbi__tga_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:5723:12: error: ‘static int Queue::stbi__psd_test(Queue::stbi__context*)’ cannot be overloaded with ‘static int Queue::stbi__psd_test(Queue::stbi__context*)’
+ 5723 | static int stbi__psd_test(stbi__context *s)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:845:17: note: previous declaration ‘static int Queue::stbi__psd_test(Queue::stbi__context*)’
+  845 | static int      stbi__psd_test(stbi__context *s);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:5768:14: error: ‘static void* Queue::stbi__psd_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*, int)’ cannot be overloaded with ‘static void* Queue::stbi__psd_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*, int)’
+ 5768 | static void *stbi__psd_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri, int bpc)
+      |              ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:846:17: note: previous declaration ‘static void* Queue::stbi__psd_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*, int)’
+  846 | static void    *stbi__psd_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri, int bpc);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:6139:14: error: ‘static void* Queue::stbi__pic_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’ cannot be overloaded with ‘static void* Queue::stbi__pic_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+ 6139 | static void *stbi__pic_load(stbi__context *s,int *px,int *py,int *comp,int req_comp, stbi__result_info *ri)
+      |              ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:859:17: note: previous declaration ‘static void* Queue::stbi__pic_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+  859 | static void    *stbi__pic_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:6175:12: error: ‘static int Queue::stbi__pic_test(Queue::stbi__context*)’ cannot be overloaded with ‘static int Queue::stbi__pic_test(Queue::stbi__context*)’
+ 6175 | static int stbi__pic_test(stbi__context *s)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:858:17: note: previous declaration ‘static int Queue::stbi__pic_test(Queue::stbi__context*)’
+  858 | static int      stbi__pic_test(stbi__context *s);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:6224:12: error: ‘static int Queue::stbi__gif_test(Queue::stbi__context*)’ cannot be overloaded with ‘static int Queue::stbi__gif_test(Queue::stbi__context*)’
+ 6224 | static int stbi__gif_test(stbi__context *s)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:864:17: note: previous declaration ‘static int Queue::stbi__gif_test(Queue::stbi__context*)’
+  864 | static int      stbi__gif_test(stbi__context *s);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:6582:14: error: ‘static void* Queue::stbi__load_gif_main(Queue::stbi__context*, int**, int*, int*, int*, int*, int)’ cannot be overloaded with ‘static void* Queue::stbi__load_gif_main(Queue::stbi__context*, int**, int*, int*, int*, int*, int)’
+ 6582 | static void *stbi__load_gif_main(stbi__context *s, int **delays, int *x, int *y, int *z, int *comp, int req_comp)
+      |              ^~~~~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:866:17: note: previous declaration ‘static void* Queue::stbi__load_gif_main(Queue::stbi__context*, int**, int*, int*, int*, int*, int)’
+  866 | static void    *stbi__load_gif_main(stbi__context *s, int **delays, int *x, int *y, int *z, int *comp, int req_comp);
+      |                 ^~~~~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:6644:14: error: ‘static void* Queue::stbi__gif_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’ cannot be overloaded with ‘static void* Queue::stbi__gif_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+ 6644 | static void *stbi__gif_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri)
+      |              ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:865:17: note: previous declaration ‘static void* Queue::stbi__gif_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+  865 | static void    *stbi__gif_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:6673:12: error: ‘static int Queue::stbi__gif_info(Queue::stbi__context*, int*, int*, int*)’ cannot be overloaded with ‘static int Queue::stbi__gif_info(Queue::stbi__context*, int*, int*, int*)’
+ 6673 | static int stbi__gif_info(stbi__context *s, int *x, int *y, int *comp)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:867:17: note: previous declaration ‘static int Queue::stbi__gif_info(Queue::stbi__context*, int*, int*, int*)’
+  867 | static int      stbi__gif_info(stbi__context *s, int *x, int *y, int *comp);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:6693:12: error: ‘static int Queue::stbi__hdr_test(Queue::stbi__context*)’ cannot be overloaded with ‘static int Queue::stbi__hdr_test(Queue::stbi__context*)’
+ 6693 | static int stbi__hdr_test(stbi__context* s)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:852:17: note: previous declaration ‘static int Queue::stbi__hdr_test(Queue::stbi__context*)’
+  852 | static int      stbi__hdr_test(stbi__context *s);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:6754:15: error: ‘static float* Queue::stbi__hdr_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’ cannot be overloaded with ‘static float* Queue::stbi__hdr_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+ 6754 | static float *stbi__hdr_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri)
+      |               ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:853:17: note: previous declaration ‘static float* Queue::stbi__hdr_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+  853 | static float   *stbi__hdr_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:6882:12: error: ‘static int Queue::stbi__hdr_info(Queue::stbi__context*, int*, int*, int*)’ cannot be overloaded with ‘static int Queue::stbi__hdr_info(Queue::stbi__context*, int*, int*, int*)’
+ 6882 | static int stbi__hdr_info(stbi__context *s, int *x, int *y, int *comp)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:854:17: note: previous declaration ‘static int Queue::stbi__hdr_info(Queue::stbi__context*, int*, int*, int*)’
+  854 | static int      stbi__hdr_info(stbi__context *s, int *x, int *y, int *comp);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:6928:12: error: ‘static int Queue::stbi__bmp_info(Queue::stbi__context*, int*, int*, int*)’ cannot be overloaded with ‘static int Queue::stbi__bmp_info(Queue::stbi__context*, int*, int*, int*)’
+ 6928 | static int stbi__bmp_info(stbi__context *s, int *x, int *y, int *comp)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:835:17: note: previous declaration ‘static int Queue::stbi__bmp_info(Queue::stbi__context*, int*, int*, int*)’
+  835 | static int      stbi__bmp_info(stbi__context *s, int *x, int *y, int *comp);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:6946:12: error: ‘static int Queue::stbi__psd_info(Queue::stbi__context*, int*, int*, int*)’ cannot be overloaded with ‘static int Queue::stbi__psd_info(Queue::stbi__context*, int*, int*, int*)’
+ 6946 | static int stbi__psd_info(stbi__context *s, int *x, int *y, int *comp)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:847:17: note: previous declaration ‘static int Queue::stbi__psd_info(Queue::stbi__context*, int*, int*, int*)’
+  847 | static int      stbi__psd_info(stbi__context *s, int *x, int *y, int *comp);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:6981:12: error: ‘static int Queue::stbi__psd_is16(Queue::stbi__context*)’ cannot be overloaded with ‘static int Queue::stbi__psd_is16(Queue::stbi__context*)’
+ 6981 | static int stbi__psd_is16(stbi__context *s)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:848:17: note: previous declaration ‘static int Queue::stbi__psd_is16(Queue::stbi__context*)’
+  848 | static int      stbi__psd_is16(stbi__context *s);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:7010:12: error: ‘static int Queue::stbi__pic_info(Queue::stbi__context*, int*, int*, int*)’ cannot be overloaded with ‘static int Queue::stbi__pic_info(Queue::stbi__context*, int*, int*, int*)’
+ 7010 | static int stbi__pic_info(stbi__context *s, int *x, int *y, int *comp)
+      |            ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:860:17: note: previous declaration ‘static int Queue::stbi__pic_info(Queue::stbi__context*, int*, int*, int*)’
+  860 | static int      stbi__pic_info(stbi__context *s, int *x, int *y, int *comp);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:7082:17: error: ‘static int Queue::stbi__pnm_test(Queue::stbi__context*)’ cannot be overloaded with ‘static int Queue::stbi__pnm_test(Queue::stbi__context*)’
+ 7082 | static int      stbi__pnm_test(stbi__context *s)
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:871:17: note: previous declaration ‘static int Queue::stbi__pnm_test(Queue::stbi__context*)’
+  871 | static int      stbi__pnm_test(stbi__context *s);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:7094:14: error: ‘static void* Queue::stbi__pnm_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’ cannot be overloaded with ‘static void* Queue::stbi__pnm_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+ 7094 | static void *stbi__pnm_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri)
+      |              ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:872:17: note: previous declaration ‘static void* Queue::stbi__pnm_load(Queue::stbi__context*, int*, int*, int*, int, Queue::stbi__result_info*)’
+  872 | static void    *stbi__pnm_load(stbi__context *s, int *x, int *y, int *comp, int req_comp, stbi__result_info *ri);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:7156:17: error: ‘static int Queue::stbi__pnm_info(Queue::stbi__context*, int*, int*, int*)’ cannot be overloaded with ‘static int Queue::stbi__pnm_info(Queue::stbi__context*, int*, int*, int*)’
+ 7156 | static int      stbi__pnm_info(stbi__context *s, int *x, int *y, int *comp)
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:873:17: note: previous declaration ‘static int Queue::stbi__pnm_info(Queue::stbi__context*, int*, int*, int*)’
+  873 | static int      stbi__pnm_info(stbi__context *s, int *x, int *y, int *comp);
+      |                 ^~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_info’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:7251:1: note: in expansion of macro ‘STBIDEF’
+ 7251 | STBIDEF int stbi_info(char const *filename, int *x, int *y, int *comp)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_info_from_file’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:7261:1: note: in expansion of macro ‘STBIDEF’
+ 7261 | STBIDEF int stbi_info_from_file(FILE *f, int *x, int *y, int *comp)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_is_16_bit’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:7272:1: note: in expansion of macro ‘STBIDEF’
+ 7272 | STBIDEF int stbi_is_16_bit(char const *filename)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_is_16_bit_from_file’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:7282:1: note: in expansion of macro ‘STBIDEF’
+ 7282 | STBIDEF int stbi_is_16_bit_from_file(FILE *f)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_info_from_memory’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:7294:1: note: in expansion of macro ‘STBIDEF’
+ 7294 | STBIDEF int stbi_info_from_memory(stbi_uc const *buffer, int len, int *x, int *y, int *comp)
+      | ^~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:7301:38: error: ‘stbi_io_callbacks’ has not been declared
+ 7301 | STBIDEF int stbi_info_from_callbacks(stbi_io_callbacks const *c, void *user, int *x, int *y, int *comp)
+      |                                      ^~~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_info_from_callbacks’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:7301:1: note: in expansion of macro ‘STBIDEF’
+ 7301 | STBIDEF int stbi_info_from_callbacks(stbi_io_callbacks const *c, void *user, int *x, int *y, int *comp)
+      | ^~~~~~~
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_is_16_bit_from_memory’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:7308:1: note: in expansion of macro ‘STBIDEF’
+ 7308 | STBIDEF int stbi_is_16_bit_from_memory(stbi_uc const *buffer, int len)
+      | ^~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:7315:43: error: ‘stbi_io_callbacks’ has not been declared
+ 7315 | STBIDEF int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const *c, void *user)
+      |                                           ^~~~~~~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h:348:17: error: storage class specified for ‘stbi_is_16_bit_from_callbacks’
+  348 | #define STBIDEF extern
+      |                 ^~~~~~
+/home/pho/Grail/include/stb/stb_image.h:7315:1: note: in expansion of macro ‘STBIDEF’
+ 7315 | STBIDEF int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const *c, void *user)
+      | ^~~~~~~
+testCursors3.cc:6:7: error: expected nested-name-specifier before ‘namespace’
+    6 | using namespace std;
+      |       ^~~~~~~~~
+testCursors3.cc:9:1: error: ‘shared_ptr’ does not name a type
+    9 | shared_ptr<CompiledWeb> cw_ptr;
+      | ^~~~~~~~~~
+testCursors3.cc:43:11: error: ‘shared_ptr’ has not been declared
+   43 | void init(shared_ptr<CompiledWeb> cw) {
+      |           ^~~~~~~~~~
+testCursors3.cc:43:21: error: expected ‘,’ or ‘...’ before ‘<’ token
+   43 | void init(shared_ptr<CompiledWeb> cw) {
+      |                     ^
+testCursors3.cc:76:1: error: expected ‘}’ at end of input
+   76 | }
+      | ^
+In file included from /home/pho/Grail/src/opengl/Canvas.hh:6,
+                 from /home/pho/Grail/src/grail/CompiledWeb.hh:8,
+                 from /home/pho/Grail/src/grail/CompiledWebWindow.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:4,
+                 from testCursors3.cc:1:
+/home/pho/Grail/src/opengl/Queue.hh:4:13: note: to match this ‘{’
+    4 | class Queue {
+      |             ^
+In file included from /home/pho/Grail/src/grail/CompiledWeb.hh:8,
+                 from /home/pho/Grail/src/grail/CompiledWebWindow.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:4,
+                 from testCursors3.cc:1:
+/home/pho/Grail/src/opengl/Canvas.hh: In member function ‘void Queue::Canvas::init()’:
+/home/pho/Grail/src/opengl/Canvas.hh:39:25: error: incomplete type ‘Queue::GLWin’ used in nested name specifier
+   39 |     winW = float(GLWin::Width);
+      |                         ^~~~~
+/home/pho/Grail/src/opengl/Canvas.hh:40:25: error: incomplete type ‘Queue::GLWin’ used in nested name specifier
+   40 |     winH = float(GLWin::Height);
+      |                         ^~~~~~
+In file included from /home/pho/Grail/src/grail/CompiledWebWindow.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:4,
+                 from testCursors3.cc:1:
+/home/pho/Grail/src/grail/CompiledWeb.hh: In member function ‘Queue::Canvas* Queue::CompiledWeb::addCanvas(Queue::Style*, uint32_t, uint32_t, uint32_t, uint32_t)’:
+/home/pho/Grail/src/grail/CompiledWeb.hh:44:66: error: no matching function for call to ‘Queue::Canvas::Canvas(Queue::GLWin*, Queue::Style*&, uint32_t&, uint32_t&, uint32_t&, uint32_t&)’
+   44 |     Canvas* c = new Canvas((GLWin*)(parent),style,vpX,vpY,vpW,vpH);
+      |                                                                  ^
+In file included from /home/pho/Grail/src/grail/CompiledWeb.hh:8,
+                 from /home/pho/Grail/src/grail/CompiledWebWindow.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:4,
+                 from testCursors3.cc:1:
+/home/pho/Grail/src/opengl/Canvas.hh:18:3: note: candidate: ‘Queue::Canvas::Canvas(GLWin*, Queue::Style*, uint32_t, uint32_t, uint32_t, uint32_t)’
+   18 |   Canvas(GLWin* w, Style* style,uint32_t vpX,uint32_t vpY,uint32_t vpW,uint32_t vpH) :
+      |   ^~~~~~
+/home/pho/Grail/src/opengl/Canvas.hh:18:17: note:   no known conversion for argument 1 from ‘Queue::GLWin*’ to ‘GLWin*’
+   18 |   Canvas(GLWin* w, Style* style,uint32_t vpX,uint32_t vpY,uint32_t vpW,uint32_t vpH) :
+      |          ~~~~~~~^
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h: In static member function ‘static void Queue::stbi__start_mem(Queue::stbi__context*, const stbi_uc*, int)’:
+/home/pho/Grail/include/stb/stb_image.h:746:9: error: ‘struct Queue::stbi__context’ has no member named ‘io’
+  746 |      s->io.read = NULL;
+      |         ^~
+/home/pho/Grail/include/stb/stb_image.h: In static member function ‘static void Queue::stbi__start_callbacks(Queue::stbi__context*, int*, void*)’:
+/home/pho/Grail/include/stb/stb_image.h:755:9: error: ‘struct Queue::stbi__context’ has no member named ‘io’
+  755 |      s->io = *c;
+      |         ^~
+/home/pho/Grail/include/stb/stb_image.h: In static member function ‘static void Queue::stbi__start_file(Queue::stbi__context*, FILE*)’:
+/home/pho/Grail/include/stb/stb_image.h:790:32: error: ‘stbi__stdio_callbacks’ was not declared in this scope; did you mean ‘stbi__start_callbacks’?
+  790 |      stbi__start_callbacks(s, &stbi__stdio_callbacks, (void *) f);
+      |                                ^~~~~~~~~~~~~~~~~~~~~
+      |                                stbi__start_callbacks
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h: In member function ‘int Queue::stbi_is_hdr_from_callbacks(const int*, void*)’:
+/home/pho/Grail/include/stb/stb_image.h:1419:36: error: ‘stbi_io_callbacks’ was not declared in this scope; did you mean ‘stbi__start_callbacks’?
+ 1419 |         stbi__start_callbacks(&s, (stbi_io_callbacks *) clbk, user);
+      |                                    ^~~~~~~~~~~~~~~~~
+      |                                    stbi__start_callbacks
+/home/pho/Grail/include/stb/stb_image.h:1419:55: error: expected primary-expression before ‘)’ token
+ 1419 |         stbi__start_callbacks(&s, (stbi_io_callbacks *) clbk, user);
+      |                                                       ^
+/home/pho/Grail/include/stb/stb_image.h: In static member function ‘static void Queue::stbi__refill_buffer(Queue::stbi__context*)’:
+/home/pho/Grail/include/stb/stb_image.h:1455:18: error: ‘struct Queue::stbi__context’ has no member named ‘io’
+ 1455 |      int n = (s->io.read)(s->io_user_data,(char*)s->buffer_start,s->buflen);
+      |                  ^~
+/home/pho/Grail/include/stb/stb_image.h: In static member function ‘static int Queue::stbi__at_eof(Queue::stbi__context*)’:
+/home/pho/Grail/include/stb/stb_image.h:1482:13: error: ‘struct Queue::stbi__context’ has no member named ‘io’
+ 1482 |      if (s->io.read) {
+      |             ^~
+/home/pho/Grail/include/stb/stb_image.h:1483:23: error: ‘struct Queue::stbi__context’ has no member named ‘io’
+ 1483 |              if (!(s->io.eof)(s->io_user_data)) return 0;
+      |                       ^~
+/home/pho/Grail/include/stb/stb_image.h: In static member function ‘static void Queue::stbi__skip(Queue::stbi__context*, int)’:
+/home/pho/Grail/include/stb/stb_image.h:1498:16: error: ‘struct Queue::stbi__context’ has no member named ‘io’
+ 1498 |         if (s->io.read) {
+      |                ^~
+/home/pho/Grail/include/stb/stb_image.h:1502:47: error: ‘struct Queue::stbi__context’ has no member named ‘io’
+ 1502 |                                           (s->io.skip)(s->io_user_data, n - blen);
+      |                                               ^~
+/home/pho/Grail/include/stb/stb_image.h: In static member function ‘static int Queue::stbi__getn(Queue::stbi__context*, Queue::stbi_uc*, int)’:
+/home/pho/Grail/include/stb/stb_image.h:1511:13: error: ‘struct Queue::stbi__context’ has no member named ‘io’
+ 1511 |      if (s->io.read) {
+      |             ^~
+/home/pho/Grail/include/stb/stb_image.h:1518:61: error: ‘struct Queue::stbi__context’ has no member named ‘io’
+ 1518 |                                                 count = (s->io.read)(s->io_user_data, (char*) buffer + blen, n - blen);
+      |                                                             ^~
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h: In static member function ‘static int Queue::stbi__parse_png_file(Queue::stbi__png*, int, int)’:
+/home/pho/Grail/include/stb/stb_image.h:4916:557: error: cannot call member function ‘char* Queue::stbi_zlib_decode_malloc_guesssize_headerflag(const char*, int, int, int*, int)’ without object
+ 4916 |                                                                                                                                                                                                                                                                                                                                                                                                                                        z->expanded = (stbi_uc *) stbi_zlib_decode_malloc_guesssize_headerflag((char *) z->idata, ioff, raw_len, (int *) &raw_len, !is_iphone);
+      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ^
+In file included from /home/pho/Grail/src/opengl/primitivesV2/Image.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:10,
+                 from testCursors3.cc:1:
+/home/pho/Grail/include/stb/stb_image.h: In member function ‘int Queue::stbi_info_from_callbacks(const int*, void*, int*, int*, int*)’:
+/home/pho/Grail/include/stb/stb_image.h:7304:36: error: ‘stbi_io_callbacks’ was not declared in this scope; did you mean ‘stbi__start_callbacks’?
+ 7304 |         stbi__start_callbacks(&s, (stbi_io_callbacks *) c, user);
+      |                                    ^~~~~~~~~~~~~~~~~
+      |                                    stbi__start_callbacks
+/home/pho/Grail/include/stb/stb_image.h:7304:55: error: expected primary-expression before ‘)’ token
+ 7304 |         stbi__start_callbacks(&s, (stbi_io_callbacks *) c, user);
+      |                                                       ^
+/home/pho/Grail/include/stb/stb_image.h: In member function ‘int Queue::stbi_is_16_bit_from_callbacks(const int*, void*)’:
+/home/pho/Grail/include/stb/stb_image.h:7318:36: error: ‘stbi_io_callbacks’ was not declared in this scope; did you mean ‘stbi__start_callbacks’?
+ 7318 |         stbi__start_callbacks(&s, (stbi_io_callbacks *) c, user);
+      |                                    ^~~~~~~~~~~~~~~~~
+      |                                    stbi__start_callbacks
+/home/pho/Grail/include/stb/stb_image.h:7318:55: error: expected primary-expression before ‘)’ token
+ 7318 |         stbi__start_callbacks(&s, (stbi_io_callbacks *) c, user);
+      |                                                       ^
+In file included from /home/pho/Grail/src/grail/Grail.hh:12,
+                 from testCursors3.cc:1:
+/home/pho/Grail/src/opengl/primitivesV2/Text.hh: In member function ‘void Queue::Text::process_input(Queue::Inputs*, float)’:
+/home/pho/Grail/src/opengl/primitivesV2/Text.hh:26:27: error: incomplete type ‘Queue::GLWin’ used in nested name specifier
+   26 |       if(x<0 || x> GLWin::Width){
+      |                           ^~~~~
+/home/pho/Grail/src/opengl/primitivesV2/Text.hh:29:27: error: incomplete type ‘Queue::GLWin’ used in nested name specifier
+   29 |       if(x<0 || x> GLWin::Height){
+      |                           ^~~~~~
+In file included from testCursors3.cc:2:
+ActionListener.hh: In static member function ‘static void Queue::ActionListener::listen(int)’:
+ActionListener.hh:52:19: error: invalid use of incomplete type ‘class Queue::Inputs’
+   52 |       int left = i->get_left(id);
+      |                   ^~
+In file included from /home/pho/Grail/src/grail/CompiledWebWindow.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:4,
+                 from testCursors3.cc:1:
+/home/pho/Grail/src/grail/CompiledWeb.hh:20:7: note: forward declaration of ‘class Queue::Inputs’
+   20 | class Inputs;
+      |       ^~~~~~
+In file included from testCursors3.cc:2:
+ActionListener.hh:53:20: error: invalid use of incomplete type ‘class Queue::Inputs’
+   53 |       int right = i->get_right(id);
+      |                    ^~
+In file included from /home/pho/Grail/src/grail/CompiledWebWindow.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:4,
+                 from testCursors3.cc:1:
+/home/pho/Grail/src/grail/CompiledWeb.hh:20:7: note: forward declaration of ‘class Queue::Inputs’
+   20 | class Inputs;
+      |       ^~~~~~
+In file included from testCursors3.cc:2:
+ActionListener.hh:54:21: error: invalid use of incomplete type ‘class Queue::Inputs’
+   54 |       int middle = i->get_middle(id);
+      |                     ^~
+In file included from /home/pho/Grail/src/grail/CompiledWebWindow.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:4,
+                 from testCursors3.cc:1:
+/home/pho/Grail/src/grail/CompiledWeb.hh:20:7: note: forward declaration of ‘class Queue::Inputs’
+   20 | class Inputs;
+      |       ^~~~~~
+testCursors3.cc: In member function ‘void Queue::mouse_clicked_callback(Queue::ActionListener::MouseEvent)’:
+testCursors3.cc:30:16: error: incomplete type ‘Queue::GLWin’ used in nested name specifier
+   30 |         GLWin::block_render = 1;
+      |                ^~~~~~~~~~~~
+testCursors3.cc:31:23: error: incomplete type ‘Queue::GLWin’ used in nested name specifier
+   31 |         while(!GLWin::render_done)
+      |                       ^~~~~~~~~~~
+testCursors3.cc:32:11: error: ‘cout’ was not declared in this scope; did you mean ‘std::cout’?
+   32 |           cout << "Waiting for render_done" << endl;
+      |           ^~~~
+      |           std::cout
+In file included from /home/pho/Grail/src/grail/Grail.hh:1,
+                 from testCursors3.cc:1:
+/usr/include/c++/9.1.0/iostream:61:18: note: ‘std::cout’ declared here
+   61 |   extern ostream cout;  /// Linked to standard output
+      |                  ^~~~
+testCursors3.cc:32:48: error: ‘endl’ was not declared in this scope; did you mean ‘std::endl’?
+   32 |           cout << "Waiting for render_done" << endl;
+      |                                                ^~~~
+      |                                                std::endl
+In file included from /usr/include/c++/9.1.0/iostream:39,
+                 from /home/pho/Grail/src/grail/Grail.hh:1,
+                 from testCursors3.cc:1:
+/usr/include/c++/9.1.0/ostream:599:5: note: ‘std::endl’ declared here
+  599 |     endl(basic_ostream<_CharT, _Traits>& __os)
+      |     ^~~~
+testCursors3.cc:34:9: error: ‘cout’ was not declared in this scope; did you mean ‘std::cout’?
+   34 |         cout << "Drawing rectangle at: (" << x1 << ", " << y1 << "), (" << x2 << ", " << y2 << ")" << endl;
+      |         ^~~~
+      |         std::cout
+In file included from /home/pho/Grail/src/grail/Grail.hh:1,
+                 from testCursors3.cc:1:
+/usr/include/c++/9.1.0/iostream:61:18: note: ‘std::cout’ declared here
+   61 |   extern ostream cout;  /// Linked to standard output
+      |                  ^~~~
+testCursors3.cc:34:103: error: ‘endl’ was not declared in this scope; did you mean ‘std::endl’?
+   34 |         cout << "Drawing rectangle at: (" << x1 << ", " << y1 << "), (" << x2 << ", " << y2 << ")" << endl;
+      |                                                                                                       ^~~~
+      |                                                                                                       std::endl
+In file included from /usr/include/c++/9.1.0/iostream:39,
+                 from /home/pho/Grail/src/grail/Grail.hh:1,
+                 from testCursors3.cc:1:
+/usr/include/c++/9.1.0/ostream:599:5: note: ‘std::endl’ declared here
+  599 |     endl(basic_ostream<_CharT, _Traits>& __os)
+      |     ^~~~
+testCursors3.cc:36:16: error: incomplete type ‘Queue::GLWin’ used in nested name specifier
+   36 |         GLWin::block_render = 0;
+      |                ^~~~~~~~~~~~
+testCursors3.cc: In member function ‘void Queue::init(int)’:
+testCursors3.cc:45:3: error: ‘cw_ptr’ was not declared in this scope
+   45 |   cw_ptr = cw;
+      |   ^~~~~~
+testCursors3.cc:45:12: error: ‘cw’ was not declared in this scope
+   45 |   cw_ptr = cw;
+      |            ^~
+testCursors3.cc:60:35: error: invalid new-expression of abstract class type ‘Queue::Cursor’
+   60 |   c->addLayer(new Cursor(20,20,s,0));
+      |                                   ^
+In file included from /home/pho/Grail/src/grail/Grail.hh:17,
+                 from testCursors3.cc:1:
+/home/pho/Grail/src/opengl/Cursor.hh:7:7: note:   because the following virtual functions are pure within ‘Queue::Cursor’:
+    7 | class Cursor : public Shape2D {
+      |       ^~~~~~
+In file included from /home/pho/Grail/src/opengl/Canvas.hh:3,
+                 from /home/pho/Grail/src/grail/CompiledWeb.hh:8,
+                 from /home/pho/Grail/src/grail/CompiledWebWindow.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:4,
+                 from testCursors3.cc:1:
+/home/pho/Grail/src/opengl/primitivesV2/Shape.hh:14:16: note: 	‘virtual void Shape::process_input(Inputs*, float)’
+   14 |   virtual void process_input(Inputs* in,float dt) = 0;
+      |                ^~~~~~~~~~~~~
+testCursors3.cc:62:51: error: invalid new-expression of abstract class type ‘Queue::MultiShape2D’
+   62 |   MultiShape2D* m = c->addLayer(new MultiShape2D(s));
+      |                                                   ^
+In file included from /home/pho/Grail/src/grail/Grail.hh:5,
+                 from testCursors3.cc:1:
+/home/pho/Grail/src/opengl/primitivesV2/MultiShape2D.hh:6:7: note:   because the following virtual functions are pure within ‘Queue::MultiShape2D’:
+    6 | class MultiShape2D : public MultiShape {
+      |       ^~~~~~~~~~~~
+In file included from /home/pho/Grail/src/opengl/Canvas.hh:3,
+                 from /home/pho/Grail/src/grail/CompiledWeb.hh:8,
+                 from /home/pho/Grail/src/grail/CompiledWebWindow.hh:3,
+                 from /home/pho/Grail/src/grail/Grail.hh:4,
+                 from testCursors3.cc:1:
+/home/pho/Grail/src/opengl/primitivesV2/Shape.hh:14:16: note: 	‘virtual void Shape::process_input(Inputs*, float)’
+   14 |   virtual void process_input(Inputs* in,float dt) = 0;
+      |                ^~~~~~~~~~~~~
+testCursors3.cc:69:57: error: invalid use of non-static member function ‘void Queue::mouse_clicked_callback(Queue::ActionListener::MouseEvent)’
+   69 |   a->registerCallback(ActionListener::Events::MOUSE, 0, mouse_clicked_callback);
+      |                                                         ^~~~~~~~~~~~~~~~~~~~~~
+testCursors3.cc:13:6: note: declared here
+   13 | void mouse_clicked_callback(ActionListener::MouseEvent e) {
+      |      ^~~~~~~~~~~~~~~~~~~~~~
+testCursors3.cc: In member function ‘int Queue::main(int, char**)’:
+testCursors3.cc:73:54: error: invalid use of non-static member function ‘void Queue::init(int)’
+   73 |   int ret = CompiledWebWindow::initGrail(argc, argv, init);
+      |                                                      ^~~~
+testCursors3.cc:43:6: note: declared here
+   43 | void init(shared_ptr<CompiledWeb> cw) {
+      |      ^~~~
+testCursors3.cc: At global scope:
+testCursors3.cc:76:1: error: expected unqualified-id at end of input
+   76 | }
+      | ^
+make: *** [Makefile:29: /home/pho/Grail/bin/testCursors3] Error 1

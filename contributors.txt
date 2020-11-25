@@ -1,0 +1,6 @@
+Dov Kruger conceived this project and is the primary architect at the
+beginning.
+
+Peter Ho initially implemented multi-device inputs as part of the
+StevensGameLib project, now incorporated into Grail. He is the project
+leader of the students implementing.

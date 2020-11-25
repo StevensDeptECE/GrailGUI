@@ -1,0 +1,96 @@
+#pragma once
+
+#include "opengl/Shape.hh"
+#include "opengl/GLWin.hh"
+#include <vector>
+
+class Camera;
+class Style;
+class Canvas {
+private:
+  GLWin* w;
+  std::vector<Shape*> layers;
+  uint32_t vpX,vpY,vpW,vpH; // viewport
+  uint32_t pX, pY; // projection
+  glm::mat4 projection;
+  const Style* style;
+  Camera* cam;
+//	uint32_t winW, winH;
+public:
+  Canvas(GLWin* w, const Style* style,
+				 uint32_t vpX, uint32_t vpY,uint32_t vpW,uint32_t vpH,
+				 uint32_t pX, uint32_t pY) : //viewport, projection
+    w(w),style(style),vpX(vpX), vpY(vpY),vpW(vpW),vpH(vpH),pX(pX),pY(pY) {
+      projection = glm::ortho(0.0f, static_cast<float>(pX), static_cast<float>(pY), 0.0f);
+	}
+  Canvas(GLWin* w, const Style* style,
+				 uint32_t vpX, uint32_t vpY,uint32_t vpW,uint32_t vpH, // viewport on the screen
+				 float xLeft, float xRight, float yTop, float yBottom) : //coordinates of each edge 
+    w(w),style(style),vpX(vpX), vpY(vpY),vpW(vpW),vpH(vpH) {
+      projection = glm::ortho(xLeft, xRight, yBottom, yTop);
+	}
+  
+  ~Canvas();
+  Canvas(const Canvas& orig) = delete;
+  Canvas& operator =(const Canvas& orig) = delete;
+  uint32_t getWidth() const {
+    return vpW;
+  }
+  uint32_t getHeight() const {
+    return vpH;
+  }
+
+  glm::mat4* getProjection(){
+    return &projection;
+  }
+  void setProjection(const glm::mat4& proj){
+    projection = proj;
+  }
+
+  void setOrthoProjection(float xLeft, float xRight, float yBottom, float yTop) {
+      projection = glm::ortho(xLeft, xRight, yBottom, yTop);
+  }
+  Camera* setLookAtProjection(float eyeX, float eyeY, float eyeZ,
+                          float lookAtX, float lookAtY, float lookAtZ,
+                          float upX, float upY, float upZ);
+
+  //Add layer pointer and return its index
+  template<typename S>
+	S* addLayer(S* shape){
+		((Shape*)shape)->setParentCanvas(this);
+		layers.push_back(shape);
+		return shape;
+	}
+
+  Shape* getLayer(uint32_t i) {
+    if (i < layers.size())
+      return layers[i];
+    return nullptr;
+  }
+
+  void init() {
+    for (int i = 0; i < layers.size(); i++) {
+      layers[i]->init();
+    }
+  }
+
+  void process_input(Inputs* in, float dt){
+    for (int i = 0; i < layers.size(); i++) {
+      layers[i]->process_input(in,dt);
+    }
+  }
+
+  void update(){
+    for (int i = 0; i < layers.size(); i++) {
+      layers[i]->update();
+    }
+  }
+
+  const Style* getStyle() const {
+    return style;
+  }
+
+  void render();
+
+  void cleanup();
+};

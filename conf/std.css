@@ -1,0 +1,63 @@
+//namespace std; // this file is all in namespace std::
+
+window {
+   // should the default be screen size?
+    width:  1280; 
+    height: 1024;
+    fullscreen: false;
+    resizable: true;
+}	  
+
+font {
+  Times:      fonts/Times-serif;    // Times Roman alias
+  Helvetia:   fonts/Nimbus-sans;    // Helvetica clone
+	    //  Courier:    fonts/Courier-fixed;           // Courier fixed
+
+  Roboto:      fonts/Google/Roboto-fixed;    // Monospaced font, like Courier
+
+  Noto:        fonts/Google/Noto-sans;       // 
+  Dancing:     fonts/Google/Dancing-script;  // handwritten look
+  Montserrat:  fonts/Google/Montserrat;      // also sans like Noto
+  LatinModern: fonts/TeXGyre/LatinModernMath;// Standard gothic font used by LaTeX
+  LatinModern: fonts/TeXGyre/LatinModern;  // Latin Modern Math
+  LatinModern: fonts/TeXGyre/LatinModern;  // Standard gothic font used by LaTeX
+  Cyberbit:    fonts/Cyberbit;             // every glyph known to man, or close  								      
+}
+
+default {	
+  font: Times;      // request standard named font
+  font-size: 12;		      
+  bg: 	#d0d0d0     // bright gray background by default
+  fg:	#000000     // default black letters
+  line-width: 1;
+  line-style: ; // solid, dash, dot, dashdot, integer pattern?
+}
+
+.big : default {
+    font-size: 24;
+    bg: #4040e0;
+    fg: #ffffff;
+}
+
+.h1 : default {
+    font-size: 20;
+}
+
+.h2 : default {
+    font-size: 16;
+}
+
+.h3 : default {
+    font-size: 14;
+}
+
+.t1 : default {
+    x: 10;
+    y: 10;
+    width: 100% -20;
+    height: 100% -20;
+    row-title-style: .h3;
+    col-title-style: .h3;
+}
+
+.t2 : defa

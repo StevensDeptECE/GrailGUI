@@ -1,0 +1,43 @@
+typedef u64  SecurityID;   //  TYPEDEF U64 10 SecurityID
+struct Stock {
+  string8     symbol;
+  SecurityID  id;     // unique identifier for this symbol (CUSIP for US)
+}
+
+struct StockQuote {
+  SecurityID  id;
+  date        d;
+  f32         low, high, open, close;
+  f64         volume;   
+}
+
+struct Position {
+  SecurityID  id;
+  f32         qty;
+}
+
+struct Portfolio {    //metadata   LIST8 size 9 Portfolio ...
+  List<Position> positions;
+}
+
+struct BrokerageAccount { // metadata STRUCT8 2  16 BrokerageAccount  I64 7 balance 
+  i64       balance;
+  Portfolio p;
+}
+
+typedef List<StockQuote> StockQuotes;
+
+server {
+  StockQuotes: List<StockQuote>   // turns into request 0 --> get us the StockQuotes
+  
+  security user {
+    Summary: BrokerageAccount account;
+    Portfolio: Portfolio p;
+
+    Info:
+       string8 firstName;
+       string8 lastName;
+       BrokerageAccount account;
+
+  }
+}

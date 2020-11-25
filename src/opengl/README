@@ -1,0 +1,21 @@
+The purpose of StevensGameLib is to create a single library that is easy to use
+and that provides useful utility functions in constructing OpenGL programs using
+modern shaders.
+
+We provide the following features:
+
+1. A single base class GLWin that encapsulates everything. A few lines will create a working OpenGL program.
+
+2. A static library libstevensgame.a that includes all the code
+3. A single input management system that supports multiple keyboards and mice and works across Windows, Linux and MacOS
+4. Utility functions for animation
+
+Status:
+1. At the moment the input library is not integrated with the graphics though it works on Windows and Linux.
+2. An animation system based on a single master time variable t is designed but not implemented yet.
+
+TODO:
+1. Create a class with a draw list that draws Shapes.  Base class Shape is already created but might need work.
+2. Create an input mapping system that maps input events to commands, and commands to functions/methods that are executed.
+3. Support a standard set of projections to make it easy to draw 2d and 3d.
+4. Add font support using freetype.

@@ -1,0 +1,30 @@
+XDL is a data standard loosely based on IDL, the data standard for
+CORBA.  It is roughly equivalent to other binary data transmission
+libraries like Google's protobuf.
+
+The purpose of XDL is to go further than the other two mentioned
+above. Specifically, there are two key features that XDL adds that IDL
+does not have.
+
+1. XDL supports more builtin data types than IDL, with integer sizes
+up to 256 bits and formal specification of Date types and bit vectors
+in order to have a standard that supports efficient data transmission.
+
+2. There is a formal binary metadata language that is standard across
+all platforms. For any object defined in XDL, there is a sequence of
+bytes defining the metadata that tells any reader the sequence of
+types to be expected. Because of this feature, it is possible to write
+a generic client that can read data from any server. There are
+therefore two ways to send data in XDL. The first way is the same as
+IDL and Protobuf -- the programmer defines data in XDL, generates
+custom code for server and client, and each sends the data, knowing
+that the other side knows at compile time what to expect. The second
+is to generate data, send the metadata either before or every time the
+data is sent, and let the client interpret the metadata to discover
+
+3. XDL includes the concept of localization of names of
+variables. Data in XDL is designed to share and be viewed by the other
+party. It is not just a programmer internal detail. Accordingly, there
+is a formal specification of how to display data including the name of
+the variables, which can be translated into local languages.
+

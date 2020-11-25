@@ -1,0 +1,30 @@
+Grail is designed to be the "holy grail" of user interfaces.
+
+Easy to use like HTML, but generating fast OpenGL code.
+
+Generates optimal web pages that download an app to a client once,
+then send only the dynamic (changing) data every time the page is hit.
+
+Contains embedded graphics for 2d, 3d, and eventually 3d models.
+
+Supports fixed format like pdf.
+
+Designed originally as a web programming language, but now envisioned as a
+portable GUI
+
+Written in C++ and designed with extreme simplicity in mind, the code
+base is small, compact, and very, very fast. It is expected that pages should
+render in milliseconds, thousands of times faster than current web pages.
+
+Security is built into the web component of Grail. There are no
+interpreted languages like JavaScript riddled with security holes.
+
+
+While this project is just a demonstration, and is not going to
+implement every feature, the hope is that this demonstrates that
+eventually, Grail should be a replacement for HTML, CSS, GUIs like
+Java FX and older Java Swing, as well as pdf. While Grail does not
+replace OpenGL, it is a layer above it, and hopefully it will provide
+a portable GUI implemented in OpenGL so that standard menus,
+scrollbars and the like can eventually be portable and fit well in
+OpenGL code.

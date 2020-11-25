@@ -1,0 +1,58 @@
+typedef x u32;
+typedef y x; // y -->u32
+typedef z y; // z -->u32
+
+
+struct A {
+  string8 name;
+  u32 x;
+  u32 y;
+}
+
+STRUCT8 1A 3 string8 4name u32 1x u32 1y
+
+typedef w A;
+
+list<u32>
+list<A> points;
+
+LIST8 u32
+LIST8 STRUCT8 1A
+
+
+data would be:
+2 3Dov x x x x y y y y 7Wanying x x x x y y y y
+
+
+5 x x x x y y y y x x x x y y y y x x x x y y y y x x x x y y y y x x x x y y y y
+
+
+
+string8
+
+7Wanying
+
+
+server Kuma {
+  port 8080
+
+  List<Student> mystudents;
+  List<Course> courses;
+  private key: Dov, Wanying {
+    PersonalHealthRecord phr;
+    
+  }
+}
+
+
+grant access to DrVitievsky phr
+add to phr xray
+add to phr blood test encrypted(DrVitievsky)
+
+
+class Server {
+public:
+  Server(int portnum, int protocol);
+  void addDocument(Document d);
+  void removeDocument(DocId id);
+  

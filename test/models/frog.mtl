@@ -1,0 +1,25 @@
+# Blender MTL File: 'None'
+# Material Count: 2
+
+newmtl frog
+Ns 96.078443
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.420000 0.420000 0.420000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Bump -bm 0.500000 /home/alex/Downloads/Frog-Obj/Obj/normal_unwarp.png
+map_Kd /home/alex/Downloads/Frog-Obj/Obj/frog-tex.jpg
+
+newmtl ojos
+Ns 96.078443
+Ka 1.000000 1.000000 1.000000
+Kd 0.969892 0.969892 0.969892
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd /home/alex/Downloads/Frog-Obj/Obj/eye11e.jpg

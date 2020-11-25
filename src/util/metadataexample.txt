@@ -1,0 +1,9 @@
+STUCT8 4
+U64 id
+STRING8 firstname
+STRING8 lastname
+F32     grade
+
+
+123        3Dov6Kruger 95.5
+12125125   5Peter2Ho   100.4
