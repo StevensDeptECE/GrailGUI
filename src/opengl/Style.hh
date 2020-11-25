@@ -34,11 +34,12 @@ public:
 	{}
 
   Style(const Font* font,
-      float bgRed, float bgGreen, float bgBlue,
-      float fgRed, float fgGreen, float fgBlue) :
-    f(font), bg(bgRed,bgGreen,bgBlue,1),fg(fgRed,fgGreen,fgBlue,1)
+				float bgRed, float bgGreen, float bgBlue,
+				float fgRed, float fgGreen, float fgBlue,
+				int shadeIndex = 0) :
+    f(font), bg(bgRed,bgGreen,bgBlue,1),fg(fgRed,fgGreen,fgBlue,1),
+		shaderIndex(shaderIndex)
   {
-    shaderIndex = 0;
   }
 
   Style(const Font* font,
