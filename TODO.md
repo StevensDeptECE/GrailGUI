@@ -13,10 +13,11 @@
 
 
   GrailGUI also attempts to make many aspects of GUI development more compact
-  and elegant. Object-Oriented demos are tiny, with minimal code needed to
-  create working code. While not as simple as processing, GrailGUI is designed
-  to allow novice C++ programmers to achieve high-efficiency graphical
-  applications more easily.
+  and elegant. The current codebase is approximately 15k lines, 458kb.
+  Object-Oriented demos are tiny, with minimal code needed to
+  create a working application. While not as simple as processing, GrailGUI
+  is designed to allow novice C++ programmers to achieve high-efficiency
+  graphical applications more easily.
 
   Grail provides some standardized features designed to make developing
   simulations, games, GUI interfaces and data visualization tools.
@@ -26,7 +27,12 @@
    3. Ability to save a movie (though very slow)
    4. Predefined move the camera
    5. Configuration for internationalization
-   6. Network connection to servers using high-speed binary data
+   6. Network connection to servers using high-speed binary data using XDL,
+   a new language designed with efficient binary data, metadata, and
+   internationalization. We hope to write a compiler to generate code in
+   C++ and other languages from XDL, making data accessible like Google
+   protobuf, but retaining the ability to examine and display data generically
+   without programming.
 
  The purpose of GrailGUI is to create graphical applications for visualizing
  data, for creating a portable GUI that will work on any platform using OpenGL,
@@ -45,6 +51,9 @@
  high-performance portable graphical applications, and to make the code for
  doing so clean and far smaller.
 
+ As Grail grows, it is essential to maintain a single coherent, clean codebase
+ that is manageable and understandable.
+ 
 ## Portability
 
  GrailGUI is currently implemented on Linux (tested on Ubuntu and Centos)
@@ -69,3 +78,8 @@
 
  5. Selection/picking for objects.
 
+ 6. Example implementing a JNI interface to Java, or perhaps a sockets
+ connection to take a text-only program and turn it into a GUI using Grail as
+ an external engine. Generate other language code such as Java from XDL.
+
+ 7. Implement menus, buttons, lots of widgets.
