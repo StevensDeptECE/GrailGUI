@@ -52,13 +52,21 @@
  doing so clean and far smaller.
 
  As Grail grows, it is essential to maintain a single coherent, clean codebase
- that is manageable and understandable.
+ that is manageable and understandable. Grail is currently simple, clean,
+ and very, very fast (it does still have memory bugs).
+ We could display a typical formatted page of text at
+ 8000fps on a GTX 2060, if there were a display capable of doing so, which
+ means in practice that there is huge headroom to display vastly more
+ complicated pages and still be faster than rendering engines for web browsers,
+ pdf viewers, and book readers. Grail could power a new generation of such
+ software.
  
 ## Portability
 
  GrailGUI is currently implemented on Linux (tested on Ubuntu and Centos)
  and Windows (at the time of writing, the sockets code has not yet been ported)
- We are currently porting to Raspberry Pi.
+ We are currently porting to Raspberry Pi which should not be very difficult.
+ More ambitious ports are below in TODO.
 
 ## TODO
 
@@ -66,20 +74,33 @@
  programmer and wish to contribute, we would love to hear from you:
 
  1. Porting to Mac OSX, Android, iphone. The critical thing is to make this
- absolutely invisible to the application programmer.
+ absolutely invisible to the application programmer. There are big barriers
+ to entry in writing iOS and Android apps. The goal of a port to those
+ platforms is to provide a wrapper that will allow a developer to create a
+ demo quickly and easily in Grail, without knowing anything at all about those
+ platforms. Wrapper code can be in Kotlin on Android, and Swift on iOS, but
+ should not be visible to a Grail programmer. The fact that Android and iOS
+ may suspend tasks and bring them back may necessitate some events to be
+ handled but if so the hope is that generic code can be implemented to work
+ the same over all platforms.
 
- 2. Supporting vector fonts and 3d fonts (as in http://oglft.sourceforge.net/
+ 2. Finding and eliminating all memory bugs with valgrind and similar tools.
+
+ 3. Supporting vector fonts and 3d fonts (as in http://oglft.sourceforge.net/
  https://sourceforge.net/projects/ftgl/)
 
- 3. Heat Map component. Given arrays of x, y, and a separate array of values v,
+ 4. Heat Map component. Given arrays of x, y, and a separate array of values v,
  write a C++ component and corresponding shader to draw
 
- 4. Support for Webrtc https://webrtc.org/
+ 5. Support for Webrtc https://webrtc.org/
 
- 5. Selection/picking for objects.
+ 6. Selection/picking for objects.
 
- 6. Example implementing a JNI interface to Java, or perhaps a sockets
+ 7. Example implementing a JNI interface to Java, or perhaps a sockets
  connection to take a text-only program and turn it into a GUI using Grail as
  an external engine. Generate other language code such as Java from XDL.
 
- 7. Implement menus, buttons, lots of widgets.
+ 8. Implement menus, buttons, lots of widgets.
+
+ 9. Creating a Rust interface to Grail. Alternatively at some point, porting
+ Grail to rust.
