@@ -13,15 +13,6 @@
 
  4. Edit `~/.bashrc` to include `export GRAIL=/path/to/GRAIL` and `export PATH=$PATH:$GRAIL/bin` on the following line. `source ~/.bashrc` the first time.
 
-      - Example: `/c/Users/USERNAME/Documents/GitHub/Grail`
- 5. Install PLibSys
-
-    1. Download from [PLibSys Releases](https://github.com/saprykin/plibsys/releases/). Get Latest `Source Code (zip)`
-    2. Decompress Locally
-    3. Run `cmake CMakeLists.txt`
-    4. `make`
-    5. `make install` (need sudo in linux)
-
 ## Getting Set Up - Linux
 
 1. Install Dependencies: `sudo apt install libglfw3-dev libfreetype-dev flex bison`
