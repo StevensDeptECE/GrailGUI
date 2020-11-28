@@ -183,9 +183,8 @@ void GLWin::startWindow() {
     throw "Failed to open GLFW window";
   }
   winMap[win] = this;
-  cerr << winMap[win] << '\n';
-  winMap[win] = this;
-  cerr << winMap[win] << '\n';
+//  cerr << winMap[win] << '\n';
+//  winMap[win] = this;
   glfwMakeContextCurrent(win);
   glfwSetWindowSizeCallback(win, resize);
   //	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -199,7 +198,7 @@ void GLWin::startWindow() {
   glfwSetWindowRefreshCallback(win, GLWin::windowRefreshCallback);
 
   // glEnable(GL_CULL_FACE); I disable this because when we change the
-  // projection to be normal screen pixels than it doesnt draw since its drwaing
+  // projection to be normal screen pixels than it doesnt draw since its drawing
   // it in the opposite orientation i assume
   glEnable(GL_BLEND);
   glEnable(GL_LINE_SMOOTH);
@@ -208,7 +207,7 @@ void GLWin::startWindow() {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   GLWin::projection = glm::ortho(0.0f, static_cast<GLfloat>(width),
                                  static_cast<GLfloat>(height), 0.0f);
-  std::cout << width << " " << height << std::endl;
+  //std::cerr << width << " " << height << std::endl;
   if (!hasBeenInitialized) {
     *(string *)&baseDir = getenv("GRAIL");
     uint32_t sizes[] = {8,  10, 12, 14, 16,

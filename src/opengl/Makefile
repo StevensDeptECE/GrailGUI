@@ -15,6 +15,7 @@ $(utilout)/Config.o $(utilout)/Prefs.o	\
 $(utilout)/HashMap.o                    \
 $(utilout)/Buffer.o			\
 $(utilout)/datatype.o			\
+$(cspout)/Socket.o				\
 $(cspout)/IPV4Socket.o			\
 $(cspout)/XDLRequest.o			\
 $(cspout)/Request.o			\
@@ -65,6 +66,9 @@ $(utilout)/Buffer.o: $(util)/Buffer.cc $(util)/Buffer.hh
 	$(COMP) $< -o $@
 
 $(utilout)/datatype.o: $(util)/datatype.cc $(util)/datatype.hh
+	$(COMP) $< -o $@
+
+$(cspout)/Socket.o: $(csp)/Socket.cc $(csp)/Socket.hh $(util)/Buffer.hh
 	$(COMP) $< -o $@
 
 $(cspout)/IPV4Socket.o: $(csp)/IPV4Socket.cc $(util)/Buffer.hh

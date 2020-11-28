@@ -3,14 +3,25 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <unistd.h>
+/*
+  All encapsulation for different operating systems networking code is done here
+*/
+#if WINDOWS
+#include<winsock2.h>
+#pragma comment(lib,"ws2_32.lib") //Winsock Library
 
-#ifdef __linux__
+#else // linux
+
+#include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
 #endif
+
+#include <signal.h>
+
 #include <memory.h>
 
-#include "csp/HTTPRequest.hh"
+//#include "csp/HTTPRequest.hh"
 #include "csp/csp.hh"
 
 using namespace std;
@@ -29,11 +40,12 @@ IPV4Socket::IPV4Socket(uint16_t port) : Socket(port) {
              Errcode::SOCKET);
   testResult(setsockopt(sckt, SOL_SOCKET, SO_REUSEADDR, (const char *) &yes, sizeof(yes)),
              __FILE__, __LINE__, Errcode::SETSOCKOPT);
-  memset((char *)&sockaddress, 0, sizeof(sockaddress));
-  sockaddress.sin_family = AF_INET;
-  sockaddress.sin_addr.s_addr = INADDR_ANY;
-  sockaddress.sin_port = htons(port);
-  ::bind(sckt, (struct sockaddr *)&sockaddress, sizeof(sockaddress));
+  memset(sockaddress, 0, sizeof(sockaddress));
+  sockaddr_in* sockAddr = (sockaddr_in*)sockaddress;
+  sockAddr->sin_family = AF_INET;
+  sockAddr->sin_addr.s_addr = INADDR_ANY;
+  sockAddr->sin_port = htons(port);
+  ::bind(sckt, (struct sockaddr *)sockAddr, sizeof(sockaddr_in));
   testResult(listen(sckt, 20), __FILE__, __LINE__, Errcode::LISTEN);
 }
 
@@ -49,13 +61,14 @@ IPV4Socket::IPV4Socket(const char *addr, uint16_t port) : Socket(addr, port) {
     throw Ex(__FILE__, __LINE__, Errcode::SERVER_INVALID);
   }
 
-  sockaddress.sin_family = AF_INET;
+  sockaddr_in* sockAddr = (sockaddr_in*)sockaddress;
+  sockAddr->sin_family = AF_INET;
   //    bcopy((char *)server->h_addr, (char *)&sockaddress.sin_addr.s_addr,
   //    server->h_length);
-  sockaddress.sin_addr.s_addr = inet_addr(address);
-  sockaddress.sin_port = htons(port);
+  sockAddr->sin_addr.s_addr = inet_addr(address);
+  sockAddr->sin_port = htons(port);
 
-  if (connect(sckt, (struct sockaddr *)&sockaddress, sizeof(sockaddress)) < 0) {
+  if (connect(sckt, (struct sockaddr *)sockaddress, sizeof(sockaddr_in)) < 0) {
     throw Ex(__FILE__, __LINE__, Errcode::CONNECTION_FAILURE);
   }
 }
@@ -76,7 +89,7 @@ void IPV4Socket::wait() {
            << "\n";
       req->handle(returnsckt);
       close(returnsckt);
-      // csp18summer: if you are not familiar with socket, try below code
+      // if you are not familiar with socket, try below code
       //			read(senderSock,testin, sizeof(testin)-1);
       //			cout<<testin<<endl;
       //			strcpy(testout,"hello,this is server");

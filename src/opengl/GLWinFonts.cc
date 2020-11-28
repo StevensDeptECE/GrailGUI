@@ -103,7 +103,7 @@ void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t> &glyphMap,
   } else {
     /* convert to an anti-aliased bitmap */
     if (FT_Render_Glyph(ftFace->glyph, FT_RENDER_MODE_NORMAL)) {
-      std::cout << "ERROR::FREETYTPE: Failed to Render Glyph" << std::endl;
+      std::cerr << "ERROR::FREETYTPE: Failed to Render Glyph" << std::endl;
       //TODO: eliminated this case because it never seems to happen
       //glyphs.push_back(Glyph(maxWidth, glm::ivec2(0, 0), glm::ivec2(0, 0), 0.0, 0.0, 1.0, bogusBottomRight));
       return;
@@ -113,7 +113,7 @@ void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t> &glyphMap,
   FT_GlyphSlot g = ftFace->glyph;
   const uint8_t *freetype_buffer_bd = g->bitmap.buffer;
   if (freetype_buffer_bd == nullptr) {  // render succeeds and it's still null?
-    cerr << "buffer is null for character " << int(c) << '\n';
+    //cerr << "buffer is null for character " << int(c) << '\n';
     // this is for space and non-printing characters
     glyphs.push_back(Glyph(spaceWidth, 0.0f, 0.0f,
                      0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
@@ -152,10 +152,6 @@ void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t> &glyphMap,
 //            float(double(sizeY - currY) / sizeY),
 //            float(double(sizeY - (currY+h)) / sizeY)
     ));
-    if (c == 'D') {
-      cout << "currX=" << currX  <<  " currY=" << currY << '\n';
-      cout << glyphs.back() << '\n';
-    }
     uint32_t dest = currY * sizeX + currX;
     for (uint32_t row = 0; row < h; row++, dest += sizeX) {
       memcpy(bitmap + dest, freetype_buffer_bd + row*w, w);

@@ -16,57 +16,32 @@
          Handlers: HTTP, HTTPS (TLS), CSP, CSPTLS, HTTPMultithreaded
          @author: Dov Kruger
  */
-#include <sys/types.h>
-#include <unistd.h>
-#if WINDOWS
 
-
-#else
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-//#include <sys/wait.h>
-#endif
-
-#include <signal.h>
-
-#include "csp/Request.hh"
+//#include "csp/Request.hh"
 #include "util/Buffer.hh"
 
 using namespace std;
 
+class Request; // forward reference, all code is included in .cc
 class Socket {
  protected:
   const char* address;
   uint16_t port;
 
-  struct sockaddr_in sockaddress;
+  char sockaddress[16]; // placeholder big enough to hold sockaddr_in structure
   Request* req;    // to be called when a request is INCOMING (req->handle() )
   Buffer in, out;  // buffers to send and receive data
 
  public:
-  Socket(const char* addr, uint16_t port)
-      : address(addr),
-        port(port),
-        req(nullptr),
-        in(BUFSIZE, false),
-        out(BUFSIZE, true) {}
+  Socket(const char* addr, uint16_t port);
 
+  // TODO: simplify
   // below two constructors could be merged depends on the location of variable
   // "req" Constructor for CSP server
-  Socket(uint16_t port, Request* req)
-      : port(port), req(req), in(BUFSIZE, false), out(BUFSIZE, true) {}
-  // Constructor for HTTP server
-  Socket(uint16_t port)
-      : address(nullptr),
-        port(port),
-        req(nullptr),
-        in(BUFSIZE, false),
-        out(BUFSIZE, true) {}
+  Socket(uint16_t port, Request* req);
 
-  ~Socket() {
-    if (req != nullptr) delete req;
-  }
+  Socket(uint16_t port);  // Constructor for server (addres not specified)
+  ~Socket();
 
   void attach(Request* r) { req = r; }
 
