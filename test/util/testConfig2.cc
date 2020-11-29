@@ -7,16 +7,16 @@ public:
 	TestConfig() {
 		//TODO: support or?  "x|y|z", Config::DOUBLE
 		mandatory(6, 
-		 	 "x", Config::DOUBLE, 
-		 	 "y", Config::DOUBLE, 
-		 	 "z", Config::DOUBLE, 
-		 	 "port", Config::UINT16, 
-		 	 "base", Config::STRING, 
-		 	 "foo", Config::STRING);
+		 	 "x", Config::Type::F64, 
+		 	 "y", Config::Type::F64, 
+		 	 "z", Config::Type::F64, 
+		 	 "port", Config::Type::U16, 
+		 	 "base", Config::Type::STRING, 
+		 	 "foo", Config::Type::STRING);
 
 		optional(2,
-						 "foo", Config::STRING,
-						 "snarf", Config::UINT64);
+						 "foo", Config::Type::STRING,
+						 "snarf", Config::Type::U64);
 
 }
 };

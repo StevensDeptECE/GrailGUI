@@ -3,8 +3,8 @@
 
 int main() {
 	Config conf("grail.conf");
-	conf.mandatory("host", STRING, "localhost",
-								 "port", U16, 80);
+	conf.mandatory("host", Config::Type::STRING, "localhost",
+								 "port", Config::Type::U16, 80);
 	
   Prefs prefs(conf);
 
