@@ -70,8 +70,8 @@
 
 ## TODO
 
- The following items are high on the TODO list. If you are a capable OpenGL
- programmer and wish to contribute, we would love to hear from you:
+ The following items are high on the TODO list. We are looking for capable
+ C++, OpenGL, Android, iOS, and rust programmers to contribute.
 
  1. Porting to Mac OSX, Android, iphone. The critical thing is to make this
  absolutely invisible to the application programmer. There are big barriers
@@ -90,9 +90,10 @@
  https://sourceforge.net/projects/ftgl/)
 
  4. Heat Map component. Given arrays of x, y, and a separate array of values v,
- write a C++ component and corresponding shader to draw
+ write a C++ component and corresponding shader to fill in colors mapped to
+ the values. This is analogous to pcolor(x,y) in MATLAB.
 
- 5. Support for Webrtc https://webrtc.org/
+ 5. Support for Webrtc https://webrtc.org/ to provide realtime video.
 
  6. Selection/picking for objects.
 
