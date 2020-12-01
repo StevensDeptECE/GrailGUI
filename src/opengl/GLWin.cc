@@ -208,17 +208,25 @@ void GLWin::startWindow() {
   GLWin::projection = glm::ortho(0.0f, static_cast<GLfloat>(width),
                                  static_cast<GLfloat>(height), 0.0f);
   //std::cerr << width << " " << height << std::endl;
-  if (!hasBeenInitialized) {
+  // this test is designed to make sure that multiple windows will only initialize fonts once
+  // baseDir is not as serious, but why not do any singleton initialization here
+  //TODO: is there any more elegant way?
+  if (!hasBeenInitialized) { 
     *(string *)&baseDir = getenv("GRAIL");
-    uint32_t sizes[] = {8,  10, 12, 14, 16,
-                        20, 24, 30, 36, 40};  // TODO: HARDCODED: BAD
     FontFace::initAll();
   }
   defaultFont = (Font *)FontFace::get("TIMES", 16, FontFace::BOLD);
-
+  Font* bigFont = (Font *)FontFace::get("TIMES", 20, FontFace::BOLD);
+	Font* normalFont = (Font *)FontFace::get("TIMES", 12, FontFace::NORMAL);
+	Font* guiFont = defaultFont;
+	
   defaultStyle = new Style(defaultFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
   defaultStyle->setLineWidth(1);
 	//  defaultStyle->setShaderIndex(COMMON_SHADER);
+  guiStyle = new Style(guiFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
+  guiTextStyle = new Style(guiFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
+	menuStyle = new Style(guiFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
+	menuTextStyle = new Style(guiFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
 	current = new Tab(this);
 	tabs.add(current);
   hasBeenInitialized = true;

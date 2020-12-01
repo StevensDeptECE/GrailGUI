@@ -20,12 +20,8 @@ private:
   DynArray<Canvas*> canvases;
   DynArray<Style*> styles;
 
-	// hardcoded, predefined objects used for GUI
+	MainCanvas mainCanvas; //special canvas for drawing GUI and menus
 	// For anything custom, you should use your own objects, not use these
-	StyledMultiShape2D* gui;
-  MultiText *mt;
-	StyledMultiShape2D* menus; // special layer for menus and anything else in front of page
-	MultiText* menuText;
   GLWin* parent;
 public:
   Tab(GLWin* parent);
@@ -42,17 +38,12 @@ public:
     return canvases[i];
   }
 
-  Canvas* getMainCanvas(){
-    return canvases[0];
+  MainCanvas* getMainCanvas(){
+    return &mainCanvas;
   }
 
   void init();
   void update();
   void render();
   void cleanup();
-	void addButton(const Style* s, const char text[],
-								 float x, float y, float w, float h);
-	void addMenu(float x, float y);
-	template<typename Widget>
-	void add(Widget w, float x, float y);
 };

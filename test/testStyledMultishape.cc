@@ -8,10 +8,11 @@ public:
 		GLWin(w, h, 0x000000, 0xCCCCCC, "Test StyledMultiShape") {}
 	void init() {
 		const Style *s = getDefaultStyle();
-		const Font *font = getDefaultFont();
+		//		const Font *font = getDefaultFont();
 		//addCanvas(s, 0, 300, Width, Height-300);
-		Canvas *c = currentTab()->getMainCanvas();
-		StyledMultiShape2D *m = c->addLayer(new StyledMultiShape2D(s));
+		MainCanvas* c = currentTab()->getMainCanvas();
+		//		StyledMultiShape2D *m = c->addLayer(new StyledMultiShape2D(s));
+		StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(s));
 
 		const float boxSize = 100;
 		const float drawSize = 90;

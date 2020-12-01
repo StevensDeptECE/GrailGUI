@@ -15,7 +15,7 @@ class Font;
 class FontFace {
  private:
   friend class Font;
-  static bool hasBeenInitialized;
+//  static bool hasBeenInitialized;
   static const char* FONT_CONF_FILEPATH;
   static std::vector<std::string> loaded_fonts;
   std::string faceName;

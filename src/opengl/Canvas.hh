@@ -7,7 +7,7 @@
 class Camera;
 class Style;
 class Canvas {
-private:
+protected:
   GLWin* w;
   std::vector<Shape*> layers;
   uint32_t vpX,vpY,vpW,vpH; // viewport
@@ -15,7 +15,6 @@ private:
   glm::mat4 projection;
   const Style* style;
   Camera* cam;
-//	uint32_t winW, winH;
 public:
   Canvas(GLWin* w, const Style* style,
 				 uint32_t vpX, uint32_t vpY,uint32_t vpW,uint32_t vpH,
@@ -93,4 +92,32 @@ public:
   void render();
 
   void cleanup();
+};
+
+class StyledMultiShape2D;
+class MultiText;
+
+class MainCanvas : public Canvas {
+private:
+	StyledMultiShape2D* gui;
+	MultiText* guiText;
+	StyledMultiShape2D* menu;
+	MultiText* menuText;
+public:
+	MainCanvas(GLWin* parent);
+	~MainCanvas();
+	MainCanvas(const MainCanvas&) = delete;
+	MainCanvas& operator =(const MainCanvas&) = delete;
+	StyledMultiShape2D* getGui() { return gui; }
+	MultiText* getGuiText() { return guiText; }
+	StyledMultiShape2D* getMenu() { return menu; }
+	MultiText* getMenuText() { return menuText; }
+  
+  void init();
+  void render();
+  void cleanup();
+
+	void addButton(const char text[], float x, float y, float w, float h);
+	void addLabel(const char text[], float x, float y, float w, float h);
+	void addMenu(const std::string menu[], uint32_t numStrings, float x, float y);
 };

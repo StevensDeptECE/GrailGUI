@@ -2,8 +2,14 @@
 #include "opengl/Shader.hh"
 #include "opengl/GLWin.hh"
 #include "opengl/Style.hh"
-#include <GL/gl.h>
+//TODO: gl.h can't be included multiple times, really ugly.
+// is there a fix?
+//#include <GL/gl.h>
 #include "opengl/util/Camera.hh"
+#include "opengl/StyledMultiShape2D.hh"
+#include "opengl/MultiText.hh"
+
+using namespace std;
 
 Canvas::~Canvas() {
   cleanup();
@@ -35,4 +41,67 @@ Camera* Canvas::setLookAtProjection(float eyeX, float eyeY, float eyeZ,
   cam->setCamPos(glm::vec3(eyeX, eyeY, eyeZ));
   cam->setLookingAt(glm::vec3(lookAtX, lookAtY, lookAtZ));
   return cam;
+}
+
+MainCanvas::MainCanvas(GLWin* parent) :
+	Canvas(parent, parent->getDefaultStyle(),
+				 0, 0, parent->getWidth(), parent->getHeight(),
+				 0, 0, parent->getWidth(), parent->getHeight()) {
+	gui = new StyledMultiShape2D(parent->getGuiStyle());
+	guiText = new MultiText(parent->getGuiTextStyle(), 16384);
+	menu = new StyledMultiShape2D(parent->getMenuStyle());
+	menuText = new MultiText(parent->getMenuTextStyle(), 16384);
+}
+
+MainCanvas::~MainCanvas() {
+	delete gui;
+	delete guiText;
+	delete menu;
+	delete menuText;
+}
+void MainCanvas::addButton(const char text[],
+													 float x, float y, float w, float h) {
+	gui->fillRectangle(x, y, w, h, style->bg);
+	guiText->add(x, y, style->f, text, strlen(text));
+}
+
+void MainCanvas::addLabel(const char text[],
+													float x, float y, float w, float h) {
+	guiText->add(x, y, style->f, text, strlen(text));
+}
+
+void MainCanvas::addMenu(const string menu[], uint32_t numStrings,
+													float x, float y) {
+	const Font* f = style->f;
+	for (int i = 0; i < numStrings; i++, y += f->getHeight()) {
+		menuText->add(x, y, f, menu[i].c_str(), menu[i].length());
+	}
+//	menu->rect()
+}
+
+void MainCanvas::init() {
+	Canvas::init(); // call parent for normal initialization
+  // initialize the GUI layers (does not have to be at the end, but in render it does)
+  gui->init();
+  guiText->init();
+  menu->init();
+  menuText->init();
+}
+
+void MainCanvas::render() {
+  Canvas::render(); // call parent's render
+  // then render the GUI layer on top of everything
+  gui->render();
+  guiText->render();
+  menu->render();
+  menuText->render();
+}
+
+void MainCanvas::cleanup() {
+  Canvas::cleanup();
+	//TODO: add cleanup for Shape? Does it deallocate memory from graphics card?
+//  gui->cleanup();
+//  guiText->cleanup();
+//  menu->cleanup();
+//  menuText->cleanup();
 }

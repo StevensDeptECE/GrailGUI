@@ -92,7 +92,7 @@ public:
     jupiterOrbitFreq = earthOrbitAngle / 12; // 12 of our earth years
     jupiterRotationFreq = 0.45; // 10 hours-ish?
 
-    Style *s = getDefaultStyle();
+    const Style *s = getDefaultStyle();
     const Font *font = getDefaultFont();
     Canvas *c = currentTab()->getMainCanvas();
     cam = c->setLookAtProjection(2, 3, 40,   0, 0, 0,  0, 0, 1);

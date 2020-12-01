@@ -19,7 +19,11 @@ class Style;
 class Font;
 class GLWin {
  protected:
-  Style *defaultStyle;
+  Style* defaultStyle;
+  Style* guiStyle;
+  Style* guiTextStyle;
+  Style* menuStyle;
+  Style* menuTextStyle;
   Font *defaultFont;
 
  public:
@@ -148,7 +152,9 @@ class GLWin {
     width = w;
     height = h;
   }
-
+  uint32_t getWidth() const { return width; }
+  uint32_t getHeight() const { return height; }
+	
   static glm::mat4 *getProjection() { return &projection; }
   virtual void init();
   void startWindow();
@@ -179,7 +185,12 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
 */
   void mainLoop();
   void setDirty() { dirty = true; }
-  Style *getDefaultStyle() { return defaultStyle; }
+  const Style *getDefaultStyle() const { return defaultStyle; }
+	const Style* getGuiStyle() const     { return guiStyle; }
+	const Style* getGuiTextStyle() const { return guiTextStyle; }
+	const Style* getMenuStyle() const     { return menuStyle; }
+	const Style* getMenuTextStyle() const { return menuTextStyle; }
+	
   Font *getDefaultFont() { return defaultFont; }
   virtual void baseInit();
 

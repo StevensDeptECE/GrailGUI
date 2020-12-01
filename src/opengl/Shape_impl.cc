@@ -1,7 +1,6 @@
 #pragma once
-
+#include <glad/glad.h>
 #include "opengl/Shape.hh"
-#include "glad/glad.h"
 #include "opengl/Shader.hh"
 
 // generic function to generate a vertex buffer

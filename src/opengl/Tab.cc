@@ -7,34 +7,27 @@
 #include <cstring>
 //#include <time.h>
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
+//#ifdef _WIN32
+//#include <windows.h>
+//#endif
 using namespace std;
 
-Tab::Tab(GLWin *parent) : parent(parent), canvases(16), styles(16) {
-  const Style* s = parent->getDefaultStyle();
-	Canvas* main;
-	canvases.add
-		(main = new Canvas(parent, s,0,0, parent->width, parent->height,
-											 parent->width, parent->height));
-	const Font* f = parent->getDefaultFont();
-	gui = main->addLayer(new StyledMultiShape2D(s));
-	mt = main->addLayer(new MultiText(s, f->getHeight()));
-	menus = main->addLayer(new StyledMultiShape2D(s));
-  menuText = main->addLayer(new MultiText(s, f->getHeight()));
+Tab::Tab(GLWin *parent) : parent(parent), canvases(16), styles(16),
+													mainCanvas(parent) {
 }
 
 void Tab::init() {
 	for (int i = 0; i < canvases.size(); ++i) {
     canvases[i]->init();
   }
+	mainCanvas.init();
 }
 
 void Tab::update(){
 	for (int i = 0; i < canvases.size(); ++i) {
     canvases[i]->update();
   }
+	mainCanvas.update();
 }
 
 void Tab::cleanup() {
@@ -47,12 +40,14 @@ void Tab::cleanup() {
     delete canvases[i];
   }
   canvases.clear(); // empty the array since the pointers are all dead
+	//TODO: mainCanvas.cleanup()?
 }
 
 void Tab::render() {
   for(int i = 0; i < canvases.size(); ++i) {
     canvases[i]->render();
   }
+	mainCanvas.render();
 }
 
 Tab::~Tab() { 
@@ -64,10 +59,4 @@ Canvas* Tab::addCanvas(const Style* style,
 	Canvas* c = new Canvas(parent, style, vpX,vpY,vpW,vpH,vpW,vpH);
 	canvases.add(c);
 	return c;
-}
-
-void Tab::addButton(const Style* s, const char text[],
-										float x, float y, float w, float h) {
-	gui->fillRectangle(x, y, w, h, s->bg);
-	mt->add(x, y, s->f, text, strlen(text));
 }

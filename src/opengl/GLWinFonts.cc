@@ -437,10 +437,10 @@ void FontFace::addFontName(std::string name, const std::string &path) {
 }
 
 const char *FontFace::FONT_CONF_FILEPATH = "$GRAIL/conf/fonts.conf";
-bool FontFace::hasBeenInitialized = false;
+//bool FontFace::hasBeenInitialized = false;
 void FontFace::initAll() {
-  if (hasBeenInitialized) return;
-  hasBeenInitialized = true;
+  //if (hasBeenInitialized) return;
+  //hasBeenInitialized = true;
   // TODO: load from config file
   std::string fontPath = GLWin::baseDir + "/conf/fonts/";
   cout << "FONT PATH = " << fontPath << endl;
