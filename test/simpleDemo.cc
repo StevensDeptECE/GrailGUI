@@ -9,7 +9,7 @@ class SimpleDemo : public GLWin {
     c->addButton("test", 0,0, 100, 100);
     string menuText[] = {"New", "Open...", "Save", "Save As...", "Quit"};
     c->addMenu(menuText, sizeof(menuText)/sizeof(string), 512,0);
-    StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(s));
+    StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(c, s));
     m->fillRectangle(0, 0, 512, 512, grail::red);
 
 		//    currentTab()->addButton(s, "testing", 500, 200, 100, 50);

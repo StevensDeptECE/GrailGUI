@@ -19,8 +19,8 @@ private:
   Transformation * transform; 
   //void addVertices();
 public:
-  Image(float x, float y, float width, float height, uint32_t textureId, Style * s);
-  Image(float x, float y, float width, float height, const char * filePath, Style * s);
+  Image(Canvas* c, float x, float y, float width, float height, uint32_t textureId, Style * s);
+  Image(Canvas* c, float x, float y, float width, float height, const char * filePath, Style * s);
 
   void init();
   void process_input(Inputs* in,float dt) {}

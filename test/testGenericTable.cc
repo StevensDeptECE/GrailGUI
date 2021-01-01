@@ -18,11 +18,11 @@ class GenericTable : public GLWin {
 	  const Struct* st = XDLType::read(in);// First read the metadata
 
     XDLType::classCleanup();
-    Style* style = getDefaultStyle();
+    const Style* style = getDefaultStyle();
     const Font* f = style->f;
     Canvas* c = currentTab()->getMainCanvas();
-    StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(style));
-    MultiText* t = c->addLayer(new MultiText(style, 8192));
+    StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(c, style));
+    MultiText* t = c->addLayer(new MultiText(c, style, 8192));
     float x = 0, y = 30;
     float w,h;
     const XDLType* p = st->getMemberType(0);

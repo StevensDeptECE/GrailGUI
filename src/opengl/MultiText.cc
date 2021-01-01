@@ -17,12 +17,15 @@ using namespace std;
   The size is the amount of text it can hold. It preallocates 24 floats per
   text to hold the coordinates for texturing
 */
-MultiText::MultiText(const Style *style, uint32_t size)
-    : Shape(), style(style) {
+MultiText::MultiText(Canvas* c, const Style *style, uint32_t size)
+    : Shape(c), style(style) {
   // if !once, once = !once was a thing
   vert.reserve(size * 24);
   const Font *f = style->f;  // FontFace::getFace(1)->getFont(0);
 }
+
+MultiText::MultiText(Canvas* c, const Style * style) : MultiText(c, style, 16) {}
+
 
 MultiText::~MultiText() {}
 

@@ -19,13 +19,13 @@ protected:
   template<typename T>
   void gen(uint32_t& vb, std::vector<T>& list);
 public:
-  Shape()  {  }
+  Shape(Canvas* parent) : parentCanvas(parent)  {  }
   virtual ~Shape();
-
+#if 0
   void setParentCanvas(Canvas *c) {
     parentCanvas = c;
   }
-  
+#endif
   #if 0
   // Get the width, in pixels, of this Shape's
   // parent Canvas

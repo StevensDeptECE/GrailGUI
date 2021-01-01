@@ -30,7 +30,7 @@ private:
   float rowSize; // the size of the current row. If there are different fonts, the size of the biggest + desired spacing
 	
 public:
-  DocView(const Style * style, Canvas* c, const Document* doc);
+  DocView(Canvas* c, const Style * style, const Document* doc);
   ~DocView();
   void clear() { 
     m->clear();

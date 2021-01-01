@@ -21,12 +21,12 @@ private:
   Vec3d a;   // acceleration
 #endif
 public:
-  Body(Style* s, Canvas* c, Camera* cam, const std::string& name, const char textureFile[], double r, double orbitalRadius,
+  Body(Canvas* c, Style* s, Camera* cam, const std::string& name, const char textureFile[], double r, double orbitalRadius,
    double orbitalPeriod, double rotationalPeriod, double axialTilt);
   void update(double time);
 };
 
-Body::Body(Style* s, Canvas* c, Camera* cam, 
+Body::Body(Canvas* c, Style* s, Camera* cam, 
   const std::string& name, const char textureFile[], 
   double r, double orbitalRadius,
   double orbitalPeriod, double rotationalPeriod, double axialTilt) :
@@ -34,7 +34,7 @@ Body::Body(Style* s, Canvas* c, Camera* cam,
      orbitalFreq(1.0/orbitalPeriod),
      rotationFreq(1.0 / rotationalPeriod) {
        phase = PI<double>;
-  MultiShape3D *body = c->addLayer(new MultiShape3D(cam, textureFile, &t));
+  MultiShape3D *body = c->addLayer(new MultiShape3D(c, cam, textureFile, &t));
   body->genOBJModel("models/sphere.obj");
   t.ident();
   t.scale(r);
@@ -97,25 +97,25 @@ public:
     Canvas *c = currentTab()->getMainCanvas();
     cam = c->setLookAtProjection(2, 3, 40,   0, 0, 0,  0, 0, 1);
 //#if 0
-    MultiShape3D *sky = c->addLayer(new MultiShape3D(cam, "textures/sky1.png", &tSky));
+    MultiShape3D *sky = c->addLayer(new MultiShape3D(c, cam, "textures/sky1.png", &tSky));
     sky->genOBJModel("models/spacesky.obj");
     //tSky.translate(0,0,-10);
     //tSky.scale(10);
 
-    MultiShape3D *earth = c->addLayer(new MultiShape3D(cam, "textures/earth.jpg", &tEarth));
+    MultiShape3D *earth = c->addLayer(new MultiShape3D(c, cam, "textures/earth.jpg", &tEarth));
     earth->genOBJModel("models/sphere.obj");
 
-    MultiShape3D *sun = c->addLayer(new MultiShape3D(cam, "textures/sun.jpg", &tSun));
+    MultiShape3D *sun = c->addLayer(new MultiShape3D(c, cam, "textures/sun.jpg", &tSun));
     sun->genOBJModel("models/sphere.obj");
 
-    MultiShape3D *moon = c->addLayer(new MultiShape3D(cam, "textures/moon.jpg", &tMoon));
+    MultiShape3D *moon = c->addLayer(new MultiShape3D(c, cam, "textures/moon.jpg", &tMoon));
     moon->genOBJModel("models/sphere.obj");
 //#endif
 //    bodies.push_back(Body(s, c, cam, "Earth", "textures/earth.jpg", 5, 3, 365.2425, 0.996, 23.5 ));
 //    bodies.push_back(Body(s, c, cam, "Mars", "textures/mars.jpg", 0.2, 11, 687, 1.14, 0));
 //    bodies.push_back(Body(s, c, cam, "Earth", "textures/earth.jpg", 1, 14, 365.2425, 0.996, 23.5 ));
 //    bodies.push_back(Body(s, c, cam, "Jupiter", "textures/jupiter.jpg", 1.5, 0, 12*365.2425, 0.48, 0 ));
-    MultiShape3D *jupiter= c->addLayer(new MultiShape3D(cam, "textures/jupiter.jpg", &tJupiter));
+    MultiShape3D *jupiter= c->addLayer(new MultiShape3D(c, cam, "textures/jupiter.jpg", &tJupiter));
     jupiter->genOBJModel("models/sphere.obj");
 
     setAction(1002, panBack);

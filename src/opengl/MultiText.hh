@@ -15,8 +15,8 @@ private:
   }
   float velX = 1,velY=1;
 public:
-  MultiText(const Style * style);
-  MultiText(const Style * style, uint32_t size);
+  MultiText(Canvas* c, const Style * style);
+  MultiText(Canvas* c, const Style * style, uint32_t size);
   ~MultiText();
   void addChar(float x, float y, const Font* f, const unsigned char c);
   // a 16-bit unicode character like Java

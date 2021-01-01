@@ -7,11 +7,11 @@
 
 class StyledMultiShape2D : public MultiShape2D {
  public:
-  StyledMultiShape2D(const Style* s, uint32_t vertCount = 1024,
+  StyledMultiShape2D(Canvas* parent, const Style* s, uint32_t vertCount = 1024,
                      uint32_t solidIndCount = 1024,
                      uint32_t lineIndCount = 1024,
                      uint32_t pointIndCount = 1024)
-      : MultiShape2D(s, vertCount, solidIndCount, lineIndCount, pointIndCount,
+      : MultiShape2D(parent, s, vertCount, solidIndCount, lineIndCount, pointIndCount,
                      5),
         currentIndex(0) {
     startIndices.push_back(0);

@@ -16,22 +16,19 @@
 #include <string>
 using namespace std;
 
-Image::Image(float x, float y, float width, float height, uint32_t textureId,
-             Style* s)
-    : x(x),
-      y(y),
+Image::Image(Canvas* c, float x, float y, float width, float height, uint32_t textureId,
+             Style* s) : Shape(c), x(x), y(y),
       rWidth(width),
       rHeight(height),
       textureID(textureId),
       style(s) {
-        vertices.reserve(16);
-        
-  addImage(x,y, width,height);
+    vertices.reserve(16);
+    addImage(x,y, width,height);
 }
 
-Image::Image(float x, float y, float width, float height, const char* filePath,
+Image::Image(Canvas* c, float x, float y, float width, float height, const char* filePath,
              Style* s)
-    : x(x), y(y), rWidth(width), rHeight(height), style(s) {
+    : Shape(c), x(x), y(y), rWidth(width), rHeight(height), style(s) {
   stbi_set_flip_vertically_on_load(
       true);  // tell stb_image.h to flip loaded texture's on the y-axis.
   data = stbi_load(filePath, &tWidth, &tHeight, &bpp, 0);

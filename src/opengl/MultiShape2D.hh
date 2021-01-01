@@ -35,13 +35,13 @@ protected:
 
 public:
 	void drawPoint(float x, float y);
-  MultiShape2D(const Style * s,
+  MultiShape2D(Canvas* parent, const Style * s,
 							 uint32_t vertCount=1024,
 							 uint32_t solidIndCount=1024,
 							 uint32_t lineIndCount=1024,
 							 uint32_t pointIndCount=1024,
 							 uint32_t elemPerVert = 2) :
-    MultiShape(vertCount, solidIndCount, lineIndCount, pointIndCount),
+    MultiShape(parent, vertCount, solidIndCount, lineIndCount, pointIndCount),
     style(s),elemPerVert(elemPerVert) {} 
     ~MultiShape2D();
 

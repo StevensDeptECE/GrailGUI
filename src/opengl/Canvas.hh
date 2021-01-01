@@ -56,7 +56,7 @@ public:
   //Add layer pointer and return its index
   template<typename S>
 	S* addLayer(S* shape){
-		((Shape*)shape)->setParentCanvas(this);
+//		((Shape*)shape)->setParentCanvas(this);
 		layers.push_back(shape);
 		return shape;
 	}

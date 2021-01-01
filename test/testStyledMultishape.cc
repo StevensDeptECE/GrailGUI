@@ -12,7 +12,7 @@ public:
 		//addCanvas(s, 0, 300, Width, Height-300);
 		MainCanvas* c = currentTab()->getMainCanvas();
 		//		StyledMultiShape2D *m = c->addLayer(new StyledMultiShape2D(s));
-		StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(s));
+		StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(c, s));
 
 		const float boxSize = 100;
 		const float drawSize = 90;

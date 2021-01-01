@@ -35,10 +35,10 @@ public:
 
 		//    const Font* f = getDefaultFont();
 		//		s->setShaderIndex(GLWin::TEXT_SHADER);
-    StyledMultiShape2D* ms = c->addLayer(new StyledMultiShape2D(s));
+    StyledMultiShape2D* ms = c->addLayer(new StyledMultiShape2D(c, s));
     ms->fillRectangle(10,10, width-20,height-20, grail::black);
     cout << width << "," << height << '\n';
-		MultiText *m = c->addLayer(new MultiText(s, 100000 * (6 + 3 + 6 + 4)));
+		MultiText *m = c->addLayer(new MultiText(c, s, 100000 * (6 + 3 + 6 + 4)));
     float y = 100;
     y = testOneFontFace(m, "TIMES", y);
     y = testOneFontFace(m, "MATH", y);

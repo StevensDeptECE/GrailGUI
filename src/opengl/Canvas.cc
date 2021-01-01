@@ -47,10 +47,10 @@ MainCanvas::MainCanvas(GLWin* parent) :
 	Canvas(parent, parent->getDefaultStyle(),
 				 0, 0, parent->getWidth(), parent->getHeight(),
 				 0, 0, parent->getWidth(), parent->getHeight()) {
-	gui = new StyledMultiShape2D(parent->getGuiStyle());
-	guiText = new MultiText(parent->getGuiTextStyle(), 16384);
-	menu = new StyledMultiShape2D(parent->getMenuStyle());
-	menuText = new MultiText(parent->getMenuTextStyle(), 16384);
+	gui = new StyledMultiShape2D(this, parent->getGuiStyle());
+	guiText = new MultiText(this, parent->getGuiTextStyle(), 16384);
+	menu = new StyledMultiShape2D(this, parent->getMenuStyle());
+	menuText = new MultiText(this, parent->getMenuTextStyle(), 16384);
 }
 
 MainCanvas::~MainCanvas() {
