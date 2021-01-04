@@ -46,7 +46,7 @@ Camera* Canvas::setLookAtProjection(float eyeX, float eyeY, float eyeZ,
 MainCanvas::MainCanvas(GLWin* parent) :
 	Canvas(parent, parent->getDefaultStyle(),
 				 0, 0, parent->getWidth(), parent->getHeight(),
-				 0, 0, parent->getWidth(), parent->getHeight()) {
+				 parent->getWidth(), parent->getHeight()) {
 	gui = new StyledMultiShape2D(this, parent->getGuiStyle());
 	guiText = new MultiText(this, parent->getGuiTextStyle(), 16384);
 	menu = new StyledMultiShape2D(this, parent->getMenuStyle());
@@ -71,12 +71,11 @@ void MainCanvas::addLabel(const char text[],
 }
 
 void MainCanvas::addMenu(const string menu[], uint32_t numStrings,
-													float x, float y) {
+                         float x, float y) {
 	const Font* f = style->f;
 	for (int i = 0; i < numStrings; i++, y += f->getHeight()) {
 		menuText->add(x, y, f, menu[i].c_str(), menu[i].length());
 	}
-//	menu->rect()
 }
 
 void MainCanvas::init() {

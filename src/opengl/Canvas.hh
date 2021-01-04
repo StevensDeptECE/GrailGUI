@@ -22,13 +22,6 @@ public:
     w(w),style(style),vpX(vpX), vpY(vpY),vpW(vpW),vpH(vpH),pX(pX),pY(pY) {
       projection = glm::ortho(0.0f, static_cast<float>(pX), static_cast<float>(pY), 0.0f);
 	}
-  Canvas(GLWin* w, const Style* style,
-				 uint32_t vpX, uint32_t vpY,uint32_t vpW,uint32_t vpH, // viewport on the screen
-				 float xLeft, float xRight, float yTop, float yBottom) : //coordinates of each edge 
-    w(w),style(style),vpX(vpX), vpY(vpY),vpW(vpW),vpH(vpH) {
-      projection = glm::ortho(xLeft, xRight, yBottom, yTop);
-	}
-  
   ~Canvas();
   Canvas(const Canvas& orig) = delete;
   Canvas& operator =(const Canvas& orig) = delete;
@@ -38,7 +31,6 @@ public:
   uint32_t getHeight() const {
     return vpH;
   }
-
   glm::mat4* getProjection(){
     return &projection;
   }
@@ -47,7 +39,7 @@ public:
   }
 
   void setOrthoProjection(float xLeft, float xRight, float yBottom, float yTop) {
-      projection = glm::ortho(xLeft, xRight, yBottom, yTop);
+    projection = glm::ortho(xLeft, xRight, yBottom, yTop);
   }
   Camera* setLookAtProjection(float eyeX, float eyeY, float eyeZ,
                           float lookAtX, float lookAtY, float lookAtZ,
@@ -56,7 +48,6 @@ public:
   //Add layer pointer and return its index
   template<typename S>
 	S* addLayer(S* shape){
-//		((Shape*)shape)->setParentCanvas(this);
 		layers.push_back(shape);
 		return shape;
 	}

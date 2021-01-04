@@ -36,7 +36,7 @@ public:
   Style(const Font* font,
 				float bgRed, float bgGreen, float bgBlue,
 				float fgRed, float fgGreen, float fgBlue,
-				int shadeIndex = 0) :
+				int shaderIndex = 0) :
     f(font), bg(bgRed,bgGreen,bgBlue,1),fg(fgRed,fgGreen,fgBlue,1),
 		shaderIndex(shaderIndex)
   {
