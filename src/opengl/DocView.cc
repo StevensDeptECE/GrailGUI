@@ -64,7 +64,7 @@ void DocView::update() {
   uint32_t start = p->getLine(0);
   uint32_t next = p->getLine(1);
   for (uint32_t i = 1; i < p->size(); i++) {
-    t->add(x, y, f, (const char*)(text+start), next-start+1);
+    t->add(x, y, f, (const char*)(text+start), next-start);
 #if 0
     for (uint32_t j = start; j < next; j++) {
       if (text[j] == ' ') {

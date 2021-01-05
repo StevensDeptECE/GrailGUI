@@ -11,6 +11,7 @@ Page::Page(const unsigned char *text,
 		: text(text), layout(layout)
 {
 	// TODO: what to do with offset, store as local variable?
+	lines.reserve(1024);
 }
 
 void Document::appendFile(const PageLayout &newLayout, const char filename[])
@@ -27,37 +28,113 @@ void Document::appendFile(const PageLayout &newLayout, const char filename[])
 	float x = layout.x0, y = layout.y0;
 	float lineSize = f->getHeight();
 	page->addLine(0);
+	buildJustifiedText(layout, text, len);
+//	buildRaggedText(layout, text, len);
+}
+
+void Document::buildJustifiedText(const PageLayout& layout, unsigned char* text, uint32_t len) {
+	float x = layout.x0, y = layout.y0;
+	const Font *f = layout.f;
+	float lineSize = f->getHeight();
+	Page *page = &pages.back();
+	//page->addLine(0);
+	unsigned char current;
+	int j = 0; // j compacts the document as it loads
 	for (uint32_t i = 0; i < len; i++)
 	{
-		if (text[i] == '\n')
-		{
-			page->addLine(++i);
-		}
-		else if (text[i] < ' ')
-		{
-			cerr << int(text[i]) << ' ';
-			i++;
-		}
-
-		const Font::Glyph *glyph = f->getGlyph(text[i]);
-		x += glyph->advance;
-		if (x > layout.x1)
-		{
+		if (text[i] == '\n') {
+			page->addLine(j);
 			x = layout.x0;
 			y += lineSize;
-			if (y >= layout.y1)
-			{
-				pages.push_back(Page(text, &layout, i));
+			continue;
+		}	else if (text[i] >= ' ') { // every time a printable letter is found...
+			current = text[j++] = text[i]; // copy it into the compacted list
+		} else {
+			continue; // skip any character that is non-printable and ignore
+		}
+		
+		/*
+		 text should now include no characters below space
+		 Each newline is now gone but the line structures point there
+		*/
+
+		const Font::Glyph *glyph = f->getGlyph(current);
+		x += glyph->advance;
+		if (x > layout.x1) {
+			x = layout.x0;
+			y += lineSize;
+			if (y >= layout.y1)	{
+				pages.push_back(Page(text, &layout, j));
 				page = &pages.back();
-				page->addLine(i);
+				page->addLine(j);
 				x = layout.x0 + glyph->advance;
 				y = layout.y0;
-			}
-			else
-			{
-				page->addLine(i);
+			}	else {
+				page->addLine(j);
 			}
 		}
 	}
-	page->addLine(len);
+
+	page->addLine(j); // the new length is j
+}
+
+void Document::buildRaggedText(const PageLayout& layout, unsigned char* text, uint32_t len) {
+	float x = layout.x0, y = layout.y0;
+	const Font *f = layout.f;
+	float lineSize = f->getHeight();
+	Page *page = &pages.back();
+	//page->addLine(0);
+	unsigned char current;
+	int j = 0; // j compacts the document as it loads
+	for (uint32_t i = 0; i < len; i++)
+	{
+		if (text[i] == '\n') {
+			page->addLine(j);
+			x = layout.x0;
+			y += lineSize;
+			continue;
+		}	else if (text[i] >= ' ') { // every time a printable letter is found...
+			current = text[j++] = text[i]; // copy it into the compacted list
+		} else {
+			continue; // skip any character that is non-printable and ignore
+		}
+		
+		/*
+		 text should now include no characters below space
+		 Each newline is now gone but the line structures point there
+		*/
+		const Font::Glyph *glyph = f->getGlyph(current);
+
+		if (x > layout.x1) {
+			float xtemp = x;
+			for (uint32_t k = i+1; k < len; k++) {
+				if (text[k] == '\n' || text[k] == ' ' || text[k]=='-') {
+					for (int m = 0; m < k-i; m++)
+					  text[j+m] = text[i+m];
+					i=k+1;
+					goto endOfLineDone;
+				} else {
+					glyph = f->getGlyph(text[k]);
+					xtemp += glyph->advance;
+					if (xtemp > layout.xDropDead)
+						break;
+				}
+			}
+			x = layout.x0;
+			y += lineSize;
+			if (y >= layout.y1)	{
+				pages.push_back(Page(text, &layout, j));
+				page = &pages.back();
+				page->addLine(j);
+				x = layout.x0 + glyph->advance;
+				y = layout.y0;
+			}	else {
+				page->addLine(j);
+			}
+		} else {
+			x += glyph->advance;
+		}
+	}
+endOfLineDone:
+	page->addLine(j); // the new length is j
 }
