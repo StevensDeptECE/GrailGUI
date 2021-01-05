@@ -25,11 +25,9 @@ void Document::appendFile(const PageLayout &newLayout, const char filename[])
 	const Font *f = layout.f;
 	pages.push_back(Page(text, &layout, 0));
 	Page *page = &pages.back();
-	float x = layout.x0, y = layout.y0;
-	float lineSize = f->getHeight();
 	page->addLine(0);
-	buildJustifiedText(layout, text, len);
-//	buildRaggedText(layout, text, len);
+	//buildJustifiedText(layout, text, len);
+	buildRaggedText(layout, text, len);
 }
 
 void Document::buildJustifiedText(const PageLayout& layout, unsigned char* text, uint32_t len) {
@@ -37,7 +35,6 @@ void Document::buildJustifiedText(const PageLayout& layout, unsigned char* text,
 	const Font *f = layout.f;
 	float lineSize = f->getHeight();
 	Page *page = &pages.back();
-	//page->addLine(0);
 	unsigned char current;
 	int j = 0; // j compacts the document as it loads
 	for (uint32_t i = 0; i < len; i++)
@@ -83,11 +80,9 @@ void Document::buildRaggedText(const PageLayout& layout, unsigned char* text, ui
 	const Font *f = layout.f;
 	float lineSize = f->getHeight();
 	Page *page = &pages.back();
-	//page->addLine(0);
 	unsigned char current;
 	int j = 0; // j compacts the document as it loads
-	for (uint32_t i = 0; i < len; i++)
-	{
+	for (uint32_t i = 0; i < len; i++) {
 		if (text[i] == '\n') {
 			page->addLine(j);
 			x = layout.x0;
@@ -104,20 +99,32 @@ void Document::buildRaggedText(const PageLayout& layout, unsigned char* text, ui
 		 Each newline is now gone but the line structures point there
 		*/
 		const Font::Glyph *glyph = f->getGlyph(current);
+   	x += glyph->advance; // calculate right edge of this character to see whether to print
 
 		if (x > layout.x1) {
+			j--; // undo the advance of j and see whether to prospectively print past right margin
 			float xtemp = x;
 			for (uint32_t k = i+1; k < len; k++) {
 				if (text[k] == '\n' || text[k] == ' ' || text[k]=='-') {
 					for (int m = 0; m < k-i; m++)
 					  text[j+m] = text[i+m];
-					i=k+1;
-					goto endOfLineDone;
+					
+					j += (k-i); // move j forward to account for letters added to this line
+				  i = (text[k] != '-') ? k : k-1; // i advances to skip end of line char, then at end of loop i++
+					// but if - print on next line, not pretty but not skipping the -
+					x = layout.x0;
+					if (text[k] == '\n')
+					  y += lineSize; //TODO: page layout should include amount to break paragraph
+					//y += lineSize;
+					page->addLine(j);
+					goto nextLine;
 				} else {
 					glyph = f->getGlyph(text[k]);
 					xtemp += glyph->advance;
-					if (xtemp > layout.xDropDead)
+					if (xtemp > layout.xDropDead) {
+						text[j++] = text[i];
 						break;
+					}
 				}
 			}
 			x = layout.x0;
@@ -131,10 +138,9 @@ void Document::buildRaggedText(const PageLayout& layout, unsigned char* text, ui
 			}	else {
 				page->addLine(j);
 			}
-		} else {
-			x += glyph->advance;
 		}
+	nextLine:
+		;
 	}
-endOfLineDone:
 	page->addLine(j); // the new length is j
 }

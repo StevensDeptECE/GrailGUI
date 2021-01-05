@@ -46,7 +46,7 @@ void BookViewer::init() {
   m->fillRoundRect(405, 7, 940, 36, 10, 10, lightgrey);
   c->addLayer(m);
 
-  PageLayout layout(10, 70, 1300, 1100, 1360, 40, 10, 40, font);
+  PageLayout layout(10, 70, 1350, 1100, 1360, 40, 10, 40, font, 1500);
   doc = new Document(layout);
   doc->appendFile(layout, filename);
   docView = new DocView(c, s, doc);
