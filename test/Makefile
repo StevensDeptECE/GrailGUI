@@ -70,7 +70,7 @@ $(BIN)/testHeatMap: testHeatMap.cc $(LIBGRAIL)
 $(BIN)/testTable2: testTable2.cc $(LIBGRAIL)
 	$(CXX) testTable2.cc -o $(BIN)/testTable2 $(LIBS)
 
-$(BIN)/convertASCIITable: convertASCIITable.cc QuoteTable.cc $(utilout)/Buffer.o $(LIBGRAIL)
+$(BIN)/convertASCIITable: convertASCIITable.cc QuoteTable.cc  QuoteTable.hh $(utilout)/Buffer.o $(LIBGRAIL)
 	$(CXX) convertASCIITable.cc QuoteTable.cc $(utilout)/Buffer.o -o $(BIN)/convertASCIITable $(LIBS)
 
 $(BIN)/testBin: testBin.cc $(LIBGRAIL)

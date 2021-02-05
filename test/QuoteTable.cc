@@ -15,6 +15,8 @@ Table::Table(const char filename[]) {
 	uint32_t numQuotes = *(uint32_t*)data; // first 4 bytes are the #of quotes
 	quotes = (const Quote*)(data + sizeof(uint32_t));	
 }
+// 14080           19620102.........
+// len len len len quote quote quote quote ....
 
 void Table::loadASCII(const char textFile[], const char binFile[]) {
 	ifstream in(textFile);
@@ -23,7 +25,8 @@ void Table::loadASCII(const char textFile[], const char binFile[]) {
 	in.seekg(0, std::ios::beg);	
 	char buf[4096];
 	DynArray<Quote> tempQuotes(len / 30);
-	while (in.getline(buf, sizeof(buf)), !in.eof()) {
+	in.getline(buf, sizeof(buf)); // throw out first line of metadata
+	while (in.getline(buf, sizeof(buf))) {
 		Quote q(buf);
 		tempQuotes.add(q);
 	}
@@ -50,11 +53,6 @@ void Table::loadASCII(const char textFile[], const char binFile[]) {
   //write metadata first
 
   for (uint32_t i = 0; i < tempQuotes.size(); i++) {
-    out.write(tempQuotes[i].date);
-    out.write(tempQuotes[i].open);
-    out.write(tempQuotes[i].hi);
-    out.write(tempQuotes[i].low);
-    out.write(tempQuotes[i].close);
-    out.write(tempQuotes[i].volume);
+    tempQuotes[i].write(out);
   }
 }
