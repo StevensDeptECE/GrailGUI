@@ -22,9 +22,19 @@ inline void XDLType::addType(const XDLType* type) {
   typeNames.add(typeName);
 }
 
+void XDLType::writeMeta(Buffer& buf) const {
+	buf.write(getDataType());
+}
+
+DataType XDLType::readType(Buffer& in) {
+	return DataType(in.readU8());
+}
+
+XDLIterator* XDLType::createIterator() {
+	return nullptr;
+}
+
 void XDLType::display(Buffer& binaryIn, Buffer& asciiOut) const {}
-void XDLType::display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
-                      float* w, float* h) const {}
 
 // this must be called before XDLType is used (class initialization of static
 // vars)
@@ -102,6 +112,28 @@ void XDLType::classInit() {
 void XDLType::classCleanup() {
   for (uint32_t i = 0; i < types.size(); i++) delete types[i];
 }
+
+DataType XDLRaw::getDataType() const {
+	return DataType::U8; // TODO: add this type!
+}
+
+uint32_t XDLRaw::size() const {
+	return len;
+}
+
+void XDLRaw::write(Buffer& buf) const {
+	buf.write(*this);
+}
+
+void XDLRaw::display(Buffer& binaryIn, Buffer& asciiOut) const {
+}
+
+void XDLRaw::format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const {
+
+}
+
+
+
 
 inline void Struct::addSym(const string& memberName, const XDLType* t) {
   byName.add(memberName.c_str(), types.size());
@@ -232,6 +264,7 @@ void U8::write(Buffer& buf) const { buf.write(val); }
 void U8::display(Buffer& binaryIn, Buffer& asciiOut) const {
   asciiOut.appendU8(binaryIn.readU8());
 }
+#if 0
 void U8::display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
                  float* w, float* h) const {
   StyledMultiShape2D* m = (StyledMultiShape2D*)c->getLayer(0);
@@ -239,6 +272,7 @@ void U8::display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
   const Font* f = s->f;
   t->add(x0, y0, f, in.readU8());
 }
+#endif
 
 DataType U16::getDataType() const { return DataType::U16; }
 uint32_t U16::size() const { return 2; }
@@ -260,13 +294,14 @@ void U32::display(Buffer& binaryIn, Buffer& asciiOut) const {
   asciiOut.appendU32(binaryIn.readU32());
 }
 
-void U32::display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
+#if 0
+void U32::display(Buffer& in, MultiShape2d* m, MultiText* t, const Style* s,
+									float x0, float y0,
                   float* w, float* h) const {
-  StyledMultiShape2D* m = (StyledMultiShape2D*)c->getLayer(0);
-  MultiText* t = (MultiText*)c->getLayer(1);
   const Font* f = s->f;
   t->add(x0, y0, f, in.readU32());
 }
+#endif
 
 DataType U64::getDataType() const { return DataType::U64; }
 uint32_t U64::size() const { return 8; }
@@ -275,6 +310,7 @@ void U64::display(Buffer& binaryIn, Buffer& asciiOut) const {
   asciiOut.appendU64(binaryIn.readU64());
 }
 
+#if 0
 void U64::display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
                   float* w, float* h) const {
   StyledMultiShape2D* m = (StyledMultiShape2D*)c->getLayer(0);
@@ -282,6 +318,7 @@ void U64::display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
   const Font* f = s->f;
   // TODO: t->add(x0, y0, f, in.readU64());
 }
+#endif
 
 DataType U128::getDataType() const { return DataType::U128; }
 uint32_t U128::size() const { return 16; }
@@ -392,6 +429,7 @@ void F64::display(Buffer& binaryIn, Buffer& asciiOut) const {
   asciiOut.appendF64(binaryIn.readF64());
 }
 
+#if 0
 void F64::display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
                   float* w, float* h) const {
   StyledMultiShape2D* m = (StyledMultiShape2D*)c->getLayer(0);
@@ -399,6 +437,7 @@ void F64::display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
   const Font* f = s->f;
   t->add(x0, y0, f, in.readF64());
 }
+#endif
 
 DataType Date::getDataType() const { return DataType::DATE; }
 uint32_t Date::size() const { return 4; }
@@ -657,6 +696,10 @@ void GenericList::writeMeta(Buffer& buf) const {
 }
 
 void GenericList::display(Buffer& binaryIn, Buffer& asciiOut) const {}
+
+XDLIterator* GenericList::createIterator() {
+	return nullptr; // TODO: should return an iterator to each item in the list
+}
 
 uint32_t TypeDef::size() const { return type->size(); }
 

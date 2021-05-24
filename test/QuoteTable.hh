@@ -46,10 +46,20 @@ class Quote : public XDLType {
 		out.write(volume);
 		out.fastCheckSpace(size_);
 	}
+  void read(Buffer& in) {
+		in.checkSpace(size());
+		date = in._readU32();
+		open = in._readU32();
+		hi = in._readU32();
+		low = in._readU32();
+		close = in._readU32();
+		volume = in._readU64();
+	}
+	
   void writeMeta(Buffer& out) {
     out.write(DataType::STRUCT8);
     out.write("Quote");
-    out.write(uint8_t(5)); // number of fields
+    out.write(uint8_t(6)); // number of fields
     out.write(DataType::DATE, "date");
     out.write(DataType::U32, "open");
     out.write(DataType::U32, "hi");
@@ -66,6 +76,36 @@ class Quote : public XDLType {
 	}
 };
 
+class DeltaQuoteNoDate : public Quote {
+public:
+  void write(const Quote& prev, Buffer& out) const {
+		out.write(int16_t(open - prev.open));
+		out.write(int16_t(hi - open));
+		out.write(int16_t(low - open));
+		out.write(int16_t(close - open));
+		out.write(uint32_t(volume-prev.volume));
+		out.fastCheckSpace(size_);
+	}
+  void read(const Quote& prev, Buffer& in) {
+		in.checkSpace(size());
+		open = prev.open + in._readU16();
+		hi = open + in._readU16();
+		low = open + in._readU16();
+		close = open + in._readU16();
+		volume = prev.volume + in._readU32();
+	}
+	
+  void writeMeta(Buffer& out) {
+    out.write(DataType::STRUCT8);
+    out.write("Quote");
+    out.write(uint8_t(5)); // number of fields
+    out.write(DataType::U16, "open");
+    out.write(DataType::U16, "hi");
+    out.write(DataType::U16, "low");
+    out.write(DataType::U16, "close");
+    out.write(DataType::U32, "volume");
+  }
+};
 class Table {
  private:
   unsigned char *data;

@@ -2,6 +2,7 @@
 
 #include "csp/csp.hh"
 #include "util/Buffer.hh"
+#include "xdl/std.hh"
 
 using namespace std;
 // const string HTTPRequest::GET = "GET";
@@ -72,6 +73,12 @@ void Buffer::write(const char* s, uint32_t len) {
   *p++ = len;
   checkAvailableWrite();
   checkAvailableWrite(s, len);
+}
+
+void Buffer::write(XDLRaw& v) {
+	if (p != buffer)
+		flush();
+	::write(fd, v.data, v.len);
 }
 
 #if 0

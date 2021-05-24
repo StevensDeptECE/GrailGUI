@@ -29,7 +29,7 @@ public:
 };
 
 void BookViewer::init() {
-	Font *font = getDefaultFont();
+	const Font *font = getDefaultFont();
 	Style *s = new Style(font, 0, 0, 0, 0, 0, 0);
 	s->setLineWidth(1);
 	Canvas *c = currentTab()->getMainCanvas();

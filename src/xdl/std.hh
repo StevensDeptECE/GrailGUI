@@ -1,12 +1,12 @@
 /*
-        This file contains all the classes for built-in XDL types that are
-        pregenerated manually as well as some example classes that will
+	This file contains all the classes for built-in XDL types that are
+	pregenerated manually as well as some example classes that will
   eventually be generated from the xdl compiler which at the moment does not
   exist.
 
-        When that happens, this comment will change and those classes will be
-        removed from std.hh
-
+	When that happens, this comment will change and those classes will be
+	removed from std.hh
+	
   what should be generated:
         if you declare        to send                 metadata should be
         u8 x;                 buf.write(x);           buf.write(DataType::U8);
@@ -19,10 +19,10 @@
 #include <string>
 
 #include "opengl/Errcode.hh"
-#include "util/Buffer.hh"
 #include "util/DynArray.hh"
 #include "util/HashMap.hh"
 #include "util/datatype.hh"
+#include "util/Buffer.hh"
 
 /*
   XDLType is the base class of all XDL-generated code.
@@ -45,8 +45,10 @@
 
 class XDLCompiler;
 class Struct;
-class Canvas;
 class Style;
+class MultiShape2d;
+class MultiText;
+class XDLIterator;
 
 class XDLType {
  protected:
@@ -79,7 +81,7 @@ class XDLType {
       : nameOffset(computeNameOffset(typeName)) {}
   XDLType(DataType t) : nameOffset(computeNameOffset(t)) {}
   virtual void write(Buffer& b) const = 0;
-  virtual void writeMeta(Buffer& buf) const { buf.write(getDataType()); }
+  virtual void writeMeta(Buffer& buf) const;
   virtual uint32_t size() const = 0;
   static const XDLType* getBuiltinType(DataType dt) {
     return types[uint32_t(dt)];
@@ -89,9 +91,9 @@ class XDLType {
   // TODO: virtual void generateCode() = 0;
   const std::string& getTypeName() const { return typeNames[nameOffset]; }
   // using this XDL type as ASCII text, not formatted
+	// each class must implement its own iterator?
+	virtual XDLIterator* createIterator();
   virtual void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  virtual void display(Buffer& in, Canvas* c, const Style* s, float x0,
-                       float y0, float* w, float* h) const;
   // TODO: for efficiency, add another display function since we usually do NOT
   // want to know w,h virtual void display(Buffer& in, Canvas* c, const Style*
   // s, float x0, float y0) const; using this XDL type, output formatted
@@ -101,7 +103,36 @@ class XDLType {
    */
   static void readMeta(XDLCompiler* compiler, Buffer& in, uint32_t count, Struct* s);
   static const Struct* read(Buffer& in);
-  static DataType readType(Buffer& in) { return DataType(in.readU8()); }
+  static DataType readType(Buffer& in);
+};
+
+class XDLIterator {
+private:
+	uint32_t pos;
+public:
+	XDLIterator() : pos(0) {}
+	void advance() { pos++; }
+	void advance(uint32_t d) { pos += d; }
+	uint32_t getPos() const { return pos; }
+};
+
+/*
+	XDLRaw loads block binary data and can write it directly to the client
+	without bothering to analyze. Useful for large datasets that don't change
+	often. Uses extremely little CPU
+ */
+class XDLRaw : public XDLType {
+private:
+	const char* data;
+	size_t len;
+	friend Buffer;
+public:
+	XDLRaw(const char* p, size_t len) : XDLType("XDLRaw"), data(p), len(len) {}
+  DataType getDataType() const;
+  uint32_t size() const override;
+  void write(Buffer& buf) const;
+  void display(Buffer& binaryIn, Buffer& asciiOut) const;
+  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
 /*
@@ -122,9 +153,7 @@ class U8 : public XDLType {
   DataType getDataType() const;
   uint32_t size() const override;
   void write(Buffer& buf) const;
-  void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  void display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
-               float* w, float* h) const;
+  void display(Buffer& binaryIn, Buffer& asciiOut) const override;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
@@ -167,8 +196,6 @@ class U32 : public XDLType {
   void write(Buffer& buf) const override;
   friend bool operator==(const U32& a, const U32& b) { return a.val == b.val; }
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  void display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
-               float* w, float* h) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
@@ -183,8 +210,6 @@ class U64 : public XDLType {
   void write(Buffer& buf) const override;
   friend bool operator==(const U64& a, const U64& b) { return a.val == b.val; }
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  void display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
-               float* w, float* h) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
@@ -368,8 +393,6 @@ class F64 : public XDLType {
   uint32_t size() const override;
   void write(Buffer& buf) const override;
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  void display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
-               float* w, float* h) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
@@ -425,7 +448,7 @@ class Timestamp : public XDLType {
   uint64_t val;
 
  public:
-  Timestamp(uint64_t v = 0) : val(v) {}
+  Timestamp(uint64_t v = 0) : XDLType("Timestamp"), val(v) {}
   void write(Buffer& b) const override;
   void writeMeta(Buffer& buf) const override;
   uint32_t size() const override;
@@ -484,7 +507,7 @@ class String64 : public XDLType {
   DataType getDataType() const override;
   uint32_t size() const override;
   void write(Buffer& buf) const override;
-  void display(Buffer& binaryIn, Buffer& asciiOut) const;
+  void display(Buffer& binaryIn, Buffer& asciiOut) const override;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
@@ -578,7 +601,7 @@ class User : public XDLType {
 
 /*
   GenericList is the metadata for a list of unknown type coming in.
-  It would be more efficient for a hardcoded
+  A hardcoded type is more efficient
 */
 class GenericList : public XDLType {
   private:
@@ -593,15 +616,17 @@ class GenericList : public XDLType {
   uint32_t size() const override;
   void write(Buffer& buf) const override;
   void writeMeta(Buffer& buf) const override;
-  void display(Buffer& binaryIn, Buffer& asciiOut) const;
+  void display(Buffer& binaryIn, Buffer& asciiOut) const override;
+	XDLIterator* createIterator() override;
 };
+
 template <typename T>
 class List : public XDLType {
  private:
-  std::vector<T> impl;
+  DynArray<T> impl;
 
  public:
-  List() : XDLType("LIST16") {}
+  List(uint32_t size = 16) : XDLType("LIST16"), impl(size) {}
   DataType getDataType() const { return DataType::LIST8; }
   void add(const T& e) { impl.push_back(e); }
 #if 0
@@ -614,14 +639,25 @@ class List : public XDLType {
     return impl.size();  // TODO: * T.size();
   }
   void write(Buffer& buf) const override {
-    for (uint32_t i = 0; i < impl.size(); i++) impl[i].write(buf);
+		buf.write(uint16_t(impl.size()));
+    for (uint32_t i = 0; i < impl.size(); i++)
+			impl[i].write(buf);
   }
   void writeMeta(Buffer& buf) const override {
-    buf.write(DataType::LIST8);
-    buf.write(uint8_t(impl.size()));
+    buf.write(DataType::LIST16);
     if (impl.size() == 0) return;
     impl[0].writeMeta(buf);
   }
+	void read(Buffer& buf) {
+		uint32_t len = buf._readU16();
+		T val;
+		for (uint32_t i = 0; i < len; i++) {
+			val.read(buf);
+			add(val);
+		}
+	}
+	XDLIterator* createIterator() override;
+  void display(Buffer& binaryIn, Buffer& asciiOut) const override;
 };
 
 class BuiltinType : public XDLType {

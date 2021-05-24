@@ -19,7 +19,7 @@ quickClean:
 	rm -rf ${GRAIL}/build ${GRAIL}/libs -f
 	@# -f for remove files even if they dont exist ... ie don't throw an error because it's already clean. 
 
-clean:
+clean: quickClean
 	cd $(util) && make clean ; cd $(csp) && make clean; cd $(opengl) && make clean ; cd ${GRAIL}/test && make clean
 
 # after this, any demos should work

@@ -55,4 +55,35 @@ void Table::loadASCII(const char textFile[], const char binFile[]) {
   for (uint32_t i = 0; i < tempQuotes.size(); i++) {
     tempQuotes[i].write(out);
   }
+
+	string binFile2 = string(binFile);
+	binFile2 = binFile2.substr(0, binFile2.length()-4) + "2.bin";
+	Buffer out2(binFile2.c_str(), 1024*1024);
+  /**
+   * TODO:
+   * SymbolTable st(compiler);
+   * st->addXDLType(tempQuotes[0]);
+   * Struct* s = new Struct();
+   * List16<Quote>* quotes = new List16<Quote>(15000); // preallocate big enough list
+   * quotes->add the data here....
+   * 
+   * s->addMember("quotes", quotes);
+   * st->addXDLType(root, s);
+   * out.write(st);
+   */
+  out.write(uint8_t(2)); // total number of elements in the symbol table (would be nice to use SymbolTable to generate this later)
+  tempQuotes[0].writeMeta(out); // first item, define "quote"
+  out.write(DataType::STRUCT8, "root"); // then define "root" that is the top level object 
+  out.write(uint8_t(1)); // 1 member in root (a list of quotes)
+  out.write(DataType::LIST16, "quotes"); // a list called quotes, maximum 65535 elements
+  out.write(uint16_t(tempQuotes.size())); // the size of the list (about 14k)
+  out.write("quote", 5); // the type of the object in the list
+  //write metadata first
+
+	tempQuotes[0].write(out);
+  for (uint32_t i = 1; i < tempQuotes.size(); i++) {
+		DeltaQuoteNoDate* dq = (DeltaQuoteNoDate*)&tempQuotes[i];
+    dq->write(dq[-1], out);
+  }
+
 }

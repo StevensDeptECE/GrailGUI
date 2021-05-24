@@ -61,7 +61,7 @@ MainCanvas::~MainCanvas() {
 }
 void MainCanvas::addButton(const char text[],
 													 float x, float y, float w, float h) {
-	gui->fillRectangle(x, y, w, h, style->bg);
+	gui->drawRectangle(x, y, w, h, style->fg);
 	guiText->add(x, y, style->f, text, strlen(text));
 }
 

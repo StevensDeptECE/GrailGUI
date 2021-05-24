@@ -25,6 +25,8 @@ class GLWin {
   Style* menuStyle;
   Style* menuTextStyle;
   Font *defaultFont;
+  Font* guiFont;
+  Font* menuFont;
 
  public:
   constexpr static uint32_t COMMON_SHADER = 0;
@@ -191,7 +193,10 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
 	const Style* getMenuStyle() const     { return menuStyle; }
 	const Style* getMenuTextStyle() const { return menuTextStyle; }
 	
-  Font *getDefaultFont() { return defaultFont; }
+  const Font *getDefaultFont() const { return defaultFont; }
+  const Font *getGuiFont() const     { return guiFont; }
+  const Font *getMenuFont() const    { return menuFont; }
+
   virtual void baseInit();
 
 

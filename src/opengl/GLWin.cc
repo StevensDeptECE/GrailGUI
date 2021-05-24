@@ -27,7 +27,7 @@
 #include "opengl/Tab.hh"
 #include "stb/stb_image_write.h"
 #include <cstring>
-
+#include "xdl/std.hh"
 using namespace std;
 string GLWin::baseDir;
 
@@ -167,6 +167,9 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const char title[],
       GLFW_OPENGL_FORWARD_COMPAT,
       GL_TRUE);  // uncomment this statement to fix compilation on OS X
 #endif
+	// all static library initializations go here
+	XDLType::classInit();
+
 }
 bool GLWin::hasBeenInitialized = false;
 GLWin::GLWin(uint32_t w, uint32_t h, uint32_t bgColor, uint32_t fgColor,
@@ -218,15 +221,16 @@ void GLWin::startWindow() {
   defaultFont = (Font *)FontFace::get("TIMES", 16, FontFace::BOLD);
   Font* bigFont = (Font *)FontFace::get("TIMES", 20, FontFace::BOLD);
 	Font* normalFont = (Font *)FontFace::get("TIMES", 12, FontFace::NORMAL);
-	Font* guiFont = defaultFont;
-	
+	guiFont = bigFont;
+  menuFont = bigFont;
+  
   defaultStyle = new Style(defaultFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
   defaultStyle->setLineWidth(1);
 	//  defaultStyle->setShaderIndex(COMMON_SHADER);
   guiStyle = new Style(guiFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
   guiTextStyle = new Style(guiFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
-	menuStyle = new Style(guiFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
-	menuTextStyle = new Style(guiFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
+	menuStyle = new Style(menuFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
+	menuTextStyle = new Style(menuFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
 	current = new Tab(this);
 	tabs.add(current);
   hasBeenInitialized = true;
@@ -291,6 +295,7 @@ void FontFaceCleanup();
 GLWin::~GLWin() {
 	cleanup();
 	cerr << "GLWin Destructor" << endl;
+	XDLType::classCleanup();
 }
 
 // void GLWin::addFontPath(std::string path, std::string name) {
