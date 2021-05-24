@@ -37,7 +37,7 @@ $(utilout)/Buffer.o: $(util)/Makefile $(util)/Buffer.cc $(util)/Buffer.hh
 $(utilout)/datatype.o: $(util)/Makefile
 	cd $(util) && make $@
 
-$(BIN)/simplexdlclient: SimpleXDLClient.o  IPV4Socket.hh XDLRequest.hh
+$(BIN)/simplexdlclient: SimpleXDLClient.cc  IPV4Socket.hh XDLRequest.hh
 	$(CXX) $< -o $@ $(LIBGRAIL) $(LIBS)
 
 $(BIN)/genericxdlclient: GenericXDLClient.cc IPV4Socket.hh XDLRequest.hh
