@@ -9,7 +9,9 @@ include ${GRAIL}/proj/settings.mk
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
 all: $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
- $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook
+ $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
+ $(BIN)/LuisaDemo \
+ $(BIN)/testWidgets
 #$(BIN)/testText 
 #$(BIN)/testDrawing
 #$(BIN)/testGraphViewer
@@ -62,7 +64,10 @@ $(BIN)/globe: Globe.cc $(LIBGRAIL)
 	$(CXX) $^ -o $@ $(LIBS)
 
 $(BIN)/testStyledMultishape: testStyledMultishape.cc $(LIBGRAIL)
-	$(CXX) testStyledMultishape.cc -o $(BIN)/testStyledMultishape $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
+
+$(BIN)/LuisaDemo: LuisaDemo.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testHeatMap: testHeatMap.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
@@ -124,6 +129,7 @@ $(BIN)/testTable: testTable.cc $(LIBGRAIL)
 
 $(BIN)/testJulian: testJulian.cc $(LIBGRAIL)
 	$(CXX) $^  -o $(BIN)/testJulian  $(LIBS)
+
 
 ActionListener.o: ActionListener.hh ActionListener.cc
 	$(CXX) -c ActionListener.cc
