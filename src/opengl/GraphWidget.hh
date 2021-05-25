@@ -1,3 +1,5 @@
+#pragma once
+
 #include "opengl/Widget2D.hh"
 #include <string>
 
