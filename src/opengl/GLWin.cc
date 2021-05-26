@@ -20,6 +20,8 @@
 #include <GLFW/glfw3.h>
 #include "util/Prefs.hh"
 
+#include "csp/Socket.hh"
+
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -140,6 +142,18 @@ void GLWin::enableMouse() {
 }
 #endif
 
+// Static initlializer for libraries
+void GLWin::classInit(){
+  XDLType::classInit();
+  Socket::classInit();
+}
+
+// Static cleanup for libraries
+void GLWin::classCleanup(){
+  Socket::classCleanup();
+  XDLType::classCleanup();
+}
+
 GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const char title[],
              uint32_t exitAfter)
     : bgColor(bgColor),
@@ -169,6 +183,7 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const char title[],
 #endif
 	// all static library initializations go here
 	XDLType::classInit();
+  Socket::classInit();
 
 }
 bool GLWin::hasBeenInitialized = false;
@@ -295,6 +310,7 @@ void FontFaceCleanup();
 GLWin::~GLWin() {
 	cleanup();
 	cerr << "GLWin Destructor" << endl;
+  Socket::classCleanup();
 	XDLType::classCleanup();
 }
 

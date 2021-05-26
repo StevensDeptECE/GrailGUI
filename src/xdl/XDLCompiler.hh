@@ -17,6 +17,7 @@ private:
 
 public:
   XDLCompiler(const char filename[]);
+  XDLCompiler();
 
   SymbolTable& getSymbolTable() { return symbols; }
   void generateCode() {

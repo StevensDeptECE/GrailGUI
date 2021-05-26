@@ -52,10 +52,8 @@ class Socket {
   Socket(uint16_t port);  // Constructor for server (addres not specified)
   ~Socket();
 
-  #ifdef _WIN32
-      void classCleanup();
-      void classInit();
-  #endif
+  static void classCleanup();
+  static void classInit();
   void attach(Request* r) { req = r; }
 
   Buffer& getOut() { return out; }

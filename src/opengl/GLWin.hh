@@ -199,7 +199,8 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
 
   virtual void baseInit();
 
-
+  static void classInit();
+  static void classCleanup();
   static void quit(GLWin* w);
   static void refresh(GLWin* w);
   static void saveFrame(GLWin* w);
