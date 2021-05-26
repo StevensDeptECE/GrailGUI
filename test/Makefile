@@ -8,7 +8,7 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all: $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
+all: $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo $(BIN)/testWidgets \
  $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook
 #$(BIN)/testText 
 #$(BIN)/testDrawing
@@ -26,43 +26,46 @@ all: $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  
 #plot.o  BarChart.o JulianDate.o TimeSeries.o $(BIN)/test7 $(BIN)/test5 $(BIN)/testText $(BIN)/testJulian $(BIN)/test8 $(BIN)/testTimeSeries $(BIN)/testBin 
 
 $(BIN)/testGrid: testGrid.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/simpleDemo: simpleDemo.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testGenericTable: testGenericTable.o $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/JoeyDemo: JoeyDemo.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testCompletePoly: testCompletePoly.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testDisplayBook: testDisplayBook.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testDisplayEntireBook: testDisplayEntireBook.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testDrawing: testDrawing.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testDrawing3D: testDrawing3D.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testDemo3D: testDemo3D.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/SolarSystem: SolarSystem.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/globe: Globe.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testStyledMultishape: testStyledMultishape.cc $(LIBGRAIL)
-	$(CXX) testStyledMultishape.cc -o $(BIN)/testStyledMultishape $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
+
+$(BIN)/testWidgets: testWidgets.cc $(opengl)/ButtonWidget.cc $(opengl)/GraphWidget.cc $(LIBGRAIL)
+	$(CXX) $^  -o $@ $(LIBS)
 
 $(BIN)/testHeatMap: testHeatMap.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
