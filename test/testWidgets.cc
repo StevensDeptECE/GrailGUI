@@ -1,6 +1,7 @@
 #include "opengl/GrailGUI.hh"
 #include "opengl/ButtonWidget.hh"
 #include "opengl/GraphWidget.hh"
+#include "opengl/BarChartWidget.hh"
 using namespace std;
 
 class TestWidgets : public GLWin {
@@ -25,6 +26,9 @@ class TestWidgets : public GLWin {
     float x[] = {100, 200, 300};
     float y[] = {50, 350, 222};
     //graph.lineGraph(x, y);
+
+
+    BarChartWidget chart(gui, guiText, 0, 300, 400, 200);
 
   }
 };
