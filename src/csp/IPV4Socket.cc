@@ -36,6 +36,8 @@ WSADATA Socket::wsaData;
 //#include "csp/HTTPRequest.hh"
 #include "csp/csp.hh"
 
+#include <fstream>
+
 using namespace std;
 
 #ifdef __linux__
@@ -52,6 +54,23 @@ inline void testResult(int result, const char *file, int lineNum, Errcode err) {
   }
 }
 #endif
+
+// Initializes Winsock
+void Socket::classInit() {
+  #ifdef _WIN32
+  testResult(WSAStartup(MAKEWORD(2, 2), &wsaData), __FILE__, __LINE__,
+             Errcode::SOCKET);
+  #endif
+  return;
+}
+
+// Takes care of allocations made by Winsock
+void Socket::classCleanup() { 
+    #ifdef _WIN32
+    WSACleanup();
+    #endif
+  }
+
 
 #ifdef __linux__
 // Constructor for HTTP server
@@ -124,16 +143,6 @@ void IPV4Socket::wait() {
 #endif
 
 #ifdef _WIN32
-// TODO: Implement ClassInit and ClassCleanup as static functions
-//       will be ripped to socket.cc in newer version
-// Initializes Winsock
-void Socket::classInit() {
-  testResult(WSAStartup(MAKEWORD(2, 2), &wsaData), __FILE__, __LINE__,
-             Errcode::SOCKET);
-}
-
-// Takes care of allocations made by Winsock
-void Socket::classCleanup() { WSACleanup(); }
 
 // Constructor for server
 IPV4Socket::IPV4Socket(uint16_t port) : Socket(port) {
@@ -198,11 +207,6 @@ IPV4Socket::IPV4Socket(const char *addr, uint16_t port) : Socket(addr, port) {
 
   char port_string[8];
   itoa(port, port_string, 10);
-
-  // Initialize Winsock
-  testResult(WSAStartup(MAKEWORD(2, 2), &wsaData) != 0, __FILE__, __LINE__,
-             Errcode::SOCKET);
-
   ZeroMemory(&hints, sizeof(hints));
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;

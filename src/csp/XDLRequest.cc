@@ -1,6 +1,7 @@
 #include <csp/csp.hh>
 #include <cstdint>
 #include <iostream>
+#include <fstream>
 #include <xdl/XDLCompiler.hh>
 #include <xdl/std.hh>
 
@@ -103,10 +104,14 @@ void XDLRequest::handle(int, char const*) {}
 void XDLRequest::addPage(const char metaDataFilename[], const char filename[]) {
 	
 }
-
+#if 1
 void XDLRequest::addPage(const char filename[]) {
+  #ifdef __linux__
 	int fh = open(filename, O_RDONLY);
-	if (fh < 0) {
+	#elif _WIN32
+	int fh = open(filename, O_RDONLY | O_BINARY);
+  #endif
+  if (fh < 0) {
 		cerr << "Error opening file " << filename << '\n';
 	}
 	struct stat s;
@@ -120,3 +125,21 @@ void XDLRequest::addPage(const char filename[]) {
 	xdlData.add(new XDLRaw(p, s.st_size));
 	close(fh);
 }
+#endif
+
+// TODO: Verify that above implementation works on both Linux and Windows.
+//  If so, delete below implementation of addPage
+#if 0
+void XDLRequest::addPage(const char filename[]) {
+	ifstream in(filename, ios::binary| ios::ate);
+  if (!in.good()) {
+		cerr << "Error opening file " << filename << '\n';
+    return;
+  }
+  size_t size = in.tellg();
+	// create an XDLRaw object with all the data in the file
+	char* p = new char[size];
+	in.read(p, size);
+	xdlData.add(new XDLRaw(p, size));
+}
+#endif 
