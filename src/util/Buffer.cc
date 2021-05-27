@@ -1,5 +1,21 @@
 #include <csp/HTTPRequest.hh>
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+#include <cstdlib>
+
+// Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
+#pragma comment(lib, "Ws2_32.lib")
+#pragma comment(lib, "Mswsock.lib")
+#pragma comment(lib, "AdvApi32.lib")
+
+#endif
+
 #include "csp/csp.hh"
 #include "util/Buffer.hh"
 #include "xdl/std.hh"
@@ -13,6 +29,7 @@ Buffer::Buffer(size_t initialSize, bool writing)
   preBuffer = new char[size + extra * 2];
   buffer = extra + preBuffer;
   p = buffer;
+  memset(preBuffer, '\0', size+extra*2);
   fd = -1;
 }
 
@@ -38,8 +55,13 @@ Buffer::Buffer(const char filename[], size_t initialSize, const char*)
 }
 
 void Buffer::readNext() {
+  #ifdef __linux__
   int32_t bytesRead = ::read(fd, buffer, size);
-  if (bytesRead > 0) availSize = bytesRead;
+  #elif _WIN32
+  int32_t bytesRead = (int32_t)recv(fd, buffer, size, 0);
+  #endif
+  
+  if (bytesRead > 0) availSize -= bytesRead; // Should this be availSize - bytesRead?
   // TODO: do we set p????
   // read really shouldn't return negative but it is, at least on windows...
   // check why This is occurring when there are no bytes to read -- possible

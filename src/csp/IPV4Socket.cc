@@ -257,10 +257,9 @@ void IPV4Socket::wait() {
       // WSACleanup();
       return;
     }
-
+    
     if (returnsckt >= 0) {
-      cout << "CONNECT SUCCESSFULLY"
-           << "\n";
+      cout << "CONNECT SUCCESSFULLY" << endl;
       req->handle(returnsckt);
       close(returnsckt);
       // csp18summer: if you are not familiar with socket, try below code

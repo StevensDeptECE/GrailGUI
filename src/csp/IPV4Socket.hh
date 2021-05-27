@@ -16,7 +16,7 @@
 */
 class IPV4Socket : public Socket {
 private:
-	int sckt;
+	long long unsigned int sckt;
 
 public:
 	IPV4Socket(const char* addr, uint16_t port); //Client
