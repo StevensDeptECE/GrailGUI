@@ -1,9 +1,10 @@
 #include <csp/HTTPRequest.hh>
 
+
 #include "csp/csp.hh"
 #include "util/Buffer.hh"
 #include "xdl/std.hh"
-
+#include "csp/SocketIO.hh"
 using namespace std;
 // const string HTTPRequest::GET = "GET";
 
@@ -13,6 +14,7 @@ Buffer::Buffer(size_t initialSize, bool writing)
   preBuffer = new char[size + extra * 2];
   buffer = extra + preBuffer;
   p = buffer;
+  memset(preBuffer, '\0', size+extra*2);
   fd = -1;
 }
 
@@ -31,15 +33,15 @@ Buffer::Buffer(const char filename[], size_t initialSize)
 */
 Buffer::Buffer(const char filename[], size_t initialSize, const char*)
     : Buffer(initialSize, false) {
-  fd = open(filename, O_RDONLY);
+  fd = open(filename, binFlags);
   if (fd < 0) throw Ex1(Errcode::PERMISSION_DENIED);
   readNext();
   writing = false;
 }
 
 void Buffer::readNext() {
-  int32_t bytesRead = ::read(fd, buffer, size);
-  if (bytesRead > 0) availSize = bytesRead;
+  int32_t bytesRead = SocketIO::recv(fd, buffer, size, 0);
+  if (bytesRead > 0) availSize -= bytesRead; // Should this be availSize - bytesRead?
   // TODO: do we set p????
   // read really shouldn't return negative but it is, at least on windows...
   // check why This is occurring when there are no bytes to read -- possible
