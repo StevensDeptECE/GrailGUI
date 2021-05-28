@@ -37,6 +37,9 @@ $(utilout)/Buffer.o: $(util)/Makefile $(util)/Buffer.cc $(util)/Buffer.hh
 $(utilout)/datatype.o: $(util)/Makefile
 	cd $(util) && make $@
 
+$(out)/SocketIO.o: SocketIO.cc SocketIO.hh
+	$(COMP) $< -o $@
+
 $(BIN)/simplexdlclient: SimpleXDLClient.cc  IPV4Socket.hh XDLRequest.hh
 	$(CXX) $< -o $@ $(LIBGRAIL) $(LIBS)
 

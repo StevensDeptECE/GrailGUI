@@ -19,6 +19,7 @@ $(cspout)/Socket.o				\
 $(cspout)/IPV4Socket.o			\
 $(cspout)/XDLRequest.o			\
 $(cspout)/Request.o			\
+$(cspout)/SocketIO.o 		\
 $(xdlout)/XDLCompiler.o			\
 $(xdlout)/SymbolTable.o			\
 $(xdlout)/std.o				\
@@ -72,6 +73,9 @@ $(cspout)/Socket.o: $(csp)/Socket.cc $(csp)/Socket.hh $(util)/Buffer.hh
 	$(COMP) $< -o $@
 
 $(cspout)/IPV4Socket.o: $(csp)/IPV4Socket.cc $(util)/Buffer.hh
+	$(COMP) $< -o $@
+
+$(cspout)/SocketIO.o: $(csp)/SocketIO.cc $(csp)/SocketIO.hh
 	$(COMP) $< -o $@
 
 $(xdlout)/SymbolTable.o: $(xdl)/SymbolTable.cc $(xdl)/SymbolTable.hh

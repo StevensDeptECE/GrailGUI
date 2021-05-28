@@ -15,6 +15,7 @@ class TestWidgets : public GLWin {
     StyledMultiShape2D* gui = c->getGui();
     MultiText* guiText = c->getGuiText();
     ButtonWidget b(gui, guiText, "hello", 0, 0, 100, 50);
+    b.init();
 
     GraphWidget graph(gui, guiText, 0, 300, 400, 200);
     graph.setTitleStyle(s);

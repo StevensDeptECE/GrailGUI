@@ -106,11 +106,7 @@ void XDLRequest::addPage(const char metaDataFilename[], const char filename[]) {
 }
 #if 1
 void XDLRequest::addPage(const char filename[]) {
-  #ifdef __linux__
-	int fh = open(filename, O_RDONLY);
-	#elif _WIN32
-	int fh = open(filename, O_RDONLY | O_BINARY);
-  #endif
+	int fh = open(filename, binFlags);
   if (fh < 0) {
 		cerr << "Error opening file " << filename << '\n';
 	}
