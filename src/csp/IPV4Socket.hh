@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Socket.hh"
 #include "csp/Request.hh"
+#include "csp/Socket.hh"
+#include "csp/SocketIO.hh"
 #include <cstdint>
 #include <string>
 /*
@@ -15,8 +16,8 @@
 
 */
 class IPV4Socket : public Socket {
-private:
-	long long unsigned int sckt;
+private:  
+  socket_t sckt;
 
 public:
 	IPV4Socket(const char* addr, uint16_t port); //Client
@@ -30,4 +31,6 @@ public:
 	void wait();
 	void send(const char* command); // For HTTP
 	void send(uint32_t reqn); // For CSP
+	static int send(socket_t sckt, const char *buf, int size, int flags);
+	static int recv(socket_t sckt, const char *buf, int size, int flags);
 };

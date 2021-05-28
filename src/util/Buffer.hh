@@ -13,9 +13,9 @@
 #include <vector>
 
 #include "csp/cspservlet/Student.hh"
+#include "csp/SocketIO.hh"
 #include "util/List1.hh"
 #include "util/datatype.hh"
-
 class XDLRaw;
 
 using namespace std;
@@ -50,7 +50,7 @@ class Buffer {
   void displayHTTPRaw();  // TODO: eliminate! die die die
 
   void flush() {  // TODO: this will fail if we overflow slightly
-    ::write(fd, buffer, p - buffer);
+    SocketIO::send(fd, buffer, p - buffer, 0);
     p = buffer;
     availSize = size;
   }

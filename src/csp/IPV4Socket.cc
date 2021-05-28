@@ -6,28 +6,6 @@
 /*
   All encapsulation for different operating systems networking code is done here
 */
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-
-#include <cstdlib>
-
-// Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
-#pragma comment(lib, "Ws2_32.lib")
-#pragma comment(lib, "Mswsock.lib")
-#pragma comment(lib, "AdvApi32.lib")
-
-WSADATA Socket::wsaData;
-
-#else // linux
-
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#endif
 
 #include <signal.h>
 
@@ -35,8 +13,10 @@ WSADATA Socket::wsaData;
 
 //#include "csp/HTTPRequest.hh"
 #include "csp/csp.hh"
-
+#include "csp/SocketIO.hh"
 #include <fstream>
+
+WSADATA Socket::wsaData;
 
 using namespace std;
 
@@ -285,3 +265,4 @@ void IPV4Socket::send(uint32_t reqn) {
   out.flush();
   in.attachRead(sckt);
 }
+
