@@ -2,6 +2,7 @@
 #include "opengl/ButtonWidget.hh"
 #include "opengl/GraphWidget.hh"
 #include "opengl/BarChartWidget.hh"
+#include <string>
 using namespace std;
 
 class TestWidgets : public GLWin {
@@ -23,12 +24,14 @@ class TestWidgets : public GLWin {
     //graph.setTitle("sin(x)");
     //graph.setXAxis("x");
     //graph.setYAxis("x");
-    float x[] = {100, 200, 300};
-    float y[] = {50, 350, 222};
+    float x[] = {100, 200, 300, 100, 100};
+    float y[] = {150, 350, 222, 100, 300};
     //graph.lineGraph(x, y);
 
-
-    BarChartWidget chart(gui, guiText, 0, 300, 400, 200);
+    std::string lables[] = {"bar","big bar","other bar","small bar", "barrr"};
+    BarChartWidget chart(gui, guiText, 50, 50, 400, 200);
+    chart.chart(y, 5, 0.25, lables, grail::green);
+    chart.init();
 
   }
 };
