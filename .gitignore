@@ -138,7 +138,8 @@ CompiledWebPointerOpCodes.cc
 
 codesummary
 *.png
-.vscode/* # in general we don't want your vscode settings, manually override when you need to
+# in general we don't want your vscode settings, manually override when you need to
+.vscode/* 
 lib/*
 BIGMAP.png
 errlog

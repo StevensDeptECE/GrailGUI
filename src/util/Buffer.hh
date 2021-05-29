@@ -16,6 +16,8 @@
 #include "csp/SocketIO.hh"
 #include "util/List1.hh"
 #include "util/datatype.hh"
+#include "csp/csp.hh"
+
 class XDLRaw;
 
 using namespace std;
@@ -50,7 +52,12 @@ class Buffer {
   void displayHTTPRaw();  // TODO: eliminate! die die die
 
   void flush() {  // TODO: this will fail if we overflow slightly
-    SocketIO::send(fd, buffer, p - buffer, 0);
+    if(isSockBuf) 
+      SocketIO::send(fd, buffer, p - buffer, 0);
+    else {
+      if(::write(fd, buffer, p-buffer) < 0)
+        throw Ex1(Errcode::FILE_WRITE);
+    }
     p = buffer;
     availSize = size;
   }
@@ -415,6 +422,7 @@ class Buffer {
 
  private:
   bool writing;
+  bool isSockBuf = false;
   size_t size;
   const size_t extra = 128;
   char* preBuffer;
