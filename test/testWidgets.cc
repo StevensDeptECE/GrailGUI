@@ -3,6 +3,7 @@
 #include "opengl/GraphWidget.hh"
 #include "opengl/BarChartWidget.hh"
 #include <string>
+#include <vector>
 using namespace std;
 
 class TestWidgets : public GLWin {
@@ -25,18 +26,26 @@ class TestWidgets : public GLWin {
     //graph.setTitle("sin(x)");
     //graph.setXAxis("x");
     //graph.setYAxis("x");
-    float x[] = {100, 200, 300, 100, 100};
-    float y[] = {150, 350, 222, 100, 300};
+    float x[] = {100, 10, 1000, 150, 10000};
+    vector<float> y = {150, 350, 222, 100, 300};
     //graph.lineGraph(x, y);
 
-    std::string lables[] = {"bar","big bar","other bar","small bar", "barrr"};
+    vector<string> labels = {"bar","big bar","other bar","small bar", "barrr"};
     BarChartWidget chart(gui, guiText, 50, 50, 400, 200);
-    chart.chart(y, 5, 0.25, lables, grail::green);
+    chart.chart(y, 0.25, labels, 50);
+    chart.title("Title");
     chart.init();
 
+    #if 0
+    std::string labels2[] = {"bar 1","bar 2","bar 3","bar 4", "bar 5"};
+    BarChartWidget chart2(gui, guiText, 50, 320, 400, 200);
+    chart2.chartLog(x, 5, 0.25, labels2, 10);
+    chart2.title("Title Log graph");
+    chart2.init();
+    #endif
   }
 };
 
 int main(int argc, char* argv[]) {
-  return GLWin::init(new TestWidgets(), 512, 512);
+  return GLWin::init(new TestWidgets(), 600, 600);
 }
