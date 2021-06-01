@@ -14,9 +14,10 @@
 //#include "csp/HTTPRequest.hh"
 #include "csp/csp.hh"
 #include "csp/SocketIO.hh"
-#include <fstream>
 
+#ifdef _WIN32
 WSADATA Socket::wsaData;
+#endif
 
 using namespace std;
 

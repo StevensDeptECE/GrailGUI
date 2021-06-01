@@ -16,6 +16,7 @@ Buffer::Buffer(size_t initialSize, bool writing)
   p = buffer;
   memset(preBuffer, '\0', size+extra*2);
   fd = -1;
+  isSockBuf = true;
 }
 
 /*
@@ -25,6 +26,7 @@ Buffer::Buffer(const char filename[], size_t initialSize)
     : Buffer(initialSize, true) {
   fd = creat(filename, 0664);
   if (fd < 0) throw Ex1(Errcode::PERMISSION_DENIED);
+  isSockBuf = false;
 }
 
 /*
@@ -37,6 +39,7 @@ Buffer::Buffer(const char filename[], size_t initialSize, const char*)
   if (fd < 0) throw Ex1(Errcode::PERMISSION_DENIED);
   readNext();
   writing = false;
+  isSockBuf = false;
 }
 
 void Buffer::readNext() {
