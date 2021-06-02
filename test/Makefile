@@ -10,9 +10,9 @@ include ${GRAIL}/proj/settings.mk
 
 
 all: $(BIN)/testWidgets \
- $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
- $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
- $(BIN)/LuisaDemo
+ # $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
+ # $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
+ # $(BIN)/LuisaDemo
 
 #$(BIN)/testText 
 #$(BIN)/testDrawing
@@ -58,7 +58,7 @@ $(BIN)/testDrawing3D: testDrawing3D.cc $(LIBGRAIL)
 
 $(BIN)/testDemo3D: testDemo3D.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
-	
+
 $(BIN)/QuentinDemo: QuentinDemo.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)	
 
@@ -75,20 +75,17 @@ $(BIN)/testStyledMultishape: testStyledMultishape.cc $(LIBGRAIL)
 $(BIN)/LuisaDemo: LuisaDemo.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
 
-$(BIN)/testWidgets: testWidgets.o $(opengl)/ButtonWidget.o $(opengl)/GraphWidget.o $(opengl)/BarChartWidget.o $(LIBGRAIL) 
+$(BIN)/testWidgets: testWidgets.cc $(LIBGRAIL)
 	$(CXX) $^  -o $@ $(LIBS)
 
-testWidgets.o: testWidgets.cc
-	$(CXX) -c $<
+# $(opengl)/ButtonWidget.o: $(opengl)/ButtonWidget.cc
+# 	$(CXX) -c $< -o $@
 
-$(opengl)/ButtonWidget.o: $(opengl)/ButtonWidget.cc
-	$(CXX) -c $< -o $@
+# $(opengl)/LineGraphWidget.o: $(opengl)/LineGraphWidget.cc
+# 	$(CXX) -c $< -o $@
 
-$(opengl)/GraphWidget.o: $(opengl)/GraphWidget.cc
-	$(CXX) -c $< -o $@
-
-$(opengl)/BarChartWidget.o: $(opengl)/BarChartWidget.cc $(opengl)/BarChartWidget.hh $(opengl)/StyledMultiShape2D.hh $(opengl)/MultiText.hh
-	$(CXX) -c $< -o $@
+# $(opengl)/BarChartWidget.o: $(opengl)/BarChartWidget.cc $(opengl)/BarChartWidget.hh $(opengl)/StyledMultiShape2D.hh $(opengl)/MultiText.hh
+# 	$(CXX) -c $< -o $@
 
 $(BIN)/testHeatMap: testHeatMap.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)

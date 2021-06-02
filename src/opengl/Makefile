@@ -34,6 +34,8 @@ $(out)/Image.o \
 $(out)/MultiShape.o $(out)/StyledMultiShape2D.o $(out)/MultiShape2D.o \
 $(out)/MultiText.o $(out)/MultiShape3D.o $(out)/TextureArray.o \
 $(out)/Document.o $(out)/DocView.o \
+$(out)/LineGraphWidget.o $(out)/BarChartWidget.o \
+$(out)/ButtonWidget.o $(out)/Scale.o
 
 # heatmap does not yet work, so commented out until Dov or someone else gets it going. But it's VERY COOL!
 #$(out)/HeatMap.o
@@ -145,6 +147,17 @@ $(out)/Document.o: Document.cc Document.hh
 $(out)/DocView.o: DocView.cc DocView.hh
 	$(COMP) $< -o $@
 
+$(out)/LineGraphWidget.o: LineGraphWidget.cc LineGraphWidget.hh
+	$(COMP) $< -o $@
+
+$(out)/BarChartWidget.o: BarChartWidget.cc BarChartWidget.hh
+	$(COMP) $< -o $@
+
+$(out)/ButtonWidget.o: ButtonWidget.cc ButtonWidget.hh
+	$(COMP) $< -o $@
+
+$(out)/Scale.o: Scale.cc Scale.hh
+	$(COMP) $< -o $@
 ###--------------------------------------------------------------------------
 $(out)/HeatMap.o: HeatMap.cc HeatMap.hh 
 	$(COMP) $< -o $@
