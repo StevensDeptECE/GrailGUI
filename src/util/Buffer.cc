@@ -282,14 +282,15 @@ void Buffer::append(const char* v, uint32_t len) {
 void Buffer::displayText(ostream& s) const { s << buffer << '\n'; }
 
 void Buffer::displayRawRead() const {
-  for (uint32_t i = 0; i < availSize; ++i) cout << uint8_t(buffer[i]) << ' ';
+  uint32_t used = size - availSize;  // the number of bytes used
+  for (uint32_t i = 0; i < used; ++i) cout << uint32_t(p[i]) << ' ';
   cout << '\n';
 }
 
 void Buffer::displayRaw() const {
   uint32_t used = size - availSize;  // the number of bytes used
   cout << hex << "\n";
-  for (uint32_t i = 0; i < used; ++i) cout << (uint8_t)buffer[i] << ' ';
+  for (uint32_t i = 0; i < used; ++i) cout << uint32_t(p[i]) << ' ';
   cout << '\n';
   for (uint32_t i = 0; i < used; ++i) {
     if (buffer[i] >= ' ' && buffer[i] <= 127)
