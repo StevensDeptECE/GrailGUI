@@ -90,5 +90,5 @@ class TestWidgets : public GLWin {
 };
 
 int main(int argc, char* argv[]) {
-  return GLWin::init(new TestWidgets(), 600, 600);
+  return GLWin::init(new TestWidgets(), 1024, 600);
 }
