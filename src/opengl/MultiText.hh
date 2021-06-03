@@ -1,22 +1,25 @@
 #pragma once
 #include "opengl/GLWin.hh"
-#include "opengl/Shape.hh"
 #include "opengl/GLWinFonts.hh"
+#include "opengl/Shape.hh"
 class Style;
 
 class MultiText : public Shape {
-private:
+ protected:
   uint32_t textureId;
   const Style* style;
   std::vector<float> vert;
-  void addPoint(float x, float y, float u, float v){
-    vert.push_back(x);  vert.push_back(y);
-    vert.push_back(u);  vert.push_back(v);
+  void addPoint(float x, float y, float u, float v) {
+    vert.push_back(x);
+    vert.push_back(y);
+    vert.push_back(u);
+    vert.push_back(v);
   }
-  float velX = 1,velY=1;
-public:
-  MultiText(Canvas* c, const Style * style);
-  MultiText(Canvas* c, const Style * style, uint32_t size);
+  float velX = 1, velY = 1;
+
+ public:
+  MultiText(Canvas* c, const Style* style);
+  MultiText(Canvas* c, const Style* style, uint32_t size);
   ~MultiText();
   void addChar(float x, float y, const Font* f, const unsigned char c);
   // a 16-bit unicode character like Java
@@ -32,12 +35,15 @@ public:
   void add(float x, float y, const Font* f, float v);
   void add(float x, float y, double v);
   void add(float x, float y, const Font* f, double v);
-  void checkAdd(float& x, float& y, const Font* f, const unsigned char c, float endMargin, float rowSize, float startOverMargin);
-  uint32_t findFirstOverMargin(float x, const Font* f, const char s[], uint32_t len, float rightMargin);
-  void  clear() {
-    vert.clear();
-
-  }
+  void add(float x, float y, const Font* f, double v, int fieldWidth,
+           int precision);
+  void addCentered(float x, float y, float w, float h, const Font* f,
+                   const char s[], uint32_t len);
+  void checkAdd(float& x, float& y, const Font* f, const unsigned char c,
+                float endMargin, float rowSize, float startOverMargin);
+  uint32_t findFirstOverMargin(float x, const Font* f, const char s[],
+                               uint32_t len, float rightMargin);
+  void clear() { vert.clear(); }
   void init() override;
 
   void process_input(Inputs* in, float dt) {

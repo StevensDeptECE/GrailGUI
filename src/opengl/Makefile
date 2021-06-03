@@ -35,7 +35,9 @@ $(out)/MultiShape.o $(out)/StyledMultiShape2D.o $(out)/MultiShape2D.o \
 $(out)/MultiText.o $(out)/MultiShape3D.o $(out)/TextureArray.o \
 $(out)/Document.o $(out)/DocView.o \
 $(out)/LineGraphWidget.o $(out)/BarChartWidget.o \
-$(out)/ButtonWidget.o $(out)/Scale.o
+$(out)/ButtonWidget.o $(out)/Scale.o \
+$(out)/AngledMultiText.o
+#$(out)/AxesWidget.o $(out)/AxisWidget.o \
 
 # heatmap does not yet work, so commented out until Dov or someone else gets it going. But it's VERY COOL!
 #$(out)/HeatMap.o
@@ -141,6 +143,9 @@ $(out)/MultiShape3D.o: MultiShape3D.cc MultiShape3D.hh
 $(out)/MultiText.o: MultiText.cc MultiText.hh
 	$(COMP) $< -o $@
 
+$(out)/AngledMultiText.o: AngledMultiText.cc AngledMultiText.hh
+	$(COMP) $< -o $@
+
 $(out)/Document.o: Document.cc Document.hh
 	$(COMP) $< -o $@
 
@@ -158,6 +163,14 @@ $(out)/ButtonWidget.o: ButtonWidget.cc ButtonWidget.hh
 
 $(out)/Scale.o: Scale.cc Scale.hh
 	$(COMP) $< -o $@
+
+# $(out)/AxesWidget.o: AxesWidget.cc AxesWidget.hh
+# 	$(COMP) $< -o $@
+
+# $(out)/AxisWidget.o: AxisWidget.cc AxisWidget.hh
+# 	$(COMP) $< -o $@
+
+
 ###--------------------------------------------------------------------------
 $(out)/HeatMap.o: HeatMap.cc HeatMap.hh 
 	$(COMP) $< -o $@
