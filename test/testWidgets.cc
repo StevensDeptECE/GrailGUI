@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "opengl/AngledMultiText.hh"
-#include "opengl/AxesWidget.hh"
+//#include "opengl/AxesWidget.hh"
 #include "opengl/BarChartWidget.hh"
 #include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
