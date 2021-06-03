@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include<vector>
+#include <algorithm>
 using namespace std;
 using namespace grail;
 
@@ -15,35 +16,6 @@ public:
 
 #define FILENAME "output2.txt"
 #define COLS 2 // Number of columns in data
-
-vector < vector <float> > array;
-
-void csvRead(){
-  // Variable declarations
-	fstream file;
-	//vector < vector <float> > array; // 2d array as a vector of vectors
-	vector <float> rowVector(COLS); // vector to add into 'array' (represents a row)
-	int row = 0; // Row counter
-
-	// Read file
-	file.open(FILENAME, ios::in); // Open file
-	if (file.is_open()) { // If file has correctly opened...
-		// Output debug message
-		cout << "File correctly opened" << endl;
-
-		// Dynamically store data into array
-		while (file.good()) { // ... and while there are no errors,
-			array.push_back(rowVector); // add a new row,
-			for (int col=0; col<COLS; col++) {
-				file >> array[row][col]; // fill the row with col elements
-			}
-			row++; // Keep track of actual row 
-		}
-	}
-	else cout << "Unable to open file" << endl;
-	file.close();
-}
-
 
 
 	void init() {
@@ -159,15 +131,10 @@ gui->drawLine(w*37,w*103.001,w*36.993,w*102.041,black);
 
 gui->drawLine(w*37,w*103.001,w*36.5,w*103.001,black);
 
-
-//csvRead();
-
 // Variable declarations
 	fstream file;
-	vector < vector <float> > array; // 2d array as a vector of vectors
-	vector <float> rowVector(COLS); // vector to add into 'array' (represents a row)
-	int row = 0; // Row counter
-  float a = 1000;
+	vector <float> xVals; // 2d array as a vector of vectors
+	vector <float> yVals;
 
 	// Read file
 	file.open(FILENAME, ios::in); // Open file
@@ -176,33 +143,43 @@ gui->drawLine(w*37,w*103.001,w*36.5,w*103.001,black);
 		cout << "File correctly opened" << endl;
 
 		// Dynamically store data into array
-		while (row<10000) { // ... and while there are no errors,
-			array.push_back(rowVector); // add a new row,
-			for (int col=0; col<COLS; col++) {
+		while (file.peek()!=EOF) { // ... and while there are no errors,
         string s;
+				//cout << s << endl;
         getline(file,s,',');
-				array[row][col]=((double)atof(s.c_str()))/a; // fill the row with col elements
-			}
-			row++; // Keep track of actual row 
+				xVals.push_back(atof(s.c_str())); // fill the row with col element
+        getline(file,s,',');
+				yVals.push_back(atof(s.c_str()));
+				//cout << array[row][col] << endl << endl;
 		}
 	}
 	else cout << "Unable to open file" << endl;
 	file.close();
 
+	int a = 1024;
 
-cout << array[0].size() << endl;
+	double xMax = *max_element(xVals.begin(), xVals.end());
+	double yMax = *max_element(yVals.begin(), yVals.end());
 
-gui->drawLine(array[0][0]/a,array[0][1]/a,array[1][0]/a,array[1][1]/a,black);
 
-for (int i = 0; i < array.size(); i++)
+	int start = 1000;
+
+	yVals[start] = 1024-a*((yVals[0]/yMax))+500;
+	xVals[start] = a*((xVals[0]/xMax));
+
+for (int i = start+1; i < 6000; i++)
 {
-    for (int j = 0; j < array[i].size(); j++)
-    {
-        cout << array[i][j] << endl;
-    }
+	yVals[i] = 1024-a*((yVals[i]/yMax))+500;
+	xVals[i] = a*((xVals[i]/xMax));
+
+	if(yVals[i] < 1024){
+        cout << xVals[i] << " " <<yVals[i] << endl;
+				cout << xVals[i+1] << " " <<yVals[i+1] << endl << endl;
+        gui->drawLine(xVals[i-1],yVals[i-1],xVals[i],yVals[i],black);
+	}
 }
 
-
+//cout << c->getWidth() << endl << c->getHeight();
 
 //gui->drawLine(borders[1][1],borders[1][2],borders[2][1],borders[2][2],black);
 
@@ -210,7 +187,7 @@ for (int i = 0; i < array.size(); i++)
   //char s[3] = to_string(borders[0][0]);
 
 
-    const char buttonName[] = "beegus";
+    const char buttonName[] = "button";
     MultiText* guiText = c->getGuiText();
     //guiText->add(300,100,s,1);
     //ButtonWidget b(gui, guiText, "hello", 0, 0, 100, 50);
