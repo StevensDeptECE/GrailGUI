@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include<vector>
 using namespace std;
 using namespace grail;
 
@@ -12,14 +13,16 @@ public:
 	TestMultiShape() :
 		GLWin(0x000000, 0xCCCCCC, "Test StyledMultiShape") {}
 
-#define FILENAME "StateBorders.csv"
-#define COLS 3 // Number of columns in data
+#define FILENAME "output2.txt"
+#define COLS 2 // Number of columns in data
 
-vector<vector<int>> csvRead(){
+vector < vector <float> > array;
+
+void csvRead(){
   // Variable declarations
 	fstream file;
-	vector < vector <int> > array; // 2d array as a vector of vectors
-	vector <int> rowVector(COLS); // vector to add into 'array' (represents a row)
+	//vector < vector <float> > array; // 2d array as a vector of vectors
+	vector <float> rowVector(COLS); // vector to add into 'array' (represents a row)
 	int row = 0; // Row counter
 
 	// Read file
@@ -39,7 +42,6 @@ vector<vector<int>> csvRead(){
 	}
 	else cout << "Unable to open file" << endl;
 	file.close();
-  return array;
 }
 
 
@@ -158,13 +160,45 @@ gui->drawLine(w*37,w*103.001,w*36.993,w*102.041,black);
 gui->drawLine(w*37,w*103.001,w*36.5,w*103.001,black);
 
 
-vector < vector <int> > borders = csvRead();
+//csvRead();
 
-for (int i = 0; i < borders.size(); i++)
+// Variable declarations
+	fstream file;
+	vector < vector <float> > array; // 2d array as a vector of vectors
+	vector <float> rowVector(COLS); // vector to add into 'array' (represents a row)
+	int row = 0; // Row counter
+  float a = 1000;
+
+	// Read file
+	file.open(FILENAME, ios::in); // Open file
+	if (file.is_open()) { // If file has correctly opened...
+		// Output debug message
+		cout << "File correctly opened" << endl;
+
+		// Dynamically store data into array
+		while (row<10000) { // ... and while there are no errors,
+			array.push_back(rowVector); // add a new row,
+			for (int col=0; col<COLS; col++) {
+        string s;
+        getline(file,s,',');
+				array[row][col]=((double)atof(s.c_str()))/a; // fill the row with col elements
+			}
+			row++; // Keep track of actual row 
+		}
+	}
+	else cout << "Unable to open file" << endl;
+	file.close();
+
+
+cout << array[0].size() << endl;
+
+gui->drawLine(array[0][0]/a,array[0][1]/a,array[1][0]/a,array[1][1]/a,black);
+
+for (int i = 0; i < array.size(); i++)
 {
-    for (int j = 0; j < borders[i].size(); j++)
+    for (int j = 0; j < array[i].size(); j++)
     {
-        cout << borders[i][j];
+        cout << array[i][j] << endl;
     }
 }
 
