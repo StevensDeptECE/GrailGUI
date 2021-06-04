@@ -17,7 +17,7 @@
 
 1. Install Dependencies: `sudo apt install make libglfw3-dev libfreetype-dev flex bison`
 
-2. Refer to step 4 of [Getting Set up - Windows](##getting-set-up-windows) to set up the environment variables.
+2. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to set up the environment variables.
 
 ## Getting Set Up - Arch-Based Linux
 
@@ -25,7 +25,7 @@
 
     - If you are using Wayland, there install `glfw-wayland` instead of `glfw-x11`. Wayland support is currently unconfirmed.
   
-2. Refer to step 4 of [Getting Set up - Windows](##-getting-set-up---windows) to set up the environment variables.
+2. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to set up the environment variables.
 
 ## Compiling
 

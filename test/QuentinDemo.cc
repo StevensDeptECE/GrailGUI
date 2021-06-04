@@ -1,9 +1,6 @@
 #include "opengl/GrailGUI.hh"
 #include"opengl/ButtonWidget.hh"
-//#include "pch.h"
 #include <iostream>
-#include <fstream>
-#include <string>
 using namespace std;
 using namespace grail;
 
@@ -11,36 +8,6 @@ class TestMultiShape : public GLWin {
 public:
 	TestMultiShape() :
 		GLWin(0x000000, 0xCCCCCC, "Test StyledMultiShape") {}
-
-#define FILENAME "StateBorders.csv"
-#define COLS 3 // Number of columns in data
-
-vector<vector<int>> csvRead(){
-  // Variable declarations
-	fstream file;
-	vector < vector <int> > array; // 2d array as a vector of vectors
-	vector <int> rowVector(COLS); // vector to add into 'array' (represents a row)
-	int row = 0; // Row counter
-
-	// Read file
-	file.open(FILENAME, ios::in); // Open file
-	if (file.is_open()) { // If file has correctly opened...
-		// Output debug message
-		cout << "File correctly opened" << endl;
-
-		// Dynamically store data into array
-		while (file.good()) { // ... and while there are no errors,
-			array.push_back(rowVector); // add a new row,
-			for (int col=0; col<COLS; col++) {
-				file >> array[row][col]; // fill the row with col elements
-			}
-			row++; // Keep track of actual row 
-		}
-	}
-	else cout << "Unable to open file" << endl;
-	file.close();
-  return array;
-}
 
 
 
@@ -158,28 +125,12 @@ gui->drawLine(w*37,w*103.001,w*36.993,w*102.041,black);
 gui->drawLine(w*37,w*103.001,w*36.5,w*103.001,black);
 
 
-vector < vector <int> > borders = csvRead();
-
-for (int i = 0; i < borders.size(); i++)
-{
-    for (int j = 0; j < borders[i].size(); j++)
-    {
-        cout << borders[i][j];
-    }
-}
 
 
-
-//gui->drawLine(borders[1][1],borders[1][2],borders[2][1],borders[2][2],black);
-
-
-  //char s[3] = to_string(borders[0][0]);
-
-
-    const char buttonName[] = "beegus";
+    const char buttonName[] = "button";
     MultiText* guiText = c->getGuiText();
     //guiText->add(300,100,s,1);
-    //ButtonWidget b(gui, guiText, "hello", 0, 0, 100, 50);
+    ButtonWidget b(gui, guiText, "hello", 0, 0, 100, 50);
 	}
 };
 

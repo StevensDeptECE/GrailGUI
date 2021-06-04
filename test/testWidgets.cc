@@ -1,12 +1,19 @@
+#define _USE_MATH_DEFINES
+
+#include <cmath>
 #include <string>
 #include <vector>
 
+#include "opengl/AngledMultiText.hh"
+//#include "opengl/AxesWidget.hh"
 #include "opengl/BarChartWidget.hh"
 #include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/GraphWidget.hh"
 #include "opengl/LineGraphWidget.hh"
 #include "opengl/MultiText.hh"
+#include "opengl/ScrollbarWidget.hh"
+#include "opengl/util/Transformation.hh"
 
 using namespace std;
 using namespace grail;
@@ -73,6 +80,43 @@ class TestWidgets : public GLWin {
     chart.init();
   }
 
+  void testScrollBar(StyledMultiShape2D *gui, MultiText *guiText) {
+    const uint32_t scrollBarWidth = 50;
+    ScrollbarWidget scrollBar(gui, guiText, getWidth() - scrollBarWidth, 0,
+                              scrollBarWidth, getHeight());
+    scrollBar.init();
+  }
+
+  void testAngleText(StyledMultiShape2D *gui, MultiText *guiText, Canvas *c,
+                     const Style *s) {
+    const char thing[] = "hello world";
+    guiText->add(0, 50, s->f, thing, strlen(thing));
+    AngledMultiText *am =
+        c->addLayer(new AngledMultiText(c, s, M_PI / 4, 20, 500));
+    am->add(0, 0, s->f, thing, strlen(thing));
+  }
+
+#if 0
+  void testLinearAxesWidget(StyledMultiShape2D *gui, MultiText *guiText,
+                            const Style *style) {
+    LinearAxesWidget axes(gui, guiText, 100, 100, 400, 400);
+    // axes.setBounds(0, 50, 0, 50);
+    // axes.setQuadrant(Quadrant::Q1);
+    // axes.setBounds(-50, 0, 0, 50);
+    // axes.setQuadrant(Quadrant::Q2);
+    // axes.setBounds(-50, 0, -50, 0);
+    // axes.setQuadrant(Quadrant::Q3);
+    // axes.setBounds(0, 50, -50, 0);
+    // axes.setQuadrant(Quadrant::Q4);
+    axes.setBounds(-50, 50, -50, 50);
+    axes.setQuadrant(Quadrant::All);
+    axes.setIntervals(15, 15);
+    axes.setYTickStyle(style);
+    axes.setXTickStyle(style);
+    axes.init();
+  }
+#endif
+
   void init() {
     const Style *s =
         new Style("TIMES", 24, 1, 0, 0, 0,  // black background (unused)
@@ -85,9 +129,14 @@ class TestWidgets : public GLWin {
 
     MultiText *guiText = c->addLayer(new MultiText(c, s));
 
+
+    const Style *graphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
     testBarChart(gui, guiText);
     testButton(gui, guiText);
     testLineGraphLinear(gui, guiText);
+    testLineGraphLog(gui, guiText);
+    //testLinearAxesWidget(gui, guiText, graphStyle);
+    testScrollBar(gui, guiText);
   }
 };
 

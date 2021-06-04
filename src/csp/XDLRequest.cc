@@ -109,6 +109,7 @@ void XDLRequest::addPage(const char filename[]) {
 	int fh = open(filename, binFlags);
   if (fh < 0) {
 		cerr << "Error opening file " << filename << '\n';
+    throw Ex1(Errcode::FILE_NOT_FOUND);  
 	}
 	struct stat s;
 	fstat(fh, &s);
