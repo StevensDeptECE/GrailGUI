@@ -1,11 +1,6 @@
 #include "opengl/GrailGUI.hh"
 #include"opengl/ButtonWidget.hh"
-//#include "pch.h"
 #include <iostream>
-#include <fstream>
-#include <string>
-#include<vector>
-#include <algorithm>
 using namespace std;
 using namespace grail;
 
@@ -14,8 +9,6 @@ public:
 	TestMultiShape() :
 		GLWin(0x000000, 0xCCCCCC, "Test StyledMultiShape") {}
 
-#define FILENAME "output2.txt"
-#define COLS 2 // Number of columns in data
 
 
 	void init() {
@@ -131,66 +124,13 @@ gui->drawLine(w*37,w*103.001,w*36.993,w*102.041,black);
 
 gui->drawLine(w*37,w*103.001,w*36.5,w*103.001,black);
 
-// Variable declarations
-	fstream file;
-	vector <float> xVals; // 2d array as a vector of vectors
-	vector <float> yVals;
 
-	// Read file
-	file.open(FILENAME, ios::in); // Open file
-	if (file.is_open()) { // If file has correctly opened...
-		// Output debug message
-		cout << "File correctly opened" << endl;
-
-		// Dynamically store data into array
-		while (file.peek()!=EOF) { // ... and while there are no errors,
-        string s;
-				//cout << s << endl;
-        getline(file,s,',');
-				xVals.push_back(atof(s.c_str())); // fill the row with col element
-        getline(file,s,',');
-				yVals.push_back(atof(s.c_str()));
-				//cout << array[row][col] << endl << endl;
-		}
-	}
-	else cout << "Unable to open file" << endl;
-	file.close();
-
-	int a = 1024;
-
-	double xMax = *max_element(xVals.begin(), xVals.end());
-	double yMax = *max_element(yVals.begin(), yVals.end());
-
-
-	int start = 1000;
-
-	yVals[start] = 1024-a*((yVals[0]/yMax))+500;
-	xVals[start] = a*((xVals[0]/xMax));
-
-for (int i = start+1; i < 6000; i++)
-{
-	yVals[i] = 1024-a*((yVals[i]/yMax))+500;
-	xVals[i] = a*((xVals[i]/xMax));
-
-	if(yVals[i] < 1024){
-        cout << xVals[i] << " " <<yVals[i] << endl;
-				cout << xVals[i+1] << " " <<yVals[i+1] << endl << endl;
-        gui->drawLine(xVals[i-1],yVals[i-1],xVals[i],yVals[i],black);
-	}
-}
-
-//cout << c->getWidth() << endl << c->getHeight();
-
-//gui->drawLine(borders[1][1],borders[1][2],borders[2][1],borders[2][2],black);
-
-
-  //char s[3] = to_string(borders[0][0]);
 
 
     const char buttonName[] = "button";
     MultiText* guiText = c->getGuiText();
     //guiText->add(300,100,s,1);
-    //ButtonWidget b(gui, guiText, "hello", 0, 0, 100, 50);
+    ButtonWidget b(gui, guiText, "hello", 0, 0, 100, 50);
 	}
 };
 

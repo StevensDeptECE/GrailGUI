@@ -11,7 +11,7 @@ include ${GRAIL}/proj/settings.mk
 all: $(BIN)/testWidgets \
   $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
   $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
-  $(BIN)/LuisaDemo $(BIN)/QuentinDemo
+  $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo
 
 #$(BIN)/testText 
 #$(BIN)/testDrawing
@@ -60,6 +60,10 @@ $(BIN)/testDemo3D: testDemo3D.cc $(LIBGRAIL)
 
 $(BIN)/QuentinDemo: QuentinDemo.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)	
+
+$(BIN)/MapDemo: MapDemo.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)	
+
 
 $(BIN)/SolarSystem: SolarSystem.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
