@@ -34,10 +34,12 @@ $(out)/Image.o \
 $(out)/MultiShape.o $(out)/StyledMultiShape2D.o $(out)/MultiShape2D.o \
 $(out)/MultiText.o $(out)/MultiShape3D.o $(out)/TextureArray.o \
 $(out)/Document.o $(out)/DocView.o \
+$(out)/Shapefile.o $(out)/ESRIShape.o $(out)/ESRIPolygon.o\
 $(out)/LineGraphWidget.o $(out)/BarChartWidget.o \
 $(out)/ButtonWidget.o $(out)/Scale.o \
 $(out)/AngledMultiText.o \
 $(out)/ScrollbarWidget.o \
+
 #$(out)/AxesWidget.o $(out)/AxisWidget.o \
 
 # heatmap does not yet work, so commented out until Dov or someone else gets it going. But it's VERY COOL!
@@ -153,6 +155,15 @@ $(out)/Document.o: Document.cc Document.hh
 	$(COMP) $< -o $@
 
 $(out)/DocView.o: DocView.cc DocView.hh
+	$(COMP) $< -o $@
+
+$(out)/ESRIPolygon.o: ESRIPolygon.cc Shapefile.hh
+	$(COMP) $< -o $@
+
+$(out)/ESRIShape.o: ESRIShape.cc Shapefile.hh
+	$(COMP) $< -o $@
+	
+$(out)/Shapefile.o: Shapefile.cc Shapefile.hh
 	$(COMP) $< -o $@
 
 $(out)/LineGraphWidget.o: LineGraphWidget.cc LineGraphWidget.hh
