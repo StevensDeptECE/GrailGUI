@@ -9,10 +9,9 @@ include ${GRAIL}/proj/settings.mk
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
 all: $(BIN)/testWidgets \
-# $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
- $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
- $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo
-
+  $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
+  $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
+  $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/TestESRIPolygon
 
 #$(BIN)/testText 
 #$(BIN)/testDrawing
@@ -65,6 +64,8 @@ $(BIN)/QuentinDemo: QuentinDemo.cc $(LIBGRAIL)
 $(BIN)/MapDemo: MapDemo.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)	
 
+$(BIN)/TestESRIPolygon: TestESRIPolygon.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)	
 
 $(BIN)/SolarSystem: SolarSystem.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
