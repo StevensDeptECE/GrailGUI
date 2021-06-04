@@ -13,9 +13,19 @@
 
  4. Edit `~/.bashrc` to include `export GRAIL=/path/to/GRAIL` and `export PATH=$PATH:$GRAIL/bin` on the following line. `source ~/.bashrc` the first time.
 
-## Getting Set Up - Linux
+## Getting Set Up - Ubuntu
 
-1. Install Dependencies: `sudo apt install libglfw3-dev libfreetype-dev flex bison`
+1. Install Dependencies: `sudo apt install make libglfw3-dev libfreetype-dev flex bison`
+
+2. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to set up the environment variables.
+
+## Getting Set Up - Arch-Based Linux
+
+1. Install Dependencies: `sudo pacman -S glfw-x11 freetype2 base-devel`
+
+    - If you are using Wayland, there install `glfw-wayland` instead of `glfw-x11`. Wayland support is currently unconfirmed.
+  
+2. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to set up the environment variables.
 
 ## Compiling
 

@@ -8,8 +8,11 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all: $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo $(BIN)/testWidgets \
- $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook
+all: $(BIN)/testWidgets \
+  $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
+  $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
+  $(BIN)/LuisaDemo $(BIN)/QuentinDemo
+
 #$(BIN)/testText 
 #$(BIN)/testDrawing
 #$(BIN)/testGraphViewer
@@ -55,6 +58,9 @@ $(BIN)/testDrawing3D: testDrawing3D.cc $(LIBGRAIL)
 $(BIN)/testDemo3D: testDemo3D.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
 
+$(BIN)/QuentinDemo: QuentinDemo.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)	
+
 $(BIN)/SolarSystem: SolarSystem.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
 
@@ -64,8 +70,21 @@ $(BIN)/globe: Globe.cc $(LIBGRAIL)
 $(BIN)/testStyledMultishape: testStyledMultishape.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
 
-$(BIN)/testWidgets: testWidgets.cc $(opengl)/ButtonWidget.cc $(opengl)/GraphWidget.cc $(LIBGRAIL)
+
+$(BIN)/LuisaDemo: LuisaDemo.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)
+
+$(BIN)/testWidgets: testWidgets.cc $(LIBGRAIL)
 	$(CXX) $^  -o $@ $(LIBS)
+
+# $(opengl)/ButtonWidget.o: $(opengl)/ButtonWidget.cc
+# 	$(CXX) -c $< -o $@
+
+# $(opengl)/LineGraphWidget.o: $(opengl)/LineGraphWidget.cc
+# 	$(CXX) -c $< -o $@
+
+# $(opengl)/BarChartWidget.o: $(opengl)/BarChartWidget.cc $(opengl)/BarChartWidget.hh $(opengl)/StyledMultiShape2D.hh $(opengl)/MultiText.hh
+# 	$(CXX) -c $< -o $@
 
 $(BIN)/testHeatMap: testHeatMap.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
@@ -127,6 +146,7 @@ $(BIN)/testTable: testTable.cc $(LIBGRAIL)
 
 $(BIN)/testJulian: testJulian.cc $(LIBGRAIL)
 	$(CXX) $^  -o $(BIN)/testJulian  $(LIBS)
+
 
 ActionListener.o: ActionListener.hh ActionListener.cc
 	$(CXX) -c ActionListener.cc

@@ -19,6 +19,7 @@ $(cspout)/Socket.o				\
 $(cspout)/IPV4Socket.o			\
 $(cspout)/XDLRequest.o			\
 $(cspout)/Request.o			\
+$(cspout)/SocketIO.o 		\
 $(xdlout)/XDLCompiler.o			\
 $(xdlout)/SymbolTable.o			\
 $(xdlout)/std.o				\
@@ -33,7 +34,11 @@ $(out)/Image.o \
 $(out)/MultiShape.o $(out)/StyledMultiShape2D.o $(out)/MultiShape2D.o \
 $(out)/MultiText.o $(out)/MultiShape3D.o $(out)/TextureArray.o \
 $(out)/Document.o $(out)/DocView.o \
-$(out)/ScrollbarWidget.o 
+$(out)/LineGraphWidget.o $(out)/BarChartWidget.o \
+$(out)/ButtonWidget.o $(out)/Scale.o \
+$(out)/AngledMultiText.o \
+$(out)/ScrollbarWidget.o \
+#$(out)/AxesWidget.o $(out)/AxisWidget.o \
 
 # heatmap does not yet work, so commented out until Dov or someone else gets it going. But it's VERY COOL!
 #$(out)/HeatMap.o
@@ -73,6 +78,9 @@ $(cspout)/Socket.o: $(csp)/Socket.cc $(csp)/Socket.hh $(util)/Buffer.hh
 	$(COMP) $< -o $@
 
 $(cspout)/IPV4Socket.o: $(csp)/IPV4Socket.cc $(util)/Buffer.hh
+	$(COMP) $< -o $@
+
+$(cspout)/SocketIO.o: $(csp)/SocketIO.cc $(csp)/SocketIO.hh
 	$(COMP) $< -o $@
 
 $(xdlout)/SymbolTable.o: $(xdl)/SymbolTable.cc $(xdl)/SymbolTable.hh
@@ -120,8 +128,7 @@ $(out)/Sector.o: Sector.cc Sector.hh
 $(out)/Rectangle.o: Rectangle.cc Rectangle.hh
 	$(COMP) $< -o $@
 
-$(out)/ScrollbarWidget.o: ScrollbarWidget.cc ScrollbarWidget.hh
-	$(COMP) $< -o $@
+
 
 ### Multishapes:--------------------------------------------------------------
 $(out)/MultiShape.o: MultiShape.cc MultiShape.hh                            
@@ -139,11 +146,36 @@ $(out)/MultiShape3D.o: MultiShape3D.cc MultiShape3D.hh
 $(out)/MultiText.o: MultiText.cc MultiText.hh
 	$(COMP) $< -o $@
 
+$(out)/AngledMultiText.o: AngledMultiText.cc AngledMultiText.hh
+	$(COMP) $< -o $@
+
 $(out)/Document.o: Document.cc Document.hh
 	$(COMP) $< -o $@
 
 $(out)/DocView.o: DocView.cc DocView.hh
 	$(COMP) $< -o $@
+
+$(out)/LineGraphWidget.o: LineGraphWidget.cc LineGraphWidget.hh
+	$(COMP) $< -o $@
+
+$(out)/BarChartWidget.o: BarChartWidget.cc BarChartWidget.hh
+	$(COMP) $< -o $@
+
+$(out)/ButtonWidget.o: ButtonWidget.cc ButtonWidget.hh
+	$(COMP) $< -o $@
+
+$(out)/Scale.o: Scale.cc Scale.hh
+	$(COMP) $< -o $@
+
+$(out)/ScrollbarWidget.o: ScrollbarWidget.cc ScrollbarWidget.hh
+	$(COMP) $< -o $@
+
+# $(out)/AxesWidget.o: AxesWidget.cc AxesWidget.hh
+# 	$(COMP) $< -o $@
+
+# $(out)/AxisWidget.o: AxisWidget.cc AxisWidget.hh
+# 	$(COMP) $< -o $@
+
 
 ###--------------------------------------------------------------------------
 $(out)/HeatMap.o: HeatMap.cc HeatMap.hh 
