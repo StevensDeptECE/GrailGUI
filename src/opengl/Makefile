@@ -33,6 +33,7 @@ $(out)/Image.o \
 $(out)/MultiShape.o $(out)/StyledMultiShape2D.o $(out)/MultiShape2D.o \
 $(out)/MultiText.o $(out)/MultiShape3D.o $(out)/TextureArray.o \
 $(out)/Document.o $(out)/DocView.o \
+$(out)/ScrollbarWidget.o 
 
 # heatmap does not yet work, so commented out until Dov or someone else gets it going. But it's VERY COOL!
 #$(out)/HeatMap.o
@@ -117,6 +118,9 @@ $(out)/Sector.o: Sector.cc Sector.hh
 	$(COMP) $< -o $@
 
 $(out)/Rectangle.o: Rectangle.cc Rectangle.hh
+	$(COMP) $< -o $@
+
+$(out)/ScrollbarWidget.o: ScrollbarWidget.cc ScrollbarWidget.hh
 	$(COMP) $< -o $@
 
 ### Multishapes:--------------------------------------------------------------
