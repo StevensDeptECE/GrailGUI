@@ -11,23 +11,22 @@ void BarChartWidget::init() {
   m ->drawRectangle(x, y, w, h, grail::black);
 }
 
-void BarChartWidget::title(const string& s){
+void BarChartWidget::setTitle(const string& s){
   const Font* f = FontFace::get("TIMES", 12, FontFace::BOLD);
     t->add(x, y-10, f , s.c_str(), s.length()); 
 }
 
 /*
   draw the bar chart
-  b = array of heights 
-  size = size of the array 
+  b = vector of heights 
 
 */
-void BarChartWidget::chart(const vector<float>& b, float relativeSpace, 
+void BarChartWidget::chart(const vector<float>& b, 
     const vector<string>& barNames, int rulerInterval){
 
-    float max = *max_element(b.begin(), b.end());
+    yAxis->init(0, max, y+h, -h, rulerInterval);
 
-    float scale = 0.8*h/max;
+    float scale = (1/maxMultiplier)*h/max;
 
     float wBar = w/(b.size() + (relativeSpace * (b.size() + 1)));
     float spaceBetweenBars = relativeSpace * wBar;
@@ -36,28 +35,23 @@ void BarChartWidget::chart(const vector<float>& b, float relativeSpace,
 
     for (int i = 0; i < b.size(); i++){
       float xBar = (i+1)*spaceBetweenBars + i*wBar + x;
-      float hBar = b[i] * scale;
-      float yTopBar = h - hBar + y;
+      float yTopBar = yAxis->transform(b[i]);
 
-      m->fillRectangle(xBar, yTopBar, wBar, hBar, grail::blue);
+      m->fillRectangle(xBar, yTopBar, wBar, y+h-yTopBar, grail::blue);
       t->add(xBar, y+h+20, f , barNames[i].c_str(), barNames[i].length());
     }
 
     float hBar = b[0] * scale;
 
-    int lineCount = 0;
-    int line = 0;
-    float rulerSpace = hBar*rulerInterval/b[0]; 
-    while(line < 1.25*max){
-      m->drawLine(x, y+h-lineCount*rulerSpace, x+10, y+h-lineCount*rulerSpace, grail::black);
-      t->add(x-40, y+h-lineCount*rulerSpace,f, line);
-      lineCount++;
-      line += rulerInterval;
+    for (float yTick = min; yTick <= max; yTick = yAxis->next(yTick)) {
+      float yScreen = yAxis->transform(yTick);
+      m->drawLine(tickStart, yScreen, tickStart + tickSize, yScreen, grail::black);
+      t->add(x-40, yScreen,f, (int)yTick);
     }
-    
+
   }
 
-
+  #if 0
   void BarChartWidget::chartLog(const float b[], int size, float space, const string barNames[], int logBase){
     float wBar;
     float location[size][2];
@@ -125,6 +119,7 @@ void BarChartWidget::chart(const vector<float>& b, float relativeSpace,
       t->add(location[i][0], y+h+20, f , char_array, n); 
     }
   }
+  #endif
 
 
 
