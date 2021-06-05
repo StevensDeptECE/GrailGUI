@@ -40,6 +40,8 @@ $(out)/ButtonWidget.o $(out)/Scale.o \
 $(out)/AngledMultiText.o \
 $(out)/ScrollbarWidget.o \
 
+SHAPEOBJS := $(libshapeout)/dbfopen.o $(libshapeout)/safileio.o \
+$(libshapeout)/sbnsearch.o $(libshapeout)/shpopen.o $(libshapeout)/shptree.o
 #$(out)/AxesWidget.o $(out)/AxisWidget.o \
 
 # heatmap does not yet work, so commented out until Dov or someone else gets it going. But it's VERY COOL!
@@ -47,7 +49,7 @@ $(out)/ScrollbarWidget.o \
 
 #generateErrors
 
-all: init  $(out)/Glad.o $(LIBGRAIL)
+all: init  $(out)/Glad.o $(LIBSHAPE) $(LIBGRAIL) 
 include ${GRAIL}/proj/common.mk
 
 $(out)/Glad.o:
@@ -201,6 +203,24 @@ $(out)/Line.o: Line.cc Line.hh
 $(out)/Shape2D.o: Shape2D.cc Shape2D.hh
 	$(COMP) $< -o $@
 
+
+$(LIBSHAPE): $(SHAPEOBJS)
+	cd $(libshapeout) ; ar rs $(LIBSHAPE) $(SHAPEOBJS)
+
+$(libshapeout)/dbfopen.o: $(libshape)/dbfopen.c $(libshape)/shapefil.h
+	$(COMP) $< -o $@
+
+$(libshapeout)/safileio.o: $(libshape)/safileio.c $(libshape)/shapefil.h
+	$(COMP) $< -o $@
+
+$(libshapeout)/sbnsearch.o: $(libshape)/sbnsearch.c $(libshape)/shapefil.h
+	$(COMP) $< -o $@
+
+$(libshapeout)/shpopen.o: $(libshape)/shpopen.c $(libshape)/shapefil.h
+	$(COMP) $< -o $@
+
+$(libshapeout)/shptree.o: $(libshape)/shptree.c $(libshape)/shapefil.h
+	$(COMP) $< -o $@
 
 #$(out)/WebCursor.o: WebCursor.cc WebCursor.hh
 #	$(COMP) $< -o $@
