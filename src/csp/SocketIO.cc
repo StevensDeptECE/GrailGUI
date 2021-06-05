@@ -9,8 +9,9 @@
 int SocketIO::send(socket_t sckt, const char *buf, int size, int flags) {
   uint32_t bytesSent;
   if ((bytesSent = ::send(sckt, (char *)buf, size, 0)) == err_code) {
-    std::cout << WSAGetLastError() << std::endl;
-    throw Ex1(Errcode::SOCKET_SEND);
+    if (errno != EBADF)
+      throw Ex1(Errcode::SOCKET_SEND);
+    perror("Warning on send(): ");
   }
   return bytesSent;
 }
@@ -18,8 +19,9 @@ int SocketIO::send(socket_t sckt, const char *buf, int size, int flags) {
 int SocketIO::recv(socket_t sckt, const char *buf, int size, int flags) {
   uint32_t bytesRecv;
   if ((bytesRecv = ::recv(sckt, (char *)buf, size, 0)) == err_code) {
-    std::cout << WSAGetLastError() << std::endl;
-    throw Ex1(Errcode::SOCKET_RECV);
+    if (errno != EBADF)
+      throw Ex1(Errcode::SOCKET_SEND);
+    perror("Warning on recv()");
   }
   return bytesRecv;
 }
