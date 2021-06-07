@@ -17,6 +17,13 @@ ESRIPolygon::ESRIPolygon(SHPObject* shapePtr) {
   yPoints = shapePtr->padfY;
 }
 
+ESRIPolygon::~ESRIPolygon() {
+  //free(parts);
+  //free(xPoints);
+  //free(yPoints);
+  free(shapePtr);
+}
+
 std::vector<std::vector<double>> ESRIPolygon::dumpPoints() {
   if (shapePtr == nullptr || xPoints == nullptr || yPoints == nullptr) {
     std::cerr << "Warning: shape pointer or components are null\n";

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "libshape/shapefil.h"
@@ -43,7 +44,7 @@ class ESRIShape {
   int shapeType;
   ESRIShape() : shapePtr(NULL){};
   ESRIShape(SHPObject* shapePtr) : shapePtr(shapePtr), shapeType(shapePtr->nSHPType){};
-  static std::vector<ESRIShape*> convertSHPObjects(std::vector<SHPObject*> shapeObjects);
+  static std::vector<std::unique_ptr<ESRIShape>> convertSHPObjects(std::vector<SHPObject*> shapeObjects);
   virtual std::vector<std::vector<double>> dumpPoints() = 0;
 };
 
@@ -56,6 +57,7 @@ class ESRIPolygon : public ESRIShape {
 
  public:
   ESRIPolygon(SHPObject* shape);
+  ~ESRIPolygon();
   std::vector<std::vector<double>> dumpPoints();
 };
 

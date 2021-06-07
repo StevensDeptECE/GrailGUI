@@ -1,3 +1,5 @@
+#include <unistd.h>
+
 #include <sstream>
 
 #include "opengl/Shapefile.hh"
@@ -7,14 +9,16 @@ using namespace std;
 int main() {
   Shapefile counties = Shapefile("res/us_counties/USA_Counties.shp");
   counties.init();
-  vector<ESRIShape*> shapes = ESRIShape::convertSHPObjects(counties.getShapeVector());
+  vector<unique_ptr<ESRIShape>> shapes = ESRIShape::convertSHPObjects(counties.getShapeVector());
   stringstream buf;
-  for (ESRIShape* shape : shapes) {
-    vector<vector<double>> points = shape->dumpPoints();
-    for (vector<double> i : points) {
+  vector<vector<double>> points;
+  for (auto const& shape : shapes) {
+    points = shape->dumpPoints();
+    for (auto const i : points) {
       buf << "(" << i[0] << ", " << i[1] << ")\n";
     }
     buf << points.size() << "\n";
   }
-  std::cout << buf.rdbuf();
+  cout << buf.rdbuf();
+  sleep(100);
 }

@@ -14,7 +14,8 @@
 #pragma comment(lib, "Mswsock.lib")
 #pragma comment(lib, "AdvApi32.lib")
 
-#define errno WSAGetLastError()
+//Compiler is not a fan of this define
+//#define errno WSAGetLastError()
 #else  // linux
 
 #include <arpa/inet.h>
