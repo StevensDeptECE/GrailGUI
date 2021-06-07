@@ -396,13 +396,14 @@ void StyledMultiShape2D::fillPolygon(const float xy[], uint32_t n, const glm::ve
     solidIndices.push_back(start+1);
 }
 
-void StyledMultiShape2D::drawPolygon(std::vector<float> xy,const glm::vec4& c){
+void StyledMultiShape2D::drawPolygon(std::vector<float>& xy, const glm::vec4& c){
   uint32_t ind = getPointIndex();
 	uint32_t start = ind;
-	uint32_t j = 0;
-	for (uint32_t i = 0; i < xy.size(); i++, j += 2)
-    if(abs(xy[j] - xy[j+2]) < 100 && xy[j] > 0 && xy[j+1] > 0){
-		  addStyledPoint(xy[j], xy[j+1], c);
+  if(xy.size()==0) return;
+	  addStyledPoint(xy[0], xy[1], c);  
+	for (uint32_t i = 2; i < 2; i+=2)
+    if(abs(xy[i] - xy[i-2]) < 100 && xy[i] > 0 && xy[i+1] > 0){
+		  addStyledPoint(xy[i], xy[i+1], c);
     }
 	for (uint32_t i = xy.size(); i > 1; i--) {
 		lineIndices.push_back(ind++);
