@@ -3,6 +3,7 @@
 #include "opengl/Shader.hh"
 #include "opengl/GLMath.hh"
 #include "opengl/Style.hh"
+#include <vector>
 
 uint32_t StyledMultiShape2D::addSector(float x, float y, float xRad,float yRad, float fromAngle, float toAngle, float angleInc, const glm::vec4& c){
   for(float i = fromAngle; i<=toAngle;i+=angleInc){
@@ -393,6 +394,22 @@ void StyledMultiShape2D::fillPolygon(const float xy[], uint32_t n, const glm::ve
     solidIndices.push_back(start);
     solidIndices.push_back(ind);
     solidIndices.push_back(start+1);
+}
+
+void StyledMultiShape2D::drawPolygon(std::vector<float> xy,const glm::vec4& c){
+  uint32_t ind = getPointIndex();
+	uint32_t start = ind;
+	uint32_t j = 0;
+	for (uint32_t i = 0; i < xy.size(); i++, j += 2)
+    if(abs(xy[j] - xy[j+2]) < 100 && xy[j] > 0 && xy[j+1] > 0){
+		  addStyledPoint(xy[j], xy[j+1], c);
+    }
+	for (uint32_t i = xy.size(); i > 1; i--) {
+		lineIndices.push_back(ind++);
+		lineIndices.push_back(ind);
+	}
+	lineIndices.push_back(ind);
+	lineIndices.push_back(start);
 }
 
 void StyledMultiShape2D::drawPolygon(const float xy[], uint32_t n, const glm::vec4& c) {
