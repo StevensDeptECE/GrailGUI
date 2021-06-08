@@ -61,7 +61,7 @@ void StyledMultiShape2D::init() {
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
-  //Desctribe how information is recieved in shaders
+  //Desctribe how information is received in shaders
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
 
@@ -94,7 +94,7 @@ void StyledMultiShape2D::init() {
   //glGenBuffers(1,&cbo);
   //glBindBuffer(GL_ARRAY_BUFFER,cbo);
   //glBufferData(GL_ARRAY_BUFFER,sizeof(GLfloat)*colors.size(),&colors[0],GL_STATIC_DRAW);
-  ////Desctribe how information is recieved in shaders
+  ////Desctribe how information is received in shaders
   //glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,0,(void*)0);
 }
 
@@ -317,7 +317,7 @@ void StyledMultiShape2D::drawLine(float x1, float y1, float x2, float y2, const 
 void StyledMultiShape2D::drawGrid(float x0, float y0, float w, float h,
                                   uint32_t numHoriz, uint32_t numVert,
                                   const glm::vec4& c) {
-  // draw verticle lines
+  // draw vertical lines
   float x = x0;
   const float dx = (w / numVert);
   for (
@@ -336,7 +336,7 @@ void StyledMultiShape2D::fillGrid(float x0, float y0, float w, float h,
                                   const glm::vec4& lc, const glm::vec4& bc) {
   // fill background
   fillRectangle(x0, y0, w, h, bc);
-  // draw verticle lines
+  // draw vertical lines
   float x = x0;
   const float dx = (w / numVert);
   for (

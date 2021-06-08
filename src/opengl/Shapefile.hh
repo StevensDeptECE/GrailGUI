@@ -39,7 +39,7 @@ class ESRIShape {
   int shapeType;
   ESRIShape() : shapePtr(NULL), shapeType(0){};
   ESRIShape(SHPObject* shapePtr) : shapePtr(shapePtr), shapeType(shapePtr->nSHPType){};
-  static std::vector<std::unique_ptr<ESRIShape>> convertSHPObjects(std::vector<SHPObject*> shapeObjects);
+  static std::vector<std::unique_ptr<ESRIShape>> convertSHPObjects(const std::vector<SHPObject*>& shapeObjects);
   virtual std::vector<ESRIPoint> getPoints() = 0;
 };
 
