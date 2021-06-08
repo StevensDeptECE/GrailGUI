@@ -79,7 +79,8 @@ const char* mapname;
 				if(shapeVector[i][j] < 0 || shapeVector[i][j+1] < 0)
 					cout << shapeVector[i][j] << " " << shapeVector[i][j+1] << endl;
 			}
-			gui->drawPolygon(shapeVector[i],black); //TODO: Crashes
+			//gui->drawPolygon(shapeVector[i],black); //TODO: Drawing way too many wrong lines
+			for(int j = 0; j < shapeVector[i].size(); j+=2) cout << shapeVector[i][j] << " " << shapeVector[i][j+1] << endl;
 		}
 
 	}
