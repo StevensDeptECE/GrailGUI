@@ -144,3 +144,8 @@ lib/*
 BIGMAP.png
 errlog
 
+docs/docbook
+docs/html
+docs/latex
+docs/man
+

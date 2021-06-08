@@ -14,13 +14,13 @@ int main() {
   stringstream buf;
 
   // Load points into string buffer
-  vector<vector<double>> points;
+  vector<ESRIPoint> points;
   for (auto const& shape : shapes) {
-    points = shape->dumpPoints();
+    points = shape->getPoints();
     for (auto const i : points) {
-      buf << "(" << i[0] << ", " << i[1] << ")\n";
+      buf << i.x << " " << i.y << "\n";
     }
-    buf << points.size() << "\n";
+    //buf << points.size() << "\n";
   }
 
   // Print String buffer

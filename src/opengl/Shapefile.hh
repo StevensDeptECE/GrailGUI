@@ -24,6 +24,13 @@ class Shapefile {
   double* getMaxBounds();
 };
 
+class ESRIPoint {
+ public:
+  double x, y;
+  ESRIPoint() : x(0), y(0){};
+  ESRIPoint(double x, double y) : x(x), y(y){};
+};
+
 class ESRIShape {
  protected:
   SHPObject* shapePtr;
@@ -50,9 +57,3 @@ class ESRIPolygon : public ESRIShape {
 };
 
 //TODO: Implement classes for individual ESRIShapes?
-
-class ESRIPoint {
- public:
-  double x, y;
-  ESRIPoint(double x, double y) : x(x), y(y){};
-};
