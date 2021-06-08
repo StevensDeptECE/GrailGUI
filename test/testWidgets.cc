@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "opengl/AngledMultiText.hh"
-//#include "opengl/AxesWidget.hh"
 #include "opengl/BarChartWidget.hh"
 #include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
@@ -49,15 +48,13 @@ class TestWidgets : public GLWin {
     chart.chart(y, labels, 50);
     chart.setTitle("Title");
     chart.init();
-  
 
-    vector<string> labels2 = {"bar 1","bar 2","bar 3","bar 4", "bar 5"};
+    vector<string> labels2 = {"bar 1", "bar 2", "bar 3", "bar 4", "bar 5"};
     BarChartWidget chart2(gui, guiText, 550, 50, 400, 200, x);
-    chart2.setAxisScale(new LogScale());    
+    chart2.setAxisScale(new LogScale());
     chart2.chart(x, labels2, 10);
     chart2.setTitle("Title Log graph");
     chart2.init();
-
   }
 
   void testLineGraphLinear(StyledMultiShape2D *gui, MultiText *guiText) {
@@ -129,18 +126,16 @@ class TestWidgets : public GLWin {
 
     MultiText *guiText = c->addLayer(new MultiText(c, s));
 
-
     const Style *graphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
     testBarChart(gui, guiText);
     testButton(gui, guiText);
     testLineGraphLinear(gui, guiText);
     testLineGraphLog(gui, guiText);
-    //testLinearAxesWidget(gui, guiText, graphStyle);
+    // testLinearAxesWidget(gui, guiText, graphStyle);
     testScrollBar(gui, guiText);
   }
 };
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   return GLWin::init(new TestWidgets(), 1024, 600);
-
 }

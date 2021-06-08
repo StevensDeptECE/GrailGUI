@@ -38,7 +38,7 @@ $(out)/LineGraphWidget.o $(out)/BarChartWidget.o \
 $(out)/ButtonWidget.o $(out)/Scale.o \
 $(out)/AngledMultiText.o \
 $(out)/ScrollbarWidget.o \
-#$(out)/AxesWidget.o $(out)/AxisWidget.o \
+$(out)/AxisWidget.o \
 
 # heatmap does not yet work, so commented out until Dov or someone else gets it going. But it's VERY COOL!
 #$(out)/HeatMap.o
@@ -170,11 +170,8 @@ $(out)/Scale.o: Scale.cc Scale.hh
 $(out)/ScrollbarWidget.o: ScrollbarWidget.cc ScrollbarWidget.hh
 	$(COMP) $< -o $@
 
-# $(out)/AxesWidget.o: AxesWidget.cc AxesWidget.hh
-# 	$(COMP) $< -o $@
-
-# $(out)/AxisWidget.o: AxisWidget.cc AxisWidget.hh
-# 	$(COMP) $< -o $@
+$(out)/AxisWidget.o: AxisWidget.cc AxisWidget.hh
+	$(COMP) $< -o $@
 
 
 ###--------------------------------------------------------------------------

@@ -8,10 +8,10 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all: $(BIN)/testWidgets \
-# $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
- $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
- $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo
+all: $(BIN)/testWidgets $(BIN)/testAxis\
+ # $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
+ # $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
+ # $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo
 
 
 #$(BIN)/testText 
@@ -80,6 +80,9 @@ $(BIN)/LuisaDemo: LuisaDemo.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testWidgets: testWidgets.cc $(LIBGRAIL)
+	$(CXX) $^  -o $@ $(LIBS)
+
+$(BIN)/testAxis: testAxis.cc $(LIBGRAIL)
 	$(CXX) $^  -o $@ $(LIBS)
 
 # $(opengl)/ButtonWidget.o: $(opengl)/ButtonWidget.cc
