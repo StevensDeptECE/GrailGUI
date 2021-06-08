@@ -97,7 +97,7 @@ void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t> &glyphMap,
     char character[2] = {(char)c, '\0'};
     cerr << "Failed to load glyph for c=" << c << '\n';
     // throw Ex2(Errcode::FONT_LOAD_GLYPH, glyph);
-    //glyphs.push_back(Glyph(maxWidth, glm::ivec2(0, 0), glm::ivec2(0, 0), 0.0, 0.0, 1.0, bogusBottomRight));
+    glyphs.push_back(Glyph(maxWidth, 0, 0, 0, 0, 0.0, 0.0, 1.0, 1.0));
     //TODO: eliminated this case because it never seems to happen
     return;
   } else {
@@ -105,7 +105,7 @@ void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t> &glyphMap,
     if (FT_Render_Glyph(ftFace->glyph, FT_RENDER_MODE_NORMAL)) {
       std::cerr << "ERROR::FREETYTPE: Failed to Render Glyph" << std::endl;
       //TODO: eliminated this case because it never seems to happen
-      //glyphs.push_back(Glyph(maxWidth, glm::ivec2(0, 0), glm::ivec2(0, 0), 0.0, 0.0, 1.0, bogusBottomRight));
+      glyphs.push_back(Glyph(maxWidth, 0, 0, 0, 0, 0.0, 0.0, 1.0, 1.0));
       return;
     }
   }
