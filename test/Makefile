@@ -12,7 +12,7 @@ all: $(BIN)/testWidgets \
   $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
   $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
   $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/TestESRIPolygon \
-	$(BIN)/ESRIMapDemo
+	$(BIN)/testPolyLines $(BIN)/ESRIMapDemo
 
 #$(BIN)/testText 
 #$(BIN)/testDrawing
@@ -85,6 +85,9 @@ $(BIN)/LuisaDemo: LuisaDemo.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testWidgets: testWidgets.cc $(LIBGRAIL)
+	$(CXX) $^  -o $@ $(LIBS)
+
+$(BIN)/testPolyLines: testPolyLines.cc $(LIBGRAIL)
 	$(CXX) $^  -o $@ $(LIBS)
 
 # $(opengl)/ButtonWidget.o: $(opengl)/ButtonWidget.cc

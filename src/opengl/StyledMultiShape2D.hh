@@ -124,6 +124,8 @@ class StyledMultiShape2D : public MultiShape2D {
   void ellipsePoints(float x, float y, float xRad, float yRad, float angleInc,
                      const glm::vec4& c);
 
+  void dump();
+
  private:
   std::vector<float> colors;
   std::vector<int> startIndices;

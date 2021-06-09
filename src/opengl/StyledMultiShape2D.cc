@@ -1,11 +1,16 @@
 #include "opengl/StyledMultiShape2D.hh"
 
+#include <unistd.h>
+
+#include <iomanip>
 #include <vector>
 
 #include "glad/glad.h"
 #include "opengl/GLMath.hh"
 #include "opengl/Shader.hh"
 #include "opengl/Style.hh"
+
+using namespace std;
 
 uint32_t StyledMultiShape2D::addSector(float x, float y, float xRad, float yRad, float fromAngle, float toAngle, float angleInc, const glm::vec4& c) {
   for (float i = fromAngle; i <= toAngle; i += angleInc) {
@@ -391,20 +396,20 @@ void StyledMultiShape2D::drawPolyline(const float xy[], uint32_t n, const glm::v
 
 void StyledMultiShape2D::fillPolygon(const float xy[], uint32_t n, const glm::vec4& c) {
   uint32_t ind = getPointIndex();
-  uint32_t start = ind;
-  uint32_t j = 0;
+  uint32_t start = ind++;
   double mid_x = 0;
   double mid_y = 0;
-  for (uint32_t i = 0; i < n; i++) {
-    mid_x += xy[2 * i];
-    mid_y += xy[2 * i + 1];
+  for (uint32_t i = 0, j = 0; i < n; i++, j += 2) {
+    mid_x += xy[j];
+    mid_y += xy[j + 1];
   }
   mid_x /= n;
   mid_y /= n;
   addStyledPoint(mid_x, mid_y, c);
-  for (uint32_t i = n; i > 0; i--, j += 2)
+  for (uint32_t i = 0, j = 0; i < n; i++, j += 2) {
     addStyledPoint(xy[j], xy[j + 1], c);
-  for (uint32_t i = 0; i < n; i++) {
+  }
+  for (uint32_t i = 1; i < n; i++) {
     solidIndices.push_back(start);
     solidIndices.push_back(ind++);
     solidIndices.push_back(ind);
@@ -415,26 +420,19 @@ void StyledMultiShape2D::fillPolygon(const float xy[], uint32_t n, const glm::ve
 }
 
 void StyledMultiShape2D::drawPolygon(const std::vector<float>& xy, const glm::vec4& c) {
-  uint32_t ind = getPointIndex();
-  uint32_t start = ind;
   if (xy.size() == 0) return;
-  for (uint32_t i = 0; i < xy.size(); i += 2) {
-    addStyledPoint(xy[i], xy[i + 1], c);
-    lineIndices.push_back(ind++);
-    lineIndices.push_back(ind);
-  }
-  lineIndices.push_back(ind);
-  lineIndices.push_back(start);
+  drawPolygon(&xy[0], xy.size() / 2, c);
 }
 
 void StyledMultiShape2D::drawPolygon(const float xy[], uint32_t n, const glm::vec4& c) {
   uint32_t ind = getPointIndex();
   uint32_t start = ind;
-  for (uint32_t i = 0; i < n; i += 2) {
-    addStyledPoint(xy[i], xy[i + 1], c);
+  for (uint32_t i = 1, j = 0; i < n; i++, j += 2) {
+    addStyledPoint(xy[j], xy[j + 1], c);
     lineIndices.push_back(ind++);
     lineIndices.push_back(ind);
   }
+  addStyledPoint(xy[n * 2 - 2], xy[n * 2 - 1], c);
   lineIndices.push_back(ind);
   lineIndices.push_back(start);
 }
@@ -633,4 +631,39 @@ void StyledMultiShape2D::spline(const std::vector<double>& points, int n, const 
       bezierSegment(&b);
     }
   }
+}
+
+void StyledMultiShape2D::dump() {
+  fprintf(stderr, "\nVertices\n%12c%12c%7c%7c%7c\n",
+          'x', 'y', 'r', 'g', 'b');
+
+  for (int i = 0; i < vertices.size(); i += 5) {
+    fprintf(stderr, "%12f%12f%7.3f%7.3f%7.3f\n", vertices[i], vertices[i + 1], vertices[i + 2], vertices[i + 3], vertices[i + 4]);
+  }
+
+  if (solidIndices.size() != 0) {
+    cerr << "\nSolid Indices:\n";
+    for (int i = 0; i < solidIndices.size(); i += 3) {
+      fprintf(stderr, "%6d %6d %6d\n",
+              solidIndices[i], solidIndices[i + 1], solidIndices[i + 2]);
+    }
+  }
+
+  if (lineIndices.size() != 0) {
+    fprintf(stderr, "\nLine Indices:\n");
+    for (int i = 0; i < lineIndices.size(); i += 2) {
+      fprintf(stderr, "%6d %6d\n", lineIndices[i], lineIndices[i + 1]);
+    }
+  }
+
+  if (pointIndices.size() != 0) {
+    cerr << "\nPoint Indices:\n";
+    for (int i = 0; i < pointIndices.size(); i++) {
+      fprintf(stderr, "%6d\n", pointIndices[i]);
+    }
+  }
+
+  cerr << "Press Enter to continue\n";
+  char buffer[3];
+  cin.getline(buffer, 3);
 }

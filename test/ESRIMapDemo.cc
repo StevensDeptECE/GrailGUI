@@ -4,64 +4,98 @@
 #include "opengl/GrailGUI.hh"
 #include "opengl/Shapefile.hh"
 
-#define curtime chrono::high_resolution_clock::now();
-
 using namespace std;
 using namespace grail;
+
+#define curTime chrono::high_resolution_clock::now()
+#define milliCurTime chrono::time_point_cast<chrono::milliseconds>(curTime)
+#define milliDuration chrono::duration<double, std::milli>
+
+typedef chrono::time_point<chrono::system_clock, chrono::milliseconds> hrctime;
+
+class Timer {
+ public:
+  Timer() : beg_(clock_::now()) {}
+  void reset() { beg_ = clock_::now(); }
+  double elapsed() const {
+    return std::chrono::duration_cast<ms_>(clock_::now() - beg_).count();
+  }
+
+ private:
+  typedef std::chrono::high_resolution_clock clock_;
+  typedef std::chrono::duration<double, std::milli> ms_;
+  std::chrono::time_point<clock_> beg_;
+};
 
 class ESRIMapLoader : public GLWin {
  private:
   vector<vector<float>> flatvec;
+  int ld_countyStart;
+  int ld_displayNumCounties;
+  Timer animateTimer;
+  uint64_t animateDelay;
 
  public:
   ESRIMapLoader() : GLWin(0x000000, 0xCCCCCC, "ESRI Shapefile Map Demo") {}
   int countyStart;
   int numCounties;
   int displayNumCounties;
-  int ld_countyStart;
-  int ld_displayNumCounties;
-  time_t actionTimer;
+  Timer actionTimer;
+  uint64_t actionDelay = 100;
   bool animate;
-  //chrono::time_point < chrono::high_resolution_clock timer = ;
 
-  //double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end - t_start).count();
-
-  static void
-  nextCounty(GLWin* w) {
+  static void nextCounty(GLWin* w) {
     ESRIMapLoader* eml = ((ESRIMapLoader*)w);
-    //if (difftime(stdtime(nullptr), eml->actionTimer) >)
-    if (eml->countyStart < eml->numCounties)
-      eml->countyStart++;
-    //eml->
+    if (eml->actionTimer.elapsed() > eml->actionDelay) {
+      cerr << "action time:" << eml->actionTimer.elapsed();
+      if (eml->countyStart < eml->numCounties) eml->countyStart++;
+      eml->actionTimer.reset();
+    }
   }
+
   static void prevCounty(GLWin* w) {
     ESRIMapLoader* eml = ((ESRIMapLoader*)w);
-    if (eml->countyStart > 0)
-      eml->countyStart--;
+    if (eml->actionTimer.elapsed() > eml->actionDelay) {
+      if (eml->countyStart > 0) eml->countyStart--;
+      eml->actionTimer.reset();
+    }
   }
   static void displayAllCounties(GLWin* w) {
     ESRIMapLoader* eml = ((ESRIMapLoader*)w);
-    eml->countyStart = 0;
-    eml->displayNumCounties = eml->numCounties;
+    if (eml->actionTimer.elapsed() > eml->actionDelay) {
+      eml->countyStart = 0;
+      eml->displayNumCounties = eml->numCounties;
+      eml->actionTimer.reset();
+    }
   }
   static void display3Counties(GLWin* w) {
     ESRIMapLoader* eml = ((ESRIMapLoader*)w);
-    eml->displayNumCounties = 3;
+    if (eml->actionTimer.elapsed() > eml->actionDelay) {
+      eml->displayNumCounties = 3;
+      eml->actionTimer.reset();
+    }
   }
   static void decreaseCounties(GLWin* w) {
     ESRIMapLoader* eml = ((ESRIMapLoader*)w);
-    if (eml->displayNumCounties > 0)
-      eml->displayNumCounties--;
+    if (eml->actionTimer.elapsed() > eml->actionDelay) {
+      if (eml->displayNumCounties > 0) eml->displayNumCounties--;
+      eml->actionTimer.reset();
+    }
   }
   static void increaseCounties(GLWin* w) {
     ESRIMapLoader* eml = ((ESRIMapLoader*)w);
-    if (eml->displayNumCounties < eml->numCounties)
-      eml->displayNumCounties++;
+    if (eml->actionTimer.elapsed() > eml->actionDelay) {
+      if (eml->displayNumCounties < eml->numCounties) eml->displayNumCounties++;
+      eml->actionTimer.reset();
+    }
   }
 
   static void toggleAnimate(GLWin* w) {
     ESRIMapLoader* eml = ((ESRIMapLoader*)w);
-    eml->animate = !eml->animate;
+    if (eml->actionTimer.elapsed() > eml->actionDelay) {
+      eml->animate = !eml->animate;
+      eml->actionTimer.reset();
+    }
   }
 
   void detectCycle(vector<float> vec) {
@@ -83,7 +117,20 @@ class ESRIMapLoader : public GLWin {
          << vec[vec.size() - 2] << " " << vec[vec.size() - 1] << "\n";
   }
 
-  void transform(ESRIPoint& pt, double shiftX, double shiftY, double scaleX, double scaleY) {
+  void filterX(vector<vector<ESRIPoint>> shapeVector, double xMin,
+               double xMax) {
+    for (auto& shape : shapeVector) {
+      int j = 0;
+      for (int i = 0; i < shape.size(); i++) {
+        if (shape[i].x >= xMin && shape[i].x <= xMax) {
+          shape[j++] = shape[i];
+        }
+      }
+      shape.resize(j);
+    }
+  }
+  void transform(ESRIPoint& pt, double shiftX, double shiftY, double scaleX,
+                 double scaleY) {
     pt.x = pt.x * scaleX + shiftX;
     pt.y = pt.y * scaleY + shiftY;
   }
@@ -102,7 +149,8 @@ class ESRIMapLoader : public GLWin {
     counties.init();
 
     // Convert shape objects to our ESRIShape class
-    vector<unique_ptr<ESRIShape>> shapes = ESRIShape::convertSHPObjects(counties.getShapeVector());
+    vector<unique_ptr<ESRIShape>> shapes =
+        ESRIShape::convertSHPObjects(counties.getShapeVector());
 
     // Set display parameters
     countyStart = 0;
@@ -110,8 +158,6 @@ class ESRIMapLoader : public GLWin {
     displayNumCounties = 3;
     ld_countyStart = -1;
     ld_displayNumCounties = -1;
-    //timer = curtime;
-    //actionTimer = curtime;
 
     // Get counties from ESRIShapes
     vector<vector<ESRIPoint>> shapeVector(numCounties);
@@ -126,7 +172,8 @@ class ESRIMapLoader : public GLWin {
     double* maxBounds = counties.getMaxBounds();
     double* minBounds = counties.getMinBounds();
     double shiftX = 1300 - minBounds[0] * xSize / (maxBounds[0] - minBounds[0]);
-    double shiftY = 700 + ySize - (minBounds[1] * ySize / (maxBounds[1] - minBounds[1]));
+    double shiftY =
+        400 + ySize - (minBounds[1] * ySize / (maxBounds[1] - minBounds[1]));
     double scaleX = 2.5 * xSize / (maxBounds[0] - minBounds[0]);
     double scaleY = -ySize / (maxBounds[1] - minBounds[1]);
 
@@ -147,24 +194,17 @@ class ESRIMapLoader : public GLWin {
     setEvent(264, 1007);  // down arrow = decrease display
     setEvent(46, 1008);   // period = toggle animation
 
-    //double xMin = -80, xMax = -60;
-    //for (auto& shape : shapeVector) {
-    //int j = 0;
-    //for (int i = 0; i < shape.size(); i++) {
-    //if (shape[i].x >= xMin && shape[i].x <= xMax) {
-    //shape[j++] = shape[i];
-    //}
-    //}
-    //shape.resize(j);
-    //}
+    double xMin = -80, xMax = -60;
+    filterX(shapeVector, xMin, xMax);
     flatvec.reserve(shapeVector.size());
     for (auto& shape : shapeVector) {
       for (auto& point : shape) {
         transform(point, shiftX, shiftY, scaleX, scaleY);
       }
       flatvec.push_back(flatten(shape));
-      //detectCycle(flatvec.back());
+      // detectCycle(flatvec.back());
     }
+    animateDelay = 1000 / log2(flatvec.size());
     update();
   }
 
@@ -187,12 +227,10 @@ class ESRIMapLoader : public GLWin {
       ld_countyStart = countyStart;
     }
 
-    //chrono::duration<double, std::milli>(timer -).count();
-    /*if (animate && (&timer == nullptr ||
-                    dt > 1.5)) {
-      //timer = stdtime(&timer);
+    if (animate && animateTimer.elapsed() > animateDelay) {
       countyStart = (countyStart >= numCounties) ? 0 : ++countyStart;
-    }*/
+      animateTimer.reset();
+    }
   }
 };
 

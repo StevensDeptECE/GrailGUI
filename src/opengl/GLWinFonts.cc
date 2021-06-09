@@ -9,6 +9,7 @@
 
 #include <dirent.h>
 #include <ft2build.h>
+
 #include <algorithm>
 #include <cstdio>
 #include <fstream>
@@ -29,11 +30,12 @@ using namespace std;
 unordered_map<string, uint32_t> FontFace::faceByName;
 
 // std::vector<std::string> FontFace::loaded_fonts;
-std::vector<FontFace *> FontFace::faces;
+std::vector<FontFace*> FontFace::faces;
 FT_Library FontFace::ftLib;
 
-Font::Font(FontFace *face, FT_Face ftFace, uint16_t height,
-           uint8_t bitmap[], uint32_t& sizeX, uint32_t& sizeY, uint32_t& currX, uint32_t& currY, uint32_t& rowSize)
+Font::Font(FontFace* face, FT_Face ftFace, uint16_t height, uint8_t bitmap[],
+           uint32_t& sizeX, uint32_t& sizeY, uint32_t& currX, uint32_t& currY,
+           uint32_t& rowSize)
     : parentFace(face), height(height), startGlyph(32) {
 #if 0
   numGlyphs = 0;
@@ -70,7 +72,7 @@ Font::Font(FontFace *face, FT_Face ftFace, uint16_t height,
   const uint32_t endGlyph = 200;
   unordered_map<uint32_t, uint32_t> glyphMap;
   maxWidth = 0;
-  spaceWidth = height/2;
+  spaceWidth = height / 2;
   for (uint32_t c = startGlyph; c <= endGlyph; c++) {
     addGlyph(ftFace, glyphMap, c, bitmap, sizeX, sizeY, currX, currY, rowSize);
   }
@@ -78,53 +80,56 @@ Font::Font(FontFace *face, FT_Face ftFace, uint16_t height,
 
 Font::~Font() {}
 
-Font *Font::getDefault() {
+Font* Font::getDefault() {
   return nullptr;  // TODO: set default font
 }
 
-//TODO: can be made a private method of font
+// TODO: can be made a private method of font
 static uint32_t hashGlyph(const uint8_t glyphBuffer[], uint32_t len) {
   uint32_t hash = len;
   for (int i = 0; i < len; i++)
-    hash = ((hash << 17) | (hash >> 13)) ^ ((hash << 5) | (hash >> 27)) ^ glyphBuffer[i];
+    hash = ((hash << 17) | (hash >> 13)) ^ ((hash << 5) | (hash >> 27)) ^
+           glyphBuffer[i];
   return hash;
 }
 
-void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t> &glyphMap,
-                    uint8_t c, uint8_t bitmap[],
-                    uint32_t& sizeX, uint32_t& sizeY, uint32_t& currX, uint32_t& currY, uint32_t& rowSize) {
+void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t>& glyphMap,
+                    uint8_t c, uint8_t bitmap[], uint32_t& sizeX,
+                    uint32_t& sizeY, uint32_t& currX, uint32_t& currY,
+                    uint32_t& rowSize) {
   if (FT_Load_Char(ftFace, c, FT_LOAD_RENDER)) {
     char character[2] = {(char)c, '\0'};
     cerr << "Failed to load glyph for c=" << c << '\n';
     // throw Ex2(Errcode::FONT_LOAD_GLYPH, glyph);
-    //glyphs.push_back(Glyph(maxWidth, glm::ivec2(0, 0), glm::ivec2(0, 0), 0.0, 0.0, 1.0, bogusBottomRight));
-    //TODO: eliminated this case because it never seems to happen
+    // glyphs.push_back(Glyph(maxWidth, glm::ivec2(0, 0), glm::ivec2(0, 0), 0.0,
+    // 0.0, 1.0, bogusBottomRight));
+    // TODO: eliminated this case because it never seems to happen
     return;
   } else {
     /* convert to an anti-aliased bitmap */
     if (FT_Render_Glyph(ftFace->glyph, FT_RENDER_MODE_NORMAL)) {
-      std::cerr << "ERROR::FREETYTPE: Failed to Render Glyph" << std::endl;
-      //TODO: eliminated this case because it never seems to happen
-      //glyphs.push_back(Glyph(maxWidth, glm::ivec2(0, 0), glm::ivec2(0, 0), 0.0, 0.0, 1.0, bogusBottomRight));
+      std::cerr << "ERROR::FREETYPE: Failed to Render Glyph" << std::endl;
+      // TODO: eliminated this case because it never seems to happen
+      // glyphs.push_back(Glyph(maxWidth, glm::ivec2(0, 0), glm::ivec2(0, 0),
+      // 0.0, 0.0, 1.0, bogusBottomRight));
       return;
     }
   }
 
   FT_GlyphSlot g = ftFace->glyph;
-  const uint8_t *freetype_buffer_bd = g->bitmap.buffer;
+  const uint8_t* freetype_buffer_bd = g->bitmap.buffer;
   if (freetype_buffer_bd == nullptr) {  // render succeeds and it's still null?
-    //cerr << "buffer is null for character " << int(c) << '\n';
+    // cerr << "buffer is null for character " << int(c) << '\n';
     // this is for space and non-printing characters
-    glyphs.push_back(Glyph(spaceWidth, 0.0f, 0.0f,
-                     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
-    //TODO: this never happens either
+    glyphs.push_back(
+        Glyph(spaceWidth, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+    // TODO: this never happens either
     return;
   }
 
   uint32_t h = g->bitmap.rows;
   uint32_t w = g->bitmap.width;
-  if (w > maxWidth)
-    maxWidth = w;
+  if (w > maxWidth) maxWidth = w;
   uint32_t glyphSize = h * w;
   uint32_t newHash = hashGlyph(freetype_buffer_bd, glyphSize);
   auto matchGlyphIt = glyphMap.find(newHash);
@@ -134,61 +139,61 @@ void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t> &glyphMap,
     // we are ignoring that for now. It is quite unlikely.
     glyphMap[newHash] = c;  // the hash map goes to this character
     float advance = float(g->advance.x >> 6);
-    //glm::ivec2 bearing = glm::ivec2(g->bitmap_left, g->bitmap_top);
-    //glm::ivec2 size = glm::ivec2(w, h);
-    if (currX+w > sizeX) {
+    // glm::ivec2 bearing = glm::ivec2(g->bitmap_left, g->bitmap_top);
+    // glm::ivec2 size = glm::ivec2(w, h);
+    if (currX + w > sizeX) {
       currX = 0;
       currY += rowSize;
       rowSize = 0;
     }
-    glyphs.push_back(
-      Glyph(advance,
-            g->bitmap_left, g->bitmap_top, // bearing x and y
-            w,h,                           // sizeX and sizeY
-            float(double(currX) / sizeX),
-            float(double(currX + w-1) / sizeX),
-            float(double(currY) / sizeY),
-            float(double((currY+h)) / sizeY)
-//            float(double(sizeY - currY) / sizeY),
-//            float(double(sizeY - (currY+h)) / sizeY)
-    ));
+    glyphs.push_back(Glyph(
+        advance, g->bitmap_left, g->bitmap_top,  // bearing x and y
+        w, h,                                    // sizeX and sizeY
+        float(double(currX) / sizeX), float(double(currX + w - 1) / sizeX),
+        float(double(currY) / sizeY), float(double((currY + h)) / sizeY)
+        //            float(double(sizeY - currY) / sizeY),
+        //            float(double(sizeY - (currY+h)) / sizeY)
+        ));
     uint32_t dest = currY * sizeX + currX;
     for (uint32_t row = 0; row < h; row++, dest += sizeX) {
-      memcpy(bitmap + dest, freetype_buffer_bd + row*w, w);
+      memcpy(bitmap + dest, freetype_buffer_bd + row * w, w);
     }
-    if (h > rowSize) { // store the largest character on this row
-      rowSize = h; // when advancing to next row, add rowSize
-    }//TODO: Note this means we waste space. could pack better
+    if (h > rowSize) {  // store the largest character on this row
+      rowSize = h;      // when advancing to next row, add rowSize
+    }  // TODO: Note this means we waste space. could pack better
     currX += w;
   } else {
-     // copy the glyph from the earlier equivalent
+    // copy the glyph from the earlier equivalent
     glyphs.push_back(glyphs[matchGlyphIt->second]);
   }
 }
 
 float Font::getWidth(const char text[], uint32_t len) const {
   float w = 0;
-  for (const char *p = text; len > 0; len--, p++) w += getGlyph(*p)->sizeX;
+  for (const char* p = text; len > 0; len--, p++) w += getGlyph(*p)->sizeX;
   return w;
 }
 
-FontFace::FontFace(FT_Library ft,
-                   const string& faceName, const string &facePath,
-                   uint32_t minFontSize, uint32_t inc, uint32_t maxFontSize,
-                   uint8_t bitmap[],
-                   uint32_t& sizeX, uint32_t& sizeY, uint32_t& currX, uint32_t& currY, uint32_t& rowSize)
+FontFace::FontFace(FT_Library ft, const string& faceName,
+                   const string& facePath, uint32_t minFontSize, uint32_t inc,
+                   uint32_t maxFontSize, uint8_t bitmap[], uint32_t& sizeX,
+                   uint32_t& sizeY, uint32_t& currX, uint32_t& currY,
+                   uint32_t& rowSize)
     : faceName(faceName), boldness(0), italics(0), fixed(0), maxWidthIndex(0) {
-
   FT_Face ftFace;
-  if (FT_New_Face(ft, facePath.c_str(), 0, &ftFace)) {// load in the face using freetype
+  if (FT_New_Face(ft, facePath.c_str(), 0,
+                  &ftFace)) {  // load in the face using freetype
     cerr << "Failed to load font: " << facePath << '\n';
-    return; // TODO: throw
+    return;  // TODO: throw
   }
   pathByName[faceName] = facePath;
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-  for (uint32_t fontSize = minFontSize, i = 0; fontSize <= maxFontSize; fontSize += inc, i++) {
-    FT_Set_Pixel_Sizes(ftFace, 0, fontSize);  // create a FreeType font of sizes[i]
-    addFont(new Font(this, ftFace, fontSize, bitmap, sizeX, sizeY, currX, currY, rowSize));
+  for (uint32_t fontSize = minFontSize, i = 0; fontSize <= maxFontSize;
+       fontSize += inc, i++) {
+    FT_Set_Pixel_Sizes(ftFace, 0,
+                       fontSize);  // create a FreeType font of sizes[i]
+    addFont(new Font(this, ftFace, fontSize, bitmap, sizeX, sizeY, currX, currY,
+                     rowSize));
     fontBySize[fontSize] = i;
   }
 
@@ -249,13 +254,12 @@ void FontFace::setTexture(const uint8_t bitmap[], uint32_t w, uint32_t h) {
 }
 
 ostream& operator<<(ostream& s, const Font::Glyph& g) {
-  return
-  s << "advance: " << g.advance << '\n'
-    << "bearing: " << g.bearingX << "," << g.bearingY << '\n'
-    << "size:    " << g.sizeX << "," << g.sizeY << '\n'
-    << "x:       " << g.u0 << "," << g.u1 << '\n'
-    << "top: " << g.v1 << '\n'
-    << "bot: " << g.v0 << '\n';
+  return s << "advance: " << g.advance << '\n'
+           << "bearing: " << g.bearingX << "," << g.bearingY << '\n'
+           << "size:    " << g.sizeX << "," << g.sizeY << '\n'
+           << "x:       " << g.u0 << "," << g.u1 << '\n'
+           << "top: " << g.v1 << '\n'
+           << "bot: " << g.v0 << '\n';
 }
 
 #if 0
@@ -358,7 +362,7 @@ Font::Font(istream& fastfont) {
 
 void FontFace::save(ostream& fastfont) {
   fastfont << faceName << boldness << italics << fixed;
-  for (auto font: fonts) {
+  for (auto font : fonts) {
     font->save(fastfont);
   }
 }
@@ -367,32 +371,36 @@ void FontFace::save(ostream& fastfont) {
   Format for header of the binary file to fastload fonts
 */
 struct FastFontHeader {
-  uint32_t magic; // the magic number identifying this file
-  uint32_t version; // version number of the implementation
-  uint32_t w, h; // width and height of the bitmap
-  uint32_t numFaces; // number of individual font faces
-  uint32_t numFonts; // number of fonts within those faces (collectively)
-  uint32_t numGlyphs; // total number of glyphs
+  uint32_t magic;      // the magic number identifying this file
+  uint32_t version;    // version number of the implementation
+  uint32_t w, h;       // width and height of the bitmap
+  uint32_t numFaces;   // number of individual font faces
+  uint32_t numFonts;   // number of fonts within those faces (collectively)
+  uint32_t numGlyphs;  // total number of glyphs
 };
 
 /*
- save all faces, each font in each face, and the bitmap into a 
+ save all faces, each font in each face, and the bitmap into a
  single binary file that can be rapidly loaded
 */
-void FontFace::saveFonts(const uint8_t* combinedBitmap, uint32_t totalWidthAllFaces, uint32_t maxHeightAllFaces) {
-  ofstream fastfont(getBaseDir() + "fast.glfont", ios::binary); // save a binary file for rapid loading next time
+void FontFace::saveFonts(const uint8_t* combinedBitmap,
+                         uint32_t totalWidthAllFaces,
+                         uint32_t maxHeightAllFaces) {
+  ofstream fastfont(
+      getBaseDir() + "fast.glfont",
+      ios::binary);  // save a binary file for rapid loading next time
   FastFontHeader header;
   header.magic = 0x544E4644;
   header.version = 1;
   header.w = totalWidthAllFaces;
   header.h = maxHeightAllFaces;
   header.numFaces = faces.size();
-  header.numFonts = 32*3; // TODO: fix this
-  header.numGlyphs = 0; //TODO: fix
+  header.numFonts = 32 * 3;  // TODO: fix this
+  header.numGlyphs = 0;      // TODO: fix
   fastfont.write((char*)&header, sizeof(header));
   fastfont.write((char*)combinedBitmap, totalWidthAllFaces * maxHeightAllFaces);
   for (auto face : faces) {
-    face->save(fastfont); // save individual face
+    face->save(fastfont);  // save individual face
   }
 }
 
@@ -400,21 +408,22 @@ void FontFace::saveFonts(const uint8_t* combinedBitmap, uint32_t totalWidthAllFa
 TODO: this just currently returns one default font, make it work!
 */
 /* gets the font size */
-const Font *FontFace::getFont(uint32_t size, int weight) const {
+const Font* FontFace::getFont(uint32_t size, int weight) const {
   std::unordered_map<uint32_t, uint32_t>::const_iterator index =
       fontBySize.find(size);
   if (index == fontBySize.end()) {
     // TODO::Load Font
     std::string msg = "Size: " + std::to_string(size);
     cerr << "cannot load font " << faceName << " size " << size << '\n';
-    //throw Ex2(Errcode::FONT_SIZE_LOAD, msg.c_str());
-    return fonts[0]; //TODO: perhaps give them the closest font to the request later
+    // throw Ex2(Errcode::FONT_SIZE_LOAD, msg.c_str());
+    return fonts[0];  // TODO: perhaps give them the closest font to the request
+                      // later
   } else
     return fonts[index->second];
 }
 
 /* gets the font family */
-const Font *FontFace::get(const char faceName[], uint32_t size,
+const Font* FontFace::get(const char faceName[], uint32_t size,
                           uint32_t boldness) {
   auto index = faceByName.find(faceName);
   if (index == faceByName.end()) {
@@ -431,16 +440,16 @@ const Font *FontFace::get(const char faceName[], uint32_t size,
 
 // TODO: remove parameter size and get font paths from config file for
 // portability
-void FontFace::addFontName(std::string name, const std::string &path) {
+void FontFace::addFontName(std::string name, const std::string& path) {
   name.erase(name.end() - 4, name.end());
   pathByName[name] = path;
 }
 
-const char *FontFace::FONT_CONF_FILEPATH = "$GRAIL/conf/fonts.conf";
-//bool FontFace::hasBeenInitialized = false;
+const char* FontFace::FONT_CONF_FILEPATH = "$GRAIL/conf/fonts.conf";
+// bool FontFace::hasBeenInitialized = false;
 void FontFace::initAll() {
-  //if (hasBeenInitialized) return;
-  //hasBeenInitialized = true;
+  // if (hasBeenInitialized) return;
+  // hasBeenInitialized = true;
   // TODO: load from config file
   std::string fontPath = GLWin::baseDir + "/conf/fonts/";
   cout << "FONT PATH = " << fontPath << endl;
@@ -461,16 +470,20 @@ void FontFace::initAll() {
   uint32_t sizeX, sizeY;
   fontConf >> sizeX >> sizeY;
   uint8_t* bitmap = new uint8_t[sizeX * sizeY];
-  uint32_t currX = 0, currY = 0; // starting location to put glyphs. We will move right to the end of each line, then down to the next scan line
-  uint32_t rowSize = 0; // tracks the largest vertical size placed on this line. For simplicity we skip that much space
-  //TODO: better packing could be achieved
-  memset(bitmap, 0, sizeX*sizeY); // clear the entire bitmap
+  uint32_t currX = 0,
+           currY = 0;  // starting location to put glyphs. We will move right to
+                       // the end of each line, then down to the next scan line
+  uint32_t rowSize = 0;  // tracks the largest vertical size placed on this
+                         // line. For simplicity we skip that much space
+  // TODO: better packing could be achieved
+  memset(bitmap, 0, sizeX * sizeY);  // clear the entire bitmap
   while (fontConf.getline(lineBuf, sizeof(lineBuf))) {
     if (lineBuf[0] == '\0' || lineBuf[0] == '#')
-      continue; // quick hack to skip comments and blank lines (blank lines would work anyway, but this is cleaner)
+      continue;  // quick hack to skip comments and blank lines (blank lines
+                 // would work anyway, but this is cleaner)
     istringstream line(lineBuf);
     line >> faceName >> facePath >> sizeSpec;
-  
+
     istringstream size(sizeSpec);
     size.getline(minStr, sizeof(minStr), ',');
     size.getline(incStr, sizeof(minStr), ',');
@@ -479,35 +492,34 @@ void FontFace::initAll() {
     inc = atoi(incStr);
     maxFontSize = atoi(maxStr);
     if (line) {
-      new FontFace(ftLib, faceName, fontBase + facePath,
-                   minFontSize, inc, maxFontSize,
-                   bitmap, sizeX, sizeY, currX, currY, rowSize);
+      new FontFace(ftLib, faceName, fontBase + facePath, minFontSize, inc,
+                   maxFontSize, bitmap, sizeX, sizeY, currX, currY, rowSize);
     }
   }
   for (int i = 1400; i < sizeY; i++) {
-    int r = i*sizeX;
-    for (int j = 0; j < sizeX/4; j+=2) {
-      bitmap[r+j] = 255;
-      bitmap[r+j+1] = 0;
+    int r = i * sizeX;
+    for (int j = 0; j < sizeX / 4; j += 2) {
+      bitmap[r + j] = 255;
+      bitmap[r + j + 1] = 0;
     }
-    for (int j = sizeX/4; j < sizeX / 2; j+=4) {
-      bitmap[r+j] = 255;
-      bitmap[r+j+1] = 255;
-      bitmap[r+j+2] = 255;
-      bitmap[r+j+3] = 255;
+    for (int j = sizeX / 4; j < sizeX / 2; j += 4) {
+      bitmap[r + j] = 255;
+      bitmap[r + j + 1] = 255;
+      bitmap[r + j + 2] = 255;
+      bitmap[r + j + 3] = 255;
     }
-    for (int j = sizeX/2; j < sizeX *3 / 4; j+=8) {
-      bitmap[r+j] = 255;
-      bitmap[r+j+1] = 0;
-      bitmap[r+j+2] = 0;
-      bitmap[r+j+3] = 0;
+    for (int j = sizeX / 2; j < sizeX * 3 / 4; j += 8) {
+      bitmap[r + j] = 255;
+      bitmap[r + j + 1] = 0;
+      bitmap[r + j + 2] = 0;
+      bitmap[r + j + 3] = 0;
     }
-    for (int j = sizeX*3/4; j < sizeX; j++) {
-      bitmap[r+j] = 255;
+    for (int j = sizeX * 3 / 4; j < sizeX; j++) {
+      bitmap[r + j] = 255;
     }
   }
-//    bitmap[i] = 255;//bitmap[i-sizeX*1450];
+  //    bitmap[i] = 255;//bitmap[i-sizeX*1450];
 
   setTexture(bitmap, sizeX, sizeY);
-  delete [] bitmap;
+  delete[] bitmap;
 }

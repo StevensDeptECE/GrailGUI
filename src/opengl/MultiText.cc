@@ -60,7 +60,8 @@ static uint32_t pow10arr[10] = {
 
 void MultiText::addChar(float x, float y, const Font* f, unsigned char c) {
   const Font::Glyph* glyph = f->getGlyph(c);
-  cout << "Glyph for char " << c << "\n" << *glyph << '\n';
+  cout << "Glyph for char " << c << "\n"
+       << *glyph << '\n';
   float x0 = x + glyph->bearingX, x1 = x0 + glyph->sizeX;
   float y0 = y - glyph->bearingY, y1 = y0 + glyph->sizeY;
   // cout << "x=" << x << ", y=" << y << '\n';
