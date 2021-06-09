@@ -277,6 +277,8 @@ int GLWin::init(GLWin* g, uint32_t w, uint32_t h, uint32_t exitAfter) {
     cerr << e << '\n';
   } catch (const char* msg) {
     cerr << msg << endl;
+  } catch (const std::exception& e) {
+    cerr << e.what() << endl; 
   } catch (...) {
     cerr << "uncaught exception! (ouch)\n";
   }
