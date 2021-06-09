@@ -14,15 +14,20 @@ class AxisWidget : public Widget2D {
     int precision;
   };
 
-  double minBound;      // minimum axis value
-  double maxBound;      // maximum axis value
-  double tickInterval;  // interval between ticks
-  double tickDrawSize;  // vertical height of tick marks
-  Format tickFormat;
-  bool showTicks;               // whether or not to show the ticks
-  std::string axisTitle;        // axis title
-  const Style *axisTitleStyle;  // style of the title
-  const Style *axisTickStyle;   // style of the tick labels
+  double minBound;                  // minimum axis value
+  double maxBound;                  // maximum axis value
+  double tickInterval;              // interval between ticks
+  double tickDrawSize;              // vertical height of tick marks
+  Format tickFormat;                // how to format float values on screen
+  bool showTicks;                   // whether or not to show the ticks
+  std::string axisTitle;            // axis title
+  glm::vec4 axisColor;              // color to draw the axis line
+  glm::vec4 tickColor;              // color to draw the ticks
+  const Style *axisTickLabelStyle;  // style of the tick labels
+  const Style *axisTitleStyle;      // style of the title
+
+  double bottomOffset;
+  void addAxisTitle();
 
  public:
   // TODO: initialize title and other style bits to some kind of sane default
@@ -30,6 +35,8 @@ class AxisWidget : public Widget2D {
              float h, double minBound = 0, double maxBound = 0,
              double tickInterval = 1, double tickDrawSize = 5,
              bool showTicks = true, std::string axisTitle = "",
+             const glm::vec4 &axisColor = grail::black,
+             const glm::vec4 &tickColor = grail::black,
              const Style *axisTitleStyle = nullptr,
              const Style *axisTickStyle = nullptr, int tickFormatWidth = 2,
              int tickFormatPrecision = 2);
@@ -37,8 +44,10 @@ class AxisWidget : public Widget2D {
   void setTickDrawSize(double i);
   void setShowTicks(bool b);
   void setTitle(std::string text);
+  void setAxisColor(const glm::vec4 &color);
+  void setTickColor(const glm::vec4 &color);
   void setTitleStyle(const Style *style);
-  void setTickStyle(const Style *style);
+  void setTickLabelStyle(const Style *style);
 };
 
 class LinearAxisWidget : public AxisWidget {
