@@ -15,8 +15,8 @@ int main() {
 
   // Load points into string buffer
   vector<ESRIPoint> points;
-  for (auto const& shape : shapes) {
-    points = shape->getPoints();
+  for (int i = 0; i < 1; i++) {
+    points = shapes[i]->getPoints();
     for (auto const i : points) {
       buf << i.x << " " << i.y << "\n";
     }

@@ -1,10 +1,10 @@
+#include "util/Buffer.hh"
+
 #include <csp/HTTPRequest.hh>
 
-
-#include "csp/csp.hh"
-#include "util/Buffer.hh"
-#include "xdl/std.hh"
 #include "csp/SocketIO.hh"
+#include "csp/csp.hh"
+#include "xdl/std.hh"
 using namespace std;
 // const string HTTPRequest::GET = "GET";
 
@@ -14,7 +14,7 @@ Buffer::Buffer(size_t initialSize, bool writing)
   preBuffer = new char[size + extra * 2];
   buffer = extra + preBuffer;
   p = buffer;
-  memset(preBuffer, '\0', size+extra*2);
+  memset(preBuffer, '\0', size + extra * 2);
   fd = -1;
   isSockBuf = true;
 }
@@ -35,7 +35,7 @@ Buffer::Buffer(const char filename[], size_t initialSize)
 */
 Buffer::Buffer(const char filename[], size_t initialSize, const char*)
     : Buffer(initialSize, false) {
-  fd = open(filename, binFlags);
+  fd = open(filename, readBinFlags);
   if (fd < 0) throw Ex1(Errcode::PERMISSION_DENIED);
   readNext();
   writing = false;
@@ -44,7 +44,7 @@ Buffer::Buffer(const char filename[], size_t initialSize, const char*)
 
 void Buffer::readNext() {
   int32_t bytesRead = SocketIO::recv(fd, buffer, size, 0);
-  if (bytesRead > 0) availSize -= bytesRead; // Should this be availSize - bytesRead?
+  if (bytesRead > 0) availSize -= bytesRead;
   // TODO: do we set p????
   // read really shouldn't return negative but it is, at least on windows...
   // check why This is occurring when there are no bytes to read -- possible
@@ -81,9 +81,9 @@ void Buffer::write(const char* s, uint32_t len) {
 }
 
 void Buffer::write(XDLRaw& v) {
-	if (p != buffer)
-		flush();
-	::write(fd, v.data, v.len);
+  if (p != buffer)
+    flush();
+  ::write(fd, v.data, v.len);
 }
 
 #if 0

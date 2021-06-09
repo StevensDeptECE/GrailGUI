@@ -98,6 +98,16 @@ void StyledMultiShape2D::init() {
   //glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,0,(void*)0);
 }
 
+void StyledMultiShape2D::updatePoints() {
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
+}
+
+void StyledMultiShape2D::updateIndices() {
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * lineIndices.size(), &lineIndices[0], GL_DYNAMIC_DRAW);
+}
+
 //Solid Primitives
 void StyledMultiShape2D::fillRectangle(float x, float y, float w, float h, const glm::vec4& c) {
   uint32_t points = 0;
@@ -408,10 +418,8 @@ void StyledMultiShape2D::drawPolygon(const std::vector<float>& xy, const glm::ve
   uint32_t ind = getPointIndex();
   uint32_t start = ind;
   if (xy.size() == 0) return;
-  for (uint32_t i = 0; i < xy.size(); i += 2)
+  for (uint32_t i = 0; i < xy.size(); i += 2) {
     addStyledPoint(xy[i], xy[i + 1], c);
-
-  for (uint32_t i = xy.size(); i > 1; i--) {
     lineIndices.push_back(ind++);
     lineIndices.push_back(ind);
   }
@@ -422,10 +430,8 @@ void StyledMultiShape2D::drawPolygon(const std::vector<float>& xy, const glm::ve
 void StyledMultiShape2D::drawPolygon(const float xy[], uint32_t n, const glm::vec4& c) {
   uint32_t ind = getPointIndex();
   uint32_t start = ind;
-  uint32_t j = 0;
-  for (uint32_t i = n; i > 0; i--, j += 2)
-    addStyledPoint(xy[j], xy[j + 1], c);
-  for (uint32_t i = n; i > 1; i--) {
+  for (uint32_t i = 0; i < n; i += 2) {
+    addStyledPoint(xy[i], xy[i + 1], c);
     lineIndices.push_back(ind++);
     lineIndices.push_back(ind);
   }
