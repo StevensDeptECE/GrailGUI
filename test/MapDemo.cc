@@ -67,20 +67,20 @@ const char* mapname;
 		double aX = (xSize-1)*(-xMin)/(xMax-xMin);
 
 		double sY = (ySize-1)/(yMax-yMin);
-		double aY = ySize- ((ySize-1)*(-yMin)/(yMax-yMin));
+		double aY = ((ySize-1)*(-yMin)/(yMax-yMin));
 
 		
 		for(int i = 0; i < shapeVector.size(); i++){
 			for(int j = 0; j < shapeVector[i].size();j+=2){
-				//shapeVector[i][j] = sX*shapeVector[i][j]+aX;
-				//shapeVector[i][j+1] = sY*shapeVector[i][j+1]+aY;
-				shapeVector[i][j] = (xSize*(shapeVector[i][j]/xMax));
-				shapeVector[i][j+1] = (ySize+300) - (ySize*(shapeVector[i][j+1]/yMax));
+				shapeVector[i][j] = sX*shapeVector[i][j]+aX;
+				shapeVector[i][j+1] = 1080-(sY*shapeVector[i][j+1]+aY);
+				//shapeVector[i][j] = (xSize*(shapeVector[i][j]/xMax));
+				//shapeVector[i][j+1] = (ySize+2200) - (3*ySize*(shapeVector[i][j+1]/yMax));
 				if(shapeVector[i][j] < 0 || shapeVector[i][j+1] < 0)
 					cout << shapeVector[i][j] << " " << shapeVector[i][j+1] << endl;
 			}
-			//gui->drawPolygon(shapeVector[i],black); //TODO: Drawing way too many wrong lines
-			for(int j = 0; j < shapeVector[i].size(); j+=2) cout << shapeVector[i][j] << " " << shapeVector[i][j+1] << endl;
+			gui->drawPolygon(shapeVector[i],black); //TODO: Drawing way too many wrong lines
+			//for(int j = 0; j < shapeVector[i].size(); j+=2) cout << shapeVector[i][j] << " " << shapeVector[i][j+1] << endl;
 		}
 
 	}

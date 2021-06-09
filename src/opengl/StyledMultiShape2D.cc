@@ -410,9 +410,9 @@ void StyledMultiShape2D::drawPolygon(std::vector<float>& xy, const glm::vec4& c)
   if (xy.size() == 0) return;
   addStyledPoint(xy[0], xy[1], c);
   for (uint32_t i = 2; i < xy.size(); i += 2) {
-    if (abs(xy[i] - xy[i - 2]) < 100 && xy[i] > 0 && xy[i + 1] > 0) {
+    //if (abs(xy[i] - xy[i - 2]) < 100 && xy[i] > 0 && xy[i + 1] > 0) {
       addStyledPoint(xy[i], xy[i + 1], c);
-    }
+    //}
   }
   for (uint32_t i = xy.size(); i > 1; i--) {
     lineIndices.push_back(ind++);

@@ -131,6 +131,7 @@ gui->drawLine(w*37,w*103.001,w*36.5,w*103.001,black);
     MultiText* guiText = c->getGuiText();
     //guiText->add(300,100,s,1);
     ButtonWidget b(gui, guiText, "hello", 0, 0, 100, 50);
+    b.init();
 	}
 };
 
