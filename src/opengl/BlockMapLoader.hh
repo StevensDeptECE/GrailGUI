@@ -1,5 +1,4 @@
 #pragma once
-
 #include <memory>
 class BlockLoader {
  public:
@@ -30,7 +29,13 @@ class BlockLoader {
   uint32_t getHeaderSize() const { return sizeof(GeneralHeader) + sizeof(SecurityHeaderV0); }
   bool authenticate() const;
   GeneralHeader* generalHeader;
-	BlockLoader(uint64_t bytes, Type t, uint32_t version);
+  BlockLoader(uint64_t bytes, Type t, uint32_t version) : mem(std::make_unique<uint64_t>(new uint64_t[getHeaderSize() + (bytes + 7) / 8])) {
+    generalHeader = (GeneralHeader*)mem;                                    // header is the first chunk of bytes
+    generalHeader->magic = ((((('!' << 8) + 'B') << 8) + 'L') << 8) + 'd';  // magic number for all block loaders
+    generalHeader->type = uint32_t(t);
+    generalHeader->version = version;
+    securityHeader = (SecurityHeader*)((uint64_t*)mem + sizeof(GeneralHeader) / 8);
+  }
 };
 
 class BlockMapLoader : public BlockLoader, public ESRIShape {
@@ -53,3 +58,8 @@ class BlockMapLoader : public BlockLoader, public ESRIShape {
   };
   BlockMapLoader(uint32_t numLists, uint32_t numPoints);
   BlastMapLoader(const char filename[]);
+	void save(const char filename[]);
+	void filterX(double xMin, double xMax);
+	void filterY(double yMin, double yMax);
+	void filter(double xMin, double xMax, double yMin, double yMax);
+};
