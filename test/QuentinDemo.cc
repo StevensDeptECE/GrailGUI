@@ -17,7 +17,7 @@ class TestMultiShape : public GLWin {
   void init() {
     MainCanvas* c = currentTab()->getMainCanvas();
     StyledMultiShape2D* gui = c->getGui();
-/*
+
     const float boxSize = 75;
     const float drawSize = (boxSize / 4) * 5;
 
@@ -123,51 +123,11 @@ class TestMultiShape : public GLWin {
     gui->drawLine(w * 37, w * 103.001, w * 36.5, w * 103.001, black);
 
     const char buttonName[] = "button";
-    */
+    
     MultiText* guiText = c->getGuiText();
     //guiText->add(300,100,s,1);
     ButtonWidget b(gui, guiText, "hello", 0, 0, 100, 50);
-    //b.init();
-
-
-
-    
-    fstream file;
-		vector <float> dailyMaximum; 
-		const float bigFloat = 1E20;
-		float yMax = -bigFloat;
-		float xMax = -bigFloat;
-		float yMin = bigFloat;
-		float xMin = bigFloat;
-		// Read file
-		file.open("GME.csv", ios::in); // Open file
-		if (file.is_open()) { // If file has correctly opened...
-			// Output debug message
-			cout << "File correctly opened" << endl;
-
-			string temp;
-			float x,y;
-			// Dynamically store data into array
-			while (file.peek()!=EOF) { // ... and while there are no errors,
-				getline(file,temp,'\n');
-				dailyMaximum.push_back(atof(temp.c_str()));
-			}
-		}
-		else cout << "Unable to open file" << endl;
-		file.close();
-
-
-  vector<float> day; 
-  for(int i = 0; i < dailyMaximum.size(); i++)
-    day.push_back(i);
-
-
-
-    LineGraphWidget chart(gui, guiText, 50, 320, 800, 400);
-    chart.chart(day, dailyMaximum, 50, 50, new LinearScale(), new LinearScale());
-    chart.title("Daily High of GME Stock Since 2010");
-    chart.init();
-
+    b.init();
 
   }
 };

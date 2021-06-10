@@ -28,6 +28,10 @@ class LineGraphWidget : public Widget2D {
              float yInterval, Scale *xAxis, Scale *yAxis);
   // void chartLog(const float b[], int size, float relativeSpace,
   //             const std::string barNames[], int logBase);
+  void add(const std::vector<float> &xPoints,
+                            const std::vector<float> &yPoints,
+                            float xInterval, float yInterval,
+                            Scale *xAxis, Scale *yAxis, const glm::vec4& rgb);
   void title(const std::string &s);
   void init() override;
 };
