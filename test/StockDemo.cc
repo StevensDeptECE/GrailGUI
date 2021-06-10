@@ -43,16 +43,22 @@ class StockDemo : public GLWin {
 
 		vector <float> GME = openFile("GME.csv"); 
     vector <float> AAPL = openFile("AAPL.csv"); 
+    vector <float> NTDOY = openFile("NTDOY.csv"); 
+    vector <float> AMC = openFile("AMC.csv"); 
 		
     vector<float> day; 
     for(int i = 0; i < GME.size(); i++)
       day.push_back(i);
 
     LineGraphWidget chart(gui, guiText, 50, 320, 800, 400);
-    chart.chart(day, GME, 50, 50, new LinearScale(), new LinearScale());
-    chart.title("Daily High of GME and AAPL Stock Since 2010");
-    chart.add(day,AAPL,50,50,new LinearScale(),new LinearScale(),red);
-    chart.init();
+    chart.add(day, GME, 50, 50, new LinearScale(), new LinearScale(), blue, "GME");
+    chart.add(day, AAPL, 50, 50, new LinearScale(), new LinearScale(),red, "AAPL");
+    chart.add(day, NTDOY, 50, 50, new LinearScale(), new LinearScale(),green, "NTDOY");
+    //chart.add(day, AMC, 50, 50, new LinearScale(), new LinearScale(),purple, "AMC");
+    chart.title("Daily High of GME,AAPL, and NTDOY Stocks Since 2010");
+    chart.legend(100,100);
+    chart.init(); 
+    //TODO:Add xAxis and yAxis label funcs
 
   }
 };

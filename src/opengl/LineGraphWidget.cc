@@ -9,7 +9,24 @@
 
 using namespace std;
 
+vector<glm::vec4> colors;
+vector<string> names;
+
 void LineGraphWidget::init() { m->drawRectangle(x, y, w, h, grail::black); }
+
+void LineGraphWidget::legend(float x, float y){
+  const float boxWidth = 150;
+  const int fontSize = 12;
+
+  m->drawRectangle(x,y,boxWidth,15*colors.size(),grail::black);
+  const Font *f = FontFace::get("TIMES", fontSize, FontFace::BOLD);
+
+  for(int i = 0; i < colors.size(); i++){
+    t->add(x+2, (y+fontSize+((fontSize+2)*i)), f, names[i].c_str(), names[i].length());
+    m->fillRectangle(x+(boxWidth*.75),y+2+((fontSize+2)*i),boxWidth/5,fontSize-1,colors[i]);
+  }
+
+}
 
 void LineGraphWidget::title(const string &s) {
   const Font *f = FontFace::get("TIMES", 12, FontFace::BOLD);
@@ -106,7 +123,11 @@ void LineGraphWidget::chart(const vector<float> &xPoints,
 void LineGraphWidget::add(const vector<float> &xPoints,
                             const vector<float> &yPoints,
                             float xInterval, float yInterval, 
-                            Scale *xAxis, Scale *yAxis,const glm::vec4& dotColor){
+                            Scale *xAxis, Scale *yAxis,const glm::vec4& dotColor, string name){
+
+  colors.push_back(dotColor);
+  names.push_back(name);
+
 
   float xMax = *max_element(xPoints.begin(), xPoints.end());
   float yMax = *max_element(yPoints.begin(), yPoints.end());
