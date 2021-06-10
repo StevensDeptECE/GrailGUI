@@ -8,10 +8,10 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all: $(BIN)/testWidgets \
+all: $(BIN)/StockDemo $(BIN)/testWidgets \
  $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
  $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
- $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/testAxis
+ $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/testAxis $(BIN)/StockDemo
 
 
 #$(BIN)/testText 
@@ -33,6 +33,9 @@ $(BIN)/testGrid: testGrid.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/simpleDemo: simpleDemo.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)
+
+$(BIN)/StockDemo: StockDemo.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testGenericTable: testGenericTable.o $(LIBGRAIL)
