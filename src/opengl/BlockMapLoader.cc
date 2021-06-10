@@ -1,6 +1,6 @@
 #include "BlockMapLoader.hh"
 
-BlockLoader::BlockLoader(uint64_t bytes, Type t, uint32_t version)
+void BlockLoader::init(uint64_t bytes, Type t, uint32_t version)
 	: mem(std::make_unique<uint64_t>
 				(new uint64_t[getHeaderSize() + (bytes + 7) / 8])) {
 	generalHeader = (GeneralHeader*)mem;                                    // header is the first chunk of bytes
@@ -8,14 +8,6 @@ BlockLoader::BlockLoader(uint64_t bytes, Type t, uint32_t version)
 	generalHeader->type = uint32_t(t);
 	generalHeader->version = version;
 	securityHeader = (SecurityHeader*)((uint64_t*)mem + sizeof(GeneralHeader) / 8);
-}
-
-BlockMapLoader::BlockMapLoader(uint32_t numLists, uint32_t numPoints)
-	: BlockLoader(sizeof(SpecificHeader) + numLists * sizeof(Segment) + numPoints * 8, Type::gismap, version) {
-	segments = (Segment*)((char*)mem + getHeaderSize());  // list of segments is next
-	points = (float*)((char*)segments + numPoints * sizeof(Segment));
-	
-	// load in all points from ESRI
 }
 
 void BlockMapLoader::save(const char filename[]) {
@@ -29,11 +21,33 @@ void BlockMapLoader::save(const char filename[]) {
 	// uint64_t:   b1 b2 b3 b4 b5 b6 b7 b8 --> b8 b7 b6 b5 b4 b3 b2 b1
 }
 BlockMapLoader::BlockMapLoader(const char filename[]) {
-	int fh = open("uscounties.bml", O_RDONLY);
+	int fh = open(filename, O_RDONLY);
 	st_stat s;
 	stat(fh, &s);
-	mem = new uint64_t[s.st_size / 8];
+	mem = new uint64_t[(s.st_size +7)/ 8];
 	read(fh, (char*)mem, size);
 	close(fh);
+	init();
 	// floats are now completely loaded, ready to draw!
 }
+
+Method BlockMapLoader::methods[] = {
+  
+};
+
+/*
+	TODO: For now we will just call methodPolygon
+	Later we have to call the method that applies to the type.
+	We will group all of the same type together so they can be
+	executed in a single block.
+
+	Perhaps teh methods should contain a start index and length to draw
+ */
+void BlockMapLoader::methodPolygon() {
+	
+}
+
+void BlockMapLoader::methodPolyline() {
+
+}
+
