@@ -171,5 +171,5 @@ public:
 
 int main(int argc, char *argv[])
 {
-  return GLWin::init(new SolarSystem(), 2048, 2048);
+  return GLWin::init(new SolarSystem(), 800, 800);
 }
