@@ -9,6 +9,7 @@
 #include "opengl/BarChartWidget.hh"
 #include "opengl/CandlestickChartWidget.hh"
 #include "opengl/BoxChartWidget.hh"
+#include "opengl/GapMinderWidget.hh"
 #include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/GraphWidget.hh"
@@ -67,7 +68,7 @@ class TestWidgets : public GLWin {
 
     CandlestickChartWidget chart(gui, guiText, 50, 50, 400, 200, y);
     chart.setMinMax(150, 180);
-    chart.chart(y, 10, 4);
+    chart.chart(y, 5, 4);
     chart.setTitle("Title");
     chart.init();
   }
@@ -81,6 +82,15 @@ class TestWidgets : public GLWin {
     chart.init();
   }
 
+  void testGapMinder(StyledMultiShape2D *gui, MultiText *guiText){
+    vector<float> x = {100, 10, 50, 150, 300};
+    vector<float> y = {150, 350, 222, 100, 300};
+    
+    GapMinderWidget chart(gui, guiText, 550, 320, 400, 200, y, x);
+    chart.chart(y, x, 50);
+    chart.setTitle("Title");
+    chart.init();
+  }
 
 
   void testLineGraphLinear(StyledMultiShape2D *gui, MultiText *guiText) {
@@ -157,6 +167,7 @@ class TestWidgets : public GLWin {
     testBarChart(gui, guiText);
     testCandlestick(gui, guiText);
     testBoxChart(gui, guiText);
+    //testGapMinder(gui, guiText);
     //testButton(gui, guiText);
     //testLineGraphLinear(gui, guiText);
     //testLineGraphLog(gui, guiText);

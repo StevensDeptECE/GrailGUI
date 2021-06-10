@@ -34,7 +34,7 @@ $(out)/Image.o \
 $(out)/MultiShape.o $(out)/StyledMultiShape2D.o $(out)/MultiShape2D.o \
 $(out)/MultiText.o $(out)/MultiShape3D.o $(out)/TextureArray.o \
 $(out)/Document.o $(out)/DocView.o \
-$(out)/LineGraphWidget.o $(out)/BarChartWidget.o $(out)/CandlestickChartWidget.o $(out)/BoxChartWidget.o \
+$(out)/LineGraphWidget.o $(out)/BarChartWidget.o $(out)/CandlestickChartWidget.o $(out)/BoxChartWidget.o $(out)/GapMinderWidget.o \
 $(out)/ButtonWidget.o $(out)/Scale.o \
 $(out)/AngledMultiText.o \
 $(out)/ScrollbarWidget.o \
@@ -165,6 +165,9 @@ $(out)/CandlestickChartWidget.o: CandlestickChartWidget.cc CandlestickChartWidge
 	$(COMP) $< -o $@
 
 $(out)/BoxChartWidget.o: BoxChartWidget.cc BoxChartWidget.hh
+	$(COMP) $< -o $@
+
+$(out)/GapMinderWidget.o: GapMinderWidget.cc GapMinderWidget.hh
 	$(COMP) $< -o $@
 
 $(out)/ButtonWidget.o: ButtonWidget.cc ButtonWidget.hh
