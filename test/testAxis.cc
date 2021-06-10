@@ -28,8 +28,10 @@ class testAxis : public GLWin {
                    const Style *style) {
     LogAxisWidget axis(gui, guiText, 100, 200, 400, 200);
     // log specific
-    axis.setNumTicks(3);
-    axis.setScale(2, 3);
+    // axis.setNumTicks(3);
+    // axis.setScale(2, 3);
+    axis.setBounds(1, 10000);
+    axis.setTickInterval(10);
 
     // general
     axis.setTickFormat(2, 0);

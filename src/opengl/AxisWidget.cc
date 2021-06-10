@@ -34,11 +34,15 @@ void AxisWidget::setAxisColor(const glm::vec4 &color) { axisColor = color; }
 
 void AxisWidget::setTickColor(const glm::vec4 &color) { tickColor = color; }
 
+void AxisWidget::setTitleStyle(const Style *style) { axisTitleStyle = style; }
+
 void AxisWidget::setTickLabelStyle(const Style *style) {
   axisTickLabelStyle = style;
 }
 
-void AxisWidget::setTitleStyle(const Style *style) { axisTitleStyle = style; }
+void AxisWidget::setTickFormat(int width, int precision) {
+  tickFormat = {width, precision};
+}
 
 void AxisWidget::addAxisTitle() {
   if (axisTitle.size()) {
@@ -51,10 +55,6 @@ void AxisWidget::addAxisTitle() {
 LinearAxisWidget::LinearAxisWidget(StyledMultiShape2D *m, MultiText *t, float x,
                                    float y, float w, float h)
     : AxisWidget(m, t, x, y, w, h) {}
-
-void LinearAxisWidget::setTickFormat(int width, int precision) {
-  tickFormat = {width, precision};
-}
 
 void LinearAxisWidget::setBounds(double minBound, double maxBound) {
   this->minBound = minBound;
@@ -88,36 +88,33 @@ LogAxisWidget::LogAxisWidget(StyledMultiShape2D *m, MultiText *t, float x,
                              float y, float w, float h)
     : AxisWidget(m, t, x, y, w, h), base(10), power(0) {}
 
-void LogAxisWidget::setTickFormat(int width, int precision) {
-  tickFormat = {width, precision};
+void LogAxisWidget::setBounds(double minBound, double maxBound) {
+  this->minBound = minBound;
+  this->maxBound = maxBound;
 }
 
-void LogAxisWidget::setScale(int base, int power) {
-  this->base = base;
-  this->power = power;
-}
-
-void LogAxisWidget::setNumTicks(int num) {
-  minBound = 0;
-  maxBound = 10;
-  tickInterval = maxBound / num;
+void LogAxisWidget::setTickInterval(double tickInterval) {
+  this->tickInterval = tickInterval;
 }
 
 void LogAxisWidget::init() {
-  float scale = w / abs(maxBound - minBound);
+  float base = 1 / log(tickInterval);
+  float scale = w / abs(log(maxBound) * base - log(minBound) * base);
   bottomOffset = tickDrawSize + axisTickLabelStyle->f->getHeight();
-  m->drawLine(x, y + h, x + scale * maxBound, y + h, axisColor);
+  m->drawLine(x, y + h, x + scale * log(maxBound) * base, y + h, axisColor);
 
-  for (float tick = minBound; tick <= maxBound; tick += tickInterval) {
-    float draw = x + scale * tick;
+  for (float tick = minBound; tick <= maxBound; tick *= tickInterval) {
+    float draw = x + scale * log(tick) / log(tickInterval);
+    cout << draw << "\n";
+    cout << log(tick) << "\n";
+    cout << log(tickInterval) << "\n";
 
     if (showTicks)
       m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
                   tickColor);
 
-    t->add(draw, y + h + bottomOffset, axisTickLabelStyle->f, pow(base, power),
+    t->add(draw, y + h + bottomOffset, axisTickLabelStyle->f, tick,
            tickFormat.width, tickFormat.precision);
-    power++;
   }
 
   addAxisTitle();
@@ -150,7 +147,8 @@ void TextAxisWidget::init() {
                   tickColor);
 
     string current = tickLabels[index];
-    t->add(draw, y + h + bottomOffset, axisTickLabelStyle->f, current.c_str(),
+    t->add(draw, y + h + bottomOffset, axisTickLabelStyle->f,
+    current.c_str(),
            strlen(current.c_str()));
 
     index++;
