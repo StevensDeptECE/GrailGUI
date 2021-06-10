@@ -8,9 +8,6 @@
 #include "opengl/BarChartWidget.hh"
 #include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
-#include "opengl/GraphWidget.hh"
-#include "opengl/LineGraphWidget.hh"
-#include "opengl/MultiText.hh"
 #include "opengl/ScrollbarWidget.hh"
 #include "opengl/util/Transformation.hh"
 
@@ -57,26 +54,6 @@ class TestWidgets : public GLWin {
     chart2.init();
   }
 
-  void testLineGraphLinear(StyledMultiShape2D *gui, MultiText *guiText) {
-    vector<float> x = {20, 40, 100, 200};
-    vector<float> y = {100, 200, 50, 325};
-
-    LineGraphWidget chart(gui, guiText, 50, 320, 400, 200);
-    chart.chart(x, y, 50, 50, new LinearScale(), new LinearScale());
-    chart.title("Title");
-    chart.init();
-  }
-
-  void testLineGraphLog(StyledMultiShape2D *gui, MultiText *guiText) {
-    vector<float> x = {20, 40, 100, 200};
-    vector<float> y = {100, 1000, 10000, 10000000};
-
-    LineGraphWidget chart(gui, guiText, 50, 320, 400, 200);
-    chart.chart(x, y, 50, 50, new LinearScale(), new LogScale());
-    chart.title("Title");
-    chart.init();
-  }
-
   void testScrollBar(StyledMultiShape2D *gui, MultiText *guiText) {
     const uint32_t scrollBarWidth = 50;
     ScrollbarWidget scrollBar(gui, guiText, getWidth() - scrollBarWidth, 0,
@@ -93,27 +70,6 @@ class TestWidgets : public GLWin {
     am->add(0, 0, s->f, thing, strlen(thing));
   }
 
-#if 0
-  void testLinearAxesWidget(StyledMultiShape2D *gui, MultiText *guiText,
-                            const Style *style) {
-    LinearAxesWidget axes(gui, guiText, 100, 100, 400, 400);
-    // axes.setBounds(0, 50, 0, 50);
-    // axes.setQuadrant(Quadrant::Q1);
-    // axes.setBounds(-50, 0, 0, 50);
-    // axes.setQuadrant(Quadrant::Q2);
-    // axes.setBounds(-50, 0, -50, 0);
-    // axes.setQuadrant(Quadrant::Q3);
-    // axes.setBounds(0, 50, -50, 0);
-    // axes.setQuadrant(Quadrant::Q4);
-    axes.setBounds(-50, 50, -50, 50);
-    axes.setQuadrant(Quadrant::All);
-    axes.setIntervals(15, 15);
-    axes.setYTickStyle(style);
-    axes.setXTickStyle(style);
-    axes.init();
-  }
-#endif
-
   void init() {
     const Style *s =
         new Style("TIMES", 24, 1, 0, 0, 0,  // black background (unused)
@@ -126,13 +82,14 @@ class TestWidgets : public GLWin {
 
     MultiText *guiText = c->addLayer(new MultiText(c, s));
 
+    StyledMultiShape2D *p =
+        c->addLayer(new StyledMultiShape2D(c, s, M_PI / 4, 0, 0));
+
     const Style *graphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
-    testBarChart(gui, guiText);
+    testBarChart(p, guiText);
     testButton(gui, guiText);
-    testLineGraphLinear(gui, guiText);
-    testLineGraphLog(gui, guiText);
-    // testLinearAxesWidget(gui, guiText, graphStyle);
-    testScrollBar(gui, guiText);
+    testScrollBar(p, guiText);
+    gui->drawRectangle(100, 100, 100, 100, grail::green);
   }
 };
 
