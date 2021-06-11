@@ -91,7 +91,7 @@ class ESRIMapLoader : public GLWin {
   }
 
   static void toggleAnimate(GLWin* w) {
-    ESRIMapLoader* eml = ((ESRIMapLoader*)w);
+    ESRIMapLoader* eml = (ESRIMapLoader*)w;
     if (eml->actionTimer.elapsed() > eml->actionDelay) {
       eml->animate = !eml->animate;
       eml->actionTimer.reset();
@@ -100,12 +100,12 @@ class ESRIMapLoader : public GLWin {
 
   void detectCycle(vector<float> vec) {
     vector<pair<float, float>> indices(vec.size() / 2 + 1);
-    indices[0] = pair(-1, -1);
+    indices[0] = pair<float, float>(-1, -1);
     pair<float, float> temp;
     vector<pair<float, float>>::iterator it;
     cout << vec.size() << "\n";
     for (int i = 0; i < vec.size(); i += 2) {
-      temp = pair(vec[i], vec[i + 1]);
+      temp = pair<float, float>(vec[i], vec[i + 1]);
       it = find(indices.begin(), indices.end(), temp);
       if (it != indices.end()) {
         cout << "Cycle detected?\n"
