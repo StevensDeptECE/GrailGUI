@@ -29,32 +29,54 @@ void LineGraphWidget::legend(float x, float y){
 }
 
 void LineGraphWidget::title(const string &s) {
-  const Font *f = FontFace::get("TIMES", 12, FontFace::BOLD);
+  int fontSize = 12;
+  const Font *f = FontFace::get("TIMES", fontSize, FontFace::BOLD);
   t->add(x, y - 10, f, s.c_str(), s.length());
+}
+
+void LineGraphWidget::axes(char xLabel[], int xLen, char yLabel[], int yLen, float xMax, float yMax, float xMin, float yMin, float xInterval, float yInterval){
+  axes(xLabel,xLen,yLabel,yLen,xMax,yMax,xMin,yMin,xInterval,yInterval,0,xMax);
+  }
+
+void LineGraphWidget::axes(char xLabel[], int xLen, char yLabel[], int yLen, float xMax, float yMax, float xMin, float yMin, float xInterval, float yInterval, int start, int end){
+  startPoint = start;
+  endPoint = end;
+
+  int fontSize = 12;
+  const Font *f = FontFace::get("TIMES", fontSize, FontFace::BOLD);
+
+  xAxis = new LinearScale();
+  yAxis = new LinearScale();
+
+  xAxis->init(xMin, xMax, x, w, xInterval);
+  yAxis->init(yMin, yMax, y + h, -h, yInterval);
+
+  for (float yTick = yMin; yTick <= yMax; yTick = yAxis->next(yTick)) {
+    float yScreen = yAxis->transform(yTick);
+    m->drawLine(x, yScreen, x + 10, yScreen, grail::black);
+  }
+
+  for (float xTick = xMin; xTick <= xMax; xTick = xAxis->next(xTick)) {
+    int i = 0;
+    float xScreen = xAxis->transform(xTick);
+    m->drawLine(xScreen, y + h + 5, xScreen, y + h - 5, grail::black);
+    t->add(xScreen, y + h + 10, f, to_string((int)(xMin + i*xInterval)).c_str(),to_string((int)(xMin + i*xInterval)).length());
+    i++;
+  }
+
+  t->add(x-(yLen*fontSize*.75), y*1.5 , f, yLabel, yLen);
+  t->add(x+(w*.5), y+h+fontSize+10, f, xLabel, xLen);
+
 }
 
 /*
   curerently assuming that x and y points are sorted
 */
-void LineGraphWidget::chart(const vector<float> &xPoints,
-                            const vector<float> &yPoints,
-                            float xInterval, float yInterval,
-                            Scale *xAxis, Scale *yAxis) {
-  if (xPoints.size() < 1 || yPoints.size() < 1) {
-    cerr << "x and y vectors cannot be zero length";
-    throw(Ex1(Errcode::VECTOR_ZERO_LENGTH));
-  }
-  if (xPoints.size() != yPoints.size()) {
-    cerr << "x and y vectors should be of equal lengths \n";
-    throw(Ex1(Errcode::VECTOR_MISMATCHED_LENGTHS));
-  }
 
-  // TODO: combine with min max element
-  float xMax = *max_element(xPoints.begin(), xPoints.end());
-  float yMax = *max_element(yPoints.begin(), yPoints.end());
-  float xMin = *min_element(xPoints.begin(), xPoints.end());
-  float yMin = *min_element(yPoints.begin(), yPoints.end());
-
+/*
+void LineGraphWidget::chart(float xMax, float yMax, float xInterval, float yInterval,
+                            Scale *xAxis, Scale *yAxis) { // OLD FUNCTION USE add()
+  
   // float xScale = w / xMax;
   // float yScale = 0.95 * h / yMax;
 
@@ -119,30 +141,34 @@ void LineGraphWidget::chart(const vector<float> &xPoints,
   //   line += xInterval;
   // }
 }
+*/
 
 void LineGraphWidget::add(const vector<float> &xPoints,
-                            const vector<float> &yPoints,
-                            float xInterval, float yInterval, 
-                            Scale *xAxis, Scale *yAxis,const glm::vec4& dotColor, string name){
+                            const vector<float> &yPoints, const glm::vec4& dotColor, string name){
+
+  if (xPoints.size() < 1 || yPoints.size() < 1) {
+    cerr << "x and y vectors cannot be zero length";
+    throw(Ex1(Errcode::VECTOR_ZERO_LENGTH));
+  }
+
+  int numPoints = 0;                            
+  if(xPoints.size() > yPoints.size())
+    numPoints = yPoints.size();
+  else
+    numPoints = xPoints.size(); 
+
+  if(endPoint < numPoints)
+    numPoints = endPoint;
 
   colors.push_back(dotColor);
   names.push_back(name);
 
-
-  float xMax = *max_element(xPoints.begin(), xPoints.end());
-  float yMax = *max_element(yPoints.begin(), yPoints.end());
-  float xMin = *min_element(xPoints.begin(), xPoints.end());
-  float yMin = *min_element(yPoints.begin(), yPoints.end());                            
-
-  xAxis->init(0, xMax, x, w, xInterval);
-  yAxis->init(0, yMax, y + h, -h, yInterval);                            
-
-  float xPoint1 = xAxis->transform(xPoints[0]);
-  float yPoint1 = yAxis->transform(yPoints[0]);
+  float xPoint1 = xAxis->transform(xPoints[startPoint]);
+  float yPoint1 = yAxis->transform(yPoints[startPoint]);
 
   m->fillCircle(xPoint1, yPoint1, 3.5, 3, grail::blue);
 
-  for (int i = 1; i < xPoints.size(); i++) {
+  for (int i = startPoint+1; i < numPoints; i++) {
     float xPoint2 = xAxis->transform(xPoints[i]);
     float yPoint2 = yAxis->transform(yPoints[i]);
 

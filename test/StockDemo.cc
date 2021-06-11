@@ -47,20 +47,24 @@ class StockDemo : public GLWin {
     vector <float> AMC = openFile("AMC.csv"); 
 		
     vector<float> day; 
-    for(int i = 0; i < GME.size(); i++)
+    for(int i = 0; i < AMC.size(); i++)
       day.push_back(i);
 
-    LineGraphWidget chart(gui, guiText, 50, 320, 800, 400);
-    chart.add(day, GME, 50, 50, new LinearScale(), new LinearScale(), blue, "GME");
-    chart.add(day, AAPL, 50, 50, new LinearScale(), new LinearScale(),red, "AAPL");
-    chart.add(day, NTDOY, 50, 50, new LinearScale(), new LinearScale(),green, "NTDOY");
-    //chart.add(day, AMC, 50, 50, new LinearScale(), new LinearScale(),purple, "AMC");
-    chart.title("Daily High of GME,AAPL, and NTDOY Stocks Since 2010");
-    chart.legend(100,100);
+    LineGraphWidget chart(gui, guiText, 100, 320, 800, 400);
+    chart.axes("Days",4,"Price ($)",9,day.size(),75,day.size()-100,0,10,10,day.size()-100,day.size());
+    chart.add(day, GME, blue, "GME");
+    //chart.add(day, AAPL, red, "AAPL");
+    chart.add(day, NTDOY, green, "NTDOY");
+    chart.add(day, AMC, purple, "AMC");
+    chart.title("Daily High of GME, and NTDOY Stocks Since 2010");
+    chart.legend(100,800);
     chart.init(); 
     //TODO:Add xAxis and yAxis label funcs
-    //TODO:Add legen to all graphwidgets
+    //TODO:Add legend to all graphwidgets
     //TODO:Fix chart axis ticker in chart(), maybe move to init()
+    //TODO:Iterations of chart funcs
+    //TODO:Custom Locations of axes labels
+    //TODO:Comment code
 
   }
 };
