@@ -97,6 +97,8 @@ void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t>& glyphMap,
                     uint8_t c, uint8_t bitmap[], uint32_t& sizeX,
                     uint32_t& sizeY, uint32_t& currX, uint32_t& currY,
                     uint32_t& rowSize) {
+  FT_BitmapGlyph bg;
+
   if (FT_Load_Char(ftFace, c, FT_LOAD_RENDER)) {
     char character[2] = {(char)c, '\0'};
     cerr << "Failed to load glyph for c=" << c << '\n';
@@ -106,18 +108,30 @@ void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t>& glyphMap,
     // TODO: eliminated this case because it never seems to happen
     return;
   } else {
-    /* convert to an anti-aliased bitmap */
-    if (FT_Render_Glyph(ftFace->glyph, FT_RENDER_MODE_NORMAL)) {
-      std::cerr << "ERROR::FREETYPE: Failed to Render Glyph" << std::endl;
-      // TODO: eliminated this case because it never seems to happen
-      // glyphs.push_back(Glyph(maxWidth, glm::ivec2(0, 0), glm::ivec2(0, 0),
-      // 0.0, 0.0, 1.0, bogusBottomRight));
+    ///* convert to an anti-aliased bitmap */
+    // if (FT_Render_Glyph(ftFace->glyph, FT_RENDER_MODE_NORMAL)) {
+    // std::cerr << "ERROR::FREETYPE: Failed to Render Glyph" << std::endl;
+    //// TODO: eliminated this case because it never seems to happen
+    //// glyphs.push_back(Glyph(maxWidth, glm::ivec2(0, 0), glm::ivec2(0, 0),
+    //// 0.0, 0.0, 1.0, bogusBottomRight));
+    // return;
+    //}
+    FT_Glyph glyph;
+    if (FT_Get_Glyph(ftFace->glyph, &glyph)) {
+      std::cerr << "ERROR::FREETYPE: Failed to get glyph" << std::endl;
       return;
     }
+    if (FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 0)) {
+      std::cerr << "ERROR::FREETYPE: Failed to convert glyph to bitmap"
+                << std::endl;
+      return;
+    }
+    bg = (FT_BitmapGlyph)glyph;
   }
 
-  FT_GlyphSlot g = ftFace->glyph;
-  const uint8_t* freetype_buffer_bd = g->bitmap.buffer;
+  // FT_GlyphSlot g = ftFace->glyph;
+  // const uint8_t* freetype_buffer_bd = g->bitmap.buffer;
+  const uint8_t* freetype_buffer_bd = bg->bitmap.buffer;
   if (freetype_buffer_bd == nullptr) {  // render succeeds and it's still null?
     // cerr << "buffer is null for character " << int(c) << '\n';
     // this is for space and non-printing characters
@@ -127,8 +141,8 @@ void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t>& glyphMap,
     return;
   }
 
-  uint32_t h = g->bitmap.rows;
-  uint32_t w = g->bitmap.width;
+  uint32_t h = bg->bitmap.rows;
+  uint32_t w = bg->bitmap.width;
   if (w > maxWidth) maxWidth = w;
   uint32_t glyphSize = h * w;
   uint32_t newHash = hashGlyph(freetype_buffer_bd, glyphSize);
@@ -138,7 +152,7 @@ void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t>& glyphMap,
     // the two hashes match but the glyphs are not the same
     // we are ignoring that for now. It is quite unlikely.
     glyphMap[newHash] = c;  // the hash map goes to this character
-    float advance = float(g->advance.x >> 6);
+    float advance = float(ftFace->glyph->metrics.horiAdvance >> 6);
     // glm::ivec2 bearing = glm::ivec2(g->bitmap_left, g->bitmap_top);
     // glm::ivec2 size = glm::ivec2(w, h);
     if (currX + w > sizeX) {
@@ -147,8 +161,8 @@ void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t>& glyphMap,
       rowSize = 0;
     }
     glyphs.push_back(Glyph(
-        advance, g->bitmap_left, g->bitmap_top,  // bearing x and y
-        w, h,                                    // sizeX and sizeY
+        advance, bg->left, bg->top,  // bearing x and y
+        w, h,                        // sizeX and sizeY
         float(double(currX) / sizeX), float(double(currX + w - 1) / sizeX),
         float(double(currY) / sizeY), float(double((currY + h)) / sizeY)
         //            float(double(sizeY - currY) / sizeY),
