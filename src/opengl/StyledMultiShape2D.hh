@@ -22,7 +22,6 @@ class StyledMultiShape2D : public MultiShape2D {
     startIndices.push_back(0);
     transform = glm::translate(transform, glm::vec3(x, y, 0));
     transform = glm::rotate(transform, angle, glm::vec3(0, 0, -1));
-    transform = glm::translate(transform, glm::vec3(-x, -y, 0));
   }
 
   uint32_t addSector(float x, float y, float xRad, float yRad, float fromAngle,
