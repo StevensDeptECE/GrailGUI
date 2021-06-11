@@ -8,10 +8,11 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all: $(BIN)/testWidgets \
+all: $(BIN)/testWidgets $(BIN)/testAxis $(BIN)/testLineGraph \
  $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
- $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
- $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/testAxis $(BIN)/StockDemo
+ $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem \
+ $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
+ $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/StockDemo
 
 
 #$(BIN)/testText 
@@ -88,14 +89,8 @@ $(BIN)/testWidgets: testWidgets.cc $(LIBGRAIL)
 $(BIN)/testAxis: testAxis.cc $(LIBGRAIL)
 	$(CXX) $^  -o $@ $(LIBS)
 
-# $(opengl)/ButtonWidget.o: $(opengl)/ButtonWidget.cc
-# 	$(CXX) -c $< -o $@
-
-# $(opengl)/LineGraphWidget.o: $(opengl)/LineGraphWidget.cc
-# 	$(CXX) -c $< -o $@
-
-# $(opengl)/BarChartWidget.o: $(opengl)/BarChartWidget.cc $(opengl)/BarChartWidget.hh $(opengl)/StyledMultiShape2D.hh $(opengl)/MultiText.hh
-# 	$(CXX) -c $< -o $@
+$(BIN)/testLineGraph: testLineGraph.cc $(LIBGRAIL)
+	$(CXX) $^  -o $@ $(LIBS)
 
 $(BIN)/testHeatMap: testHeatMap.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
