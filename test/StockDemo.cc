@@ -59,6 +59,8 @@ class StockDemo : public GLWin {
     chart.legend(100,100);
     chart.init(); 
     //TODO:Add xAxis and yAxis label funcs
+    //TODO:Add legen to all graphwidgets
+    //TODO:Fix chart axis ticker in chart(), maybe move to init()
 
   }
 };
