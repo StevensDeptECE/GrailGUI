@@ -99,35 +99,43 @@ void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t>& glyphMap,
                     uint32_t& rowSize) {
   FT_BitmapGlyph bg;
 
+  // Loads glyph and pushes a blank if anything fails.
   if (FT_Load_Char(ftFace, c, FT_LOAD_RENDER)) {
     char character[2] = {(char)c, '\0'};
     cerr << "Failed to load glyph for c=" << c << '\n';
     // throw Ex2(Errcode::FONT_LOAD_GLYPH, glyph);
-    // glyphs.push_back(Glyph(maxWidth, glm::ivec2(0, 0), glm::ivec2(0, 0), 0.0,
-    // 0.0, 1.0, bogusBottomRight));
-    // TODO: eliminated this case because it never seems to happen
+    glyphs.push_back(Glyph(maxWidth, 0, 0, 0, 0, 0.0, 0.0, 1.0, 1.0));
     return;
   } else {
     ///* convert to an anti-aliased bitmap */
+
+    // The below code used to work, but is specifically not to be used with the
+    // glyph format FT_GLYPH_FORMAT_BITMAP. As a result, use FT_Get_Glyph and
+    // FT_Glyph_To_Bitmap instead, but the original code here is left commented
+    // out in the event that this new code breaks again
+
     // if (FT_Render_Glyph(ftFace->glyph, FT_RENDER_MODE_NORMAL)) {
     // std::cerr << "ERROR::FREETYPE: Failed to Render Glyph" << std::endl;
-    //// TODO: eliminated this case because it never seems to happen
-    //// glyphs.push_back(Glyph(maxWidth, glm::ivec2(0, 0), glm::ivec2(0, 0),
-    //// 0.0, 0.0, 1.0, bogusBottomRight));
-    // return;
-    //}
     FT_Glyph glyph;
     if (FT_Get_Glyph(ftFace->glyph, &glyph)) {
       std::cerr << "ERROR::FREETYPE: Failed to get glyph" << std::endl;
+      glyphs.push_back(Glyph(maxWidth, 0, 0, 0, 0, 0.0, 0.0, 1.0, 1.0));
       return;
     }
     if (FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 0)) {
       std::cerr << "ERROR::FREETYPE: Failed to convert glyph to bitmap"
                 << std::endl;
+      glyphs.push_back(Glyph(maxWidth, 0, 0, 0, 0, 0.0, 0.0, 1.0, 1.0));
       return;
     }
     bg = (FT_BitmapGlyph)glyph;
   }
+
+  // The below is from the same code as the above commented out FT_Render_Glyph.
+  // Use this if we have to switch back to using FT_Render_Glyph. All of the
+  // functions that rely on bg will have to be changed in that instance, but at
+  // this moment that means about 6 or 7 changes isolated to Font::addGlyph and
+  // nothing anywhere else.
 
   // FT_GlyphSlot g = ftFace->glyph;
   // const uint8_t* freetype_buffer_bd = g->bitmap.buffer;

@@ -14,7 +14,7 @@ void LinearScale::init(double min, double max, double shift,
   this->tickInterval = tickInterval;
   this->numInterval = tickInterval;
   scale = axisSize / (max - min);
-  this->shift = shift;
+  this->shift = scale*(-min)+shift;
 }
 
 void LogScale::init(double min, double max, double shift,
