@@ -100,12 +100,12 @@ class ESRIMapLoader : public GLWin {
 
   void detectCycle(vector<float> vec) {
     vector<pair<float, float>> indices(vec.size() / 2 + 1);
-    indices[0] = pair(-1, -1);
+    indices[0] = pair<float, float>(-1, -1);
     pair<float, float> temp;
     vector<pair<float, float>>::iterator it;
     cout << vec.size() << "\n";
     for (int i = 0; i < vec.size(); i += 2) {
-      temp = pair(vec[i], vec[i + 1]);
+      temp = pair<float, float>(vec[i], vec[i + 1]);
       it = find(indices.begin(), indices.end(), temp);
       if (it != indices.end()) {
         cout << "Cycle detected?\n"
@@ -185,6 +185,13 @@ class ESRIMapLoader : public GLWin {
     setAction(1006, increaseCounties);
     setAction(1007, decreaseCounties);
     setAction(1008, toggleAnimate);
+    setAction(1009, zoomIn2D);
+    setAction(1010, zoomOut2D);
+    setAction(1011, panLeft2D);
+    setAction(1012, panRight2D);
+    setAction(1013, panUp2D);
+    setAction(1014, panDown2D);
+    setAction(1015, resetProjection2D);
 
     setEvent(266, 1002);  // page up = displayAll
     setEvent(267, 1003);  // page down = display3
@@ -193,7 +200,14 @@ class ESRIMapLoader : public GLWin {
     setEvent(265, 1006);  // up arrow = increase  display
     setEvent(264, 1007);  // down arrow = decrease display
     setEvent(46, 1008);   // period = toggle animation
+    setEvent('W', 1013);  // w PAN up
+    setEvent('S', 1014);  // S PAN Down
+    setEvent('A', 1011);  // c pan left
+    setEvent('D', 1012);  // d pan right
 
+    setEvent('Q', 1009);  // zoom in
+    setEvent('E', 1010);  // zoom out
+    setEvent('P', 1015);
     double xMin = -80, xMax = -60;
     filterX(shapeVector, xMin, xMax);
     flatvec.reserve(shapeVector.size());
@@ -235,5 +249,5 @@ class ESRIMapLoader : public GLWin {
 };
 
 int main(int argc, char* argv[]) {
-  return GLWin::init(new ESRIMapLoader(), 1920, 800);
+  return GLWin::init(new ESRIMapLoader(), 1920, 1500);
 }

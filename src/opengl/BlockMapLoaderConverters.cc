@@ -33,7 +33,6 @@ BlockMapLoader::BlockMapLoader(
     numPoints += shape->nVertices;
     shapes[i] = shape;
   }
-
   BlockLoader::init(
       sizeof(SpecificHeader) + nEntities * sizeof(Segment) + numPoints * 8,
       Type::gismap, version);
@@ -41,6 +40,7 @@ BlockMapLoader::BlockMapLoader(
   specificHeader = (SpecificHeader*)((char*)mem + getHeaderSize());
   // next, get the location of the segments
   specificHeader->numLists = nEntities;
+  specificHeader->totalPoints = numPoints;
   segments = (Segment*)((char*)specificHeader + sizeof(SpecificHeader));
 
   // last, points are a block of floating point numbers

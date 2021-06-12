@@ -69,6 +69,7 @@ class BlockLoader {
 
  public:
   BlockLoader(const char filename[]);
+  void init(uint64_t* mem, uint64_t size);
   void init(uint64_t bytes, Type t, uint32_t version);
   // Fast load a blockfile
   void readBlockFile(const char filename[]);
@@ -80,7 +81,7 @@ class BlockLoader {
   bool authenticate() const;
   BlockLoader(uint64_t bytes, Type t, uint32_t version)
       : mem(new uint64_t[(getHeaderSize() + (bytes + 7) / 8)]) {
-    // std::make_unique<uint64_t>(getHeaderSize() + (bytes + 7) / 8)) {
+    // std::make_unique<uint64_t[]>(getHeaderSize() + (bytes + 7) / 8)) {
     generalHeader = (GeneralHeader*)mem;  // header is the first chunk of bytes
     generalHeader->magic = ((((('!' << 8) + 'B') << 8) + 'L') << 8) +
                            'd';  // magic number for all block loaders

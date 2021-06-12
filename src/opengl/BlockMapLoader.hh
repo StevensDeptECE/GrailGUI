@@ -5,7 +5,8 @@ class BlockMapLoader : public BlockLoader {
  public:
   struct SpecificHeader {
     uint32_t numLists;
-    uint32_t unused;
+    uint32_t totalPoints;
+    uint32_t deltaEncoded : 1;
   };
 
   struct Segment {
@@ -27,12 +28,14 @@ class BlockMapLoader : public BlockLoader {
   const static Method methods[];
 
  public:
+  void init(const uint64_t* mem, uint64_t size);
   void init(uint32_t numLists, uint32_t numPoints);
   // fast load a blockmap from a .bml file
   BlockMapLoader(const char filename[]);
 
   // load and convert an ESRI .shp to BlockMap format
   BlockMapLoader(const char filename[], const char[]);
+  static BlockMapLoader loadCompressed(const char filename[]);
 
   // save a fast blockmap file
   void save(const char filename[]);
@@ -45,4 +48,8 @@ class BlockMapLoader : public BlockLoader {
 
   void methodPolygon();
   void methodPolyline();
+  uint64_t sum() const;
+  void deltaEncode();
+  void deltaUnEncode();
+  void dumpSegment(uint32_t seg);
 };
