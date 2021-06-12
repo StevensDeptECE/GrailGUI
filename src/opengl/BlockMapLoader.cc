@@ -107,10 +107,10 @@ void BlockMapLoader::save(const char filename[]) {
   // uint64_t:   b1 b2 b3 b4 b5 b6 b7 b8 --> b8 b7 b6 b5 b4 b3 b2 b1
 }
 BlockMapLoader::BlockMapLoader(const char filename[]) : BlockLoader(filename) {
-  specificHeader = (SpecificHeader*)((char*)mem + getHeaderSize());
-  segments = (Segment*)((char*)specificHeader + sizeof(SpecificHeader));
+  blockMapHeader = (BlockMapHeader*)((char*)mem + getHeaderSize());
+  segments = (Segment*)((char*)blockMapHeader + sizeof(BlockMapHeader));
   points =
-      (float*)((char*)segments + specificHeader->numLists * sizeof(Segment));
+      (float*)((char*)segments + blockMapHeader->numSegments * sizeof(Segment));
 
   // floats are now completely loaded, ready to draw!
 }
@@ -132,7 +132,7 @@ void BlockMapLoader::methodPolyline() {}
 uint64_t BlockMapLoader::sum() const {
   uint64_t sum = 0;
   uint64_t* p = (uint64_t*)points;
-  for (uint32_t i = specificHeader->totalPoints / 2; i > 0; i--) sum += *p++;
+  for (uint32_t i = blockMapHeader->totalPoints / 2; i > 0; i--) sum += *p++;
   return sum;
 }
 
@@ -143,7 +143,7 @@ inline void delta(float& val, float& prevVal) {
 }
 
 void BlockMapLoader::deltaEncode() {
-  uint32_t numSegments = specificHeader->numLists;
+  uint32_t numSegments = blockMapHeader->numSegments;
   uint32_t sizeSoFar = 0;
   for (uint32_t i = 0; i < numSegments; i++) {
     const uint32_t numPoints = segments[i].numPoints;
@@ -160,7 +160,7 @@ void BlockMapLoader::deltaEncode() {
 }
 
 void BlockMapLoader::deltaUnEncode() {
-  uint32_t numSegments = specificHeader->numLists;
+  uint32_t numSegments = blockMapHeader->numSegments;
   uint32_t sizeSoFar = 0;
   for (uint32_t i = 0; i < numSegments; i++) {
     const uint32_t numPoints = segments[i].numPoints;
@@ -177,7 +177,7 @@ void BlockMapLoader::deltaUnEncode() {
 }
 
 void BlockMapLoader::dumpSegment(uint32_t seg) {
-  uint32_t numSegments = specificHeader->numLists;
+  uint32_t numSegments = blockMapHeader->numSegments;
   uint32_t sizeSoFar = 0;
 
   if (seg >= numSegments) return;

@@ -6,15 +6,23 @@
 #include "opengl/MultiShape2D.hh"
 
 class StyledMultiShape2D : public MultiShape2D {
+ private:
+  glm::mat4 transform;
+
  public:
-  StyledMultiShape2D(Canvas* parent, const Style* s, uint32_t vertCount = 1024,
+  StyledMultiShape2D(Canvas* parent, const Style* s, float angle = 0,
+                     float x = 0, float y = 0, uint32_t vertCount = 1024,
                      uint32_t solidIndCount = 1024,
                      uint32_t lineIndCount = 1024,
                      uint32_t pointIndCount = 1024)
-      : MultiShape2D(parent, s, vertCount, solidIndCount, lineIndCount, pointIndCount,
-                     5),
-        currentIndex(0) {
+      : MultiShape2D(parent, s, vertCount, solidIndCount, lineIndCount,
+                     pointIndCount, 5),
+        currentIndex(0),
+        transform(1.0f) {
     startIndices.push_back(0);
+    transform = glm::translate(transform, glm::vec3(x, y, 0));
+    transform = glm::rotate(transform, angle, glm::vec3(0, 0, -1));
+    transform = glm::translate(transform, glm::vec3(-x, -y, 0));
   }
 
   uint32_t addSector(float x, float y, float xRad, float yRad, float fromAngle,

@@ -12,7 +12,7 @@ all:  $(BIN)/testBlockMapLoader  $(BIN)/testFastMapLoad $(BIN)/ESRIMapDemo \
   $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
   $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
   $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/TestESRIPolygon \
-	$(BIN)/testPolyLines  #$(BIN)/testWidgets
+	$(BIN)/testPolyLines $(BIN)/StockDemo $(BIN)/testAxis $(BIN)/testWidgets
 
 #$(BIN)/testText 
 #$(BIN)/testDrawing
@@ -33,6 +33,9 @@ $(BIN)/testGrid: testGrid.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/simpleDemo: simpleDemo.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)
+
+$(BIN)/StockDemo: StockDemo.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testGenericTable: testGenericTable.o $(LIBGRAIL)
@@ -94,6 +97,9 @@ $(BIN)/testWidgets: testWidgets.cc $(LIBGRAIL)
 	$(CXX) $^  -o $@ $(LIBS)
 
 $(BIN)/testPolyLines: testPolyLines.cc $(LIBGRAIL)
+	$(CXX) $^  -o $@ $(LIBS)
+
+$(BIN)/testAxis: testAxis.cc $(LIBGRAIL)
 	$(CXX) $^  -o $@ $(LIBS)
 
 # $(opengl)/ButtonWidget.o: $(opengl)/ButtonWidget.cc

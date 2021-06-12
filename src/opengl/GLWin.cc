@@ -278,6 +278,8 @@ int GLWin::init(GLWin *g, uint32_t w, uint32_t h, uint32_t exitAfter) {
     cerr << e << '\n';
   } catch (const char *msg) {
     cerr << msg << endl;
+  } catch (const std::exception &e) {
+    cerr << e.what() << endl;
   } catch (...) {
     cerr << "uncaught exception! (ouch)\n";
   }
@@ -382,10 +384,7 @@ void GLWin::quit(GLWin *w) {
   exit(0);  // TODO: check for cleanup first?
 }
 
-void GLWin::refresh(GLWin *w) {
-  w->setDirty();
-  // TODO: send signal to force redraw
-}
+void GLWin::refresh(GLWin *w) { w->setDirty(); }
 
 void GLWin::saveFrame(GLWin *w) {
   if (w->saveBuffer != nullptr && w->saveW != w->width ||
@@ -509,7 +508,7 @@ void GLWin::toggleSelectObject3D(GLWin *w) {
 */
 
 void GLWin::resetProjection2D(GLWin *w) {
-  w->currentTab()->getMainCanvas()->resetProjection2D();
+  w->currentTab()->getMainCanvas()->resetProjection();
 }
 
 void GLWin::zoomIn2D(GLWin *w) {

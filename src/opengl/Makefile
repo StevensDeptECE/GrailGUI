@@ -36,13 +36,20 @@ $(out)/MultiText.o $(out)/MultiShape3D.o $(out)/TextureArray.o \
 $(out)/Document.o $(out)/DocView.o \
 $(out)/Shapefile.o $(out)/ESRIShape.o $(out)/ESRIPolygon.o\
 $(out)/LineGraphWidget.o $(out)/BarChartWidget.o \
-$(out)/ButtonWidget.o $(out)/Scale.o \
-$(out)/AngledMultiText.o \
-$(out)/ScrollbarWidget.o \
+$(out)/ButtonWidget.o $(out)/Scale.o $(out)/CandlestickChartWidget.o\
+$(out)/AngledMultiText.o $(out)/BoxChartWidget.o \
+$(out)/ScrollbarWidget.o $(out)/AxisWidget.o $(out)/GapMinderWidget.o \
 
 SHAPEOBJS := $(libshapeout)/dbfopen.o $(libshapeout)/safileio.o \
 $(libshapeout)/sbnsearch.o $(libshapeout)/shpopen.o $(libshapeout)/shptree.o
+
+
 #$(out)/AxesWidget.o $(out)/AxisWidget.o \
+$(out)/LineGraphWidget.o $(out)/BarChartWidget.o $(out)/CandlestickChartWidget.o $(out)/BoxChartWidget.o $(out)/GapMinderWidget.o \
+$(out)/ButtonWidget.o $(out)/Scale.o \
+$(out)/AngledMultiText.o \
+$(out)/ScrollbarWidget.o \
+$(out)/AxisWidget.o \
 
 # heatmap does not yet work, so commented out until Dov or someone else gets it going. But it's VERY COOL!
 #$(out)/HeatMap.o
@@ -174,6 +181,15 @@ $(out)/LineGraphWidget.o: LineGraphWidget.cc LineGraphWidget.hh
 $(out)/BarChartWidget.o: BarChartWidget.cc BarChartWidget.hh
 	$(COMP) $< -o $@
 
+$(out)/CandlestickChartWidget.o: CandlestickChartWidget.cc CandlestickChartWidget.hh
+	$(COMP) $< -o $@
+
+$(out)/BoxChartWidget.o: BoxChartWidget.cc BoxChartWidget.hh
+	$(COMP) $< -o $@
+
+$(out)/GapMinderWidget.o: GapMinderWidget.cc GapMinderWidget.hh
+	$(COMP) $< -o $@
+
 $(out)/ButtonWidget.o: ButtonWidget.cc ButtonWidget.hh
 	$(COMP) $< -o $@
 
@@ -183,11 +199,8 @@ $(out)/Scale.o: Scale.cc Scale.hh
 $(out)/ScrollbarWidget.o: ScrollbarWidget.cc ScrollbarWidget.hh
 	$(COMP) $< -o $@
 
-# $(out)/AxesWidget.o: AxesWidget.cc AxesWidget.hh
-# 	$(COMP) $< -o $@
-
-# $(out)/AxisWidget.o: AxisWidget.cc AxisWidget.hh
-# 	$(COMP) $< -o $@
+$(out)/AxisWidget.o: AxisWidget.cc AxisWidget.hh
+	$(COMP) $< -o $@
 
 
 ###--------------------------------------------------------------------------

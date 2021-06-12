@@ -23,6 +23,7 @@ BlockMapLoader::BlockMapLoader(
   }
 
   uint64_t numPoints = 0;
+  uint32_t numSegments = 0;
   vector<SHPObject*> shapes(nEntities);
   for (int i = 0; i < nEntities; i++) {
     SHPObject* shape = SHPReadObject(shapeHandle, i);
@@ -31,40 +32,60 @@ BlockMapLoader::BlockMapLoader(
       continue;
     }
     numPoints += shape->nVertices;
+    numSegments += shape->nParts;
     shapes[i] = shape;
   }
   BlockLoader::init(
-      sizeof(SpecificHeader) + nEntities * sizeof(Segment) + numPoints * 8,
+      sizeof(BlockMapHeader) + numSegments * sizeof(Segment) + numPoints * 8,
       Type::gismap, version);
   // first bytes past standard header is the header specific to this file format
-  specificHeader = (SpecificHeader*)((char*)mem + getHeaderSize());
+  blockMapHeader = (BlockMapHeader*)((char*)mem + getHeaderSize());
   // next, get the location of the segments
-  specificHeader->numLists = nEntities;
-  specificHeader->totalPoints = numPoints;
-  segments = (Segment*)((char*)specificHeader + sizeof(SpecificHeader));
+  blockMapHeader->bounds.xMin = minBounds[0];
+  blockMapHeader->bounds.xMax = maxBounds[0];
+  blockMapHeader->bounds.yMin = minBounds[1];
+  blockMapHeader->bounds.yMax = maxBounds[1];
+  blockMapHeader->numRegionContainers = 0;
+  blockMapHeader->numRegions = nEntities;
+  blockMapHeader->numSegments = numSegments;
+  blockMapHeader->totalPoints = numPoints;
+  regions = (Region*)((char*)blockMapHeader + sizeof(BlockMapHeader));
+  segments =
+      (Segment*)((char*)regions + blockMapHeader->numRegions * sizeof(Region));
 
   // last, points are a block of floating point numbers
   points =
-      (float*)((char*)segments + specificHeader->numLists * sizeof(Segment));
+      (float*)((char*)segments + blockMapHeader->numSegments * sizeof(Segment));
   uint32_t sizeSoFar = 0;
+  uint32_t segCount = 0;
   for (uint32_t i = 0; i < shapes.size(); i++) {
-    segments[i].type = shapes[i]->nSHPType;
-    segments[i].xMin = shapes[i]->dfXMin;
-    segments[i].xMax = shapes[i]->dfXMax;
-    segments[i].yMin = shapes[i]->dfYMin;
-    segments[i].yMax = shapes[i]->dfYMax;
-
-    uint32_t numPoints = segments[i].numPoints = shapes[i]->nVertices;
-    if (numPoints > 0) {
-      segments[i].baseLocX = shapes[i]->padfX[0];
-      segments[i].baseLocY = shapes[i]->padfY[0];
-      float* xPoints = points + sizeSoFar;
-      float* yPoints = points + sizeSoFar + numPoints;  // y starts after all x
-      sizeSoFar += numPoints * 2;
-
-      for (uint32_t j = 0; j < numPoints; j++) {
-        xPoints[j] = shapes[i]->padfX[j];
-        yPoints[j] = shapes[i]->padfY[j];
+    // segments[i].xMin = shapes[i]->dfXMin;
+    // segments[i].xMax = shapes[i]->dfXMax;
+    // segments[i].yMin = shapes[i]->dfYMin;
+    // segments[i].yMax = shapes[i]->dfYMax;
+    int* start = shapes[i]->panPartStart;
+    if (start == nullptr && shapes[i]->nParts != 0) {
+      cerr << "error null list of offsets for parts panpartstart\n";
+      return;
+    }
+    for (uint32_t j = 0; j < shapes[i]->nParts; j++, start++, segCount++) {
+      segments[segCount].type = shapes[i]->nSHPType;
+      uint32_t numPoints;
+      if (j == shapes[i]->nParts - 1)
+        numPoints = shapes[i]->nVertices - *start;
+      else
+        numPoints = start[1] - start[0];
+      if (numPoints > 0) {
+        segments[i].baseLocX = shapes[i]->padfX[0];
+        segments[i].baseLocY = shapes[i]->padfY[0];
+        float* xPoints = points + sizeSoFar;
+        float* yPoints =
+            points + sizeSoFar + numPoints;  // y starts after all x
+        sizeSoFar += numPoints * 2;
+        for (uint32_t k = 0; k < numPoints; k++) {
+          xPoints[k] = shapes[i]->padfX[*start + k];
+          yPoints[k] = shapes[i]->padfY[*start + k];
+        }
       }
     }
   }

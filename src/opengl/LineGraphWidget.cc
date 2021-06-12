@@ -9,7 +9,24 @@
 
 using namespace std;
 
+vector<glm::vec4> colors;
+vector<string> names;
+
 void LineGraphWidget::init() { m->drawRectangle(x, y, w, h, grail::black); }
+
+void LineGraphWidget::legend(float x, float y){
+  const float boxWidth = 150;
+  const int fontSize = 12;
+
+  m->drawRectangle(x,y,boxWidth,15*colors.size(),grail::black);
+  const Font *f = FontFace::get("TIMES", fontSize, FontFace::BOLD);
+
+  for(int i = 0; i < colors.size(); i++){
+    t->add(x+2, (y+fontSize+((fontSize+2)*i)), f, names[i].c_str(), names[i].length());
+    m->fillRectangle(x+(boxWidth*.75),y+2+((fontSize+2)*i),boxWidth/5,fontSize-1,colors[i]);
+  }
+
+}
 
 void LineGraphWidget::title(const string &s) {
   const Font *f = FontFace::get("TIMES", 12, FontFace::BOLD);
@@ -101,6 +118,42 @@ void LineGraphWidget::chart(const vector<float> &xPoints,
   //   lineCount++;
   //   line += xInterval;
   // }
+}
+
+void LineGraphWidget::add(const vector<float> &xPoints,
+                            const vector<float> &yPoints,
+                            float xInterval, float yInterval, 
+                            Scale *xAxis, Scale *yAxis,const glm::vec4& dotColor, string name){
+
+  colors.push_back(dotColor);
+  names.push_back(name);
+
+
+  float xMax = *max_element(xPoints.begin(), xPoints.end());
+  float yMax = *max_element(yPoints.begin(), yPoints.end());
+  float xMin = *min_element(xPoints.begin(), xPoints.end());
+  float yMin = *min_element(yPoints.begin(), yPoints.end());                            
+
+  xAxis->init(0, xMax, x, w, xInterval);
+  yAxis->init(0, yMax, y + h, -h, yInterval);                            
+
+  float xPoint1 = xAxis->transform(xPoints[0]);
+  float yPoint1 = yAxis->transform(yPoints[0]);
+
+  m->fillCircle(xPoint1, yPoint1, 3.5, 3, grail::blue);
+
+  for (int i = 1; i < xPoints.size(); i++) {
+    float xPoint2 = xAxis->transform(xPoints[i]);
+    float yPoint2 = yAxis->transform(yPoints[i]);
+
+    m->drawLine(xPoint1, yPoint1, xPoint2, yPoint2,
+                grail::black);
+    m->fillCircle(xPoint2, yPoint2, 3.5, 3, dotColor);
+
+    xPoint1 = xPoint2;
+    yPoint1 = yPoint2;
+  }
+
 }
 
 #if 0

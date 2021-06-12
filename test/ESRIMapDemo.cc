@@ -91,7 +91,7 @@ class ESRIMapLoader : public GLWin {
   }
 
   static void toggleAnimate(GLWin* w) {
-    ESRIMapLoader* eml = ((ESRIMapLoader*)w);
+    ESRIMapLoader* eml = (ESRIMapLoader*)w;
     if (eml->actionTimer.elapsed() > eml->actionDelay) {
       eml->animate = !eml->animate;
       eml->actionTimer.reset();
