@@ -8,11 +8,11 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all: $(BIN)/testWidgets \
+all:  $(BIN)/testBlockMapLoader  $(BIN)/testFastMapLoad $(BIN)/ESRIMapDemo \
   $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
   $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
   $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/TestESRIPolygon \
-	$(BIN)/testPolyLines $(BIN)/ESRIMapDemo
+	$(BIN)/testPolyLines  #$(BIN)/testWidgets
 
 #$(BIN)/testText 
 #$(BIN)/testDrawing
@@ -70,6 +70,12 @@ $(BIN)/TestESRIPolygon: TestESRIPolygon.cc $(LIBGRAIL)
 
 $(BIN)/ESRIMapDemo: ESRIMapDemo.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)	
+
+$(BIN)/testBlockMapLoader: testBlockMapLoader.cc $(opengl)/BlockMapLoader.cc $(opengl)/BlockMapLoaderConverters.cc $(LIBGRAIL)
+	$(CXX) $< $(opengl)/BlockMapLoader.cc $(opengl)/BlockMapLoaderConverters.cc -o $@ $(LIBS)
+
+$(BIN)/testFastMapLoad: testFastMapLoad.cc $(opengl)/BlockMapLoader.cc $(opengl)/BlockMapLoaderConverters.cc $(LIBGRAIL)
+	$(CXX)  $< $(opengl)/BlockMapLoader.cc $(opengl)/BlockMapLoaderConverters.cc -o $@ $(LIBS)
 
 $(BIN)/SolarSystem: SolarSystem.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
