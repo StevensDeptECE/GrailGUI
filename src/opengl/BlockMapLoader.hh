@@ -12,7 +12,7 @@ class BlockMapLoader : public BlockLoader {
     uint32_t numRegionContainers;
     uint32_t numRegions;
     uint32_t numSegments;
-    uint32_t totalPoints;
+    uint32_t numPoints;
     uint32_t deltaEncoded : 1;
     BoundRect bounds;
   };
@@ -66,14 +66,16 @@ class BlockMapLoader : public BlockLoader {
     //    float xMin, xMax, yMin, yMax;  // bounding box
     // TODO: remove baseLocX and Y from segment, move to region
     // high precision base, all points can be relative
-    double baseLocX, baseLocY;  // if (0,0) this is unused
+    // double baseLocX, baseLocY;  // if (0,0) this is unused
   };
 
  private:
   BlockMapHeader* blockMapHeader;
+  RegionContainer* regionContainers;
+  Region* regions;
   Segment* segments;
   float* points;
-  static constexpr uint32_t version = 0x00010000;
+  static constexpr uint32_t version = 0x00000401;  // 0.4.0.1
   typedef void (BlockMapLoader::*Method)();
   const static Method methods[];
 
@@ -86,7 +88,11 @@ class BlockMapLoader : public BlockLoader {
   // load and convert an ESRI .shp to BlockMap format
   BlockMapLoader(const char filename[], const char[]);
   static BlockMapLoader loadCompressed(const char filename[]);
+  // TODO: const RegionContainers* getRegionContainers() const { return
+  // regionContainers; }
 
+  const Region* getRegions() const { return regions; }
+  const Segment* getSegments() const { return segments; }
   // save a fast blockmap file
   void save(const char filename[]);
 
@@ -102,4 +108,15 @@ class BlockMapLoader : public BlockLoader {
   void deltaEncode();
   void deltaUnEncode();
   void dumpSegment(uint32_t seg);
+  uint32_t getNumRegionContainers() const {
+    return blockMapHeader->numRegionContainers;
+  }
+  const BlockMapHeader* getBlockMapHeader() const { return blockMapHeader; }
+  uint32_t getNumRegions() const { return blockMapHeader->numRegions; }
+  uint32_t getNumSegments() const { return blockMapHeader->numSegments; }
+  uint32_t getNumPoints() const { return blockMapHeader->numPoints; }
+  const float* getXPoints() const { return points; }
+  const float* getYPoints() const { return points + blockMapHeader->numPoints; }
+  const Segment& getSegment(uint32_t i) { return segments[i]; }
+  static void diff(const BlockMapLoader& a, const BlockMapLoader& b);
 };

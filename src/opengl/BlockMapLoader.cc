@@ -5,7 +5,9 @@
 #include <unistd.h>
 
 #include <cstdio>
+#include <iostream>
 //#include "lzmadec.h"
+using namespace std;
 
 void BlockLoader::init(uint64_t bytes, Type t, uint32_t version) {
   bytes =
@@ -132,7 +134,7 @@ void BlockMapLoader::methodPolyline() {}
 uint64_t BlockMapLoader::sum() const {
   uint64_t sum = 0;
   uint64_t* p = (uint64_t*)points;
-  for (uint32_t i = blockMapHeader->totalPoints / 2; i > 0; i--) sum += *p++;
+  for (uint32_t i = blockMapHeader->numPoints / 2; i > 0; i--) sum += *p++;
   return sum;
 }
 
@@ -144,52 +146,86 @@ inline void delta(float& val, float& prevVal) {
 
 void BlockMapLoader::deltaEncode() {
   uint32_t numSegments = blockMapHeader->numSegments;
-  uint32_t sizeSoFar = 0;
+  float* xPoints = points;
+  float* yPoints = points + blockMapHeader->numPoints;
+
   for (uint32_t i = 0; i < numSegments; i++) {
     const uint32_t numPoints = segments[i].numPoints;
-    float lastX = segments[i].baseLocX;
-    float lastY = segments[i].baseLocY;
-    float* xPoints = points + sizeSoFar;
-    float* yPoints = points + sizeSoFar + numPoints;
+    float lastX = regions[i].baseX;
+    float lastY = regions[i].baseY;
     for (uint32_t j = 0; j < numPoints; j++) {
       delta(xPoints[j], lastX);
       delta(yPoints[j], lastY);
     }
-    sizeSoFar += segments[i].numPoints * 2;
   }
 }
 
 void BlockMapLoader::deltaUnEncode() {
   uint32_t numSegments = blockMapHeader->numSegments;
-  uint32_t sizeSoFar = 0;
+  float* xPoints = points;
+  float* yPoints = points + blockMapHeader->numPoints;
   for (uint32_t i = 0; i < numSegments; i++) {
     const uint32_t numPoints = segments[i].numPoints;
-    double lastX = segments[i].baseLocX;
-    double lastY = segments[i].baseLocY;
-    float* xPoints = points + sizeSoFar;
-    float* yPoints = points + sizeSoFar + numPoints;
+    double lastX = regions[i].baseX;
+    double lastY = regions[i].baseY;
     for (uint32_t j = 0; j < numPoints; j++) {
       lastX += xPoints[i], lastY += yPoints[i];
       xPoints[i] = lastX, yPoints[i] = lastY;
     }
-    sizeSoFar += segments[i].numPoints * 2;
   }
 }
 
 void BlockMapLoader::dumpSegment(uint32_t seg) {
   uint32_t numSegments = blockMapHeader->numSegments;
-  uint32_t sizeSoFar = 0;
-
   if (seg >= numSegments) return;
+  const float* xPoints = points;
+  const float* yPoints = points + blockMapHeader->numPoints;
 
+  uint32_t pointIndex = 0;
   for (uint32_t i = 0; i < seg; i++) {
-    const uint32_t numPoints = segments[i].numPoints;
-    sizeSoFar += segments[i].numPoints * 2;
+    pointIndex += segments[i].numPoints;
   }
   const uint32_t numPoints = segments[seg].numPoints;
-  float* xPoints = points + sizeSoFar;
-  float* yPoints = points + sizeSoFar + numPoints;
-  for (uint32_t j = 0; j < numPoints; j++) {
-    printf("%14.7lf%14.7lf\n", xPoints[j], yPoints[j]);
+  for (uint32_t j = 0; j < numPoints; j++, pointIndex++) {
+    printf("%14.7lf%14.7lf\n", xPoints[pointIndex], yPoints[pointIndex]);
   }
+}
+
+inline bool approxeq(double a, double b) {
+  return abs(b - a) < abs(a * 1e-7);  // TODO: is this good?
+}
+void BlockMapLoader::diff(const BlockMapLoader& a, const BlockMapLoader& b) {
+  const BlockMapHeader* ahead = a.getBlockMapHeader();
+  const BlockMapHeader* bhead = b.getBlockMapHeader();
+  uint32_t errors = 0;
+  // if (!approxeq(ahead->bounds, bhead->bounds))
+  //  cout << ahead->bounds << bhead->bounds;
+  if (ahead->numRegions != bhead->numRegions) {
+    cerr << "diff: number of regions " << ahead->numRegions << " "
+         << bhead->numRegions << '\n';
+    errors++;
+  } else {
+    const Region* areg = a.getRegions();
+    const Region* breg = b.getRegions();
+  }
+  if (ahead->numSegments != bhead->numSegments) {
+    cerr << "diff: number of segments " << ahead->numSegments << " "
+         << bhead->numSegments << '\n';
+    errors++;
+  } else {
+    for (uint32_t i = 0; i < ahead->numSegments; i++) {
+      const Segment* aseg = a.segments + i;
+      const Segment* bseg = b.segments + i;
+      if (aseg->numPoints != bseg->numPoints)
+        cerr << "diff: size of segment " << i << " " << aseg->numPoints << " "
+             << bseg->numPoints << '\n';
+      errors++;
+    }
+  }
+  if (errors != 0) return;
+  const float* ap = a.getXPoints();
+  const float* bp = b.getXPoints();
+  for (uint32_t i = 0; i < a.getNumPoints() * 2; i++)
+    if (!approxeq(ap[i], bp[i]))
+      cerr << i << ": " << ap[i] << "," << bp[i] << '\n';
 }

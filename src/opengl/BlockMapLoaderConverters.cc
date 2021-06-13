@@ -35,9 +35,9 @@ BlockMapLoader::BlockMapLoader(
     numSegments += shape->nParts;
     shapes[i] = shape;
   }
-  BlockLoader::init(
-      sizeof(BlockMapHeader) + numSegments * sizeof(Segment) + numPoints * 8,
-      Type::gismap, version);
+  BlockLoader::init(sizeof(BlockMapHeader) + nEntities * sizeof(Region) +
+                        numSegments * sizeof(Segment) + numPoints * 8,
+                    Type::gismap, version);
   // first bytes past standard header is the header specific to this file format
   blockMapHeader = (BlockMapHeader*)((char*)mem + getHeaderSize());
   // next, get the location of the segments
@@ -48,7 +48,7 @@ BlockMapLoader::BlockMapLoader(
   blockMapHeader->numRegionContainers = 0;
   blockMapHeader->numRegions = nEntities;
   blockMapHeader->numSegments = numSegments;
-  blockMapHeader->totalPoints = numPoints;
+  blockMapHeader->numPoints = numPoints;
   regions = (Region*)((char*)blockMapHeader + sizeof(BlockMapHeader));
   segments =
       (Segment*)((char*)regions + blockMapHeader->numRegions * sizeof(Region));
@@ -56,18 +56,23 @@ BlockMapLoader::BlockMapLoader(
   // last, points are a block of floating point numbers
   points =
       (float*)((char*)segments + blockMapHeader->numSegments * sizeof(Segment));
-  uint32_t sizeSoFar = 0;
   uint32_t segCount = 0;
+  float* xPoints = points;  // all x points are together in a single block
+  float* yPoints = points + numPoints;  // same for y
+  uint32_t pointOffset = 0;             // track current point
   for (uint32_t i = 0; i < shapes.size(); i++) {
-    // segments[i].xMin = shapes[i]->dfXMin;
-    // segments[i].xMax = shapes[i]->dfXMax;
-    // segments[i].yMin = shapes[i]->dfYMin;
-    // segments[i].yMax = shapes[i]->dfYMax;
     int* start = shapes[i]->panPartStart;
     if (start == nullptr && shapes[i]->nParts != 0) {
       cerr << "error null list of offsets for parts panpartstart\n";
       return;
     }
+    // regions[i].numPoints =
+    regions[i].bounds.xMin = shapes[i]->dfXMin;
+    regions[i].bounds.xMax = shapes[i]->dfXMax;
+    regions[i].bounds.yMin = shapes[i]->dfYMin;
+    regions[i].bounds.yMax = shapes[i]->dfYMax;
+    regions[i].baseX = shapes[i]->padfX[0];
+    regions[i].baseY = shapes[i]->padfY[0];
     for (uint32_t j = 0; j < shapes[i]->nParts; j++, start++, segCount++) {
       segments[segCount].type = shapes[i]->nSHPType;
       uint32_t numPoints;
@@ -75,17 +80,10 @@ BlockMapLoader::BlockMapLoader(
         numPoints = shapes[i]->nVertices - *start;
       else
         numPoints = start[1] - start[0];
-      if (numPoints > 0) {
-        segments[i].baseLocX = shapes[i]->padfX[0];
-        segments[i].baseLocY = shapes[i]->padfY[0];
-        float* xPoints = points + sizeSoFar;
-        float* yPoints =
-            points + sizeSoFar + numPoints;  // y starts after all x
-        sizeSoFar += numPoints * 2;
-        for (uint32_t k = 0; k < numPoints; k++) {
-          xPoints[k] = shapes[i]->padfX[*start + k];
-          yPoints[k] = shapes[i]->padfY[*start + k];
-        }
+      segments[segCount].numPoints = numPoints;
+      for (uint32_t k = 0; k < numPoints; k++, pointOffset++) {
+        xPoints[pointOffset] = shapes[i]->padfX[*start + k];
+        yPoints[pointOffset] = shapes[i]->padfY[*start + k];
       }
     }
   }

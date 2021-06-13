@@ -214,10 +214,10 @@ void GLWin::startWindow() {
 
   // it seems like glfw will not support good mouse behavior unless we hide the
   // cursor? ugly.
-  glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-  // glEnable(GL_CULL_FACE); I disable this because when we change the
-  // projection to be normal screen pixels than it doesnt draw since its drawing
-  // it in the opposite orientation i assume
+  // TODO: not necessary? glfwSetInputMode(win, GLFW_CURSOR,
+  // GLFW_CURSOR_HIDDEN); glEnable(GL_CULL_FACE); I disable this because when we
+  // change the projection to be normal screen pixels than it doesnt draw since
+  // its drawing it in the opposite orientation i assume
   glEnable(GL_BLEND);
   glEnable(GL_LINE_SMOOTH);
   glEnable(GL_TEXTURE);
