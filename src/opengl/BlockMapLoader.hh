@@ -53,20 +53,14 @@ class BlockMapLoader : public BlockLoader {
   */
   struct Region {
     uint32_t segmentStart;  // first segment in this region
-    uint32_t segmentEnd;    // last semgment in this region
     uint32_t startPoints;   // starting index for points so you don't have to
                             // start from the beginning to index them
     BoundRect bounds;       // bounding box for region
     double baseX, baseY;    // the base location in high precision
   };
   struct Segment {
-    uint32_t numPoints;
-    uint32_t type : 8;
-    uint32_t unused : 24;
-    //    float xMin, xMax, yMin, yMax;  // bounding box
-    // TODO: remove baseLocX and Y from segment, move to region
-    // high precision base, all points can be relative
-    // double baseLocX, baseLocY;  // if (0,0) this is unused
+    uint32_t numPoints : 24;  // up to 16 million points
+    uint32_t type : 8;        //
   };
 
  private:

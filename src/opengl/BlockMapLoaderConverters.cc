@@ -73,17 +73,17 @@ BlockMapLoader::BlockMapLoader(
     regions[i].bounds.yMax = shapes[i]->dfYMax;
     regions[i].baseX = shapes[i]->padfX[0];
     regions[i].baseY = shapes[i]->padfY[0];
-    for (uint32_t j = 0; j < shapes[i]->nParts; j++, start++, segCount++) {
+    for (uint32_t j = 0; j < shapes[i]->nParts; j++, segCount++) {
       segments[segCount].type = shapes[i]->nSHPType;
       uint32_t numPoints;
       if (j == shapes[i]->nParts - 1)
-        numPoints = shapes[i]->nVertices - *start;
+        numPoints = shapes[i]->nVertices - start[j];
       else
-        numPoints = start[1] - start[0];
+        numPoints = start[j + 1] - start[j];
       segments[segCount].numPoints = numPoints;
       for (uint32_t k = 0; k < numPoints; k++, pointOffset++) {
-        xPoints[pointOffset] = shapes[i]->padfX[*start + k];
-        yPoints[pointOffset] = shapes[i]->padfY[*start + k];
+        xPoints[pointOffset] = shapes[i]->padfX[start[j] + k];
+        yPoints[pointOffset] = shapes[i]->padfY[start[j] + k];
       }
     }
   }

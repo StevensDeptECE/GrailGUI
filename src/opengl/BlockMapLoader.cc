@@ -110,7 +110,10 @@ void BlockMapLoader::save(const char filename[]) {
 }
 BlockMapLoader::BlockMapLoader(const char filename[]) : BlockLoader(filename) {
   blockMapHeader = (BlockMapHeader*)((char*)mem + getHeaderSize());
-  segments = (Segment*)((char*)blockMapHeader + sizeof(BlockMapHeader));
+  // TODO: add RegionContainer and NamedEntities
+  regions = (Region*)((char*)blockMapHeader + sizeof(BlockMapHeader));
+  segments =
+      (Segment*)((char*)regions + blockMapHeader->numRegions * sizeof(Region));
   points =
       (float*)((char*)segments + blockMapHeader->numSegments * sizeof(Segment));
 
