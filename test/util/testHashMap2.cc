@@ -35,4 +35,12 @@ int main() {
     if (m.get(symbolsNotInMap[i], &v))
       cerr << "Error: found erroneous symbol: " << symbolsNotInMap[i] << '\n';
   }
+  const char* addWords[] = {"who", "how", "what", "where", "cat", "act", "tac",
+  "homonym", "palindrome",
+  "fuzz", "fizz", "eat", "tea", "ate", "eta", "tae",
+  "tar", "rat", "art", "tare", "rate", "tear"
+  };
+  for (int i = 0; i < sizeof(symbolsNotInMap)/sizeof(char*); i++)
+    m.add(addWords[i], 100+i);
+  m.hist();
 }

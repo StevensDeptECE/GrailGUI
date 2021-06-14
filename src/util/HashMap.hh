@@ -77,7 +77,7 @@ public:
 	HashMap& operator =(const HashMap& orig) = delete;
 
 	void checkGrow() {
-		if (nodeCount < nodeSize)
+		if (nodeCount*2 <= size)
 			return;
 		const Node* old = nodes;
 		nodes = new Node[nodeSize*2];//TODO: need placement new
@@ -85,12 +85,22 @@ public:
 		  nodes[i] = std::move(old[i]); // TODO: this is broken for objects Val without default constructor
 		nodeSize *= 2;
 		delete [] (char*)old; // get rid of the old block of memory
-		std::cerr << "HashMap growing size=" << nodeSize << '\n';
+		uint32_t* oldTable = table;
+		uint32_t oldSize = size;
+		table = new uint32_t[size = size*2|1]; // new size = power of 2 - 1
+		for (uint32_t i = 0; i < size; i++)
+		  if (table[i] != 0) {
+				uint32_t index = hash(symbols+nodes[oldTable[i]].offset); // find out new hash value of symbol
+				table[index] = oldTable[i];
+			}
+		delete [] oldTable;
+	//TODO: grow the symbol table too
+		std::cerr << "HashMap growing size=" << size << " " << nodeSize << '\n';
 	}
 
   void add(const char s[], const Val& v) {
 		uint32_t index = hash(s);
-		for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {
+		for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {	
 			const char* w = symbols + nodes[p].offset;
 			for (int i = 0; *w == s[i]; i++)
 				if (*w == '\0') {
