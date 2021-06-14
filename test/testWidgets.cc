@@ -124,12 +124,15 @@ class TestWidgets : public GLWin {
     chart.init();
   }
 
-  void testScrollBar() {
+  void testScrollBar(StyledMultiShape2D *gui, MultiText *guiText) {
     const uint32_t scrollBarWidth = 50;
     //    ScrollbarWidget scrollBar(gui, guiText, getWidth() - scrollBarWidth,
     //    0, scrollBarWidth, getHeight()); scrollBar.init();
     MainCanvas *c = currentTab()->getMainCanvas();
+    gui->fillRectangle(0, 0, 200, 100, grail::yellow);
     const Style *s = new Style(nullptr, grail::black, grail::blue);
+    StyledMultiShape2D *ms = c->addLayer(new StyledMultiShape2D(c, s));
+    ms->fillCircle(300, 200, 100, .02, grail::darkgreen);
     c->addLayer(new ScrollbarWidget(c, s, width - scrollBarWidth, 0,
                                     scrollBarWidth, getHeight()));
   }
@@ -152,23 +155,26 @@ class TestWidgets : public GLWin {
 
     MainCanvas *c = currentTab()->getMainCanvas();
     StyledMultiShape2D *gui = c->getGui();
+    StyledMultiShape2D *test = c->addLayer(new StyledMultiShape2D(c, s2));
 
+    test->fillRectangle(0, 500, 300, 30, grail::green);
     MultiText *guiText = c->addLayer(new MultiText(c, s));
 
     StyledMultiShape2D *p =
-        c->addLayer(new StyledMultiShape2D(c, s, M_PI / 4, 0, 0));
+        c->addLayer(new StyledMultiShape2D(c, s, -M_PI / 4, 0, 0));
+    p->fillRectangle(400, 100, 100, 100, grail::cyan);
 
     const Style *graphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
-    //    testBarChart(gui, guiText);
-    //    testCandlestick(gui, guiText);
-    //    testBoxChart(gui, guiText);
+    testBarChart(gui, guiText);
+    testCandlestick(gui, guiText);
+    testBoxChart(gui, guiText);
     // testGapMinder(gui, guiText);
     // testButton(gui, guiText);
     // testLineGraphLinear(gui, guiText);
     // testLineGraphLog(gui, guiText);
     // testLinearAxesWidget(gui, guiText, graphStyle);
 
-    testScrollBar();
+    testScrollBar(gui, guiText);
   }
 };
 
