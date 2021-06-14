@@ -57,7 +57,7 @@ class GLWin {
   bool dragMode;
   int winXPos, winYPos;    // location of the top-left of the window in pixels
   uint32_t width, height;  // width and height of the window in pixels
-  bool dirty;
+  bool dirty, dirty2;
   bool focused;
   uint32_t exitAfter;  // if not zero, will terminate
   /*
