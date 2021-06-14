@@ -121,10 +121,8 @@ void GLWin::mouseButtonCallback(GLFWwindow *win, int button, int action,
 void GLWin::scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
   cout << "xoffset=" << xoffset << " yoffset=" << yoffset << '\n';
   // todo: we would have to copy offsets into the object given the way this is
-  // written.
-  // are there different mouse wheels?
-  uint32_t input = 512;
-  // doit(input);
+  uint32_t input = 400;
+  doit(winMap[win], input + int(yoffset));
 }
 
 void GLWin::windowRefreshCallback(GLFWwindow *win) {

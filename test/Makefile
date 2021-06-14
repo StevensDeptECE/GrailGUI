@@ -74,10 +74,10 @@ $(BIN)/TestESRIPolygon: TestESRIPolygon.cc $(LIBGRAIL)
 $(BIN)/ESRIMapDemo: ESRIMapDemo.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)	
 
-$(BIN)/testBlockMapLoader: testBlockMapLoader.cc $(opengl)/BlockMapLoader.cc $(opengl)/BlockMapLoaderConverters.cc $(LIBGRAIL)
+$(BIN)/testBlockMapLoader: testBlockMapLoader.cc $(opengl)/BlockMapLoader.cc $(opengl)/BlockMapLoaderConverters.cc $(LIBGRAIL) $(opengl)/BlockMapLoader.hh $(opengl)/BlockLoader.hh 
 	$(CXX) $< $(opengl)/BlockMapLoader.cc $(opengl)/BlockMapLoaderConverters.cc -o $@ $(LIBS)
 
-$(BIN)/testFastMapLoad: testFastMapLoad.cc $(opengl)/BlockMapLoader.cc $(opengl)/BlockMapLoaderConverters.cc $(LIBGRAIL)
+$(BIN)/testFastMapLoad: testFastMapLoad.cc $(opengl)/BlockMapLoader.cc $(opengl)/BlockMapLoaderConverters.cc $(LIBGRAIL) $(opengl)/BlockMapLoader.hh $(opengl)/BlockLoader.hh 
 	$(CXX)  $< $(opengl)/BlockMapLoader.cc $(opengl)/BlockMapLoaderConverters.cc -o $@ $(LIBS)
 
 $(BIN)/SolarSystem: SolarSystem.cc $(LIBGRAIL)
