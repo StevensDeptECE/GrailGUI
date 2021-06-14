@@ -14,6 +14,7 @@ all: $(BIN)/testWidgets \
  $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/testAxis $(BIN)/StockDemo
 
 
+
 #$(BIN)/testText 
 #$(BIN)/testDrawing
 #$(BIN)/testGraphViewer
@@ -88,14 +89,8 @@ $(BIN)/testWidgets: testWidgets.cc $(LIBGRAIL)
 $(BIN)/testAxis: testAxis.cc $(LIBGRAIL)
 	$(CXX) $^  -o $@ $(LIBS)
 
-# $(opengl)/ButtonWidget.o: $(opengl)/ButtonWidget.cc
-# 	$(CXX) -c $< -o $@
-
-# $(opengl)/LineGraphWidget.o: $(opengl)/LineGraphWidget.cc
-# 	$(CXX) -c $< -o $@
-
-# $(opengl)/BarChartWidget.o: $(opengl)/BarChartWidget.cc $(opengl)/BarChartWidget.hh $(opengl)/StyledMultiShape2D.hh $(opengl)/MultiText.hh
-# 	$(CXX) -c $< -o $@
+$(BIN)/testLineGraph: testLineGraph.cc $(LIBGRAIL)
+	$(CXX) $^  -o $@ $(LIBS)
 
 $(BIN)/testHeatMap: testHeatMap.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)

@@ -14,17 +14,16 @@ class AxisWidget : public Widget2D {
     int precision;
   };
 
-  double minBound;                  // minimum axis value
-  double maxBound;                  // maximum axis value
-  double tickInterval;              // interval between ticks
-  double tickDrawSize;              // vertical height of tick marks
-  Format tickFormat;                // how to format float values on screen
-  bool showTicks;                   // whether or not to show the ticks
-  std::string axisTitle;            // axis title
-  glm::vec4 axisColor;              // color to draw the axis line
-  glm::vec4 tickColor;              // color to draw the ticks
-  const Style *axisTickLabelStyle;  // style of the tick labels
-  const Style *axisTitleStyle;      // style of the title
+  double minBound;        // minimum axis value
+  double maxBound;        // maximum axis value
+  double tickInterval;    // interval between ticks
+  double tickDrawSize;    // vertical height of tick marks
+  Format tickFormat;      // how to format float values on screen
+  bool showTicks;         // whether or not to show the ticks
+  bool isVert;            // whether the axis will be drawn vertically
+  std::string axisTitle;  // axis title
+  glm::vec4 axisColor;    // color to draw the axis line
+  glm::vec4 tickColor;    // color to draw the ticks
 
   double bottomOffset;
   void addAxisTitle();
@@ -34,29 +33,32 @@ class AxisWidget : public Widget2D {
   AxisWidget(StyledMultiShape2D *m, MultiText *t, float x, float y, float w,
              float h, double minBound = 0, double maxBound = 0,
              double tickInterval = 1, double tickDrawSize = 5,
-             bool showTicks = true, std::string axisTitle = "",
+             bool showTicks = true, bool isVert = false,
+             std::string axisTitle = "",
              const glm::vec4 &axisColor = grail::black,
-             const glm::vec4 &tickColor = grail::black,
-             const Style *axisTitleStyle = nullptr,
-             const Style *axisTickStyle = nullptr, int tickFormatWidth = 2,
+             const glm::vec4 &tickColor = grail::black, int tickFormatWidth = 2,
              int tickFormatPrecision = 2);
 
   void setTickDrawSize(double i);
   void setShowTicks(bool b);
+  void setIsVert(bool b);
   void setTitle(std::string text);
   void setAxisColor(const glm::vec4 &color);
   void setTickColor(const glm::vec4 &color);
-  void setTitleStyle(const Style *style);
-  void setTickLabelStyle(const Style *style);
+  void setTickFormat(int width, int precision);
+  double getTickInterval();
+  double getMinBound();
+  double getMaxBound();
+  virtual void setBounds(double minBound, double maxBound) = 0;
+  virtual void setTickInterval(double tickInterval) = 0;
 };
 
 class LinearAxisWidget : public AxisWidget {
  public:
   LinearAxisWidget(StyledMultiShape2D *m, MultiText *t, float x, float y,
                    float w, float h);
-  void setTickFormat(int width, int precision);
-  void setBounds(double minBound, double maxBound);
-  void setTickInterval(double TickInterval);
+  void setBounds(double minBound, double maxBound) override;
+  void setTickInterval(double tickInterval) override;
   void init() override;
 };
 
@@ -67,14 +69,17 @@ class LogAxisWidget : public AxisWidget {
  public:
   LogAxisWidget(StyledMultiShape2D *m, MultiText *t, float x, float y, float w,
                 float h);
-  void setTickFormat(int width, int precision);
-  void setNumTicks(int num);
-  void setScale(int base, int power);
+  void setBounds(double minBound, double maxBound) override;
+  void setTickInterval(double tickInterval) override;
   void init() override;
 };
 
 class TextAxisWidget : public AxisWidget {
  private:
+  using AxisWidget::setBounds;
+  using AxisWidget::setTickInterval;
+  void setBounds(double minBound, double maxBound) override{};
+  void setTickInterval(double tickInterval) override{};
   std::vector<std::string> tickLabels;
 
  public:

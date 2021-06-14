@@ -19,8 +19,6 @@ class testAxis : public GLWin {
     axis.setTickDrawSize(8);
     axis.setShowTicks(true);
     axis.setTitle("Test Title");
-    axis.setTitleStyle(style);
-    axis.setTickLabelStyle(style);
     axis.init();
   }
 
@@ -28,16 +26,16 @@ class testAxis : public GLWin {
                    const Style *style) {
     LogAxisWidget axis(gui, guiText, 100, 200, 400, 200);
     // log specific
-    axis.setNumTicks(3);
-    axis.setScale(2, 3);
+    // axis.setNumTicks(3);
+    // axis.setScale(2, 3);
+    axis.setBounds(1, 10000);
+    axis.setTickInterval(10);
 
     // general
     axis.setTickFormat(2, 0);
     axis.setTickDrawSize(10);
-    axis.setTickLabelStyle(style);
     axis.setTickColor(grail::purple);
     axis.setTitle("Longer Title");
-    axis.setTitleStyle(style);
     axis.init();
   }
 
@@ -50,11 +48,25 @@ class testAxis : public GLWin {
 
     // general
     axis.setTitle("Categories");
-    axis.setTitleStyle(style);
     axis.setTickDrawSize(7);
     axis.setAxisColor(grail::red);
     axis.setShowTicks(true);
-    axis.setTickLabelStyle(style);
+    axis.init();
+  }
+
+  void testRotatedAxis(Canvas *c, MultiText *guiText, const Style *style) {
+    StyledMultiShape2D *rot90 =
+        c->addLayer(new StyledMultiShape2D(c, style, M_PI/2, 0, 200));
+    LinearAxisWidget axis(rot90, guiText, 0, 0, 100, 100);
+
+    // linear specific
+    axis.setBounds(0, 1);
+    axis.setTickInterval(0.10);
+
+    // general
+    axis.setTickDrawSize(8);
+    axis.setShowTicks(true);
+    axis.setTitle("Test Title");
     axis.init();
   }
 
@@ -67,9 +79,12 @@ class testAxis : public GLWin {
     StyledMultiShape2D *gui = c->getGui();
     MultiText *guiText = c->addLayer(new MultiText(c, s));
 
-    testLinearAxis(gui, guiText, s);
-    testLogAxis(gui, guiText, s);
-    testTextAxis(gui, guiText, s);
+    // testLinearAxis(gui, guiText, s);
+    // testLogAxis(gui, guiText, s);
+    // testTextAxis(gui, guiText, s);
+    testRotatedAxis(c, guiText, s);
+    gui->drawRectangle(100, 100, 100, 100, grail::green);
+    gui->drawCircle(100, 100, 3.5, 3, glm::vec4(0, 0, 1, 1));
   }
 };
 

@@ -26,7 +26,7 @@ StyledMultiShape2D::~StyledMultiShape2D() {
 void StyledMultiShape2D::render() {
   //Get Shader based on style
   Shader* shader = Shader::useShader(GLWin::PER_VERTEX_SHADER);
-  shader->setMat4("projection", *(parentCanvas->getProjection()));
+  shader->setMat4("projection", *parentCanvas->getProjection() * transform);
   glBindVertexArray(vao);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
