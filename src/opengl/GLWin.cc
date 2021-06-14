@@ -52,6 +52,9 @@ void GLWin::cursorPositionCallback(GLFWwindow *win, double xpos, double ypos) {
     return;
   }
   glfwGetCursorPos(win, &w->mouseX, &w->mouseY);
+  if (w->dragMode) {
+    cerr << (xpos - w->mousePressX) << " " << (ypos - w->mousePressY) << '\n';
+  }
 }
 
 void GLWin::cursorEnterCallback(GLFWwindow *win, int entered) {
@@ -212,8 +215,8 @@ void GLWin::startWindow() {
 
   // it seems like glfw will not support good mouse behavior unless we hide the
   // cursor? ugly.
-  // TODO: not necessary? glfwSetInputMode(win, GLFW_CURSOR,
-  // GLFW_CURSOR_HIDDEN); glEnable(GL_CULL_FACE); I disable this because when we
+  glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+  // glEnable(GL_CULL_FACE); I disable this because when we
   // change the projection to be normal screen pixels than it doesnt draw since
   // its drawing it in the opposite orientation i assume
   glEnable(GL_BLEND);
@@ -550,6 +553,12 @@ void GLWin::panDown2D(GLWin *w) {
   *proj = glm::translate(*proj, glm::vec3(0, y, 0));
 }
 
+void GLWin::pressOnWidget(GLWin *w) {
+  w->mousePressX = w->mouseX, w->mousePressY = w->mouseY;
+  w->dragMode = true;
+}
+
+void GLWin::releaseWidget(GLWin *w) { w->dragMode = false; }
 /*
   Page environment (like a book reader)
 */
@@ -637,7 +646,7 @@ void GLWin::loadBindings() {
   setAction(1008, saveFrame);
 #endif
 
-  // bind(KB_LEFT, "");
+  // bind(KB_LEFT, "panLeft2D");
   setEvent(263, 1000);
 
   setEvent(260, 1000);  // INSERT->speed up time

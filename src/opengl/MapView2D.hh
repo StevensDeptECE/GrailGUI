@@ -2,9 +2,9 @@
 
 #include <glm/glm.hpp>
 
+#include "opengl/BlockMapLoader.hh"
 #include "opengl/Canvas.hh"
 #include "opengl/MultiShape2D.hh"
-#include "opengl/BlockMapLoader.hh"
 
 class Style;
 class MapView2D : public Shape {
@@ -18,12 +18,12 @@ class MapView2D : public Shape {
 
  public:
   MapView2D(Canvas* parent, const Style* s, BlockMapLoader* bml = nullptr)
-      : Shape(parent), style(s), bml(bml), transform(1.0) {
-        const BlockMapLoader::BoundRect& bounds = bml->getBlockMapHeader()->bounds;
-        float centerX = (bounds.xMin + bounds.xMax) * 0.5;
-        float centerY = (bounds.yMin + bounds.yMax) * 0.5;
-        transform = glm::translate(transform, glm::vec3(centerX, centerY,0));
-        transform = glm::scale(transform, glm::vec3(2,2,1));
+      : Shape(parent), style(s), bml(bml), transform(1.0f) {
+    const BlockMapLoader::BoundRect& bounds = bml->getBlockMapHeader()->bounds;
+    float centerX = (bounds.xMin + bounds.xMax) * 0.5;
+    float centerY = (bounds.yMin + bounds.yMax) * 0.5;
+    transform = glm::translate(transform, glm::vec3(centerX, centerY, 0));
+    transform = glm::scale(transform, glm::vec3(2, 2, 1));
   }
   void init() override;
   void render() override;

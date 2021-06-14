@@ -53,6 +53,8 @@ class GLWin {
  public:
   static std::string baseDir;
   double mouseX, mouseY;
+  float mousePressX, mousePressY;
+  bool dragMode;
   int winXPos, winYPos;    // location of the top-left of the window in pixels
   uint32_t width, height;  // width and height of the window in pixels
   bool dirty;
@@ -259,4 +261,7 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
 
   static void playSound(GLWin* w, const char name[]);
   static void stopSound(GLWin* w);
+
+  static void pressOnWidget(GLWin* w);
+  static void releaseWidget(GLWin* w);
 };
