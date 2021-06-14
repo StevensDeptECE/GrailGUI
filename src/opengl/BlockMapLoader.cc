@@ -26,6 +26,8 @@ void BlockLoader::init(uint64_t bytes, Type t, uint32_t version) {
 
 BlockLoader::BlockLoader(const char filename[]) {
   int fh = open(filename, O_RDONLY);
+  if (fh < 0)
+   throw "Can't open file"; //TODO: Use Ex.hh to report location
   struct stat s;
   fstat(fh, &s);
   size = (s.st_size + 7) & ~7ULL;

@@ -57,8 +57,8 @@ BlockMapLoader::BlockMapLoader(
   points =
       (float*)((char*)segments + blockMapHeader->numSegments * sizeof(Segment));
   uint32_t segCount = 0;
-  float* xPoints = points;  // all x points are together in a single block
-  float* yPoints = points + numPoints;  // same for y
+//  float* xPoints = points;  // all x points are together in a single block
+//  float* yPoints = points + numPoints;  // same for y
   uint32_t pointOffset = 0;             // track current point
   for (uint32_t i = 0; i < shapes.size(); i++) {
     int* start = shapes[i]->panPartStart;
@@ -81,9 +81,9 @@ BlockMapLoader::BlockMapLoader(
       else
         numPoints = start[j + 1] - start[j];
       segments[segCount].numPoints = numPoints;
-      for (uint32_t k = 0; k < numPoints; k++, pointOffset++) {
-        xPoints[pointOffset] = shapes[i]->padfX[start[j] + k];
-        yPoints[pointOffset] = shapes[i]->padfY[start[j] + k];
+      for (uint32_t k = 0; k < numPoints; k++) {
+        points[pointOffset++] = shapes[i]->padfX[start[j] + k];
+        points[pointOffset++] = shapes[i]->padfY[start[j] + k];
       }
     }
   }
