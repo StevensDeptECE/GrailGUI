@@ -96,10 +96,8 @@ inline void GLWin::doit(GLWin *w, uint32_t input) {
     return;  // TODO: come up with better response? Should never
   }          // happen
   uint32_t act = GLWin::inputMap[input];
-  cout << input << " " << act << " ";
   if (act == 0) return;
   Action a = GLWin::actionMap[act];
-  cout << a << endl;
   a(w);  // execute the action
 }
 
