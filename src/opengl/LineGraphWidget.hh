@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -22,10 +23,17 @@ class LineGraphWidget : public SuperWidget2D {
   std::vector<double> xPoints;
   std::vector<double> yPoints;
   std::string graphTitle;
+  glm::vec4 &pointColor;
+  double pointSize;
+  void (StyledMultiShape2D::*markerFunction)(float, float, float, glm::vec4 &);
   const Style *xAxisTextStyle;
   const Style *yAxisTextStyle;
   AxisType xAxisType;
   AxisType yAxisType;
+
+  std::unordered_map<char, void (StyledMultiShape2D::*)(float, float, float,
+                                                        glm::vec4 &)>
+      map;
 
  public:
   AxisWidget *xAxis;  // can be either linear or logarithmic
@@ -38,8 +46,20 @@ class LineGraphWidget : public SuperWidget2D {
         yPoints(std::vector<double>()),
         xAxisTextStyle(new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0)),
         yAxisTextStyle(new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0)),
+        pointColor(grail::blue),
+        pointSize(4),
+        markerFunction(&StyledMultiShape2D::drawCircleMarker),
         xAxis(nullptr),
-        yAxis(nullptr) {}
+        yAxis(nullptr) {
+    xPoints = std::vector<double>();
+    map['o'] = &StyledMultiShape2D::drawCircleMarker;
+    map['s'] = &StyledMultiShape2D::drawSquareMarker;
+    map['h'] = &StyledMultiShape2D::drawHexagonMarker;
+    map['t'] = &StyledMultiShape2D::drawTriangleMarker;
+    map['p'] = &StyledMultiShape2D::drawPentagonMarker;
+    map['c'] = &StyledMultiShape2D::drawCrossMarker;
+  }
+  void setPointFormat(char pt, double size, glm::vec4 &color);
   void setXPoints(const std::vector<double> &xPoints);
   void setYPoints(const std::vector<double> &yPoints);
   void createXAxis(AxisType a);
@@ -48,8 +68,8 @@ class LineGraphWidget : public SuperWidget2D {
   void setXAxisTextStyle(const Style *xAxisTextStyle);
   void setYAxisTextStyle(const Style *yAxisTextStyle);
 #if 0
-    I've left this here from whoever was working with line graph previously,
-    it needs to be ported to the new format/api
+    //I've left this here from whoever was working with line graph previously,
+    //it needs to be ported to the new format/api
 
     std::string text;
   const Style *titleStyle;

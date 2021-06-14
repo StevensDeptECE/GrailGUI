@@ -46,7 +46,8 @@ class TestLineGraph : public GLWin {
 
     StyledMultiShape2D *m = c->getGui();
 
-    MultiText *lineGraphTitleText = c->addLayer(new MultiText(c, lineGraphTitleStyle));
+    MultiText *lineGraphTitleText =
+        c->addLayer(new MultiText(c, lineGraphTitleStyle));
 
     vector<double> times = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     vector<double> values = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20};
@@ -59,6 +60,7 @@ class TestLineGraph : public GLWin {
     lgw.setGraphTitle("Test Title");
     lgw.setXAxisTextStyle(xAxisTitleStyle);
     lgw.setYAxisTextStyle(yAxisTitleStyle);
+    lgw.setPointFormat('t', 5, grail::red);
 
     // x axis stuff
     lgw.setXPoints(times);

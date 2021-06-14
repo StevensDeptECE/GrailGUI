@@ -15,7 +15,7 @@ class StockDemo : public GLWin {
  public:
   StockDemo() : GLWin(0x000000, 0xCCCCCC, "Stock Demo") {}
 
-  vector<float> openFile(char name[]) {
+  vector<float> openFile(const char name[]) {
     fstream file;
     vector<float> v;
     // Read file

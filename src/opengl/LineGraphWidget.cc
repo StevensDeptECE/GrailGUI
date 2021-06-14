@@ -6,6 +6,12 @@
 
 using namespace std;
 
+void LineGraphWidget::setPointFormat(char pt, double size, glm::vec4 &color) {
+  pointSize = size;
+  markerFunction = map[pt];
+  pointColor = color;
+}
+
 void LineGraphWidget::setXPoints(const std::vector<double> &xPoints) {
   this->xPoints = xPoints;
 }
@@ -86,7 +92,7 @@ void LineGraphWidget::init() {
     cerr << "x and y vectors cannot be zero length";
     throw(Ex1(Errcode::VECTOR_ZERO_LENGTH));
 #if 0
-      old code that I don't want to delete
+     // old code that I don't want to delete
 void LineGraphWidget::title(const string &s) {
   int fontSize = 12;
   const Font *f = FontFace::get("TIMES", fontSize, FontFace::BOLD);
@@ -165,14 +171,14 @@ void LineGraphWidget::axes(char xLabel[], int xLen, char yLabel[], int yLen, flo
   double xPoint1 = xPoints[0];
   double yPoint1 = yPoints[0];
 
-  m->fillCircle(xPoint1, yPoint1, 3.5, 3, grail::blue);
+  (m->*markerFunction)(xPoint1, yPoint1, pointSize, pointColor);
 
   for (int i = 1; i < xPoints.size(); i++) {
     double xPoint2 = xPoints[i];
     double yPoint2 = yPoints[i];
 
     m->drawLine(xPoint1, yPoint1, xPoint2, yPoint2, grail::black);
-    m->fillCircle(xPoint2, yPoint2, 3.5, 3, grail::blue);
+    (m->*markerFunction)(xPoint2, yPoint2, pointSize, pointColor);
 
     xPoint1 = xPoint2;
     yPoint1 = yPoint2;
@@ -188,7 +194,6 @@ void LineGraphWidget::axes(char xLabel[], int xLen, char yLabel[], int yLen, flo
   xAxis->init();
   yAxis->init();
 }
-
 
 #if 0
 /*
