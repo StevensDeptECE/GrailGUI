@@ -51,7 +51,6 @@ class LineGraphWidget : public SuperWidget2D {
         markerFunction(&StyledMultiShape2D::drawCircleMarker),
         xAxis(nullptr),
         yAxis(nullptr) {
-    xPoints = std::vector<double>();
     map['o'] = &StyledMultiShape2D::drawCircleMarker;
     map['s'] = &StyledMultiShape2D::drawSquareMarker;
     map['h'] = &StyledMultiShape2D::drawHexagonMarker;

@@ -14,7 +14,6 @@ all: $(BIN)/testWidgets $(BIN)/testAxis $(BIN)/testLineGraph \
  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
  $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/StockDemo
 
-
 #$(BIN)/testText 
 #$(BIN)/testDrawing
 #$(BIN)/testGraphViewer
