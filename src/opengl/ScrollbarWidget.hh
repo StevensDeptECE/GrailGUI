@@ -7,6 +7,8 @@
 class ScrollbarWidget : public StyledMultiShape2D {
  private:
   float x, y, w, h;
+  float scrollbarBoxY;
+  float boxSize;
   glm::vec4 bgColor;
 
  public:
@@ -15,10 +17,14 @@ class ScrollbarWidget : public StyledMultiShape2D {
         bgColor(glm::vec4(0, 0, 1, 0.7)),
         x(x),
         y(y),
+        scrollbarBoxY(y + 3),
         w(w),
-        h(h) {}
+        h(h),
+        boxSize(h / 2) {}
   // void ;
   void init() override;
   void render() override;
   void update() override;
+  void draw();
+  void scroll(float dy);
 };

@@ -19,8 +19,24 @@ using namespace std;
 using namespace grail;
 
 class TestWidgets : public GLWin {
+ private:
+  ScrollbarWidget *scrollbar;
+
  public:
   TestWidgets() : GLWin(0x000000, 0xCCCCCC, "TestWidgets") {}
+
+  static void scrollUp(GLWin *w) {
+    TestWidgets *tw = (TestWidgets *)w;
+
+    tw->scrollbar->scroll(-5);
+    tw->setDirty();
+  }
+  static void scrollDown(GLWin *w) {
+    TestWidgets *tw = (TestWidgets *)w;
+
+    tw->scrollbar->scroll(5);
+    tw->setDirty();
+  }
 
   void testButton(StyledMultiShape2D *gui, MultiText *guiText) {
     const float boxSize = 100;
@@ -129,12 +145,9 @@ class TestWidgets : public GLWin {
     //    ScrollbarWidget scrollBar(gui, guiText, getWidth() - scrollBarWidth,
     //    0, scrollBarWidth, getHeight()); scrollBar.init();
     MainCanvas *c = currentTab()->getMainCanvas();
-    gui->fillRectangle(0, 0, 200, 100, grail::yellow);
     const Style *s = new Style(nullptr, grail::black, grail::blue);
-    StyledMultiShape2D *ms = c->addLayer(new StyledMultiShape2D(c, s));
-    ms->fillCircle(300, 200, 100, .02, grail::darkgreen);
-    c->addLayer(new ScrollbarWidget(c, s, width - scrollBarWidth, 0,
-                                    scrollBarWidth, getHeight()));
+    scrollbar = c->addLayer(new ScrollbarWidget(c, s, width - scrollBarWidth, 0,
+                                                scrollBarWidth, getHeight()));
   }
 
   void testAngleText(StyledMultiShape2D *gui, MultiText *guiText, Canvas *c,
@@ -157,12 +170,10 @@ class TestWidgets : public GLWin {
     StyledMultiShape2D *gui = c->getGui();
     StyledMultiShape2D *test = c->addLayer(new StyledMultiShape2D(c, s2));
 
-    test->fillRectangle(0, 500, 300, 30, grail::green);
     MultiText *guiText = c->addLayer(new MultiText(c, s));
 
     StyledMultiShape2D *p =
         c->addLayer(new StyledMultiShape2D(c, s, -M_PI / 4, 0, 0));
-    p->fillRectangle(400, 100, 100, 100, grail::cyan);
 
     const Style *graphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
     testBarChart(gui, guiText);
@@ -175,7 +186,15 @@ class TestWidgets : public GLWin {
     // testLinearAxesWidget(gui, guiText, graphStyle);
 
     testScrollBar(gui, guiText);
+
+    setAction(1002, scrollUp);
+    setAction(1003, scrollDown);
+
+    setEvent(401, 1002);
+    setEvent(399, 1003);
   }
+
+  void update() { scrollbar->update(); }
 };
 
 int main(int argc, char *argv[]) {
