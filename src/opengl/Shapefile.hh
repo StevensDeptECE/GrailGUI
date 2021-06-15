@@ -38,8 +38,10 @@ class ESRIShape {
  public:
   int shapeType;
   ESRIShape() : shapePtr(NULL), shapeType(0){};
-  ESRIShape(SHPObject* shapePtr) : shapePtr(shapePtr), shapeType(shapePtr->nSHPType){};
-  static std::vector<std::unique_ptr<ESRIShape>> convertSHPObjects(const std::vector<SHPObject*>& shapeObjects);
+  ESRIShape(SHPObject* shapePtr)
+      : shapePtr(shapePtr), shapeType(shapePtr->nSHPType){};
+  static std::vector<std::unique_ptr<ESRIShape>> convertSHPObjects(
+      const std::vector<SHPObject*>& shapeObjects);
   virtual std::vector<ESRIPoint> getPoints() = 0;
 };
 
@@ -52,8 +54,15 @@ class ESRIPolygon : public ESRIShape {
   std::vector<ESRIPoint> points;
 
  public:
-  ESRIPolygon(SHPObject* shapePtr) : ESRIShape(shapePtr), boundingBox{shapePtr->dfXMin, shapePtr->dfXMax, shapePtr->dfYMin, shapePtr->dfYMax}, numParts(shapePtr->nParts), numPoints(shapePtr->nVertices), xPoints(shapePtr->padfX), yPoints(shapePtr->padfY){};
+  ESRIPolygon(SHPObject* shapePtr)
+      : ESRIShape(shapePtr),
+        boundingBox{shapePtr->dfXMin, shapePtr->dfXMax, shapePtr->dfYMin,
+                    shapePtr->dfYMax},
+        numParts(shapePtr->nParts),
+        numPoints(shapePtr->nVertices),
+        xPoints(shapePtr->padfX),
+        yPoints(shapePtr->padfY){};
   std::vector<ESRIPoint> getPoints();
 };
 
-//TODO: Implement classes for individual ESRIShapes?
+// TODO: Implement classes for individual ESRIShapes?
