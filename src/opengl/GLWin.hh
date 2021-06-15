@@ -60,6 +60,42 @@ class GLWin {
   bool dirty;
   bool focused;
   uint32_t exitAfter;  // if not zero, will terminate
+
+  enum Inputs {
+    INSERT = 260,
+    DEL = 261,
+    RARROW = 262,
+    LARROW = 263,
+    UPARROW = 265,
+    DOWNARROW = 264,
+    PAGEUP = 266,
+    PAGEDOWN = 267,
+    F1 = 290,
+    F2 = 291,
+    F3 = 292,
+    F4 = 293,
+    F5 = 294,
+    F6 = 295,
+    F7 = 296,
+    F8 = 297,
+    F9 = 298,
+    F10 = 299,
+    F11 = 300,
+    F12 = 301,
+    WHEELUP = 401,
+    WHEELDOWN = 399,
+    MOUSE0 = 0,
+    MOUSE1 = 1,
+    MOUSE2 = 2,
+    MOUSE3 = 3,
+    MOUSE4 = 4,
+    PRESS = 8,
+    RELEASE = 0,
+    CTRL = 512,
+    SHIFT = 1024,
+    ALT = 2048
+  };
+
   /*
         map input events, like pressing a key, or clicking alt-mouse button 1
      to an action number. Actions are internally stored in a separate table
@@ -74,6 +110,8 @@ class GLWin {
         the actions are all the publicly available performance the code can DO
   */
   static Action actionMap[4096];  // TODO: hardcoded maximum size for now
+  static std::unordered_map<std::string, int> actionNameMap;
+  uint32_t lookupAction(const char actionName[]);
   //	static GLWin* w;
   void setEvent(uint32_t e, uint32_t a) { inputMap[e] = a; }
 
@@ -95,6 +133,7 @@ class GLWin {
       const char name[], Security s,
       Action action);  // registerAction("myFunc", Security::RESTRICTED, myFunc)
   // bind an input event to an action Name. looks up offsets into arrays
+  void bind(uint32_t input, const char actionName[]);
   void bind(const char inputCmd[], const char actionName[]);
 #define quote(a) #a
 #define registerAction(security, func) \
@@ -216,6 +255,9 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
 
   static void classInit();
   static void classCleanup();
+
+  void bind2DOrtho();
+  void bind3D();
 
   // build in actions
   static void quit(GLWin* w);

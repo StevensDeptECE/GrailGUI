@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "opengl/Errcode.hh"
 #include "util/Ex.hh"
 
 // glad seems "unhappy" if you include it after glfw. Why?
@@ -590,8 +591,36 @@ void GLWin::internalRegisterAction(const char name[], Security s,
   }
   cout << "Setting action " << actNum << " for action " << name << '\n';
   setAction(actNum, action);
+  actionNameMap[name] = actNum;
 }
 
+unordered_map<string, int> GLWin::actionNameMap;
+
+uint32_t GLWin::lookupAction(const char actionName[]) {
+  auto it = actionNameMap.find(actionName);
+
+  if (it == actionNameMap.end()) {  // throw Ex1(Errcode::NONEXISTENT_ACTION);
+    cerr << "Input binding failed: " << actionName << '\n';
+    return 0;
+  }
+  return it->second;
+}
+
+void GLWin::bind(uint32_t input, const char actionName[]) {
+  setEvent(input, lookupAction(actionName));
+}
+
+void GLWin::bind2DOrtho() {}
+
+void GLWin::bind3D() {
+  bind(Inputs::INSERT, "speedTime");
+  bind(Inputs::DEL, "slowTime");
+  bind(Inputs::RARROW, "panRight3D");
+  bind(Inputs::LARROW, "panLeft3D");
+  bind(Inputs::PAGEUP, "zoomIn3D");
+  bind(Inputs::PAGEDOWN, "zoomOut3D");
+  //  bind(Inputs::MOUSE0|Inputs::PRESS|Inputs::ALT, "xyz");
+}
 void GLWin::loadBindings() {
   registerAction(Security::RESTRICTED, quit);
   registerAction(Security::SAFE, refresh);
@@ -634,26 +663,7 @@ void GLWin::loadBindings() {
   // TODO: How to define actions that take parameters, in this case a string?
   //  registerAction(Security::SAFE, playSound);
   registerAction(Security::SAFE, stopSound);
-#if 0
-  setAction(1000, speedTime);
-  setAction(1001, slowTime);
-  setAction(1002, zoomOut);
-  setAction(1003, zoomIn);
-  setAction(1004, panRight);
-  setAction(1005, panLeft);
-  setAction(1006, gotoStartTime);
-  setAction(1007, gotoEndTime);
-  setAction(1008, saveFrame);
-#endif
 
-  // bind(KB_LEFT, "panLeft2D");
-  setEvent(263, 1000);
-
-  setEvent(260, 1000);  // INSERT->speed up time
-  setEvent(261, 1001);  // DEL-> slow down time
-  setEvent(262, 1004);  // right arrow = pan right
-  setEvent(263, 1005);  // left arrow = pan left
-  setEvent(266, 1002);  // page up = zoom out
-  setEvent(267, 1003);  // page down = zoom in
-  setEvent(335, 1008);  // ` is printscreen (printscreen seems taken by the OS?)
+  bind3D();
+  // bind2DOrtho();
 }
