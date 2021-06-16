@@ -129,7 +129,7 @@ class GLWin {
   uint32_t numActions[3];  // keep track of how many of each kind of operations
                            // there are
   void loadBindings();
-  void internalRegisterAction(
+  uint32_t internalRegisterAction(
       const char name[], Security s,
       Action action);  // registerAction("myFunc", Security::RESTRICTED, myFunc)
   // bind an input event to an action Name. looks up offsets into arrays
@@ -138,7 +138,8 @@ class GLWin {
 #define quote(a) #a
 #define registerAction(security, func) \
   internalRegisterAction(quote(func), security, func)
-
+#define bindEvent(inp, func) \
+  setEvent(inp, internalRegisterAction(quote(func), Security::SAFE, func))
   // Render control
   //  static uint32_t render_done, block_render;
   double time() const { return t; }

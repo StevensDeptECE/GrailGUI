@@ -584,8 +584,8 @@ void GLWin::sectionDown(GLWin *w) {}
 void GLWin::playSound(GLWin *w, const char soundName[]) {}
 void GLWin::stopSound(GLWin *w) {}
 
-void GLWin::internalRegisterAction(const char name[], Security s,
-                                   Action action) {
+uint32_t GLWin::internalRegisterAction(const char name[], Security s,
+                                       Action action) {
   uint32_t securityIndex = uint32_t(s);
   // SAFE = 0..999, RESTRICTED=1000.1999, ASK=2000..2999
   uint32_t actNum = 1000 * securityIndex + numActions[securityIndex]++;
@@ -598,6 +598,7 @@ void GLWin::internalRegisterAction(const char name[], Security s,
   cout << "Setting action " << actNum << " for action " << name << '\n';
   setAction(actNum, action);
   actionNameMap[name] = actNum;
+  return actNum;
 }
 
 unordered_map<string, int> GLWin::actionNameMap;
