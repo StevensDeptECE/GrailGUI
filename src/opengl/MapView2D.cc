@@ -39,6 +39,14 @@ void MapView2D::init() {
 }
 
 void debug(const glm::mat4& m, float x, float y, float z) {
+  cout << m[0][0] << '\t' << m[0][1] << '\t' << m[0][2] << '\t' << m[0][3]
+       << '\n'
+       << m[1][0] << '\t' << m[1][1] << '\t' << m[1][2] << '\t' << m[1][3]
+       << '\n'
+       << m[2][0] << '\t' << m[2][1] << '\t' << m[2][2] << '\t' << m[2][3]
+       << '\n'
+       << m[3][0] << '\t' << m[3][1] << '\t' << m[3][2] << '\t' << m[3][3]
+       << '\n';
   glm::vec4 v(x, y, z, 0);
   v = m * v;
   cout << v.x << "," << v.y << "," << v.z << '\n';
@@ -46,8 +54,9 @@ void debug(const glm::mat4& m, float x, float y, float z) {
 void MapView2D::render() {
   Shader* shader = Shader::useShader(GLWin::COMMON_SHADER);
   shader->setVec4("solidColor", style->getFgColor());
-  shader->setMat4("projection", *parentCanvas->getProjection() * transform);
-  glm::mat4 t = *parentCanvas->getProjection() * transform;
+
+  shader->setMat4("projection", transform * *parentCanvas->getProjection());
+  glm::mat4 t = transform * *parentCanvas->getProjection();
   debug(transform, 0, 0, 0);
   debug(t, 100, 0, 0);
   debug(t, 0, 70, 0);

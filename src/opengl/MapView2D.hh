@@ -22,8 +22,8 @@ class MapView2D : public Shape {
     const BlockMapLoader::BoundRect& bounds = bml->getBlockMapHeader()->bounds;
     float centerX = (bounds.xMin + bounds.xMax) * 0.5;
     float centerY = (bounds.yMin + bounds.yMax) * 0.5;
-    transform = glm::translate(transform, glm::vec3(centerX, centerY, 0));
-    transform = glm::scale(transform, glm::vec3(2, 2, 1));
+    // transform = glm::translate(transform, glm::vec3(-bounds.xMin, 0, 0));
+    transform = glm::scale(transform, glm::vec3(20, 20, 1));
   }
   void init() override;
   void render() override;
