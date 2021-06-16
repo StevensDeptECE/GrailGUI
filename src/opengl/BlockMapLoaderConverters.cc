@@ -6,6 +6,7 @@
 using namespace std;
 
 // extra parameter calls loader from ESRI Shapefile
+// TODO: BlockMapLoader BlockMapLoader::loadESRI(const char filename[])
 BlockMapLoader::BlockMapLoader(
     const char filename[],
     const char[]) {  // TODO:}: BlockLoader( loadESRI(filename) ){
@@ -57,13 +58,16 @@ BlockMapLoader::BlockMapLoader(
   points =
       (float*)((char*)segments + blockMapHeader->numSegments * sizeof(Segment));
   uint32_t segCount = 0;
-//  float* xPoints = points;  // all x points are together in a single block
-//  float* yPoints = points + numPoints;  // same for y
-  uint32_t pointOffset = 0;             // track current point
+  //  float* xPoints = points;  // all x points are together in a single block
+  //  float* yPoints = points + numPoints;  // same for y
+  uint32_t pointOffset = 0;  // track current point
   for (uint32_t i = 0; i < shapes.size(); i++) {
     int* start = shapes[i]->panPartStart;
     if (start == nullptr && shapes[i]->nParts != 0) {
-      cerr << "error null list of offsets for parts panpartstart\n";
+      cerr
+          << "error null list of offsets for parts panpartstart\n";  // TODO:
+                                                                     // use
+                                                                     // exception
       return;
     }
     // regions[i].numPoints =

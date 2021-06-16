@@ -44,18 +44,10 @@ void Shapefile::init() {
   }
 }
 
-double* Shapefile::getMinBounds() {
-  return minBounds;
-}
+double* Shapefile::getMinBounds() { return minBounds; }
 
-double* Shapefile::getMaxBounds() {
-  return maxBounds;
-}
+double* Shapefile::getMaxBounds() { return maxBounds; }
 
-SHPObject* Shapefile::getShape(int index) {
-  return shapeObjects[index];
-}
+SHPObject* Shapefile::getShape(int index) { return shapeObjects[index]; }
 
-std::vector<SHPObject*> Shapefile::getShapeVector() {
-  return shapeObjects;
-}
+std::vector<SHPObject*> Shapefile::getShapeVector() { return shapeObjects; }

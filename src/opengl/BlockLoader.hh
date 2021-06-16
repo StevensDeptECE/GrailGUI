@@ -13,10 +13,9 @@ class BlockLoader {
   uint64_t* mem;  // hating unique pointers right now
   uint64_t size;
   struct GeneralHeader {
-    uint32_t magic;    // magic number for all block loaders
-    uint32_t type;     // type of block loader
-    uint32_t version;  // version
-    uint32_t unused;
+    uint32_t magic;         // magic number for all block loaders
+    uint32_t type : 16;     // type of block loader
+    uint32_t version : 16;  // version
   };
   struct SecurityHeaderV0 {
     uint64_t yoho;  // TODO: put something in
@@ -69,6 +68,10 @@ class BlockLoader {
 
  public:
   BlockLoader(const char filename[]);
+  ~BlockLoader() { delete[] mem; }
+  BlockLoader(const BlockLoader& orig) = delete;
+  BlockLoader& operator=(const BlockLoader& orig) = delete;
+
   void init(uint64_t* mem, uint64_t size);
   void init(uint64_t bytes, Type t, uint32_t version);
   // Fast load a blockfile

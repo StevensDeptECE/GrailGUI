@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "opengl/Errcode.hh"
 #include "util/Ex.hh"
 
 // glad seems "unhappy" if you include it after glfw. Why?
@@ -52,6 +53,9 @@ void GLWin::cursorPositionCallback(GLFWwindow *win, double xpos, double ypos) {
     return;
   }
   glfwGetCursorPos(win, &w->mouseX, &w->mouseY);
+  if (w->dragMode) {
+    cerr << (xpos - w->mousePressX) << " " << (ypos - w->mousePressY) << '\n';
+  }
 }
 
 void GLWin::cursorEnterCallback(GLFWwindow *win, int entered) {
@@ -121,10 +125,8 @@ void GLWin::mouseButtonCallback(GLFWwindow *win, int button, int action,
 void GLWin::scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
   cout << "xoffset=" << xoffset << " yoffset=" << yoffset << '\n';
   // todo: we would have to copy offsets into the object given the way this is
-  // written.
-  // are there different mouse wheels?
-  uint32_t input = 512;
-  // doit(input);
+  uint32_t input = 400;
+  doit(winMap[win], input + int(yoffset));
 }
 
 void GLWin::windowRefreshCallback(GLFWwindow *win) {
@@ -214,8 +216,8 @@ void GLWin::startWindow() {
 
   // it seems like glfw will not support good mouse behavior unless we hide the
   // cursor? ugly.
-  // TODO: not necessary? glfwSetInputMode(win, GLFW_CURSOR,
-  // GLFW_CURSOR_HIDDEN); glEnable(GL_CULL_FACE); I disable this because when we
+  glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+  // glEnable(GL_CULL_FACE); I disable this because when we
   // change the projection to be normal screen pixels than it doesnt draw since
   // its drawing it in the opposite orientation i assume
   glEnable(GL_BLEND);
@@ -334,6 +336,8 @@ void GLWin::mainLoop() {
   uint32_t frameCount = 0;
   double startTime = glfwGetTime();  // get time now for calculating FPS
   double renderTime;
+  dirty = true;
+  dirty2 = false;
   while (!glfwWindowShouldClose(win)) {
     //    bool modified = Queue::dump_render();
     //    dt = current - lastFrame;
@@ -359,6 +363,10 @@ void GLWin::mainLoop() {
     }
 
     dirty = false;
+    if (dirty2) {
+      dirty = true;
+      dirty2 = false;
+    }
     t += dt;
     update();
   }
@@ -552,6 +560,12 @@ void GLWin::panDown2D(GLWin *w) {
   *proj = glm::translate(*proj, glm::vec3(0, y, 0));
 }
 
+void GLWin::pressOnWidget(GLWin *w) {
+  w->mousePressX = w->mouseX, w->mousePressY = w->mouseY;
+  w->dragMode = true;
+}
+
+void GLWin::releaseWidget(GLWin *w) { w->dragMode = false; }
 /*
   Page environment (like a book reader)
 */
@@ -583,8 +597,36 @@ void GLWin::internalRegisterAction(const char name[], Security s,
   }
   cout << "Setting action " << actNum << " for action " << name << '\n';
   setAction(actNum, action);
+  actionNameMap[name] = actNum;
 }
 
+unordered_map<string, int> GLWin::actionNameMap;
+
+uint32_t GLWin::lookupAction(const char actionName[]) {
+  auto it = actionNameMap.find(actionName);
+
+  if (it == actionNameMap.end()) {  // throw Ex1(Errcode::NONEXISTENT_ACTION);
+    cerr << "Input binding failed: " << actionName << '\n';
+    return 0;
+  }
+  return it->second;
+}
+
+void GLWin::bind(uint32_t input, const char actionName[]) {
+  setEvent(input, lookupAction(actionName));
+}
+
+void GLWin::bind2DOrtho() {}
+
+void GLWin::bind3D() {
+  bind(Inputs::INSERT, "speedTime");
+  bind(Inputs::DEL, "slowTime");
+  bind(Inputs::RARROW, "panRight3D");
+  bind(Inputs::LARROW, "panLeft3D");
+  bind(Inputs::PAGEUP, "zoomIn3D");
+  bind(Inputs::PAGEDOWN, "zoomOut3D");
+  //  bind(Inputs::MOUSE0|Inputs::PRESS|Inputs::ALT, "xyz");
+}
 void GLWin::loadBindings() {
   registerAction(Security::RESTRICTED, quit);
   registerAction(Security::SAFE, refresh);
@@ -627,26 +669,7 @@ void GLWin::loadBindings() {
   // TODO: How to define actions that take parameters, in this case a string?
   //  registerAction(Security::SAFE, playSound);
   registerAction(Security::SAFE, stopSound);
-#if 0
-  setAction(1000, speedTime);
-  setAction(1001, slowTime);
-  setAction(1002, zoomOut);
-  setAction(1003, zoomIn);
-  setAction(1004, panRight);
-  setAction(1005, panLeft);
-  setAction(1006, gotoStartTime);
-  setAction(1007, gotoEndTime);
-  setAction(1008, saveFrame);
-#endif
 
-  // bind(KB_LEFT, "");
-  setEvent(263, 1000);
-
-  setEvent(260, 1000);  // INSERT->speed up time
-  setEvent(261, 1001);  // DEL-> slow down time
-  setEvent(262, 1004);  // right arrow = pan right
-  setEvent(263, 1005);  // left arrow = pan left
-  setEvent(266, 1002);  // page up = zoom out
-  setEvent(267, 1003);  // page down = zoom in
-  setEvent(335, 1008);  // ` is printscreen (printscreen seems taken by the OS?)
+  bind3D();
+  // bind2DOrtho();
 }

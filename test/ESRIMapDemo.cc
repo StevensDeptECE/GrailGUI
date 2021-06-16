@@ -200,6 +200,8 @@ class ESRIMapLoader : public GLWin {
     setEvent(265, 1006);  // up arrow = increase  display
     setEvent(264, 1007);  // down arrow = decrease display
     setEvent(46, 1008);   // period = toggle animation
+    setEvent(401, 1009);  // scroll up zoom in 2d
+    setEvent(399, 1010);  // scroll down zoom in 2d
     setEvent('W', 1013);  // w PAN up
     setEvent('S', 1014);  // S PAN Down
     setEvent('A', 1011);  // c pan left
