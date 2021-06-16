@@ -154,6 +154,7 @@ class GLWin {
     width = w;
     height = h;
   }
+
   uint32_t getWidth() const { return width; }
   uint32_t getHeight() const { return height; }
 	
@@ -217,4 +218,6 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   static void playSound(const char name[]);
   static void stopSound();
   void loadBindings();
+
+  double getTime();
 };

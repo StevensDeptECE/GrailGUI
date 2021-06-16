@@ -457,3 +457,7 @@ void GLWin::loadBindings() {
     setEvent(267, 1003); // page down = zoom in
     setEvent(335, 1008); // ` is printscreen (printscreen seems taken by the OS?)
 }
+
+double GLWin::getTime() {
+  return glfwGetTime();
+}
