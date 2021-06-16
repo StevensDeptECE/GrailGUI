@@ -1,5 +1,6 @@
 #pragma once
 
+#include "opengl/Errcode.hh"
 #include "util/Ex.hh"
 #include "util/JulianDate.hh"
 /*
@@ -16,23 +17,26 @@
 class Date {
 private:
 	int32_t date;
-	static Date epoch;
+	static int32_t epochYear;
 	Date(int32_t d) : date(d) {}
 public:
-	Date(JulianDate jd) : date(uint32_t(jd)) {}
+	Date(JulianDate jd) : date(uint32_t(double(jd))) {}
 	operator JulianDate() const {
 		return JulianDate(date);
 	}
-	Date(int32_t year, uint32_t month, uint32_t day, uint32_t hour, uint32_t min, double second) {
-		if (month < 1 || month > 12 || day < 1 || day > daysInMonth[day]) {
+	Date(int32_t year, uint32_t month, uint32_t day) {
+		if (month < 1 || month > 12 || day < 1 || day > JulianDate::daysInMonth[day]) {
 			throw Ex1(Errcode::BAD_DATE);
 		}
 		int32_t dY = year - epochYear;
 	  int32_t leapYears = dY / 4 - dY / 100 + dY / 400; // is this true
-		date = dY * 365 + leapYears + daysUpTo[month-1] + day;
+		date = dY * 365 + leapYears + JulianDate::daysUpTo[month-1] + day;
 	}
 	Date operator +(int32_t days) const {
 		return Date(date + days);
+	}
+	friend int32_t operator -(Date d1, Date d2) {
+		return d1.date - d2.date;
 	}
 	Date operator -(int32_t days) const {
 		return Date(date - days);
@@ -47,11 +51,14 @@ public:
 	}
 	//TODO: implement date extraction math
 	int32_t getYear() const {
-		return 0;
+		int32_t dy = int32_t(date / 365.2425);
+		return 2000 + dy;
 	}
+	
 	uint32_t getMonth() const {
 		return 0;
 	}
+	
 	uint32_t getDay() const {
 		return 0;
 	}
