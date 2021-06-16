@@ -10,6 +10,7 @@
 #include "opengl/ButtonWidget.hh"
 #include "opengl/CandlestickChartWidget.hh"
 #include "opengl/GapMinderWidget.hh"
+#include "opengl/SparklineWidget.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/LineGraphWidget.hh"
 #include "opengl/ScrollbarWidget.hh"
@@ -107,6 +108,20 @@ class TestWidgets : public GLWin {
     chart.init();
   }
 
+  void testSparkline(StyledMultiShape2D *gui, MultiText *guiText){
+    vector<float> x = {0, 50, 100, 150, 200, 250, 300};
+    vector<float> y = {150, 350, 222, 100, 290, 60, 200};
+    vector<float> y2 = {20, 74, 42, 80, 20, 60, 37};
+
+    SparklineWidget chart(gui, guiText, 550, 50, 150, 50, x, y);
+    chart.chart(y,x, grail::blue);
+    chart.init();
+
+    SparklineWidget chart2(gui, guiText, 550, 110, 150, 50, x, y2);
+    chart2.chart(y2,x, grail::red);
+    chart2.init();
+  }
+
 
 #if 0
   void testLineGraphLinear(StyledMultiShape2D *gui, MultiText *guiText) {
@@ -166,6 +181,7 @@ class TestWidgets : public GLWin {
     testCandlestick(gui, guiText);
     testBoxChart(gui, guiText);
     testGapMinder(gui, guiText);
+    testSparkline(gui, guiText);
     //testButton(gui, guiText);
     //testLineGraphLinear(gui, guiText);
     //testLineGraphLog(gui, guiText);

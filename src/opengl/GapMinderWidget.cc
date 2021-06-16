@@ -64,6 +64,7 @@ void GapMinderWidget::chart(const vector<float>& yLocations,
     for (float xTick = minX; xTick <= maxX; xTick = xAxis->next(xTick)) {
       float xScreen = xAxis->transform(xTick);
       m->drawLine(xScreen, y + h + 5, xScreen, y + h - 5, grail::black);
+      t->add(xScreen - 5, y+h+20 ,f, (int)xTick);
     }
 
   }
