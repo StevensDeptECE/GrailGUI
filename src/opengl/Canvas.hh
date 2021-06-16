@@ -34,6 +34,8 @@ class Canvas {
     projection =
         glm::ortho(0.0f, static_cast<float>(pX), static_cast<float>(pY), 0.0f);
     originalProjection = projection;
+    //    projection = glm::scale(projection, glm::vec3(16, -16, 1));
+    //    projection = glm::translate(projection, glm::vec3(180, -90, 0));
   }
   ~Canvas();
   Canvas(const Canvas& orig) = delete;

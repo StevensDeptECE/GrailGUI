@@ -9,14 +9,33 @@ using namespace grail;
 class TestDrawBlockMap : public GLWin {
  private:
   const char* filename;
+  MapView2D* mv;
 
  public:
   TestDrawBlockMap(const char filename[])
       : GLWin(0x000000, 0xCCCCCC, "Block Loader: Map Demo"),
-        filename(filename) {}
+        filename(filename),
+        mv(nullptr) {}
   int countyStart;
   int numCounties;
   int displayNumCounties;
+
+  ~TestDrawBlockMap() { delete mv; }
+  TestDrawBlockMap(const TestDrawBlockMap& orig) = delete;
+  TestDrawBlockMap& operator=(const TestDrawBlockMap& orig) = delete;
+
+  constexpr static float zoom = 1.2;
+  static void mapZoomIn(GLWin* w) {
+    TestDrawBlockMap* map = ((TestDrawBlockMap*)w);
+    glm::mat4& t = map->mv->getTransform();
+    t = glm::translate(t, glm::vec3(-74, +40, 0));
+    t = glm::scale(t, glm::vec3(zoom));
+    t = glm::translate(t, glm::vec3(+74, -40, 0) / zoom);
+  }
+
+  static void mapZoomOut(GLWin* w) {
+    TestDrawBlockMap* eml = ((TestDrawBlockMap*)w);
+  }
 
   static void nextCounty(GLWin* w) {
     TestDrawBlockMap* eml = ((TestDrawBlockMap*)w);
@@ -53,8 +72,8 @@ class TestDrawBlockMap : public GLWin {
   void init() {
     MainCanvas* c = currentTab()->getMainCanvas();
     const Style* s = getDefaultStyle();
-    MapView2D* mv =
-        c->addLayer(new MapView2D(c, s, new BlockMapLoader(filename)));
+    Style* s2 = new Style(getDefaultFont(), grail::white, grail::black);
+    mv = c->addLayer(new MapView2D(c, s2, new BlockMapLoader(filename)));
 
 #if 0
     // Keybinds for animation!
@@ -98,5 +117,5 @@ class TestDrawBlockMap : public GLWin {
 };
 
 int main(int argc, char* argv[]) {
-  return GLWin::init(new TestDrawBlockMap("uscounties.bml"), 1920, 1500);
+  return GLWin::init(new TestDrawBlockMap("uscounties.bml"), 2000, 2000);
 }
