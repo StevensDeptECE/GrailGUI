@@ -10,11 +10,11 @@ class Stats1D {
   unique_ptr<T> median, mean, iqr, stddev, variance, q1, q3;
   vector<T> modes;
 
-  struct summary {
+  struct Summary {
     T min, max, q1, q3, median;
   };
 
-  unique_ptr<summary> fivenum;
+  unique_ptr<struct summary> fivenum;
 
  public:
   Stats1D(T* array, uint32_t size, sorted = false)
@@ -22,7 +22,7 @@ class Stats1D {
   T getMean() const;
   std::vector<T> getModes() const;
   T getIQR() const;
-  summary getSummary() const;
+  struct Summary getSummary() const;
   T getStdDev() const;
   T getVariance() const;
 };
