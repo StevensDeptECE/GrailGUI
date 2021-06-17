@@ -23,6 +23,7 @@ $(cspout)/SocketIO.o 		\
 $(xdlout)/XDLCompiler.o			\
 $(xdlout)/SymbolTable.o			\
 $(xdlout)/std.o				\
+$(audioout)/AudioPlayer.o \
 $(out)/ErrNames.o			\
 $(out)/Tab.o 				\
 $(out)/Canvas.o 			\
@@ -52,6 +53,9 @@ $(out)/Glad.o:
 	echo "*****"
 	echo $(out)
 	$(CXX) -g -std=c++11 -c -I $(GRAIL)/include $(GRAIL)/include/glad/glad.c -o $@
+
+$(audioout)/AudioPlayer.o: $(audio)/AudioPlayer.cc $(audio)/AudioPlayer.hh
+	$(COMP) $< -o $@
 
 $(LIBGRAIL): $(SHARED)
 	cd $(out) ; ar rs $(LIBGRAIL) $(SHARED)
