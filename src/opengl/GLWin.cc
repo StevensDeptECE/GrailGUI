@@ -267,6 +267,8 @@ void GLWin::baseInit() {
   }
 }
 
+float getTime() const { return glfwGetTime(); }
+
 int GLWin::init(GLWin *g, uint32_t w, uint32_t h, uint32_t exitAfter) {
   try {
     g->exitAfter = exitAfter;
@@ -341,14 +343,15 @@ void GLWin::mainLoop() {
   while (!glfwWindowShouldClose(win)) {
     //    bool modified = Queue::dump_render();
     //    dt = current - lastFrame;
+    float startRender = glfwGetTime();
     glfwPollEvents();  // Check and call events
 
-    float startRender = glfwGetTime();
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);  // Clear the colorbuffer and depth
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     render();
-    renderTime += glfwGetTime() - startRender;
     glfwSwapBuffers(win);  // Swap buffer so the scene shows on screen
+    float endRender = glfwGetTime();
+    renderTime += endRender - startRender;
     if (frameCount >= 150) {
       double endTime = glfwGetTime();
       double elapsed = endTime - startTime;
@@ -584,8 +587,8 @@ void GLWin::sectionDown(GLWin *w) {}
 void GLWin::playSound(GLWin *w, const char soundName[]) {}
 void GLWin::stopSound(GLWin *w) {}
 
-void GLWin::internalRegisterAction(const char name[], Security s,
-                                   Action action) {
+uint32_t GLWin::internalRegisterAction(const char name[], Security s,
+                                       Action action) {
   uint32_t securityIndex = uint32_t(s);
   // SAFE = 0..999, RESTRICTED=1000.1999, ASK=2000..2999
   uint32_t actNum = 1000 * securityIndex + numActions[securityIndex]++;
@@ -598,6 +601,7 @@ void GLWin::internalRegisterAction(const char name[], Security s,
   cout << "Setting action " << actNum << " for action " << name << '\n';
   setAction(actNum, action);
   actionNameMap[name] = actNum;
+  return actNum;
 }
 
 unordered_map<string, int> GLWin::actionNameMap;

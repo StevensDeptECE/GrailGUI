@@ -8,7 +8,7 @@
 using namespace std;
 
 void MapView2D::init() {
-  numPoints = bml->getNumPoints();
+  uint32_t numPoints = bml->getNumPoints();
 
   glGenVertexArrays(1, &vao);  // Create the container for all vbo objects
   glBindVertexArray(vao);
@@ -24,8 +24,8 @@ void MapView2D::init() {
   // Create a buffer object for indices of lines
   uint32_t numSegments = bml->getNumSegments();
   constexpr uint32_t endIndex = 0xFFFFFFFF;
-  const uint32_t numIndices = numPoints + numSegments;
-  uint32_t* lineIndices = new uint32_t[numIndices];
+  numIndicesToDraw = numPoints + numSegments;
+  uint32_t* lineIndices = new uint32_t[numIndicesToDraw];
   for (uint32_t i = 0, j = 0, c = 0; i < numSegments; i++) {
     for (uint32_t k = 0; k < bml->getSegment(i).numPoints; k++)
       lineIndices[c++] = j++;
@@ -33,7 +33,7 @@ void MapView2D::init() {
   }
   glGenBuffers(1, &lbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * numIndices,
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * numIndicesToDraw,
                lineIndices, GL_STATIC_DRAW);
 
   delete[] lineIndices;
@@ -64,11 +64,10 @@ void MapView2D::render() {
 
   // quick debugging rectangle in old immediate mode
   glBegin(GL_QUADS);
-  glColor3f(1, 0, 0);  // red
-  glVertex2f(0, 0);
-  glVertex2f(200, 0);
-  glVertex2f(200, 200);
-  glVertex2f(0, 200);
+  glVertexAttrib2f(0, 0, 0);
+  glVertexAttrib2f(0, 200, 0);
+  glVertexAttrib2f(0, 200, 200);
+  glVertexAttrib2f(0, 0, 200);
   glEnd();
 
   glEnable(GL_PRIMITIVE_RESTART);
@@ -81,7 +80,7 @@ void MapView2D::render() {
 
   // Draw Lines
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
-  glDrawElements(GL_LINE_LOOP, numPoints, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_LINE_LOOP, numIndicesToDraw, GL_UNSIGNED_INT, 0);
 
   // Unbind
   glDisableVertexAttribArray(1);
