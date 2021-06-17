@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "data/BlockMapLoader.hh"
 
 int main(int argc, char* argv[]) {

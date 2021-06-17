@@ -620,7 +620,14 @@ void GLWin::bind(uint32_t input, const char actionName[]) {
   setEvent(input, lookupAction(actionName));
 }
 
-void GLWin::bind2DOrtho() {}
+void GLWin::bind2DOrtho() {
+  bind(Inputs::LARROW, "panLeft2D");
+  bind(Inputs::RARROW, "panRight2D");
+  bind(Inputs::UPARROW, "panUp2D");
+  bind(Inputs::DOWNARROW, "panDown2D");
+  bind(Inputs::PAGEUP, "zoomIn2D");
+  bind(Inputs::PAGEDOWN, "zoomOut2D");
+}
 
 void GLWin::bind3D() {
   bind(Inputs::INSERT, "speedTime");

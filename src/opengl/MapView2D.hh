@@ -23,15 +23,20 @@ class MapView2D : public Shape {
     const BlockMapLoader::BoundRect& bounds = bml->getBlockMapHeader()->bounds;
     float centerX = (bounds.xMin + bounds.xMax) * 0.5;
     float centerY = (bounds.yMin + bounds.yMax) * 0.5;
-    transform = glm::ortho(0.0f, (float)parent->getWidth(), 0.0f,
-                           (float)parent->getHeight());
-    transform = glm::scale(transform, glm::vec3(16, 16, 1));
-    transform = glm::translate(transform, glm::vec3(180, 0, 0));
-    originalTransform = transform;
 
-    // transform = glm::translate(transform, glm::vec3(-bounds.xMin, 0, 0));
+    double ySize = parent->getHeight();
+    double xSize = parent->getWidth();
+    double shiftX = -bounds.xMin * xSize / (bounds.xMax - bounds.xMin);
+    double shiftY = ySize + (bounds.yMin * ySize / (bounds.yMax - bounds.yMin));
+    double scaleX = xSize / (bounds.xMax - bounds.xMin);
+    double scaleY = -ySize / (bounds.yMax - bounds.yMin);
 
-    // transform = glm::scale(transform, glm::vec3(200, 200, 1));
+    std::cout << "shift: " << shiftX << " " << shiftY << "\n";
+    std::cout << "scale: " << scaleX << " " << scaleY << "\n";
+
+    transform = glm::mat4(1.0f);
+    transform = glm::translate(transform, glm::vec3(shiftX, shiftY, 0));
+    transform = glm::scale(transform, glm::vec3(scaleX, scaleY, 0));
   }
   glm::mat4& getTransform() { return transform; }
   void init() override;
