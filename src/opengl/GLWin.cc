@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "opengl/Errcode.hh"
 #include "util/Ex.hh"
 
 // glad seems "unhappy" if you include it after glfw. Why?
@@ -683,4 +682,13 @@ void GLWin::loadBindings() {
 
   bind3D();
   // bind2DOrtho();
+}
+
+string GLWin::getFile(const char defaultDir[], const char defaultFilename[],
+                      int argc, const char *argv[]) {
+  const char *grail = getenv("GRAIL");
+  if (grail == nullptr || defaultDir == nullptr)
+    return string(argc > 1 ? argv[1] : defaultFilename);
+  string dir = string(grail) + string(defaultDir);
+  return dir + (argc > 1 ? argv[1] : defaultFilename);
 }

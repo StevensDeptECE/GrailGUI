@@ -87,5 +87,7 @@ class TestDrawBlockMap : public GLWin {
 };
 
 int main(int argc, char* argv[]) {
-  return GLWin::init(new TestDrawBlockMap("uscounties.bml"), 2000, 2000);
+  std::string mapFile = GLWin::getFile("/test/res/maps/", "uscounties.bml",
+                                       argc, (const char**)argv);
+  return GLWin::init(new TestDrawBlockMap(mapFile.c_str()), 2000, 2000);
 }

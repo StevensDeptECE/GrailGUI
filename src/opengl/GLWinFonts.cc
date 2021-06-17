@@ -16,7 +16,6 @@
 #include <memory>
 
 #include "glad/glad.h"
-#include "opengl/Errcode.hh"
 #include "opengl/GLWin.hh"
 #include "util/Ex.hh"
 #include "util/FileUtil.hh"

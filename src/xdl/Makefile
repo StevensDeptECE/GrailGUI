@@ -68,7 +68,7 @@ TESTSYM	:= xdltest.o XDLCompiler.o SymbolTable.o Buffer.o datatype.o std.o
 $(BIN)/testsymbols: $(TESTSYM)
 	$(CXX) $(TESTSYM)  -o $(BIN)/testsymbols
 
-SymbolTable.hh: $(util)/datatype.hh $(grail)/Errors.hh $(util)/Ex.hh
+SymbolTable.hh: $(util)/datatype.hh $(opengl)/Errcode.hh $(util)/Ex.hh
 
 xdltest.o:  xdltest.cc SymbolTable.hh $(util)/Buffer.hh
 	$(COMP) $<
