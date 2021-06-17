@@ -61,6 +61,8 @@ class GLWin {
   bool focused;
   uint32_t exitAfter;  // if not zero, will terminate
 
+  float getTime() const;
+
   enum Inputs {
     INSERT = 260,
     DEL = 261,
