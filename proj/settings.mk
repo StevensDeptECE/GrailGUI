@@ -8,9 +8,10 @@ LIBSPEC	:=	-L${LIBDIR}
 SRC	:=	${GRAIL}/src
 
 util	:=	$(SRC)/util
-opengl	:=	$(SRC)/opengl
-csp	:=	$(SRC)/csp
-xdl	:=	$(SRC)/xdl
+opengl:=	$(SRC)/opengl
+csp		:=	$(SRC)/csp
+xdl		:=	$(SRC)/xdl
+data	:=	$(SRC)/data
 libshape := $(BASE)/include/libshape
 
 test	:=  ${GRAIL}/test
@@ -21,6 +22,7 @@ utilout 		:= $(build)/util
 openglout		:= $(build)/opengl
 cspout			:= $(build)/csp
 xdlout			:= $(build)/xdl
+dataout			:= $(build)/data
 libshapeout := $(build)/libshape
 
 
