@@ -55,6 +55,7 @@ class TestDrawBlockMap : public GLWin {
     const Style* s = getDefaultStyle();
     MapView2D* mv =
         c->addLayer(new MapView2D(c, s, new BlockMapLoader(filename)));
+    bind2DOrtho();
 
 #if 0
     // Keybinds for animation!
@@ -98,5 +99,5 @@ class TestDrawBlockMap : public GLWin {
 };
 
 int main(int argc, char* argv[]) {
-  return GLWin::init(new TestDrawBlockMap("uscounties.bml"), 1920, 1500);
+  return GLWin::init(new TestDrawBlockMap("uscounties.bml"), 1920, 1080);
 }

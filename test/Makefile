@@ -8,8 +8,8 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all:    $(BIN)/testDrawBlockMap #$(BIN)/testWidgets   $(BIN)/testStyledMultishape
-#$(BIN)/SolarSystem #$(BIN)/testBlockMapLoader  $(BIN)/testFastMapLoad $(BIN)/ESRIMapDemo \
+all:    $(BIN)/testDrawBlockMap $(BIN)/testWidgets   $(BIN)/testStyledMultishape \
+$(BIN)/SolarSystem $(BIN)/testBlockMapLoader  $(BIN)/testFastMapLoad $(BIN)/ESRIMapDemo \
   $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
 $(BIN)/testText3 $(BIN)/globe    $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
   $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/TestESRIPolygon \

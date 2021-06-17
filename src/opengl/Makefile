@@ -15,6 +15,7 @@ $(utilout)/Config.o $(utilout)/Prefs.o	\
 $(utilout)/HashMap.o                    \
 $(utilout)/Buffer.o			\
 $(utilout)/datatype.o			\
+$(utilout)/Timers.o 			\
 $(cspout)/Socket.o				\
 $(cspout)/IPV4Socket.o			\
 $(cspout)/XDLRequest.o			\
@@ -118,6 +119,9 @@ $(utilout)/Config.o: $(util)/Config.cc $(util)/Config.hh
 $(utilout)/Prefs.o: $(util)/Prefs.cc $(util)/Prefs.hh
 	$(COMP) $< -o $@
 
+$(utilout)/Timers.o: $(util)/Timers.cc $(util)/Timers.hh
+	$(CXX) -c $< -o $@
+
 $(out)/Shader.o: Shader.cc Shader.hh
 	$(COMP) $< -o $@
 
@@ -138,7 +142,6 @@ $(out)/Sector.o: Sector.cc Sector.hh
 
 $(out)/Rectangle.o: Rectangle.cc Rectangle.hh
 	$(COMP) $< -o $@
-
 
 
 ### Multishapes:--------------------------------------------------------------

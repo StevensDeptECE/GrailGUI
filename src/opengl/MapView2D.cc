@@ -1,5 +1,6 @@
 #include "opengl/MapView2D.hh"
 
+#include <iomanip>
 #include <iostream>
 
 #include "opengl/BlockMapLoader.hh"  //TODO: move to util or new data directory
@@ -39,8 +40,8 @@ void MapView2D::init() {
 }
 
 void debug(const glm::mat4& m, float x, float y, float z) {
-  cout << m[0][0] << '\t' << m[0][1] << '\t' << m[0][2] << '\t' << m[0][3]
-       << '\n'
+  cout << left << setw(10) << setprecision(2) << m[0][0] << '\t' << m[0][1]
+       << '\t' << m[0][2] << '\t' << m[0][3] << '\n'
        << m[1][0] << '\t' << m[1][1] << '\t' << m[1][2] << '\t' << m[1][3]
        << '\n'
        << m[2][0] << '\t' << m[2][1] << '\t' << m[2][2] << '\t' << m[2][3]
@@ -55,8 +56,8 @@ void MapView2D::render() {
   Shader* shader = Shader::useShader(GLWin::COMMON_SHADER);
   shader->setVec4("solidColor", style->getFgColor());
 
-  shader->setMat4("projection", transform * *parentCanvas->getProjection());
-  glm::mat4 t = transform * *parentCanvas->getProjection();
+  shader->setMat4("projection", *parentCanvas->getProjection() * transform);
+  glm::mat4 t = *parentCanvas->getProjection() * transform;
   debug(transform, 0, 0, 0);
   debug(t, 100, 0, 0);
   debug(t, 0, 70, 0);
