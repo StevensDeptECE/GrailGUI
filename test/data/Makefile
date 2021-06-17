@@ -22,3 +22,5 @@ $(BIN)/testFastMapLoad: testFastMapLoad.cc $(data)/BlockMapLoader.cc $(data)/Blo
 
 clean:
 	rm -f build/data/*
+
+	
