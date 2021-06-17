@@ -6,12 +6,11 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
   string grail = getenv("GRAIL");
-  grail += "/res/maps/";
+  grail += "/test/res/maps/";
   const char* shapefilename = argc > 1 ? argv[1] : "uscounties.bml";
-  grail += shapefilename;
 
-  BlockMapLoader bml(grail.c_str());
+  BlockMapLoader bml((grail + shapefilename).c_str());
   // cout << bml.sum() << '\n';
   bml.deltaEncode();
-  bml.save("uscountiesdelta.bml");
+  bml.save((grail + "uscountiesdelta.bml").c_str());
 }

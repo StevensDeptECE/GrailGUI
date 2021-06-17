@@ -8,7 +8,7 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all:    #$(BIN)/testBlockMapLoader  $(BIN)/testFastMapLoad 
+all:    $(BIN)/testBlockMapLoader  $(BIN)/testFastMapLoad 
 
 $(BIN)/testDrawBlockMap: testDrawBlockMap.cc $(data)/BlockMapLoader.cc $(opengl)/MapView2D.cc $(LIBGRAIL) $(opengl)/MapView2D.hh $(data)/BlockMapLoader.hh $(data)/BlockLoader.hh 
 	$(CXX) $< $(data)/BlockMapLoader.cc $(opengl)/MapView2D.cc -o $@ $(LIBS)
@@ -23,4 +23,3 @@ $(BIN)/testFastMapLoad: testFastMapLoad.cc $(data)/BlockMapLoader.cc $(data)/Blo
 clean:
 	rm -f build/data/*
 
-	
