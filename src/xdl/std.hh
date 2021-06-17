@@ -1,12 +1,12 @@
 /*
-	This file contains all the classes for built-in XDL types that are
-	pregenerated manually as well as some example classes that will
+        This file contains all the classes for built-in XDL types that are
+        pregenerated manually as well as some example classes that will
   eventually be generated from the xdl compiler which at the moment does not
   exist.
 
-	When that happens, this comment will change and those classes will be
-	removed from std.hh
-	
+        When that happens, this comment will change and those classes will be
+        removed from std.hh
+
   what should be generated:
         if you declare        to send                 metadata should be
         u8 x;                 buf.write(x);           buf.write(DataType::U8);
@@ -19,10 +19,10 @@
 #include <string>
 
 #include "opengl/Errcode.hh"
+#include "util/Buffer.hh"
 #include "util/DynArray.hh"
 #include "util/HashMap.hh"
 #include "util/datatype.hh"
-#include "util/Buffer.hh"
 
 /*
   XDLType is the base class of all XDL-generated code.
@@ -55,8 +55,9 @@ class XDLType {
   const static std::string empty;
   uint32_t nameOffset;
   static DynArray<const XDLType*> types;
-  static DynArray<std::string> typeNames;  // the list of all unique names in the system
-  static std::unordered_map<std::string, uint32_t> byName;
+  static DynArray<std::string>
+      typeNames;  // the list of all unique names in the system
+  static HashMap<uint32_t> byName;
   static void addType(const XDLType* type);
 
  public:
@@ -64,12 +65,8 @@ class XDLType {
   static void classCleanup();
   static uint32_t computeNameOffset(const std::string& typeName) {
     uint32_t nameOffset;
-    if (byName.find(typeName) != byName.end())
-      nameOffset = byName.at(typeName);
-    else {
-      nameOffset = byName[typeName] = typeNames.size();
-      typeNames.add(typeName);
-    }
+    if (!byName.get(typeName.c_str(), &nameOffset))
+      byName.add(typeName.c_str(), nameOffset = typeNames.size());
     return nameOffset;
   }
   static uint32_t computeNameOffset(DataType t) {
@@ -91,8 +88,8 @@ class XDLType {
   // TODO: virtual void generateCode() = 0;
   const std::string& getTypeName() const { return typeNames[nameOffset]; }
   // using this XDL type as ASCII text, not formatted
-	// each class must implement its own iterator?
-	virtual XDLIterator* createIterator();
+  // each class must implement its own iterator?
+  virtual XDLIterator* createIterator();
   virtual void display(Buffer& binaryIn, Buffer& asciiOut) const;
   // TODO: for efficiency, add another display function since we usually do NOT
   // want to know w,h virtual void display(Buffer& in, Canvas* c, const Style*
@@ -101,33 +98,36 @@ class XDLType {
   /* read from metadata and create a struct of all the variables specified
            if any variables are structures, then this can get recursive
    */
-  static void readMeta(XDLCompiler* compiler, Buffer& in, uint32_t count, Struct* s);
+  static void readMeta(XDLCompiler* compiler, Buffer& in, uint32_t count,
+                       Struct* s);
   static const Struct* read(Buffer& in);
   static DataType readType(Buffer& in);
 };
 
 class XDLIterator {
-private:
-	uint32_t pos;
-public:
-	XDLIterator() : pos(0) {}
-	void advance() { pos++; }
-	void advance(uint32_t d) { pos += d; }
-	uint32_t getPos() const { return pos; }
+ private:
+  uint32_t pos;
+
+ public:
+  XDLIterator() : pos(0) {}
+  void advance() { pos++; }
+  void advance(uint32_t d) { pos += d; }
+  uint32_t getPos() const { return pos; }
 };
 
 /*
-	XDLRaw loads block binary data and can write it directly to the client
-	without bothering to analyze. Useful for large datasets that don't change
-	often. Uses extremely little CPU
+        XDLRaw loads block binary data and can write it directly to the client
+        without bothering to analyze. Useful for large datasets that don't
+   change often. Uses extremely little CPU
  */
 class XDLRaw : public XDLType {
-private:
-	const char* data;
-	size_t len;
-	friend Buffer;
-public:
-	XDLRaw(const char* p, size_t len) : XDLType("XDLRaw"), data(p), len(len) {}
+ private:
+  const char* data;
+  size_t len;
+  friend Buffer;
+
+ public:
+  XDLRaw(const char* p, size_t len) : XDLType("XDLRaw"), data(p), len(len) {}
   DataType getDataType() const;
   uint32_t size() const override;
   void write(Buffer& buf) const;
@@ -604,10 +604,11 @@ class User : public XDLType {
   A hardcoded type is more efficient
 */
 class GenericList : public XDLType {
-  private:
+ private:
   uint32_t capacity;
   uint32_t size_;
   std::string listType;
+
  public:
   GenericList(const std::string& name, uint32_t size,
               const std::string& listType)
@@ -617,7 +618,7 @@ class GenericList : public XDLType {
   void write(Buffer& buf) const override;
   void writeMeta(Buffer& buf) const override;
   void display(Buffer& binaryIn, Buffer& asciiOut) const override;
-	XDLIterator* createIterator() override;
+  XDLIterator* createIterator() override;
 };
 
 template <typename T>
@@ -639,24 +640,23 @@ class List : public XDLType {
     return impl.size();  // TODO: * T.size();
   }
   void write(Buffer& buf) const override {
-		buf.write(uint16_t(impl.size()));
-    for (uint32_t i = 0; i < impl.size(); i++)
-			impl[i].write(buf);
+    buf.write(uint16_t(impl.size()));
+    for (uint32_t i = 0; i < impl.size(); i++) impl[i].write(buf);
   }
   void writeMeta(Buffer& buf) const override {
     buf.write(DataType::LIST16);
     if (impl.size() == 0) return;
     impl[0].writeMeta(buf);
   }
-	void read(Buffer& buf) {
-		uint32_t len = buf._readU16();
-		T val;
-		for (uint32_t i = 0; i < len; i++) {
-			val.read(buf);
-			add(val);
-		}
-	}
-	XDLIterator* createIterator() override;
+  void read(Buffer& buf) {
+    uint32_t len = buf._readU16();
+    T val;
+    for (uint32_t i = 0; i < len; i++) {
+      val.read(buf);
+      add(val);
+    }
+  }
+  XDLIterator* createIterator() override;
   void display(Buffer& binaryIn, Buffer& asciiOut) const override;
 };
 
@@ -701,15 +701,15 @@ class Struct : public CompoundType {
     Member(uint32_t nameOffset, uint32_t nameLen, const XDLType* type)
         : nameOffset(nameOffset), nameLen(nameLen), type(type) {}
   };
-   XDLCompiler* compiler;
-   DynArray<Member> members;  // sequential list of all members
+  XDLCompiler* compiler;
+  DynArray<Member> members;  // sequential list of all members
  private:
- 
-  std::string memberNames;   // single string containing names of all members
+  std::string memberNames;  // single string containing names of all members
 
   HashMap<uint32_t> byName;  // map to index into members
   uint32_t packedSize;
   const Member& getMember(uint32_t index) const { return members[index]; }
+
  public:
   Struct(XDLCompiler* compiler, const std::string& name)
       : CompoundType(name), members(16), byName(16), packedSize(0) {}
@@ -734,7 +734,7 @@ class Struct : public CompoundType {
   const XDLType* getMemberType(const std::string& memberName) const {
     uint32_t index;
     return byName.get(memberName.c_str(), &index) ? members[index].type
-                                                 : nullptr;
+                                                  : nullptr;
   }
 
   const XDLType* getMemberType(uint32_t index) const {
