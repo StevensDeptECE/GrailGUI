@@ -1,5 +1,5 @@
 
-#include "opengl/BlockMapLoader.hh"
+#include "data/BlockMapLoader.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/MapView2D.hh"
 
