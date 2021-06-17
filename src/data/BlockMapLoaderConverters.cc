@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 
+#include "data/BlockMapLoader.hh"
 #include "libshape/shapefil.h"
-#include "opengl/BlockMapLoader.hh"
 using namespace std;
 
 // extra parameter calls loader from ESRI Shapefile

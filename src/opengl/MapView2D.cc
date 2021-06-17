@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "opengl/BlockMapLoader.hh"  //TODO: move to util or new data directory
+#include "data/BlockMapLoader.hh"  //TODO: move to util or new data directory
 #include "opengl/Style.hh"
 using namespace std;
 

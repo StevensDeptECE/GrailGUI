@@ -267,7 +267,7 @@ void GLWin::baseInit() {
   }
 }
 
-float getTime() const { return glfwGetTime(); }
+float GLWin::getTime() const { return glfwGetTime(); }
 
 int GLWin::init(GLWin *g, uint32_t w, uint32_t h, uint32_t exitAfter) {
   try {

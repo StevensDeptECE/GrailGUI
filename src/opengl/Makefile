@@ -38,7 +38,7 @@ $(out)/Shapefile.o $(out)/ESRIShape.o $(out)/ESRIPolygon.o\
 $(out)/LineGraphWidget.o $(out)/BarChartWidget.o \
 $(out)/ButtonWidget.o $(out)/Scale.o $(out)/CandlestickChartWidget.o\
 $(out)/AngledMultiText.o $(out)/BoxChartWidget.o \
-$(out)/ScrollbarWidget.o $(out)/AxisWidget.o $(out)/GapMinderWidget.o \
+$(out)/ScrollbarWidget.o $(out)/AxisWidget.o $(out)/GapMinderWidget.o
 
 SHAPEOBJS := $(libshapeout)/dbfopen.o $(libshapeout)/safileio.o \
 $(libshapeout)/sbnsearch.o $(libshapeout)/shpopen.o $(libshapeout)/shptree.o
