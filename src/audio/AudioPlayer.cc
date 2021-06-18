@@ -1,33 +1,64 @@
-#include "AudioPlayer.hh"
+#include "audio/AudioPlayer.hh"
 
 using namespace std;
-AudioPlayer::AudioPlayer(string filePath, int volume)
-    : filePath(filePath), volume(volume) {}
+AudioPlayer::AudioPlayer() { addContext(); }
 
-void AudioPlayer::setFilePath(string filePath) { this->filePath = filePath; }
+AudioPlayer::~AudioPlayer() {
+  for (auto ctx : contexts) {
+    mpv_terminate_destroy(ctx);
+  }
+}
 
-void AudioPlayer::setVolume(int volume) { this->volume = volume; }
-
-void AudioPlayer::init() {
-  ctx = mpv_create();
+void AudioPlayer::addContext() {
+  mpv_handle *ctx = mpv_create();
   if (!ctx) {
     printf("failed creating context\n");
-    // todo, crash / fail here
+    throw(Ex1(Errcode::MPV_FAILURE));
   }
 
-  check_error(mpv_initialize(ctx));
-  check_error(mpv_command_string(ctx, "cycle pause"));
+  checkError(mpv_initialize(ctx));
 
-  const char *loadCmd[] = {"loadfile", filePath.c_str(), NULL};
-  check_error(mpv_command(ctx, loadCmd));
+  checkError(mpv_command_string(ctx, "cycle pause"));
 
-  char volumeCmd[25];
-  sprintf(volumeCmd, "set volume %d", volume);
-  check_error(mpv_command_string(ctx, volumeCmd));
+  contexts.push_back(ctx);
+  currentCtx = ctx;
 }
+
+void AudioPlayer::setCurrentContext(int index) {
+  if (index > contexts.size() - 1) {
+    cout << "Can't do that chief\n";
+    return;
+  }
+
+  currentCtx = contexts[index];
+}
+
+void AudioPlayer::addFile(string filePath) {
+  const char *cmd[] = {"loadfile", filePath.c_str(), "append", nullptr};
+  checkError(mpv_command(currentCtx, cmd));
+}
+
+void AudioPlayer::addPlaylist(string filePath, bool append) {
+  const char *cmd[] = {"loadlist", filePath.c_str(),
+                       (append) ? "append" : "replace", nullptr};
+  checkError(mpv_command(currentCtx, cmd));
+}
+
+void AudioPlayer::setVolume(int volume) {
+  char cmd[25];
+  sprintf(cmd, "set volume %d", volume);
+  checkError(mpv_command_string(currentCtx, cmd));
+}
+
+void AudioPlayer::next() {
+  const char *cmd[] = {"playlist-next", nullptr};
+  checkError(mpv_command(currentCtx, cmd));
+}
+
+void AudioPlayer::init() {}
 
 void AudioPlayer::togglePause() {
-  check_error(mpv_command_string(ctx, "cycle pause"));
+  checkError(mpv_command_string(currentCtx, "cycle pause"));
 }
 
-void AudioPlayer::destroy() { mpv_terminate_destroy(ctx); }
+void AudioPlayer::classCleanup() {}

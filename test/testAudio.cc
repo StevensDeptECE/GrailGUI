@@ -5,33 +5,46 @@ using namespace std;
 using namespace grail;
 
 class TestAudioPlayer : public GLWin {
- public:
-  TestAudioPlayer() : GLWin(0x000000, 0xCCCCCC, "TestAudioPlayer") {}
-
+ private:
   double startTime;
-  AudioPlayer a;
+  AudioPlayer *a;
   bool playing;
+  bool didit;
+
+ public:
+  TestAudioPlayer()
+      : GLWin(0x000000, 0xCCCCCC, "TestAudioPlayer"),
+        startTime(0),
+        a(nullptr),
+        playing(false),
+        didit(false) {}
+
+  ~TestAudioPlayer() { delete a; }
 
   void update() {
-    if (getTime() > startTime + 3 && !playing) {
-      a.togglePause();
+    double time = getTime();
+    if (time > startTime + 2 && !playing) {
+      a->togglePause();
       playing = true;
+      startTime = time;
+    }
+
+    if (time > startTime + 6 && !didit) {
+      a->addPlaylist("res/playlist.txt");
+      didit = true;
     }
   }
 
   void init() {
     startTime = getTime();
-    playing = false;
-
     MainCanvas *c = currentTab()->getMainCanvas();
 
     StyledMultiShape2D *m = c->getGui();
 
-    a = AudioPlayer();
+    a = new AudioPlayer();
 
-    a.setFilePath("res/sample1mb.ogg");
-    a.setVolume(50);
-    a.init();
+    a->addFile("res/sample1mb.ogg");
+    a->setVolume(75);
   }
 };
 
