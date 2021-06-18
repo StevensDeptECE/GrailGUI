@@ -1,32 +1,28 @@
 #include "audio/AudioPlayer.hh"
 
 using namespace std;
-AudioPlayer::AudioPlayer() { addContext(); }
+AudioPlayer::AudioPlayer() { newContext(); }
 
 AudioPlayer::~AudioPlayer() {
-  for (auto ctx : contexts) {
-    mpv_terminate_destroy(ctx);
-  }
+  for (auto ctx : contexts) mpv_terminate_destroy(ctx);
 }
 
-void AudioPlayer::addContext() {
+void AudioPlayer::newContext() {
   mpv_handle *ctx = mpv_create();
+
   if (!ctx) {
-    printf("failed creating context\n");
-    throw(Ex1(Errcode::MPV_FAILURE));
+    printf("failed creating mpv context\n");
+    throw Ex1(Errcode::MPV_FAILURE);
   }
 
   checkError(mpv_initialize(ctx));
-
   checkError(mpv_command_string(ctx, "cycle pause"));
-
   contexts.push_back(ctx);
-  currentCtx = ctx;
 }
 
 void AudioPlayer::setCurrentContext(int index) {
   if (index > contexts.size() - 1) {
-    cout << "Can't do that chief\n";
+    printf("Can't do that chief\n");
     return;
   }
 
@@ -50,15 +46,11 @@ void AudioPlayer::setVolume(int volume) {
   checkError(mpv_command_string(currentCtx, cmd));
 }
 
-void AudioPlayer::next() {
+void AudioPlayer::nextTrack() {
   const char *cmd[] = {"playlist-next", nullptr};
   checkError(mpv_command(currentCtx, cmd));
 }
 
-void AudioPlayer::init() {}
-
 void AudioPlayer::togglePause() {
   checkError(mpv_command_string(currentCtx, "cycle pause"));
 }
-
-void AudioPlayer::classCleanup() {}

@@ -1,11 +1,7 @@
 #pragma once
 
 #include <mpv/client.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-#include <map>
 #include <string>
 #include <vector>
 
@@ -27,17 +23,12 @@ class AudioPlayer {
   AudioPlayer();
   ~AudioPlayer();
   AudioPlayer(const AudioPlayer &orig) = delete;
-  AudioPlayer& operator=(const AudioPlayer &orig) = delete;
-
-  void addContext();
+  AudioPlayer &operator=(const AudioPlayer &orig) = delete;
+  void newContext();
   void setCurrentContext(int index);
   void addFile(std::string filePath);
   void addPlaylist(std::string filePath, bool append = false);
-  // void setFilePath(std::string filePath);
-  // needs to check if between 0 and 100 (or a reasonable bound)
   void setVolume(int volume);
-  void next();
-  void init();
+  void nextTrack();
   void togglePause();
-  static void classCleanup();
 };

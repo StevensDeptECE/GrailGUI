@@ -8,30 +8,35 @@ class TestAudioPlayer : public GLWin {
  private:
   double startTime;
   AudioPlayer *a;
-  bool playing;
-  bool didit;
+  int step;
 
  public:
   TestAudioPlayer()
       : GLWin(0x000000, 0xCCCCCC, "TestAudioPlayer"),
         startTime(0),
         a(nullptr),
-        playing(false),
-        didit(false) {}
+        step(0) {}
 
   ~TestAudioPlayer() { delete a; }
 
   void update() {
     double time = getTime();
-    if (time > startTime + 2 && !playing) {
+    // printf("current time: %f\n", time);
+    // printf("startTime: %f\n", startTime);
+    if (time > startTime + 1 && step == 0) {
+      a->setCurrentContext(0);
       a->togglePause();
-      playing = true;
+      a->setCurrentContext(1);
+      a->togglePause();
       startTime = time;
+      step++;
     }
 
-    if (time > startTime + 6 && !didit) {
-      a->addPlaylist("res/playlist.txt");
-      didit = true;
+    if (time > startTime + 15 && step == 1) {
+      a->setCurrentContext(0);
+      a->togglePause();
+      startTime = time;
+      step++;
     }
   }
 
@@ -43,8 +48,14 @@ class TestAudioPlayer : public GLWin {
 
     a = new AudioPlayer();
 
-    a->addFile("res/sample1mb.ogg");
+    a->setCurrentContext(0);
     a->setVolume(75);
+    a->addFile("res/sample1mb.ogg");
+
+    a->newContext();
+    a->setCurrentContext(1);
+    a->setVolume(50);
+    a->addPlaylist("res/playlist.txt");
   }
 };
 
