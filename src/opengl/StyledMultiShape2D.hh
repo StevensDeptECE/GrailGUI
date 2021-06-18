@@ -22,7 +22,6 @@ class StyledMultiShape2D : public MultiShape2D {
     startIndices.push_back(0);
     transform = glm::translate(transform, glm::vec3(x, y, 0));
     transform = glm::rotate(transform, angle, glm::vec3(0, 0, -1));
-    transform = glm::translate(transform, glm::vec3(-x, -y, 0));
   }
 
   uint32_t addSector(float x, float y, float xRad, float yRad, float fromAngle,
@@ -118,6 +117,15 @@ class StyledMultiShape2D : public MultiShape2D {
                    const glm::vec4& c);
   void drawHexGrid(float x, float y, float w, float h,
                    uint32_t numHorizHexagons, const glm::vec4& c);
+
+  // Markers for graphs
+  // TODO: add hollow and filled variants of shapes
+  void drawCircleMarker(float x, float y, float size, glm::vec4 &color);
+  void drawTriangleMarker(float x, float y, float size, glm::vec4 &color);
+  void drawSquareMarker(float x, float y, float size, glm::vec4 &color);
+  void drawPentagonMarker(float x, float y, float size, glm::vec4 &color);
+  void drawHexagonMarker(float x, float y, float size, glm::vec4 &color);
+  void drawCrossMarker(float x, float y, float size, glm::vec4 &color);
 
   // Point Primitives
   void rectanglePoints(float x, float y, float w, float h, const glm::vec4& c);
