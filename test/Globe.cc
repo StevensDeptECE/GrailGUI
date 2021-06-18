@@ -13,7 +13,7 @@ class Globe : public GLWin {
     Canvas *c = currentTab()->getMainCanvas();
     Camera *cam = c->setLookAtProjection(2, 3, 40, 0, 0, 0, 0, 0, 1);
     MultiShape3D *earth =
-        c->addLayer(new MultiShape3D(cam, "textures/earth.jpg", &tEarth));
+        c->addLayer(new MultiShape3D(c, cam, "textures/earth.jpg", &tEarth));
     earth->genOBJModel("models/sphere.obj");
   }
   void update() {

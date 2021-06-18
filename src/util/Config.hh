@@ -40,8 +40,9 @@ class BadType { //BadType exception is thrown when an incorrect type is passed a
 
 class Config {
 public:
-	enum Type {UINT16, UINT32, UINT64, INT16, INT32, INT64,
-						 DOUBLE, STRING, BOOL};
+//TODO: this should use the Datatype types
+	enum class Type {U16, U32, U64, I16, I32, I64,
+						 F64, F32, BOOL, STRING};
 private:
 	struct Sym {
 		Type type;
@@ -60,37 +61,37 @@ private:
 		//Constructors
 		Sym(Type t, const string& val) : type(t) {
 			//TODO: check online for actual integer bit-precision conversions
-			if (t == UINT16)	
+			if (t == Type::U16)	
 				u16 = stoi(val);
-			else if (t == UINT32)
+			else if (t == Type::U32)
 				u32 = stoi(val);
-			else if (t == UINT64)
+			else if (t == Type::U64)
 				u64 = stoi(val);
-			else if (t == INT16)
+			else if (t == Type::I16)
 				i16 = stoi(val);
-			else if (t == INT32)
+			else if (t == Type::I32)
 				i32 = stoi(val);
-			else if (t == INT64)
+			else if (t == Type::I64)
 				i64 = stoi(val);
-			else if (t == DOUBLE)
+			else if (t == Type::F64)
 				d = stod(val);
-			else if (t == STRING)
+			else if (t == Type::STRING)
 				s = new string(val);
-			else if (t == BOOL) 
+			else if (t == Type::BOOL) 
 				b = stoi(val);
 			else 
 				throw BadType(__FILE__, __LINE__);
 		}
-		Sym(uint16_t u16) : type(UINT16),  u16(u16) {}
-		Sym(uint32_t u32) : type(UINT32),  u32(u32) {}
-		Sym(uint64_t u64) : type(UINT64),  u64(u64) {}
-		Sym(int16_t i16)  : type(INT16),   i16(i16) {}
-		Sym(int32_t i32)  : type(INT32),   i32(i32) {}
-		Sym(int64_t i64)  : type(INT64),   i64(i64) {}
-		Sym(double d) 	  : type(DOUBLE),  d(d)     {}
-		Sym(const string& str)	: type(STRING),  s(new string(str))   {}
-		Sym(bool b)	      : type(BOOL),    b(b)     {}// true = 1, false = 0
-		Sym(double size, char mul) : type(UINT64) { // 1024 or 128k or 16M or 2G
+		Sym(uint16_t u16) : type(Type::U16),  u16(u16) {}
+		Sym(uint32_t u32) : type(Type::U32),  u32(u32) {}
+		Sym(uint64_t u64) : type(Type::U64),  u64(u64) {}
+		Sym(int16_t i16)  : type(Type::I16),   i16(i16) {}
+		Sym(int32_t i32)  : type(Type::I32),   i32(i32) {}
+		Sym(int64_t i64)  : type(Type::I64),   i64(i64) {}
+		Sym(double d) 	  : type(Type::F64),  d(d)     {}
+		Sym(const string& str)	: type(Type::STRING),  s(new string(str))   {}
+		Sym(bool b)	      : type(Type::BOOL),    b(b)     {}// true = 1, false = 0
+		Sym(double size, char mul) : type(Type::U64) { // 1024 or 128k or 16M or 2G
 			if (mul == 'k') size *= 1024;
 			if (mul == 'M') size *= 1024*1024;
 			if (mul == 'G') size *= 1024*1024*1024;
@@ -98,7 +99,7 @@ private:
 		}
 		Sym(const Sym& orig) {
 			memcpy(this, &orig, sizeof(*this));
-			if (type == STRING) {
+			if (type == Type::STRING) {
 				s = new string(orig.s->c_str());
 			}
 		}

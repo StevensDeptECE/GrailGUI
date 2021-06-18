@@ -8,7 +8,9 @@ private:
   float xRad,yRad,fromAngle,toAngle,angleInc;
 
 public:
-  Sector(float x, float y, float xRad, float yRad, float fromAngle,float toAngle,float angleInc,Style* s):Shape2D(x,y,s),xRad(xRad),yRad(yRad),fromAngle(fromAngle),toAngle(toAngle),angleInc(angleInc)
+  Sector(Canvas* c, float x, float y, float xRad, float yRad,
+   float fromAngle,float toAngle,float angleInc,Style* s) :
+   Shape2D(c, x,y,s),xRad(xRad),yRad(yRad),fromAngle(fromAngle),toAngle(toAngle),angleInc(angleInc)
   {
     addPoint(x,y);
 

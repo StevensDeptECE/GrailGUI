@@ -1,7 +1,9 @@
 #include "csp/csp.hh"
 #include "csp/IPV4Socket.hh"
 //#include <cstdlib>
+#include "opengl/GLWin.hh"
 #include "xdl/std.hh"
+#include "xdl/XDLCompiler.hh"
 using namespace std;
 
 Log srvlog; // log all important events for security and debugging
@@ -10,15 +12,21 @@ Log srvlog; // log all important events for security and debugging
 //https://stackoverflow.com/questions/51169357/unable-to-catch-sigint-sent-by-clion
 //However the solution there introduces other issues so code is left as is
 
+// NOTICE: This has been effectively replaced by GenericXDLClient
 int main(int argc, char* argv[]) {
-	const char* ip = argc > 2 ? argv[1] : "127.0.0.1";
-	int port = argc > 3 ? atoi(argv[2]) : 8000;
-	uint32_t req = argc > 4 ? atoi(argv[3]) : 0;
+	const char* ip = argc > 1 ? argv[1] : "127.0.0.1";
+	int port = argc > 2 ? atoi(argv[2]) : 8060;
+	uint32_t req = argc > 3 ? atoi(argv[3]) : 1;
+
+	GLWin::classInit();
 	try {
 		IPV4Socket s(ip, port);
     s.send(req);
 		Buffer& in = s.getIn();
-    in.displayRawRead();
+
+		//XDLCompiler compiler;
+		//XDLType::readMeta(&compiler, in, 
+    //in.displayRawRead();
 //    Struct st;
 //		XDLType::read(in, &st);// First read the metadata
     /*
@@ -33,5 +41,6 @@ int main(int argc, char* argv[]) {
 	} catch (const Ex& e) {
 		cerr << e << '\n';
 	}
+	GLWin::classCleanup();
 	return 0;
 }

@@ -1,8 +1,7 @@
-#version 330 core
+#version 330
 layout (location = 0) in vec3 aPos;   // the position variable has attribute position 0
 
 uniform mat4 projection;
-uniform mat4 trans;
 uniform vec4 solidColor;
 
 out vec4 ourColor; // output a color to the fragment shader

@@ -6,8 +6,8 @@ class Rectangle : public Shape2D{
 private:
   float width,height;
 public:
-  Rectangle(float x, float y, float width,float height, Style* s): Shape2D(x,y,s)
-  {
+  Rectangle(Canvas* c, float x, float y, float width,float height, Style* s) :
+   Shape2D(c, x,y,s) {
     addPoint(x,y);
     addPoint(x,y-height);
     addPoint(x+width,y-height);

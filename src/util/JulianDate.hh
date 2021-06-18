@@ -26,13 +26,14 @@
 */
 class Date;
 class JulianDate {
-private:
+public:
   friend class Date;
-  static double epoch;
-  static uint16_t daysUpTo[12];
-  static uint16_t daysInMonth[12];
+  static const double epoch;
+  static const uint16_t daysUpTo[12];
+  static const uint16_t daysInMonth[12];
   static const char* monthAbbr[12];
   static const char* monthNames[12];
+private:
   
   double date;
 #if 0
@@ -75,6 +76,7 @@ public:
   bool operator ==(JulianDate orig){
     return abs(date - orig.date) < 0.0000125;
   }
+	operator double() const { return date; }
   //TODO: need to implement extraction of date info
   int32_t getYear() const {
 		int64_t ddate = int64_t(date);
@@ -141,4 +143,5 @@ public:
     s << JulianDate::monthAbbr[jd.getMonth()-1];
     return s;
   }
+	friend class Date;
 };

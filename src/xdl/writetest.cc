@@ -43,7 +43,7 @@ int main() {
   buf2.write(y);
   */
   Buffer t0("test10.bin", 32768);
-  int8_t aa= -200;
+  int8_t aa= -100;
   int16_t ab = 22345;
   //  float ac=123.45;
   //  double ad=456.78;

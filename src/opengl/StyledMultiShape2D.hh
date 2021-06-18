@@ -6,15 +6,22 @@
 #include "opengl/MultiShape2D.hh"
 
 class StyledMultiShape2D : public MultiShape2D {
+ private:
+  glm::mat4 transform;
+
  public:
-  StyledMultiShape2D(const Style* s, uint32_t vertCount = 1024,
+  StyledMultiShape2D(Canvas* parent, const Style* s, float angle = 0,
+                     float x = 0, float y = 0, uint32_t vertCount = 1024,
                      uint32_t solidIndCount = 1024,
                      uint32_t lineIndCount = 1024,
                      uint32_t pointIndCount = 1024)
-      : MultiShape2D(s, vertCount, solidIndCount, lineIndCount, pointIndCount,
-                     5),
-        currentIndex(0) {
+      : MultiShape2D(parent, s, vertCount, solidIndCount, lineIndCount,
+                     pointIndCount, 5),
+        currentIndex(0),
+        transform(1.0f) {
     startIndices.push_back(0);
+    transform = glm::translate(transform, glm::vec3(x, y, 0));
+    transform = glm::rotate(transform, angle, glm::vec3(0, 0, -1));
   }
 
   uint32_t addSector(float x, float y, float xRad, float yRad, float fromAngle,
@@ -44,6 +51,8 @@ class StyledMultiShape2D : public MultiShape2D {
   void clear() {
     vertices.clear();
     colors.clear();
+    lineIndices.clear();
+    pointIndices.clear();
   }
   void init() override;
   void render() override;
@@ -52,6 +61,9 @@ class StyledMultiShape2D : public MultiShape2D {
   void updateColors(const uint64_t pos, const float r, const float g,
                     const float b);
 
+  // Update buffers
+  void updatePoints();
+  void updateIndices();
   // Solid Primitives
   void fillRectangle(float x, float y, float w, float h, const glm::vec4& c);
   void fillRoundRect(float x, float y, float w, float h, float rx, float ry,
@@ -71,6 +83,7 @@ class StyledMultiShape2D : public MultiShape2D {
                      const glm::vec4& c);
   void drawTriangle(float x1, float y1, float x2, float y2, float x3, float y3,
                     const glm::vec4& c);
+  void drawPolygon(const std::vector<float>& v, const glm::vec4& c);
   void drawPolygon(float x, float y, float xRad, float yRad, float n,
                    const glm::vec4& c);
   void drawCompletePolygon(float x, float y, float xRad, float yRad, float n,
@@ -105,6 +118,15 @@ class StyledMultiShape2D : public MultiShape2D {
   void drawHexGrid(float x, float y, float w, float h,
                    uint32_t numHorizHexagons, const glm::vec4& c);
 
+  // Markers for graphs
+  // TODO: add hollow and filled variants of shapes
+  void drawCircleMarker(float x, float y, float size, glm::vec4 &color);
+  void drawTriangleMarker(float x, float y, float size, glm::vec4 &color);
+  void drawSquareMarker(float x, float y, float size, glm::vec4 &color);
+  void drawPentagonMarker(float x, float y, float size, glm::vec4 &color);
+  void drawHexagonMarker(float x, float y, float size, glm::vec4 &color);
+  void drawCrossMarker(float x, float y, float size, glm::vec4 &color);
+
   // Point Primitives
   void rectanglePoints(float x, float y, float w, float h, const glm::vec4& c);
   void roundRectPoints(float x, float y, float w, float h, float rx, float ry,
@@ -117,6 +139,9 @@ class StyledMultiShape2D : public MultiShape2D {
                     const glm::vec4& c);
   void ellipsePoints(float x, float y, float xRad, float yRad, float angleInc,
                      const glm::vec4& c);
+
+  void dump();
+
  private:
   std::vector<float> colors;
   std::vector<int> startIndices;
