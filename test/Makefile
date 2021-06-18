@@ -13,7 +13,7 @@ all:    $(BIN)/testDrawBlockMap $(BIN)/testWidgets   $(BIN)/testStyledMultishape
 # $(BIN)/ESRIMapDemo \
   $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
 $(BIN)/testText3 $(BIN)/globe    $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
-  $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/TestESRIPolygon \
+  $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/testESRIPolygon \
 	$(BIN)/testPolyLines $(BIN)/StockDemo $(BIN)/testAxis
 
 #$(BIN)/testText 
@@ -70,7 +70,7 @@ $(BIN)/QuentinDemo: QuentinDemo.cc $(LIBGRAIL)
 $(BIN)/MapDemo: MapDemo.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)	
 
-$(BIN)/TestESRIPolygon: TestESRIPolygon.cc $(LIBGRAIL)
+$(BIN)/testESRIPolygon: testESRIPolygon.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)	
 
 $(BIN)/ESRIMapDemo: ESRIMapDemo.cc $(LIBGRAIL)
