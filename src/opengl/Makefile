@@ -24,6 +24,7 @@ $(xdlout)/XDLCompiler.o			\
 $(xdlout)/SymbolTable.o			\
 $(xdlout)/std.o				\
 $(audioout)/AudioPlayer.o \
+$(audioout)/VideoPlayer.o \
 $(out)/ErrNames.o			\
 $(out)/Tab.o 				\
 $(out)/Canvas.o 			\
@@ -55,6 +56,9 @@ $(out)/Glad.o:
 	$(CXX) -g -std=c++11 -c -I $(GRAIL)/include $(GRAIL)/include/glad/glad.c -o $@
 
 $(audioout)/AudioPlayer.o: $(audio)/AudioPlayer.cc $(audio)/AudioPlayer.hh
+	$(COMP) $< -o $@
+
+$(audioout)/VideoPlayer.o: $(audio)/VideoPlayer.cc $(audio)/VideoPlayer.hh
 	$(COMP) $< -o $@
 
 $(LIBGRAIL): $(SHARED)
