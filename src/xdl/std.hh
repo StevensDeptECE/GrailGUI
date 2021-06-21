@@ -50,6 +50,7 @@ class MultiShape2d;
 class MultiText;
 class XDLIterator;
 
+class UnImpl;
 class XDLType {
  protected:
   const static std::string empty;
@@ -61,6 +62,7 @@ class XDLType {
   static void addType(const XDLType* type);
 
  public:
+  const static UnImpl* unimpl;
   static void classInit();
   static void classCleanup();
   static uint32_t computeNameOffset(const std::string& typeName) {
@@ -100,6 +102,7 @@ class XDLType {
    */
   static void readMeta(XDLCompiler* compiler, Buffer& in, uint32_t count,
                        Struct* s);
+  static const XDLType* readMeta(XDLCompiler* compiler, Buffer& in);
   static const Struct* read(Buffer& in);
   static DataType readType(Buffer& in);
 };
@@ -603,16 +606,17 @@ class User : public XDLType {
   GenericList is the metadata for a list of unknown type coming in.
   A hardcoded type is more efficient
 */
-class GenericList : public XDLType {
+class GenericList : public CompoundType {
  private:
-  uint32_t capacity;
-  uint32_t size_;
-  std::string listType;
+  XDLCompiler* compiler;
+  const XDLType* listType;
 
  public:
-  GenericList(const std::string& name, uint32_t size,
-              const std::string& listType)
-      : XDLType(name), capacity(size), size_(size), listType(listType) {}
+  GenericList(XDLCompiler* compiler, const std::string& name, DataType t)
+      : CompoundType(name), compiler(compiler), listType(types[uint32_t(t)]) {}
+  GenericList(XDLCompiler* compiler, const std::string& name,
+              const XDLType* listType)
+      : CompoundType(name), compiler(compiler), listType(listType) {}
   DataType getDataType() const override;
   uint32_t size() const override;
   void write(Buffer& buf) const override;
@@ -773,4 +777,12 @@ class Regex : public XDLType {
   // string getTypeName() const {return typeName;}
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
+};
+
+class UnImpl : public XDLType {
+ private:
+ public:
+  uint32_t size() const override;
+  void write(Buffer& buf) const override;
+  void writeMeta(Buffer& buf) const override;
 };
