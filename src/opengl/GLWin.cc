@@ -562,6 +562,12 @@ void GLWin::panDown2D(GLWin *w) {
   *proj = glm::translate(*proj, glm::vec3(0, y, 0));
 }
 
+void GLWin::clickOnWidget(GLWin *w) {
+  w->mousePressX = w->mouseX, w->mousePressY = w->mouseY;
+  MainCanvas *c = w->currentTab()->getMainCanvas();
+  c->click(w->mouseX, w->mouseY, w->mouseX, w->mouseY);
+}
+
 void GLWin::pressOnWidget(GLWin *w) {
   w->mousePressX = w->mouseX, w->mousePressY = w->mouseY;
   w->dragMode = true;
@@ -581,6 +587,7 @@ void GLWin::pageDown(GLWin *w) {}
 void GLWin::sectionUp(GLWin *w) {}
 void GLWin::sectionDown(GLWin *w) {}
 
+void GLWin::helloWorld(GLWin *w) { cout << "Hello World!\n"; }
 // TODO: this function requires passing a parameter telling us what sound to
 // play
 void GLWin::playSound(GLWin *w, const char soundName[]) {}
@@ -682,13 +689,4 @@ void GLWin::loadBindings() {
 
   bind3D();
   // bind2DOrtho();
-}
-
-string GLWin::getFile(const char defaultDir[], const char defaultFilename[],
-                      int argc, const char *argv[]) {
-  const char *grail = getenv("GRAIL");
-  if (grail == nullptr || defaultDir == nullptr)
-    return string(argc > 1 ? argv[1] : defaultFilename);
-  string dir = string(grail) + string(defaultDir);
-  return dir + (argc > 1 ? argv[1] : defaultFilename);
 }

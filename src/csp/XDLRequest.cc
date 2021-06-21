@@ -15,25 +15,93 @@
 
 using namespace std;
 
+template <typename... Args>
+void buildString(std::string& dest, const Args&... args) {
+  dest.clear();
+  int unpack[]{0, (dest += to_string(args), 0)...};
+  static_cast<void>(unpack);
+}
+
+template <typename... Args>
+void buildData(XDLStruct* s, const Args&... args) {
+  XDLIterator i(*s);
+  int unpack[] { 0, (i.assertSameType(args); i++)... };
+  static_cast<void>(unpack);
+}
+
 XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
   // TODO: create all the XDL objects to satisfy requests
   // TODO: for now, ignore the filename and hardcode some objects
 
   compiler = new XDLCompiler(filename);
   SymbolTable* st = new SymbolTable(compiler);
-  Struct* s = new Struct(compiler);  // name encoded as 0""
-  s->addMember("x", new U32(1));
-  s->addMember("y", new U64(2));
-  s->addMember("z", new F64(3.0));
-  s->addMember("bach", new F64(1.23456e+5));
-  s->addMember("gnuoncrack", new U32(1));
-  s->addMember("", new U32(1));
-  st->addRoot(s);
 
-  xdlData.add(st);
+  // page 0
+  // Metadata
+  // STRUCT8 0"" 4 U32 x U64 y STRUCT8 5Point 3 F32 x F32 y F32 z 5point F64
+  // 4bach
+  //
+  Struct* s = new Struct(compiler);  // name encoded as 0""
+  s->addBuiltin("x", DataType::U32);
+  s->addBuiltin("y", DataType::U64);
+  Struct* s2 = new Struct(compiler, "Point");
+  s2->addBuiltin("x", DataType::F32);
+  s2->addBuiltin("y", DataType::F32);
+  s2->addBuiltin("z", DataType::F32);
+  s->addMember("point", s2);
+  s->addBuiltin("bach", DataType::F64);
+  // st->addRoot(s);
+  // Buffer ans(32768);
+  // ans.write(uint32_t(1));
+  // ans.write(uint64_t(3));
+  // ans.write(float(1.5));
+  // ans.write(float(2.5));
+  // ans.write(float(3.5));
+  // ans.write(double(123.456));
+
+  //  st->attachData(1, 2, {1, 2, 3}, 2.5);
+  xdlData.add(s);
+
+  // page 2
+  // Metadata LIST8 ??? U32
+  // st = new SymbolTable(compiler);
+  // st->addRoot();
+  xdlData.add(new GenericList(compiler, "fred", DataType::U32));
+
+  // page4
+  // Metadata LIST8 6mylist ??? STRUCT8 6Person 3 STRING8, 9firstname STRING8,
+  // 8lastname, U32 3age
+  // st = new SymbolTable(compiler);
+  s = new Struct(compiler, "Person");
+  s->addBuiltin("firstname", DataType::STRING8);
+  s->addBuiltin("lastname", DataType::STRING8);
+  s->addBuiltin("age", DataType::U32);
+  // st->addRoot();
+  xdlData.add(new GenericList(compiler, "people", s));
+
+  // referring to an already-existing type
+  // STRUCT8 3abc 2 LIST8 6mylist F64 LIST8 6mylist
+  s = new Struct(compiler, "abc");
+  GenericList* list;
+  s->addMember("a",
+               (list = new GenericList(compiler, "mylist", DataType::F64)));
+  s->addMember("b", list);
+  xdlData.add(s);
+
+  //  List<StockQuote>* quotes = new List<StockQuote>();
+  //  for (int i = 0; i < n; i++) quotes->add(new StockQuote(...));
+
+  // xdlData.add(quotes);  // hardcoded class which should spew
+  // Metadata LIST16 5Quotes STRUCT8 10StockQuote 6 F32 open F32 hi F32 LOW F32
+
+  // close ...
 
   // load page 1
   addPage("res/aapl.bin");
+  //  List<StockQuote> quotes;
+
+  //  out.write(quote);
+
 #if 0
 	List<Quote> *quotes = new List<StockQuote>();
   quotes.read("res/aapl.bin");
@@ -87,7 +155,7 @@ void XDLRequest::handle(int fd) {
   }
 
   XDLType* x = xdlData[requestId];
-  //Struct* s = (Struct*)st->getSymbol(root);
+  // Struct* s = (Struct*)st->getSymbol(root);
   x->writeMeta(out);
   x->write(out);
   out.displayRaw();
