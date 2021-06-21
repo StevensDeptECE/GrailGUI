@@ -41,7 +41,7 @@ CXX	:=	g++  $(VERS) $(CCFLAGS) $(INC)
 CXXI	:=	g++  $(VERS) $(DEBUG) $(OPT) $(INC)  #CXX INSANE so we don't have to deal with -f sanitize while debugging other stuff
 COMP	:=	$(CXX) -c
 
-LIBS	:=	-lgrail -lfreetype -lglfw -lGL -lX11 -ldl -pthread 
+#LIBS	:=	-lgrail -lfreetype -lglfw -lGL -lX11 -ldl -pthread 
 LD	:=	g++ $(VERS) $(CCFLAGS) $(LIBSPEC)
 
 # Note that any recipes in this file will cause all makefiles to stop working
