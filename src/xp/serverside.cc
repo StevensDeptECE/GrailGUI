@@ -104,9 +104,11 @@ class Point {
 };
 
 void write(char*& buf, const Point& p) {
-  *(double*)buf++ = p.x;
-  *(double*)buf++ = p.y;
-  *(double*)buf++ = p.z;
+  double* d = (double*)buf;
+  *d++ = p.x;
+  *d++ = p.y;
+  *d++ = p.z;
+  buf = (char*)d;
 }
 void writeMeta(char*& buf, const Point& p) {
   constexpr uint32_t meta =
@@ -120,13 +122,22 @@ void writeMeta(char*& buf, const Point& p) {
 // C++17 ugh!
 template <typename... Args>
 void writeBuf(char* buf, char* meta, Args... args) {
-  write(buf, args);
-  writeMeta(meta, args);
-  args...;
+  (write(buf, args), ...);
+  (writeMeta(meta, args), ...);
 }
 
 #if 0
+// C++17
+template <typename... Ts>
+void test(Ts... args) {
+  ((std::cout << sizeof(first) << '\n'), ...);
+}
+#endif
+
+#if 0
 // C++11
+
+
 
 void writeBuf(char* buf, char* meta) {}
 
@@ -150,4 +161,11 @@ int main() {
   char metadata[1024];
   Point p(1, 2, 3);
   writeBuf(buffer, metadata, uint32_t(2), uint64_t(3), p, 3.5, 1.5f);
+
+  for (int i = 0; i < 60; i++) {
+    cout << uint32_t(uint8_t(buffer[i])) << ' ';
+  }
+  cout << '\n';
+  for (int i = 0; i < 4; i++) cout << uint32_t(uint8_t(metadata[i])) << ' ';
+  cout << '\n';
 }

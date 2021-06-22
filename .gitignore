@@ -144,8 +144,12 @@ lib/*
 BIGMAP.png
 errlog
 
+# Doxygen output
 docs/docbook
 docs/html
 docs/latex
 docs/man
 
+# Clang Language Server Cache
+.ccls-cache
+compile_commands.json
