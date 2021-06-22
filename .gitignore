@@ -152,3 +152,4 @@ docs/man
 
 # Clang Language Server Cache
 .ccls-cache
+compile_commands.json
