@@ -104,7 +104,8 @@ void GLWin::windowFocusCallback(GLFWwindow *win, int focused) {
 void GLWin::key_callback(GLFWwindow *win, int key, int scancode, int action,
                          int mods) {
   GLWin *w = winMap[win];
-  if (w == nullptr) {  //TODO: come up with better response? Should never happen
+  if (w == nullptr) {  // TODO: come up with better response? Should never
+                       // happen
     cerr << "no mapping for window " << win << " to GLWin\n";
     return;
   }
@@ -118,15 +119,18 @@ void GLWin::key_callback(GLFWwindow *win, int key, int scancode, int action,
 void GLWin::mouseButtonCallback(GLFWwindow *win, int button, int action,
                                 int mods) {
   GLWin *w = getWin(win);
-  if (w == nullptr) {  //TODO: come up with better response? Should never happen
+  if (w == nullptr) {  // TODO: come up with better response? Should never
+                       // happen
     cerr << "no mapping for window " << win << " to GLWin\n";
     return;
   }
-  //find the button and click on it.
+  // find the button and click on it.
   //  ((Grail*)this) ->currentTab()->processMouseEvent
-  //bool consumed = gui.clickOnObject(button, (uint32_t)mouseXPos, (uint32_t)mouseYPos);
-  cerr << "mouse! " << button << "," << w->mouseXPos << "," << w->mouseYPos << '\n';
-  //if (consumed)
+  // bool consumed = gui.clickOnObject(button, (uint32_t)mouseXPos,
+  // (uint32_t)mouseYPos);
+  cerr << "mouse! " << button << "," << w->mouseXPos << "," << w->mouseYPos
+       << '\n';
+  // if (consumed)
   return;
 
   //	w->addMouseEvent(button, action, mods);
@@ -183,7 +187,7 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const char title[],
       GLFW_OPENGL_FORWARD_COMPAT,
       GL_TRUE);  // uncomment this statement to fix compilation on OS X
 #endif
-      // all static library initializations go here
+  // all static library initializations go here
   XDLType::classInit();
   Socket::classInit();
 }
@@ -226,10 +230,11 @@ void GLWin::startWindow() {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   GLWin::projection = glm::ortho(0.0f, static_cast<GLfloat>(width),
                                  static_cast<GLfloat>(height), 0.0f);
-  //std::cerr << width << " " << height << std::endl;
-  // this test is designed to make sure that multiple windows will only initialize fonts once
-  // baseDir is not as serious, but why not do any singleton initialization here
-  //TODO: is there any more elegant way?
+  // std::cerr << width << " " << height << std::endl;
+  // this test is designed to make sure that multiple windows will only
+  // initialize fonts once baseDir is not as serious, but why not do any
+  // singleton initialization here
+  // TODO: is there any more elegant way?
   if (!hasBeenInitialized) {
     *(string *)&baseDir = getenv("GRAIL");
     FontFace::initAll();
@@ -339,26 +344,29 @@ void GLWin::mainLoop() {
     //    dt = current - lastFrame;
     glfwPollEvents();  // Check and call events
 
-    float startRender = glfwGetTime();
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);  // Clear the colorbuffer and depth
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    render();
-    renderTime += glfwGetTime() - startRender;
-    glfwSwapBuffers(win);  // Swap buffer so the scene shows on screen
-    if (frameCount >= 150) {
-      double endTime = glfwGetTime();
-      double elapsed = endTime - startTime;
-      cerr << "Elapsed=" << elapsed << " FPS= " << frameCount / elapsed
-           << " render=" << renderTime << '\n';
-      frameCount = 0;
-      renderTime = 0;
-      startTime = endTime;
-      if (exitAfter != 0 && frameCount >= exitAfter) break;
-    } else {
-      frameCount++;
-    }
+    if (dirty) {
+      float startRender = glfwGetTime();
+      glClearColor(1.0f, 1.0f, 1.0f, 1.0f);  // Clear the colorbuffer and depth
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      renderVideo();
+      render();
+      renderTime += glfwGetTime() - startRender;
+      glfwSwapBuffers(win);  // Swap buffer so the scene shows on screen
+      if (frameCount >= 150) {
+        double endTime = glfwGetTime();
+        double elapsed = endTime - startTime;
+        cerr << "Elapsed=" << elapsed << " FPS= " << frameCount / elapsed
+             << " render=" << renderTime << '\n';
+        frameCount = 0;
+        renderTime = 0;
+        startTime = endTime;
+        if (exitAfter != 0 && frameCount >= exitAfter) break;
+      } else {
+        frameCount++;
+      }
 
-    dirty = false;
+      dirty = false;
+    }
     t += dt;
     update();
   }
@@ -381,15 +389,16 @@ void GLWin::random(glm::vec3 &v) {
 }
 
 void GLWin::quit(GLWin *w) {
-  exit(0);  //TODO: check for cleanup first?
+  exit(0);  // TODO: check for cleanup first?
 }
 
 void GLWin::refresh(GLWin *w) {
-  //TODO: send signal to force redraw
+  // TODO: send signal to force redraw
 }
 
 void GLWin::saveFrame(GLWin *w) {
-  if (w->saveBuffer != nullptr && w->saveW != w->width || w->saveH != w->height) {
+  if (w->saveBuffer != nullptr && w->saveW != w->width ||
+      w->saveH != w->height) {
     delete[] w->saveBuffer;
     w->saveBuffer = nullptr;
   }
@@ -399,40 +408,30 @@ void GLWin::saveFrame(GLWin *w) {
     w->saveBuffer = new uint8_t[3 * w->saveW * w->saveH];
   }
   sprintf(w->frameName + 8, "%d.png", w->frameNum++);
-  glReadPixels(0, 0, w->saveW, w->saveH, GL_RGB, GL_UNSIGNED_BYTE, w->saveBuffer);
+  glReadPixels(0, 0, w->saveW, w->saveH, GL_RGB, GL_UNSIGNED_BYTE,
+               w->saveBuffer);
   constexpr int CHANNELS = 3;
   stbi_write_png(w->frameName, w->saveW, w->saveH, CHANNELS, w->saveBuffer,
                  w->saveW * CHANNELS);  // TODO: Remove - debugging purposes
 }
 void GLWin::resetCamera(GLWin *w) {
-  //TODO: call resetCamera on every canvas to reset to initial state (we have to write that)
+  // TODO: call resetCamera on every canvas to reset to initial state (we have
+  // to write that)
 }
 
-void GLWin::gotoStartTime(GLWin *w) {
-  w->t = w->startTime;
-}
+void GLWin::gotoStartTime(GLWin *w) { w->t = w->startTime; }
 
-void GLWin::gotoEndTime(GLWin *w) {
-  w->t = w->endTime;
-}
+void GLWin::gotoEndTime(GLWin *w) { w->t = w->endTime; }
 
-void GLWin::speedTime(GLWin *w) {
-  w->dt *= 2;
-}
-void GLWin::slowTime(GLWin *w) {
-  w->dt *= 0.5;
-}
+void GLWin::speedTime(GLWin *w) { w->dt *= 2; }
+void GLWin::slowTime(GLWin *w) { w->dt *= 0.5; }
 
-void GLWin::zoomOut(GLWin *w) {
-}
-void GLWin::zoomIn(GLWin *w) {
-}
+void GLWin::zoomOut(GLWin *w) {}
+void GLWin::zoomIn(GLWin *w) {}
 
-void GLWin::panRight(GLWin *w) {
-}
+void GLWin::panRight(GLWin *w) {}
 
-void GLWin::panLeft(GLWin *w) {
-}
+void GLWin::panLeft(GLWin *w) {}
 
 void GLWin::loadBindings() {
   setAction(1000, speedTime);
@@ -445,8 +444,8 @@ void GLWin::loadBindings() {
   setAction(1007, gotoEndTime);
   setAction(1008, saveFrame);
 
-  setEvent(260, 1000);  //INSERT->speed up time
-  setEvent(261, 1001);  //DEL-> slow down time
+  setEvent(260, 1000);  // INSERT->speed up time
+  setEvent(261, 1001);  // DEL-> slow down time
   setEvent(262, 1004);  // right arrow = pan right
   setEvent(263, 1005);  // left arrow = pan left
   setEvent(266, 1002);  // page up = zoom out
@@ -454,6 +453,6 @@ void GLWin::loadBindings() {
   setEvent(335, 1008);  // ` is printscreen (printscreen seems taken by the OS?)
 }
 
-double GLWin::getTime() {
-  return glfwGetTime();
-}
+double GLWin::getTime() { return glfwGetTime(); }
+
+void GLWin::renderVideo() {}

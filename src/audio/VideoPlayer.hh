@@ -9,12 +9,12 @@
 #include <mpv/client.h>
 #include <mpv/render_gl.h>
 
-#include "opengl/GLWin.hh"
 #include "util/Ex.hh"
 
 class VideoPlayer {
  private:
   mpv_handle *mpv;
+  int advancedControl;
 
   inline void checkError(int status) {
     if (status < 0) {
@@ -23,10 +23,6 @@ class VideoPlayer {
     }
   }
 
-  // void on_mpv_events(void *ctx) { glfwPostEmptyEvent(); }
-
-  // void on_mpv_render_update(void *ctx) { glfwPostEmptyEvent(); }
-
  public:
   mpv_render_context *mpv_gl;
   VideoPlayer();
@@ -34,4 +30,5 @@ class VideoPlayer {
   VideoPlayer(const VideoPlayer &orig) = delete;
   VideoPlayer &operator=(const VideoPlayer &orig) = delete;
   void setVid(std::string filePath);
+  void togglePause();
 };

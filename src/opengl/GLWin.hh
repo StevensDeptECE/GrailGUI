@@ -220,4 +220,5 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   void loadBindings();
 
   double getTime();
+  virtual void renderVideo();
 };
