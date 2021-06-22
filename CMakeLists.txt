@@ -18,8 +18,8 @@ option(CMAKE_LINK_WHAT_YOU_USE ON)
 set(GRAIL_EXPERIMENTAL "OFF")
 set(CMAKE_DEBUG_POSTFIX d)
 
+
 add_subdirectory(src)
-add_subdirectory(test)
 
 target_include_directories(grail PUBLIC src)
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/include)
@@ -28,4 +28,4 @@ target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/include)
 #	target_link_libraries()
 #endif()
 
-
+add_subdirectory(test)
