@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-
+#include <utility>
 class HashMapBase {
 protected:
 	uint32_t size;
@@ -57,7 +57,7 @@ class HashMap : public HashMapBase {
 	};
 	uint32_t nodeSize; // how many nodes are preallocated
 	uint32_t nodeCount; // how many nodes are currently used
-	Node* nodes;
+ 	Node* nodes;
 public:
 	HashMap(uint32_t sz, uint32_t symbolSize = 1024*1024) :
     HashMapBase(sz, symbolSize), nodeSize(sz/2+2), nodes(new Node[sz/2+2])	{
@@ -75,9 +75,32 @@ public:
 	}
 	HashMap(const HashMap& orig) = delete;
 	HashMap& operator =(const HashMap& orig) = delete;
+
+	void checkGrow() {
+		if (nodeCount*2 <= size)
+			return;
+		const Node* old = nodes;
+		nodes = new Node[nodeSize*2];//TODO: need placement new
+		for (uint32_t i = 0; i < nodeSize; i++)
+		  nodes[i] = std::move(old[i]); // TODO: this is broken for objects Val without default constructor
+		nodeSize *= 2;
+		delete [] (char*)old; // get rid of the old block of memory
+		uint32_t* oldTable = table;
+		uint32_t oldSize = size;
+		table = new uint32_t[size = size*2|1]; // new size = power of 2 - 1
+		for (uint32_t i = 0; i < size; i++)
+		  if (table[i] != 0) {
+				uint32_t index = hash(symbols+nodes[oldTable[i]].offset); // find out new hash value of symbol
+				table[index] = oldTable[i];
+			}
+		delete [] oldTable;
+	//TODO: grow the symbol table too
+		std::cerr << "HashMap growing size=" << size << " " << nodeSize << '\n';
+	}
+
   void add(const char s[], const Val& v) {
 		uint32_t index = hash(s);
-		for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {
+		for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {	
 			const char* w = symbols + nodes[p].offset;
 			for (int i = 0; *w == s[i]; i++)
 				if (*w == '\0') {
@@ -85,10 +108,7 @@ public:
 					return;
 				}
 		}
-		if (nodeCount >= nodeSize) {
-			std::cerr << "grew beyond table size, wow!\n";
-			exit(-1);
-		}
+		checkGrow();
 		
 		int i;
 		for (i = 0; s[i] != '\0'; i++)
@@ -108,11 +128,8 @@ public:
 					throw "Error, this should not happen";
 				}
 		}
-		if (nodeCount >= nodeSize) {
-			std::cerr << "grew beyond table size, wow!\n";
-			exit(-1);
-		}
-		
+		checkGrow();
+
 		int i;
 		for (i = 0; i < len; i++)
 			current[i] = s[i];
@@ -188,7 +205,7 @@ public:
 		for (uint64_t i = 2; i < histsize; i++)
 			totalQuality += i * h[i];
 		std::cout << "Total Quality=" << totalQuality << '\n';
-		const bool verbose = false;
+		const bool verbose = true;
 		if (verbose) {
 			for (int i = 0; i < histsize; i++) {
 				if (h[i] != 0)

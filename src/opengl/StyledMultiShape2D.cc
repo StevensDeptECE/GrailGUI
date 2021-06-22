@@ -1,5 +1,8 @@
 #include "opengl/StyledMultiShape2D.hh"
 
+#include <unistd.h>
+
+#include <iomanip>
 #include <vector>
 
 #include "glad/glad.h"
@@ -7,7 +10,11 @@
 #include "opengl/Shader.hh"
 #include "opengl/Style.hh"
 
-uint32_t StyledMultiShape2D::addSector(float x, float y, float xRad, float yRad, float fromAngle, float toAngle, float angleInc, const glm::vec4& c) {
+using namespace std;
+
+uint32_t StyledMultiShape2D::addSector(float x, float y, float xRad, float yRad,
+                                       float fromAngle, float toAngle,
+                                       float angleInc, const glm::vec4& c) {
   for (float i = fromAngle; i <= toAngle; i += angleInc) {
     float px = x + xRad * cos(-i * DEG2RAD<float>);
     float py = y + yRad * sin(-i * DEG2RAD<float>);
@@ -17,14 +24,12 @@ uint32_t StyledMultiShape2D::addSector(float x, float y, float xRad, float yRad,
   return (toAngle - fromAngle) / angleInc + 1;
 }
 
-StyledMultiShape2D::~StyledMultiShape2D() {
-}
+StyledMultiShape2D::~StyledMultiShape2D() {}
 
-//TODO: Maybe add a different render calls that loops through array of either the render of style
-//or the super render
-//Shape2D
+// TODO: Maybe add a different render calls that loops through array of either
+// the render of style or the super render Shape2D
 void StyledMultiShape2D::render() {
-  //Get Shader based on style
+  // Get Shader based on style
   Shader* shader = Shader::useShader(GLWin::PER_VERTEX_SHADER);
   shader->setMat4("projection", *parentCanvas->getProjection() * transform);
   glBindVertexArray(vao);
@@ -33,73 +38,91 @@ void StyledMultiShape2D::render() {
 
   glLineWidth(style->getLineWidth());
 
-  //Draw Solids
+  // Draw Solids
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sbo);
   glDrawElements(GL_TRIANGLES, solidIndices.size(), GL_UNSIGNED_INT, 0);
 
-  //Draw Lines
+  // Draw Lines
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
   glDrawElements(GL_LINES, lineIndices.size(), GL_UNSIGNED_INT, 0);
 
-  //Draw Points
+  // Draw Points
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pbo);
   glDrawElements(GL_POINTS, pointIndices.size(), GL_UNSIGNED_INT, 0);
 
-  //Unbind
+  // Unbind
   glDisableVertexAttribArray(1);
   glDisableVertexAttribArray(0);
   glBindVertexArray(0);
 }
 void StyledMultiShape2D::init() {
-  //Create VAO,
+  // Create VAO,
   // a container to have all shapes and their attributes
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
-  //Create VBO for vertices
-  //Create an object in the VAO to store all the vertex values
+  // Create VBO for vertices
+  // Create an object in the VAO to store all the vertex values
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
-  //Desctribe how information is recieved in shaders
+  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0],
+               GL_DYNAMIC_DRAW);
+  // Describe how information is received in shaders
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+                        (void*)(2 * sizeof(float)));
 
-  //Create SBO
-  //Create an object to hold the order at which the vertices are drawn(from indices)
-  //in order to draw it as a solid(filled)
+  // Create SBO
+  // Create an object to hold the order at which the vertices are drawn(from
+  // indices) in order to draw it as a solid(filled)
   glGenBuffers(1, &sbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sbo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * solidIndices.size(), &solidIndices[0], GL_DYNAMIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * solidIndices.size(),
+               &solidIndices[0], GL_DYNAMIC_DRAW);
 
-  //Create LBO
-  //Create an object to hold the order at which the vertices are drawn(from indices)
-  //in order to draw it as lines(wireframe)
+  // Create LBO
+  // Create an object to hold the order at which the vertices are drawn(from
+  // indices) in order to draw it as lines(wireframe)
   glGenBuffers(1, &lbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * lineIndices.size(), &lineIndices[0], GL_DYNAMIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * lineIndices.size(),
+               &lineIndices[0], GL_DYNAMIC_DRAW);
 
-  //temporary bind point size
-  //TODO: set input for point size.
+  // temporary bind point size
+  // TODO: set input for point size.
   const float pointSize = 10.0f;
   glPointSize(pointSize);
 
-  //Create PBO
-  //Create an object to hold the order at which the vertices are drawn(from indices)
-  //in order to draw it as points.
+  // Create PBO
+  // Create an object to hold the order at which the vertices are drawn(from
+  // indices) in order to draw it as points.
   glGenBuffers(1, &pbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pbo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * pointIndices.size(), &pointIndices[0], GL_DYNAMIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * pointIndices.size(),
+               &pointIndices[0], GL_DYNAMIC_DRAW);
 
-  //glGenBuffers(1,&cbo);
-  //glBindBuffer(GL_ARRAY_BUFFER,cbo);
-  //glBufferData(GL_ARRAY_BUFFER,sizeof(GLfloat)*colors.size(),&colors[0],GL_STATIC_DRAW);
-  ////Desctribe how information is recieved in shaders
-  //glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,0,(void*)0);
+  // glGenBuffers(1,&cbo);
+  // glBindBuffer(GL_ARRAY_BUFFER,cbo);
+  // glBufferData(GL_ARRAY_BUFFER,sizeof(GLfloat)*colors.size(),&colors[0],GL_STATIC_DRAW);
+  ////Desctribe how information is received in shaders
+  // glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,0,(void*)0);
 }
 
-//Solid Primitives
-void StyledMultiShape2D::fillRectangle(float x, float y, float w, float h, const glm::vec4& c) {
+void StyledMultiShape2D::updatePoints() {
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0],
+               GL_DYNAMIC_DRAW);
+}
+
+void StyledMultiShape2D::updateIndices() {
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * lineIndices.size(),
+               &lineIndices[0], GL_DYNAMIC_DRAW);
+}
+
+// Solid Primitives
+void StyledMultiShape2D::fillRectangle(float x, float y, float w, float h,
+                                       const glm::vec4& c) {
   uint32_t points = 0;
   addStyledPoint(x, y, c);
   addStyledPoint(x, y + h, c);  // goes in counter-clockwise order
@@ -112,7 +135,8 @@ void StyledMultiShape2D::fillRectangle(float x, float y, float w, float h, const
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape2D::fillRoundRect(float x, float y, float w, float h, float rx, float ry, const glm::vec4& c) {
+void StyledMultiShape2D::fillRoundRect(float x, float y, float w, float h,
+                                       float rx, float ry, const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t cur = getPointIndex();
   uint32_t centerIndex = getPointIndex();
@@ -160,7 +184,8 @@ void StyledMultiShape2D::fillRoundRect(float x, float y, float w, float h, float
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape2D::fillTriangle(float x1, float y1, float x2, float y2, float x3, float y3, const glm::vec4& c) {
+void StyledMultiShape2D::fillTriangle(float x1, float y1, float x2, float y2,
+                                      float x3, float y3, const glm::vec4& c) {
   uint32_t points = 0;
   addStyledPoint(x1, y1, c);
   addStyledPoint(x2, y2, c);
@@ -172,15 +197,18 @@ void StyledMultiShape2D::fillTriangle(float x1, float y1, float x2, float y2, fl
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape2D::fillPolygon(float x, float y, float xRad, float yRad, float n, const glm::vec4& c) {
+void StyledMultiShape2D::fillPolygon(float x, float y, float xRad, float yRad,
+                                     float n, const glm::vec4& c) {
   fillEllipse(x, y, xRad, yRad, 360 / n, c);
 }
 
-void StyledMultiShape2D::fillCircle(float x, float y, float rad, float angleInc, const glm::vec4& c) {
+void StyledMultiShape2D::fillCircle(float x, float y, float rad, float angleInc,
+                                    const glm::vec4& c) {
   fillEllipse(x, y, rad, rad, angleInc, c);
 }
 
-void StyledMultiShape2D::fillEllipse(float x, float y, float xRad, float yRad, float angleInc, const glm::vec4& c) {
+void StyledMultiShape2D::fillEllipse(float x, float y, float xRad, float yRad,
+                                     float angleInc, const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t cur = getPointIndex();
   uint32_t centerIndex = getPointIndex();
@@ -195,8 +223,9 @@ void StyledMultiShape2D::fillEllipse(float x, float y, float xRad, float yRad, f
   startIndices.push_back(currentIndex);
 }
 
-//Line Primitives
-void StyledMultiShape2D::drawRectangle(float x, float y, float w, float h, const glm::vec4& c) {
+// Line Primitives
+void StyledMultiShape2D::drawRectangle(float x, float y, float w, float h,
+                                       const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t cur = getPointIndex();
   addStyledPoint(x, y, c);
@@ -210,7 +239,8 @@ void StyledMultiShape2D::drawRectangle(float x, float y, float w, float h, const
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape2D::drawRoundRect(float x, float y, float w, float h, float rx, float ry, const glm::vec4& c) {
+void StyledMultiShape2D::drawRoundRect(float x, float y, float w, float h,
+                                       float rx, float ry, const glm::vec4& c) {
   uint32_t points = 0;
 
   uint32_t cur = getPointIndex();
@@ -255,7 +285,8 @@ void StyledMultiShape2D::drawRoundRect(float x, float y, float w, float h, float
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape2D::drawTriangle(float x1, float y1, float x2, float y2, float x3, float y3, const glm::vec4& c) {
+void StyledMultiShape2D::drawTriangle(float x1, float y1, float x2, float y2,
+                                      float x3, float y3, const glm::vec4& c) {
   uint32_t points = 0;
 
   addStyledPoint(x1, y1, c);
@@ -269,18 +300,22 @@ void StyledMultiShape2D::drawTriangle(float x1, float y1, float x2, float y2, fl
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape2D::drawPolygon(float x, float y, float xRad, float yRad, float n, const glm::vec4& c) {
+void StyledMultiShape2D::drawPolygon(float x, float y, float xRad, float yRad,
+                                     float n, const glm::vec4& c) {
   drawEllipse(x, y, xRad, yRad, 360 / n, c);
 }
 
-void StyledMultiShape2D::drawCompletePolygon(float x, float y, float xRad, float yRad, float n, const glm::vec4& c) {
-}
+void StyledMultiShape2D::drawCompletePolygon(float x, float y, float xRad,
+                                             float yRad, float n,
+                                             const glm::vec4& c) {}
 
-void StyledMultiShape2D::drawCircle(float x, float y, float rad, float angleInc, const glm::vec4& c) {
+void StyledMultiShape2D::drawCircle(float x, float y, float rad, float angleInc,
+                                    const glm::vec4& c) {
   drawEllipse(x, y, rad, rad, angleInc, c);
 }
 
-void StyledMultiShape2D::drawEllipse(float x, float y, float xRad, float yRad, float angleInc, const glm::vec4& c) {
+void StyledMultiShape2D::drawEllipse(float x, float y, float xRad, float yRad,
+                                     float angleInc, const glm::vec4& c) {
   uint32_t points = 0;
 
   uint32_t cur = getPointIndex();
@@ -298,7 +333,8 @@ void StyledMultiShape2D::drawEllipse(float x, float y, float xRad, float yRad, f
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape2D::drawLine(float x1, float y1, float x2, float y2, const glm::vec4& c) {
+void StyledMultiShape2D::drawLine(float x1, float y1, float x2, float y2,
+                                  const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t ind = getPointIndex();
 
@@ -317,17 +353,14 @@ void StyledMultiShape2D::drawLine(float x1, float y1, float x2, float y2, const 
 void StyledMultiShape2D::drawGrid(float x0, float y0, float w, float h,
                                   uint32_t numHoriz, uint32_t numVert,
                                   const glm::vec4& c) {
-  // draw verticle lines
+  // draw vertical lines
   float x = x0;
-  const float dx = (w / numVert);
-  for (
-      uint32_t indexVert = numVert + 1; indexVert > 0; indexVert--, x += dx)
-    drawLine(x, y0, x, y0 + h, c);
+  drawLine(x, y0, x, y0 + h, c);
   // draw horizontal lines
   float y = y0;
   const float dy = (h / numHoriz);
-  for (
-      uint32_t indexHoriz = numHoriz + 1; indexHoriz > 0; indexHoriz--, y += dy)
+  for (uint32_t indexHoriz = numHoriz + 1; indexHoriz > 0;
+       indexHoriz--, y += dy)
     drawLine(x0, y, x0 + w, y, c);
 }
 
@@ -336,17 +369,16 @@ void StyledMultiShape2D::fillGrid(float x0, float y0, float w, float h,
                                   const glm::vec4& lc, const glm::vec4& bc) {
   // fill background
   fillRectangle(x0, y0, w, h, bc);
-  // draw verticle lines
+  // draw vertical lines
   float x = x0;
   const float dx = (w / numVert);
-  for (
-      uint32_t indexVert = numVert + 1; indexVert > 0; indexVert--, x += dx)
+  for (uint32_t indexVert = numVert + 1; indexVert > 0; indexVert--, x += dx)
     drawLine(x, y0, x, y0 + h, lc);
   // draw horizontal lines
   float y = y0;
   const float dy = (h / numHoriz);
-  for (
-      uint32_t indexHoriz = numHoriz + 1; indexHoriz > 0; indexHoriz--, y += dy)
+  for (uint32_t indexHoriz = numHoriz + 1; indexHoriz > 0;
+       indexHoriz--, y += dy)
     drawLine(x0, y, x0 + w, y, lc);
 }
 
@@ -363,60 +395,65 @@ void StyledMultiShape2D::drawTriGrid(float x0, float y0, float s,
 
 void StyledMultiShape2D::drawHexGrid(float x, float y, float w, float h,
                                      uint32_t numHorizHexagons,
-                                     const glm::vec4& c) {
-}
+                                     const glm::vec4& c) {}
 
 // Markers for Graphs
-void StyledMultiShape2D::drawCircleMarker(float x, float y, float size, glm::vec4 &color) {
+void StyledMultiShape2D::drawCircleMarker(float x, float y, float size,
+                                          glm::vec4& color) {
   fillCircle(x, y, size, 3, color);
 }
-void StyledMultiShape2D::drawTriangleMarker(float x, float y, float size, glm::vec4 &color) {
+void StyledMultiShape2D::drawTriangleMarker(float x, float y, float size,
+                                            glm::vec4& color) {
   fillPolygon(x, y, size, size, 3, color);
 }
-void StyledMultiShape2D::drawSquareMarker(float x, float y, float size, glm::vec4 &color) {
+void StyledMultiShape2D::drawSquareMarker(float x, float y, float size,
+                                          glm::vec4& color) {
   fillPolygon(x, y, size, size, 4, color);
 }
-void StyledMultiShape2D::drawPentagonMarker(float x, float y, float size, glm::vec4 &color) {
+void StyledMultiShape2D::drawPentagonMarker(float x, float y, float size,
+                                            glm::vec4& color) {
   fillPolygon(x, y, size, size, 5, color);
 }
-void StyledMultiShape2D::drawHexagonMarker(float x, float y, float size, glm::vec4 &color) {
+void StyledMultiShape2D::drawHexagonMarker(float x, float y, float size,
+                                           glm::vec4& color) {
   fillPolygon(x, y, size, size, 6, color);
 }
-void StyledMultiShape2D::drawCrossMarker(float x, float y, float size, glm::vec4 &color) {
-  drawLine(x, y+size, x, y-size, color);
-  drawLine(x-size, y, x+size, y, color);
+void StyledMultiShape2D::drawCrossMarker(float x, float y, float size,
+                                         glm::vec4& color) {
+  drawLine(x, y + size, x, y - size, color);
+  drawLine(x - size, y, x + size, y, color);
 }
 
+// drawBezier, end bezier,grid
 
-//drawBezier, end bezier,grid
-
-void StyledMultiShape2D::drawPolyline(const float xy[], uint32_t n, const glm::vec4& c) {
+void StyledMultiShape2D::drawPolyline(const float xy[], uint32_t n,
+                                      const glm::vec4& c) {
   uint32_t ind = getPointIndex();
   uint32_t j = 0;
-  for (uint32_t i = n; i > 0; i--, j += 2)
-    addStyledPoint(xy[j], xy[j + 1], c);
+  for (uint32_t i = n; i > 0; i--, j += 2) addStyledPoint(xy[j], xy[j + 1], c);
   for (uint32_t i = n; i > 1; i--) {
     lineIndices.push_back(ind++);
     lineIndices.push_back(ind);
   }
 }
 
-void StyledMultiShape2D::fillPolygon(const float xy[], uint32_t n, const glm::vec4& c) {
+void StyledMultiShape2D::fillPolygon(const float xy[], uint32_t n,
+                                     const glm::vec4& c) {
   uint32_t ind = getPointIndex();
-  uint32_t start = ind;
-  uint32_t j = 0;
+  uint32_t start = ind++;
   double mid_x = 0;
   double mid_y = 0;
-  for (uint32_t i = 0; i < n; i++) {
-    mid_x += xy[2 * i];
-    mid_y += xy[2 * i + 1];
+  for (uint32_t i = 0, j = 0; i < n; i++, j += 2) {
+    mid_x += xy[j];
+    mid_y += xy[j + 1];
   }
   mid_x /= n;
   mid_y /= n;
   addStyledPoint(mid_x, mid_y, c);
-  for (uint32_t i = n; i > 0; i--, j += 2)
+  for (uint32_t i = 0, j = 0; i < n; i++, j += 2) {
     addStyledPoint(xy[j], xy[j + 1], c);
-  for (uint32_t i = 0; i < n; i++) {
+  }
+  for (uint32_t i = 1; i < n; i++) {
     solidIndices.push_back(start);
     solidIndices.push_back(ind++);
     solidIndices.push_back(ind);
@@ -426,40 +463,29 @@ void StyledMultiShape2D::fillPolygon(const float xy[], uint32_t n, const glm::ve
   solidIndices.push_back(start + 1);
 }
 
-void StyledMultiShape2D::drawPolygon(std::vector<float>& xy, const glm::vec4& c) {
-  uint32_t ind = getPointIndex();
-  uint32_t start = ind;
+void StyledMultiShape2D::drawPolygon(const std::vector<float>& xy,
+                                     const glm::vec4& c) {
   if (xy.size() == 0) return;
-  addStyledPoint(xy[0], xy[1], c);
-  for (uint32_t i = 2; i < xy.size(); i += 2) {
-    //if (abs(xy[i] - xy[i - 2]) < 100 && xy[i] > 0 && xy[i + 1] > 0) {
-      addStyledPoint(xy[i], xy[i + 1], c);
-    //}
-  }
-  for (uint32_t i = xy.size(); i > 1; i--) {
-    lineIndices.push_back(ind++);
-    lineIndices.push_back(ind);
-  }
-  lineIndices.push_back(ind);
-  lineIndices.push_back(start);
+  drawPolygon(&xy[0], xy.size() / 2, c);
 }
 
-void StyledMultiShape2D::drawPolygon(const float xy[], uint32_t n, const glm::vec4& c) {
+void StyledMultiShape2D::drawPolygon(const float xy[], uint32_t n,
+                                     const glm::vec4& c) {
   uint32_t ind = getPointIndex();
   uint32_t start = ind;
-  uint32_t j = 0;
-  for (uint32_t i = n; i > 0; i--, j += 2)
+  for (uint32_t i = 1, j = 0; i < n; i++, j += 2) {
     addStyledPoint(xy[j], xy[j + 1], c);
-  for (uint32_t i = n; i > 1; i--) {
     lineIndices.push_back(ind++);
     lineIndices.push_back(ind);
   }
+  addStyledPoint(xy[n * 2 - 2], xy[n * 2 - 1], c);
   lineIndices.push_back(ind);
   lineIndices.push_back(start);
 }
 
-//Point Primitives
-void StyledMultiShape2D::rectanglePoints(float x, float y, float w, float h, const glm::vec4& c) {
+// Point Primitives
+void StyledMultiShape2D::rectanglePoints(float x, float y, float w, float h,
+                                         const glm::vec4& c) {
   uint32_t points = 0;
 
   addStyledPoint(x, y, c);
@@ -474,7 +500,9 @@ void StyledMultiShape2D::rectanglePoints(float x, float y, float w, float h, con
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape2D::roundRectPoints(float x, float y, float w, float h, float rx, float ry, const glm::vec4& c) {
+void StyledMultiShape2D::roundRectPoints(float x, float y, float w, float h,
+                                         float rx, float ry,
+                                         const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t cur = getPointIndex();
   uint32_t centerIndex = getPointIndex();
@@ -506,7 +534,9 @@ void StyledMultiShape2D::roundRectPoints(float x, float y, float w, float h, flo
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape2D::trianglePoints(float x1, float y1, float x2, float y2, float x3, float y3, const glm::vec4& c) {
+void StyledMultiShape2D::trianglePoints(float x1, float y1, float x2, float y2,
+                                        float x3, float y3,
+                                        const glm::vec4& c) {
   uint32_t points = 0;
 
   addStyledPoint(x1, y1, c);
@@ -520,7 +550,8 @@ void StyledMultiShape2D::trianglePoints(float x1, float y1, float x2, float y2, 
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape2D::polygonPoints(float x, float y, float xRad, float yRad, float n, const glm::vec4& c) {
+void StyledMultiShape2D::polygonPoints(float x, float y, float xRad, float yRad,
+                                       float n, const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t cur = getPointIndex();
   uint32_t centerIndex = getPointIndex();
@@ -536,7 +567,8 @@ void StyledMultiShape2D::polygonPoints(float x, float y, float xRad, float yRad,
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape2D::circlePoints(float x, float y, float rad, float angleInc, const glm::vec4& c) {
+void StyledMultiShape2D::circlePoints(float x, float y, float rad,
+                                      float angleInc, const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t cur = getPointIndex();
   uint32_t centerIndex = getPointIndex();
@@ -552,7 +584,8 @@ void StyledMultiShape2D::circlePoints(float x, float y, float rad, float angleIn
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape2D::ellipsePoints(float x, float y, float xRad, float yRad, float angleInc, const glm::vec4& c) {
+void StyledMultiShape2D::ellipsePoints(float x, float y, float xRad, float yRad,
+                                       float angleInc, const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t cur = getPointIndex();
   uint32_t centerIndex = getPointIndex();
@@ -567,14 +600,16 @@ void StyledMultiShape2D::ellipsePoints(float x, float y, float xRad, float yRad,
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape2D::updateColors(const uint64_t pos, const float r, const float g, const float b) {
+void StyledMultiShape2D::updateColors(const uint64_t pos, const float r,
+                                      const float g, const float b) {
   for (uint32_t i = 0; i < numIndices[pos]; ++i) {
     vertices[startIndices[pos] * 5 + 5 * i + 2] = r;
     vertices[startIndices[pos] * 5 + 5 * i + 3] = g;
     vertices[startIndices[pos] * 5 + 5 * i + 4] = b;
   }
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(float), &vertices[0]);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(float),
+                  &vertices[0]);
 }
 
 void StyledMultiShape2D::bezierSegment(const Bezier* b) {
@@ -601,9 +636,10 @@ void StyledMultiShape2D::bezierSegment(const Bezier* b) {
   }
 }
 
-void StyledMultiShape2D::bezierSegmentByPoints(float p1x, float p1y, float p2x, float p2y,
-                                               float p3x, float p3y, float p4x, float p4y,
-                                               int n, bool end, const glm::vec4& c) {
+void StyledMultiShape2D::bezierSegmentByPoints(float p1x, float p1y, float p2x,
+                                               float p2y, float p3x, float p3y,
+                                               float p4x, float p4y, int n,
+                                               bool end, const glm::vec4& c) {
   float ax = -p1x + 3 * p2x - 3 * p3x + p4x;
   float ay = -p1y + 3 * p2y - 3 * p3y + p4y;
   float bx = 3 * p1x - 6 * p2x + 3 * p3x;
@@ -614,7 +650,8 @@ void StyledMultiShape2D::bezierSegmentByPoints(float p1x, float p1y, float p2x, 
   bezierSegment(&b);
 }
 
-void StyledMultiShape2D::spline(const std::vector<double>& points, int n, const glm::vec4& c) {
+void StyledMultiShape2D::spline(const std::vector<double>& points, int n,
+                                const glm::vec4& c) {
   uint32_t num = points.size() / 2 - 1;
   std::vector<double> parameter, dx, dy;
 
@@ -624,24 +661,32 @@ void StyledMultiShape2D::spline(const std::vector<double>& points, int n, const 
   }
   parameter.push_back(4.0 - 1.0 / parameter[num - 2]);
 
-  dx.push_back(3 * (points[2 * num] - points[2 * num - 2]) / parameter[num - 1]);
-  dy.push_back(3 * (points[2 * num + 1] - points[2 * num - 1]) / parameter[num - 1]);
+  dx.push_back(3 * (points[2 * num] - points[2 * num - 2]) /
+               parameter[num - 1]);
+  dy.push_back(3 * (points[2 * num + 1] - points[2 * num - 1]) /
+               parameter[num - 1]);
   for (uint32_t i = num - 2; i > 0; i--) {
-    double d = (3 * (points[2 * i + 2] - points[2 * i - 2]) - dx[0]) / parameter[i - 1];
+    double d = (3 * (points[2 * i + 2] - points[2 * i - 2]) - dx[0]) /
+               parameter[i - 1];
     dx.insert(dx.begin(), d);
-    d = (3 * (points[2 * i + 3] - points[2 * i - 1]) - dy[0]) / parameter[i - 1];
+    d = (3 * (points[2 * i + 3] - points[2 * i - 1]) - dy[0]) /
+        parameter[i - 1];
     dy.insert(dy.begin(), d);
   }
   dx.insert(dx.begin(), (3 * (points[2] - points[0]) - dx[0]) / parameter[0]);
   dy.insert(dy.begin(), (3 * (points[3] - points[1]) - dy[0]) / parameter[0]);
 
   for (uint32_t i = 0; i < num; i++) {
-    float ax = float(2 * (points[2 * i] - points[2 * i + 2]) + dx[i] + dx[i + 1]);
-    float bx = float(3 * (points[2 * i + 2] - points[2 * i]) - 2 * dx[i] - dx[i + 1]);
+    float ax =
+        float(2 * (points[2 * i] - points[2 * i + 2]) + dx[i] + dx[i + 1]);
+    float bx =
+        float(3 * (points[2 * i + 2] - points[2 * i]) - 2 * dx[i] - dx[i + 1]);
     float cx = float(dx[i]);
     float dx = float(points[2 * i]);
-    float ay = float(2 * (points[2 * i + 1] - points[2 * i + 3]) + dy[i] + dy[i + 1]);
-    float by = float(3 * (points[2 * i + 3] - points[2 * i + 1]) - 2 * dy[i] - dy[i + 1]);
+    float ay =
+        float(2 * (points[2 * i + 1] - points[2 * i + 3]) + dy[i] + dy[i + 1]);
+    float by = float(3 * (points[2 * i + 3] - points[2 * i + 1]) - 2 * dy[i] -
+                     dy[i + 1]);
     float cy = float(dy[i]);
     float dy = float(points[2 * i + 1]);
     if (i == num - 1) {
@@ -652,4 +697,39 @@ void StyledMultiShape2D::spline(const std::vector<double>& points, int n, const 
       bezierSegment(&b);
     }
   }
+}
+
+void StyledMultiShape2D::dump() {
+  fprintf(stderr, "\nVertices\n%12c%12c%7c%7c%7c\n", 'x', 'y', 'r', 'g', 'b');
+
+  for (int i = 0; i < vertices.size(); i += 5) {
+    fprintf(stderr, "%12f%12f%7.3f%7.3f%7.3f\n", vertices[i], vertices[i + 1],
+            vertices[i + 2], vertices[i + 3], vertices[i + 4]);
+  }
+
+  if (solidIndices.size() != 0) {
+    cerr << "\nSolid Indices:\n";
+    for (int i = 0; i < solidIndices.size(); i += 3) {
+      fprintf(stderr, "%6d %6d %6d\n", solidIndices[i], solidIndices[i + 1],
+              solidIndices[i + 2]);
+    }
+  }
+
+  if (lineIndices.size() != 0) {
+    fprintf(stderr, "\nLine Indices:\n");
+    for (int i = 0; i < lineIndices.size(); i += 2) {
+      fprintf(stderr, "%6d %6d\n", lineIndices[i], lineIndices[i + 1]);
+    }
+  }
+
+  if (pointIndices.size() != 0) {
+    cerr << "\nPoint Indices:\n";
+    for (int i = 0; i < pointIndices.size(); i++) {
+      fprintf(stderr, "%6d\n", pointIndices[i]);
+    }
+  }
+
+  cerr << "Press Enter to continue\n";
+  char buffer[3];
+  cin.getline(buffer, 3);
 }

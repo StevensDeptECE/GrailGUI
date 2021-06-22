@@ -17,6 +17,7 @@ grail:
 
 quickClean:
 	rm -rf ${GRAIL}/build ${GRAIL}/libs -f
+	rm -f ${GRAIL}/bin/*
 	@# -f for remove files even if they dont exist ... ie don't throw an error because it's already clean. 
 
 clean: quickClean

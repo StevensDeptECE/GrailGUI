@@ -245,9 +245,12 @@ void MultiText::render() {
   s->setMat4("projection", *(parentCanvas->getProjection()));
   s->setInt("ourTexture", 0);
 
+  // glPushAttrib(GL_CURRENT_BIT);
+  // glColor3f(0, 0, 255);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, textureId);
 
+  // glPopAttrib();
   // Update data
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   const int windowLen = 128 * 128 * 24;  // preallocate a

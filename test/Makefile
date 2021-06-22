@@ -8,11 +8,13 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all: $(BIN)/testAudio $(BIN)/testWidgets $(BIN)/testAxis $(BIN)/testLineGraph $(BIN)/testImage\
- $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
- $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem \
- $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
- $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/StockDemo
+all:    $(BIN)/testDrawBlockMap $(BIN)/testWidgets   $(BIN)/testStyledMultishape	\
+	$(BIN)/SolarSystem  $(BIN)/globe
+ $(BIN)/ESRIMapDemo $(BIN)/testLineGraph $(BIN)/testImage $(BIN)/testAudio\
+  $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
+$(BIN)/testText3 $(BIN)/globe    $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
+  $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/testESRIPolygon \
+	$(BIN)/testPolyLines $(BIN)/StockDemo $(BIN)/testAxis
 
 #$(BIN)/testText 
 #$(BIN)/testDrawing
@@ -68,6 +70,14 @@ $(BIN)/QuentinDemo: QuentinDemo.cc $(LIBGRAIL)
 $(BIN)/MapDemo: MapDemo.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)	
 
+$(BIN)/testESRIPolygon: testESRIPolygon.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)	
+
+$(BIN)/ESRIMapDemo: ESRIMapDemo.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)	
+
+$(BIN)/testDrawBlockMap: testDrawBlockMap.cc $(data)/BlockMapLoader.cc $(opengl)/MapView2D.cc $(LIBGRAIL) $(opengl)/MapView2D.hh $(data)/BlockMapLoader.hh $(data)/BlockLoader.hh 
+	$(CXX) $< $(data)/BlockMapLoader.cc $(opengl)/MapView2D.cc -o $@ $(LIBS)
 
 $(BIN)/SolarSystem: SolarSystem.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
@@ -83,6 +93,9 @@ $(BIN)/LuisaDemo: LuisaDemo.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testWidgets: testWidgets.cc $(LIBGRAIL)
+	$(CXX) $^  -o $@ $(LIBS)
+
+$(BIN)/testPolyLines: testPolyLines.cc $(LIBGRAIL)
 	$(CXX) $^  -o $@ $(LIBS)
 
 $(BIN)/testAxis: testAxis.cc $(LIBGRAIL)

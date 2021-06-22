@@ -51,6 +51,8 @@ class StyledMultiShape2D : public MultiShape2D {
   void clear() {
     vertices.clear();
     colors.clear();
+    lineIndices.clear();
+    pointIndices.clear();
   }
   void init() override;
   void render() override;
@@ -59,6 +61,9 @@ class StyledMultiShape2D : public MultiShape2D {
   void updateColors(const uint64_t pos, const float r, const float g,
                     const float b);
 
+  // Update buffers
+  void updatePoints();
+  void updateIndices();
   // Solid Primitives
   void fillRectangle(float x, float y, float w, float h, const glm::vec4& c);
   void fillRoundRect(float x, float y, float w, float h, float rx, float ry,
@@ -78,7 +83,7 @@ class StyledMultiShape2D : public MultiShape2D {
                      const glm::vec4& c);
   void drawTriangle(float x1, float y1, float x2, float y2, float x3, float y3,
                     const glm::vec4& c);
-  void drawPolygon(std::vector<float>& v, const glm::vec4& c);
+  void drawPolygon(const std::vector<float>& v, const glm::vec4& c);
   void drawPolygon(float x, float y, float xRad, float yRad, float n,
                    const glm::vec4& c);
   void drawCompletePolygon(float x, float y, float xRad, float yRad, float n,
@@ -134,6 +139,8 @@ class StyledMultiShape2D : public MultiShape2D {
                     const glm::vec4& c);
   void ellipsePoints(float x, float y, float xRad, float yRad, float angleInc,
                      const glm::vec4& c);
+
+  void dump();
 
  private:
   std::vector<float> colors;
