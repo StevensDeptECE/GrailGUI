@@ -3,32 +3,34 @@
 #endif
 
 #include "GLWin.hh"
-#include "util/Ex.hh"
+
+#include <unistd.h>
 
 #include <iostream>
 #include <map>
+#include <random>
 #include <string>
 #include <vector>
-#include <unistd.h>
 
-#include <random>
+#include "util/Ex.hh"
 
 // glad seems "unhappy" if you include it after glfw. Why?
 #include <glad/glad.h>
 
 // GLFW
 #include <GLFW/glfw3.h>
-#include "util/Prefs.hh"
 
 #include "csp/Socket.hh"
+#include "util/Prefs.hh"
 
 #ifdef _WIN32
 #include <windows.h>
 #endif
+#include <cstring>
+
 #include "opengl/Style.hh"
 #include "opengl/Tab.hh"
 #include "stb/stb_image_write.h"
-#include <cstring>
 #include "xdl/std.hh"
 using namespace std;
 string GLWin::baseDir;
@@ -101,8 +103,8 @@ void GLWin::windowFocusCallback(GLFWwindow *win, int focused) {
 
 void GLWin::key_callback(GLFWwindow *win, int key, int scancode, int action,
                          int mods) {
-  GLWin* w = winMap[win];
-  if (w == nullptr) { //TODO: come up with better response? Should never happen
+  GLWin *w = winMap[win];
+  if (w == nullptr) {  //TODO: come up with better response? Should never happen
     cerr << "no mapping for window " << win << " to GLWin\n";
     return;
   }
@@ -116,16 +118,16 @@ void GLWin::key_callback(GLFWwindow *win, int key, int scancode, int action,
 void GLWin::mouseButtonCallback(GLFWwindow *win, int button, int action,
                                 int mods) {
   GLWin *w = getWin(win);
-  if (w == nullptr) { //TODO: come up with better response? Should never happen
+  if (w == nullptr) {  //TODO: come up with better response? Should never happen
     cerr << "no mapping for window " << win << " to GLWin\n";
     return;
   }
   //find the button and click on it.
-//  ((Grail*)this) ->currentTab()->processMouseEvent
+  //  ((Grail*)this) ->currentTab()->processMouseEvent
   //bool consumed = gui.clickOnObject(button, (uint32_t)mouseXPos, (uint32_t)mouseYPos);
   cerr << "mouse! " << button << "," << w->mouseXPos << "," << w->mouseYPos << '\n';
   //if (consumed)
-    return;
+  return;
 
   //	w->addMouseEvent(button, action, mods);
   //((GLFWInputs*)GLWin::inp)->setMouseState(button, action);
@@ -143,13 +145,13 @@ void GLWin::enableMouse() {
 #endif
 
 // Static initlializer for libraries
-void GLWin::classInit(){
+void GLWin::classInit() {
   XDLType::classInit();
   Socket::classInit();
 }
 
 // Static cleanup for libraries
-void GLWin::classCleanup(){
+void GLWin::classCleanup() {
   Socket::classCleanup();
   XDLType::classCleanup();
 }
@@ -163,13 +165,13 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const char title[],
       endTime(0),
       t(startTime),
       dt(1),
-			tabs(4),
+      tabs(4),
       faces(16) {
   if (title != nullptr) {
     this->title = title;
   } else {
-		this->title = "";
-	}
+    this->title = "";
+  }
   loadBindings();
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -181,10 +183,9 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const char title[],
       GLFW_OPENGL_FORWARD_COMPAT,
       GL_TRUE);  // uncomment this statement to fix compilation on OS X
 #endif
-	// all static library initializations go here
-	XDLType::classInit();
+      // all static library initializations go here
+  XDLType::classInit();
   Socket::classInit();
-
 }
 bool GLWin::hasBeenInitialized = false;
 GLWin::GLWin(uint32_t w, uint32_t h, uint32_t bgColor, uint32_t fgColor,
@@ -201,8 +202,8 @@ void GLWin::startWindow() {
     throw "Failed to open GLFW window";
   }
   winMap[win] = this;
-//  cerr << winMap[win] << '\n';
-//  winMap[win] = this;
+  //  cerr << winMap[win] << '\n';
+  //  winMap[win] = this;
   glfwMakeContextCurrent(win);
   glfwSetWindowSizeCallback(win, resize);
   //	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -229,25 +230,25 @@ void GLWin::startWindow() {
   // this test is designed to make sure that multiple windows will only initialize fonts once
   // baseDir is not as serious, but why not do any singleton initialization here
   //TODO: is there any more elegant way?
-  if (!hasBeenInitialized) { 
+  if (!hasBeenInitialized) {
     *(string *)&baseDir = getenv("GRAIL");
     FontFace::initAll();
   }
   defaultFont = (Font *)FontFace::get("TIMES", 16, FontFace::BOLD);
-  Font* bigFont = (Font *)FontFace::get("TIMES", 20, FontFace::BOLD);
-	Font* normalFont = (Font *)FontFace::get("TIMES", 12, FontFace::NORMAL);
-	guiFont = bigFont;
+  Font *bigFont = (Font *)FontFace::get("TIMES", 20, FontFace::BOLD);
+  Font *normalFont = (Font *)FontFace::get("TIMES", 12, FontFace::NORMAL);
+  guiFont = bigFont;
   menuFont = bigFont;
-  
+
   defaultStyle = new Style(defaultFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
   defaultStyle->setLineWidth(1);
-	//  defaultStyle->setShaderIndex(COMMON_SHADER);
+  //  defaultStyle->setShaderIndex(COMMON_SHADER);
   guiStyle = new Style(guiFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
   guiTextStyle = new Style(guiFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
-	menuStyle = new Style(menuFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
-	menuTextStyle = new Style(menuFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
-	current = new Tab(this);
-	tabs.add(current);
+  menuStyle = new Style(menuFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
+  menuTextStyle = new Style(menuFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
+  current = new Tab(this);
+  tabs.add(current);
   hasBeenInitialized = true;
 }
 void GLWin::baseInit() {
@@ -264,7 +265,7 @@ void GLWin::baseInit() {
   }
 }
 
-int GLWin::init(GLWin* g, uint32_t w, uint32_t h, uint32_t exitAfter) {
+int GLWin::init(GLWin *g, uint32_t w, uint32_t h, uint32_t exitAfter) {
   try {
     g->exitAfter = exitAfter;
     g->setSize(w, h);
@@ -273,12 +274,12 @@ int GLWin::init(GLWin* g, uint32_t w, uint32_t h, uint32_t exitAfter) {
     g->mainLoop();
     FontFace::emptyFaces();
     delete g;  // free up the memory given to us (must use new!)
-  } catch (const Ex& e) {
+  } catch (const Ex &e) {
     cerr << e << '\n';
-  } catch (const char* msg) {
+  } catch (const char *msg) {
     cerr << msg << endl;
-  } catch (const std::exception& e) {
-    cerr << e.what() << endl; 
+  } catch (const std::exception &e) {
+    cerr << e.what() << endl;
   } catch (...) {
     cerr << "uncaught exception! (ouch)\n";
   }
@@ -308,12 +309,11 @@ void GLWin::update() {}
 // FaceFont::cleanup()
 void FontFaceCleanup();
 
-
 GLWin::~GLWin() {
-	cleanup();
-	cerr << "GLWin Destructor" << endl;
+  cleanup();
+  cerr << "GLWin Destructor" << endl;
   Socket::classCleanup();
-	XDLType::classCleanup();
+  XDLType::classCleanup();
 }
 
 // void GLWin::addFontPath(std::string path, std::string name) {
@@ -335,7 +335,7 @@ void GLWin::mainLoop() {
   double startTime = glfwGetTime();  // get time now for calculating FPS
   double renderTime;
   while (!glfwWindowShouldClose(win)) {
-		//    bool modified = Queue::dump_render();
+    //    bool modified = Queue::dump_render();
     //    dt = current - lastFrame;
     glfwPollEvents();  // Check and call events
 
@@ -380,17 +380,17 @@ void GLWin::random(glm::vec3 &v) {
   v.x = u01(gen), v.y = u01(gen), v.y = u01(gen);
 }
 
-void GLWin::quit(GLWin* w) {
-  exit(0); //TODO: check for cleanup first?
+void GLWin::quit(GLWin *w) {
+  exit(0);  //TODO: check for cleanup first?
 }
 
-void GLWin::refresh(GLWin* w) {
+void GLWin::refresh(GLWin *w) {
   //TODO: send signal to force redraw
 }
 
-void GLWin::saveFrame(GLWin* w) {
+void GLWin::saveFrame(GLWin *w) {
   if (w->saveBuffer != nullptr && w->saveW != w->width || w->saveH != w->height) {
-    delete [] w->saveBuffer;
+    delete[] w->saveBuffer;
     w->saveBuffer = nullptr;
   }
   if (w->saveBuffer == nullptr) {
@@ -398,64 +398,60 @@ void GLWin::saveFrame(GLWin* w) {
     w->saveW = w->width, w->saveH = w->height;
     w->saveBuffer = new uint8_t[3 * w->saveW * w->saveH];
   }
-  sprintf(w->frameName+8, "%d.png", w->frameNum++);
+  sprintf(w->frameName + 8, "%d.png", w->frameNum++);
   glReadPixels(0, 0, w->saveW, w->saveH, GL_RGB, GL_UNSIGNED_BYTE, w->saveBuffer);
   constexpr int CHANNELS = 3;
   stbi_write_png(w->frameName, w->saveW, w->saveH, CHANNELS, w->saveBuffer,
                  w->saveW * CHANNELS);  // TODO: Remove - debugging purposes
 }
-void GLWin::resetCamera(GLWin* w) {
+void GLWin::resetCamera(GLWin *w) {
   //TODO: call resetCamera on every canvas to reset to initial state (we have to write that)
 }
 
-void GLWin::gotoStartTime(GLWin* w) {
+void GLWin::gotoStartTime(GLWin *w) {
   w->t = w->startTime;
 }
 
-void GLWin::gotoEndTime(GLWin* w) {
+void GLWin::gotoEndTime(GLWin *w) {
   w->t = w->endTime;
 }
 
-void GLWin::speedTime(GLWin* w) {
+void GLWin::speedTime(GLWin *w) {
   w->dt *= 2;
 }
-void GLWin::slowTime(GLWin* w) {
+void GLWin::slowTime(GLWin *w) {
   w->dt *= 0.5;
 }
 
-void GLWin::zoomOut(GLWin* w) {
-
+void GLWin::zoomOut(GLWin *w) {
 }
-void GLWin::zoomIn(GLWin* w) {
-
+void GLWin::zoomIn(GLWin *w) {
 }
 
-void GLWin::panRight(GLWin* w) {
-
+void GLWin::panRight(GLWin *w) {
 }
 
-void GLWin::panLeft(GLWin* w) {
-
+void GLWin::panLeft(GLWin *w) {
 }
 
 void GLWin::loadBindings() {
-    setAction(1000, speedTime);
-    setAction(1001, slowTime);
-    setAction(1002, zoomOut);
-    setAction(1003, zoomIn);
-    setAction(1004, panRight);
-    setAction(1005, panLeft);
-    setAction(1006, gotoStartTime);
-    setAction(1007, gotoEndTime);
-    setAction(1008, saveFrame);
+  setAction(1000, speedTime);
+  setAction(1001, slowTime);
+  setAction(1002, zoomOut);
+  setAction(1003, zoomIn);
+  setAction(1004, panRight);
+  setAction(1005, panLeft);
+  setAction(1006, gotoStartTime);
+  setAction(1007, gotoEndTime);
+  setAction(1008, saveFrame);
 
-    setEvent(260, 1000); //INSERT->speed up time
-    setEvent(261, 1001); //DEL-> slow down time
-    setEvent(262, 1004); // right arrow = pan right
-    setEvent(263, 1005); // left arrow = pan left
-    setEvent(266, 1002); // page up = zoom out
-    setEvent(267, 1003); // page down = zoom in
-    setEvent(335, 1008); // ` is printscreen (printscreen seems taken by the OS?)
+  setEvent(260, 1000);  //INSERT->speed up time
+  setEvent(261, 1001);  //DEL-> slow down time
+  setEvent(262, 1004);  // right arrow = pan right
+  setEvent(263, 1005);  // left arrow = pan left
+  setEvent(266, 1002);  // page up = zoom out
+  setEvent(267, 1003);  // page down = zoom in
+  setEvent(335, 1008);  // ` is printscreen (printscreen seems taken by the OS?)
 }
 
 double GLWin::getTime() {

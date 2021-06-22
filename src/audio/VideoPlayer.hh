@@ -1,9 +1,13 @@
 #pragma once
 
+#include <glad/glad.h>
+
+// This comment is keeping the peace between glad and glfw
+// Removing glad causes some errors at compile-time
+// Refer to GLWin.cc for a similar situation
+#include <GLFW/glfw3.h>
 #include <mpv/client.h>
 #include <mpv/render_gl.h>
-
-#include <GLFW/glfw3.h>
 
 #include "opengl/GLWin.hh"
 #include "util/Ex.hh"
