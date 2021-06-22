@@ -8,7 +8,7 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all:    $(BIN)/testDrawBlockMap $(BIN)/testWidgets   $(BIN)/testStyledMultishape	\
+all:    $(BIN)/testDrawBlockMap $(BIN)/testWidgets #  $(BIN)/testStyledMultishape	\
 	$(BIN)/SolarSystem  $(BIN)/globe
 # $(BIN)/ESRIMapDemo \
   $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
