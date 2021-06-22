@@ -8,19 +8,13 @@ LIBSPEC	:=	-L${LIBDIR}
 SRC	:=	${GRAIL}/src
 
 util	:=	$(SRC)/util
-<<<<<<< HEAD
-opengl	:=	$(SRC)/opengl
-csp	:=	$(SRC)/csp
-xdl	:=	$(SRC)/xdl
-audio := $(SRC)/audio
-=======
 opengl:=	$(SRC)/opengl
 csp		:=	$(SRC)/csp
 xdl		:=	$(SRC)/xdl
+audio := $(SRC)/audio
 data	:=	$(SRC)/data
 xp    :=  $(SRC)/xp
 libshape := $(BASE)/include/libshape
->>>>>>> main
 
 test	:=  ${GRAIL}/test
 
@@ -30,13 +24,10 @@ utilout 		:= $(build)/util
 openglout		:= $(build)/opengl
 cspout			:= $(build)/csp
 xdlout			:= $(build)/xdl
-<<<<<<< HEAD
 audioout		:= $(build)/audio
-=======
 dataout			:= $(build)/data
 xpout       := $(build)/xp
 libshapeout := $(build)/libshape
->>>>>>> main
 
 
 SOURCES := $(wildcard $(opengl)/*.cc $(opengl)/*.hh)
@@ -57,6 +48,7 @@ COMP	:=	$(CXX) -c
 LIBS	:=	-lgrail -lfreetype -lglfw -lGL -lX11 -ldl -pthread 
 LD	:=	g++ $(VERS) $(CCFLAGS) $(LIBSPEC)
 
+ifeq ($(OS),Windows_NT)
 # Note that any recipes in this file will cause all makefiles to stop working
 	LIBS	:=	$(LIBSPEC) -lgrail -lOpenGL32 -lz -mwindows -lfreetype -lglfw3 -lWs2_32 -lshape -lmpv
 	# @echo "WINDOWS DETECTED"
