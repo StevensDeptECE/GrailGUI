@@ -229,6 +229,10 @@ void MultiText::checkAdd(float& x, float& y, const Font* f,
   add(x, y, f, c);
 }
 
+const Style* MultiText::getStyle() {
+  return style;
+}
+
 void MultiText::update() {}
 
 void MultiText::render() {

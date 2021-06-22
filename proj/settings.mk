@@ -12,6 +12,7 @@ opengl:=	$(SRC)/opengl
 csp		:=	$(SRC)/csp
 xdl		:=	$(SRC)/xdl
 data	:=	$(SRC)/data
+xp    :=  $(SRC)/xp
 libshape := $(BASE)/include/libshape
 
 test	:=  ${GRAIL}/test
@@ -23,6 +24,7 @@ openglout		:= $(build)/opengl
 cspout			:= $(build)/csp
 xdlout			:= $(build)/xdl
 dataout			:= $(build)/data
+xpout       := $(build)/xp
 libshapeout := $(build)/libshape
 
 
