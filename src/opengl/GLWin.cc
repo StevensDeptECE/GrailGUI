@@ -685,3 +685,5 @@ void GLWin::loadBindings() {
 double GLWin::getTime() {
   return glfwGetTime();
 }
+
+void GLWin::renderVideo() {}
