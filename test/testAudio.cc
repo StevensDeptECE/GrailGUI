@@ -21,20 +21,23 @@ class TestAudioPlayer : public GLWin {
 
   void update() {
     double time = getTime();
-    // printf("current time: %f\n", time);
-    // printf("startTime: %f\n", startTime);
     if (time > startTime + 1 && step == 0) {
-      a->setCurrentContext(0);
-      a->togglePause();
-      a->setCurrentContext(1);
-      a->togglePause();
+      a->setCurrentContext("default");
+      a->setPlaying();
+      a->setCurrentContext("new context");
+      a->setPlaying();
       startTime = time;
       step++;
     }
 
-    if (time > startTime + 15 && step == 1) {
-      a->setCurrentContext(0);
+    if (time > startTime + 7 && step == 1) {
+      a->setCurrentContext("default");
       a->togglePause();
+      a->setCurrentContext("new context");
+      a->togglePause();
+
+      a->setCurrentContext("from youtube");
+      a->setPlaying();
       startTime = time;
       step++;
     }
@@ -48,14 +51,37 @@ class TestAudioPlayer : public GLWin {
 
     a = new AudioPlayer();
 
-    a->setCurrentContext(0);
+    // The initial context created with an AudioPlayer is called default
+    // Before performing operations on an mpv context, you have to set the
+    // current context of the AudioPlayer object
+    a->setCurrentContext("default");
     a->setVolume(75);
     a->addFile("res/sample1mb.ogg");
 
-    a->newContext();
-    a->setCurrentContext(1);
+    // creating a new context, calling it "new context"
+    // set the current context to the new one, give it a playlist that mpv can
+    // understand (see playlist.txt in test/res/)
+    a->newContext("new context");
+    a->setCurrentContext("new context");
     a->setVolume(50);
     a->addPlaylist("res/playlist.txt");
+
+    // if you try to set a current context that doesn't exist, a message will
+    // print telling you what's happened
+    a->setCurrentContext("i should print something");
+
+    // mpv can play things from the internet utilizing youtube-dl, here's an
+    // example of how to do it
+    a->newContext("from youtube");
+    a->setCurrentContext("from youtube");
+    a->addFile("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    a->setVolume(50);
+
+    // because of how commands are given to mpv, there's a limit on how long the
+    // number for the volume is allowed to be (makes sure a sprintf doesn't
+    // write to memory it doesn't have access to). this limit is
+    // between 0 and 999
+    a->setVolume(11111);
   }
 };
 

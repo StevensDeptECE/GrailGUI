@@ -1,13 +1,20 @@
 #include "audio/AudioPlayer.hh"
 
 using namespace std;
-AudioPlayer::AudioPlayer() { newContext(); }
+AudioPlayer::AudioPlayer() { newContext("default"); }
 
 AudioPlayer::~AudioPlayer() {
-  for (auto ctx : contexts) mpv_terminate_destroy(ctx);
+  for (auto pair = contexts.begin(); pair != contexts.end(); pair++) {
+    mpv_terminate_destroy(pair->second);
+  }
+
+  // c++ 17 feature
+  // for (const auto &[name, ctx] : contexts) {
+  //   mpv_terminate_destroy(ctx);
+  // }
 }
 
-void AudioPlayer::newContext() {
+void AudioPlayer::newContext(string name) {
   mpv_handle *ctx = mpv_create();
 
   if (!ctx) {
@@ -17,16 +24,18 @@ void AudioPlayer::newContext() {
 
   checkError(mpv_initialize(ctx));
   checkError(mpv_command_string(ctx, "cycle pause"));
-  contexts.push_back(ctx);
+  const char *cmd[] = {"set", "video", "no", nullptr};
+  checkError(mpv_command(ctx, cmd));
+  contexts[name] = ctx;
 }
 
-void AudioPlayer::setCurrentContext(int index) {
-  if (index > contexts.size() - 1) {
-    printf("Can't do that chief\n");
-    return;
+void AudioPlayer::setCurrentContext(string name) {
+  auto pair = contexts.find(name);
+  if (pair != contexts.end()) {
+    currentCtx = pair->second;
+  } else {
+    printf("Couldn't set a context with name: %s\n", name.c_str());
   }
-
-  currentCtx = contexts[index];
 }
 
 void AudioPlayer::addFile(string filePath) {
@@ -41,9 +50,13 @@ void AudioPlayer::addPlaylist(string filePath, bool append) {
 }
 
 void AudioPlayer::setVolume(int volume) {
-  char cmd[25];
-  sprintf(cmd, "set volume %d", volume);
-  checkError(mpv_command_string(currentCtx, cmd));
+  if (volume < 1000 && volume >= 0) {
+    char cmd[25];
+    sprintf(cmd, "set volume %d", volume);
+    checkError(mpv_command_string(currentCtx, cmd));
+  } else {
+    printf("Please provide a volume that is between 0 and 999\n");
+  }
 }
 
 void AudioPlayer::nextTrack() {
@@ -53,4 +66,13 @@ void AudioPlayer::nextTrack() {
 
 void AudioPlayer::togglePause() {
   checkError(mpv_command_string(currentCtx, "cycle pause"));
+  isPlaying = !isPlaying;
+}
+
+void AudioPlayer::setPlaying() {
+  if (!isPlaying) checkError(mpv_command_string(currentCtx, "cycle pause"));
+}
+
+void AudioPlayer::setPaused() {
+  if (isPlaying) checkError(mpv_command_string(currentCtx, "cycle pause"));
 }
