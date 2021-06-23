@@ -7,8 +7,8 @@ uint32_t HashMapBase::bytewisehash(const char s[]) const {
     sum = (((sum << r1) | (sum >> (32-r1))) ^ ((sum >> r2) | (sum >> (32-r2)))) + s[i];
     sum = (((sum << r3) | (sum >> (32-r3))) ^ ((sum >> r4) | (sum >> (32-r4)))) + s[i];
   }
-  sum ^= i;
-  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >> (32-r6)))) + s[i];
+  sum = ((sum << r5) | (sum >> (32-r5))) ^ sum ^ (i << 7);
+//  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >> (32-r6)))) + s[i];
   return sum & size;
 }
 
@@ -20,8 +20,8 @@ uint32_t HashMapBase::bytewisehash(const char s[], uint32_t len) const {
     sum = (((sum << r1) | (sum >> (32-r1))) ^ ((sum >> r2) | (sum >> (32-r2)))) + s[i];
     sum = (((sum << r3) | (sum >> (32-r3))) ^ ((sum >> r4) | (sum >> (32-r4)))) + s[i];
   }
-  sum ^= i;
-  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >> (32-r6)))) + s[i];
+  sum = ((sum << r5) | (sum >> (32-r5))) ^ sum ^ (i << 7);
+//  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >> (32-r6)))) + s[i];
   return sum & size;
 }
 

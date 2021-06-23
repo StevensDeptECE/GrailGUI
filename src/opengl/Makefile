@@ -15,6 +15,7 @@ $(utilout)/Config.o $(utilout)/Prefs.o	\
 $(utilout)/HashMap.o                    \
 $(utilout)/Buffer.o			\
 $(utilout)/datatype.o			\
+$(utilout)/Timers.o 			\
 $(cspout)/Socket.o				\
 $(cspout)/IPV4Socket.o			\
 $(cspout)/XDLRequest.o			\
@@ -36,18 +37,22 @@ $(out)/Image.o \
 $(out)/MultiShape.o $(out)/StyledMultiShape2D.o $(out)/MultiShape2D.o \
 $(out)/MultiText.o $(out)/MultiShape3D.o $(out)/TextureArray.o \
 $(out)/Document.o $(out)/DocView.o \
-$(out)/LineGraphWidget.o $(out)/BarChartWidget.o $(out)/CandlestickChartWidget.o $(out)/BoxChartWidget.o $(out)/GapMinderWidget.o $(out)/SparklineWidget.o\
-$(out)/ButtonWidget.o $(out)/Scale.o \
-$(out)/AngledMultiText.o \
-$(out)/ScrollbarWidget.o \
-$(out)/AxisWidget.o \
+$(out)/Shapefile.o $(out)/ESRIShape.o $(out)/ESRIPolygon.o\
+$(out)/LineGraphWidget.o $(out)/BarChartWidget.o \
+$(out)/ButtonWidget.o $(out)/Scale.o $(out)/CandlestickChartWidget.o\
+$(out)/AngledMultiText.o $(out)/BoxChartWidget.o \
+$(out)/ScrollbarWidget.o $(out)/AxisWidget.o $(out)/GapMinderWidget.o \
+$(out)/SparklineWidget.o
+
+SHAPEOBJS := $(libshapeout)/dbfopen.o $(libshapeout)/safileio.o \
+$(libshapeout)/sbnsearch.o $(libshapeout)/shpopen.o $(libshapeout)/shptree.o
 
 # heatmap does not yet work, so commented out until Dov or someone else gets it going. But it's VERY COOL!
 #$(out)/HeatMap.o
 
 #generateErrors
 
-all: init  $(out)/Glad.o $(LIBGRAIL)
+all: init  $(out)/Glad.o $(LIBSHAPE) $(LIBGRAIL) 
 include ${GRAIL}/proj/common.mk
 
 $(out)/Glad.o:
@@ -115,6 +120,9 @@ $(utilout)/Config.o: $(util)/Config.cc $(util)/Config.hh
 $(utilout)/Prefs.o: $(util)/Prefs.cc $(util)/Prefs.hh
 	$(COMP) $< -o $@
 
+$(utilout)/Timers.o: $(util)/Timers.cc $(util)/Timers.hh
+	$(CXX) -c $< -o $@
+
 $(out)/Shader.o: Shader.cc Shader.hh
 	$(COMP) $< -o $@
 
@@ -135,7 +143,6 @@ $(out)/Sector.o: Sector.cc Sector.hh
 
 $(out)/Rectangle.o: Rectangle.cc Rectangle.hh
 	$(COMP) $< -o $@
-
 
 
 ### Multishapes:--------------------------------------------------------------
@@ -161,6 +168,15 @@ $(out)/Document.o: Document.cc Document.hh
 	$(COMP) $< -o $@
 
 $(out)/DocView.o: DocView.cc DocView.hh
+	$(COMP) $< -o $@
+
+$(out)/ESRIPolygon.o: ESRIPolygon.cc Shapefile.hh
+	$(COMP) $< -o $@
+
+$(out)/ESRIShape.o: ESRIShape.cc Shapefile.hh
+	$(COMP) $< -o $@
+	
+$(out)/Shapefile.o: Shapefile.cc Shapefile.hh
 	$(COMP) $< -o $@
 
 $(out)/LineGraphWidget.o: LineGraphWidget.cc LineGraphWidget.hh
@@ -207,6 +223,24 @@ $(out)/Line.o: Line.cc Line.hh
 $(out)/Shape2D.o: Shape2D.cc Shape2D.hh
 	$(COMP) $< -o $@
 
+
+$(LIBSHAPE): $(SHAPEOBJS)
+	cd $(libshapeout) ; ar rs $(LIBSHAPE) $(SHAPEOBJS)
+
+$(libshapeout)/dbfopen.o: $(libshape)/dbfopen.c $(libshape)/shapefil.h
+	$(COMP) $< -o $@
+
+$(libshapeout)/safileio.o: $(libshape)/safileio.c $(libshape)/shapefil.h
+	$(COMP) $< -o $@
+
+$(libshapeout)/sbnsearch.o: $(libshape)/sbnsearch.c $(libshape)/shapefil.h
+	$(COMP) $< -o $@
+
+$(libshapeout)/shpopen.o: $(libshape)/shpopen.c $(libshape)/shapefil.h
+	$(COMP) $< -o $@
+
+$(libshapeout)/shptree.o: $(libshape)/shptree.c $(libshape)/shapefil.h
+	$(COMP) $< -o $@
 
 #$(out)/WebCursor.o: WebCursor.cc WebCursor.hh
 #	$(COMP) $< -o $@
