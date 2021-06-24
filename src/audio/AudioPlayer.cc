@@ -59,6 +59,18 @@ void AudioPlayer::setVolume(int volume) {
   }
 }
 
+void AudioPlayer::seekLocation(string time, string type) {
+  if (type == "relative" || type == "absolute" || type == "relative-percent" ||
+      type == "absolute-percent") {
+    const char *cmd[] = {"seek", time.c_str(), type.c_str(), nullptr};
+    checkError(mpv_command(currentCtx, cmd));
+  } else {
+    printf(
+        "Please provide one of the following for seek type: \nrelative, "
+        "absolute, relative-percent, absolute-percent\n");
+  }
+}
+
 void AudioPlayer::nextTrack() {
   const char *cmd[] = {"playlist-next", nullptr};
   checkError(mpv_command(currentCtx, cmd));

@@ -41,6 +41,14 @@ class TestAudioPlayer : public GLWin {
       startTime = time;
       step++;
     }
+
+    if (time > startTime + 5 && step == 2) {
+      a->setCurrentContext("from youtube");
+      a->seekLocation("1:52", "absolute");
+      a->seekLocation("66", "chicken");
+      startTime = time;
+      step++;
+    }
   }
 
   void init() {

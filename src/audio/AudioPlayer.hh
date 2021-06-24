@@ -2,7 +2,6 @@
 
 #include <mpv/client.h>
 
-#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -32,6 +31,7 @@ class AudioPlayer {
   void addFile(std::string filePath);
   void addPlaylist(std::string filePath, bool append = false);
   void setVolume(int volume);
+  void seekLocation(std::string time, std::string type = "relative");
   void nextTrack();
   void togglePause();
   void setPlaying();
