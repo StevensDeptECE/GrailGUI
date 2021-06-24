@@ -93,3 +93,12 @@ void AudioPlayer::setPlaying() {
 void AudioPlayer::setPaused() {
   if (isPlaying) checkError(mpv_command_string(currentCtx, "cycle pause"));
 }
+
+void AudioPlayer::printCurrentTime() {
+  mpv_node result;
+
+  checkError(
+      mpv_get_property(currentCtx, "time-pos", MPV_FORMAT_NODE, &result));
+  printf("Track Time Elapsed in Seconds: %.2f\n", result.u.double_);
+  mpv_free_node_contents(&result);
+}

@@ -37,4 +37,5 @@ class AudioPlayer {
   void togglePause();
   void setPlaying();
   void setPaused();
+  void printCurrentTime();
 };
