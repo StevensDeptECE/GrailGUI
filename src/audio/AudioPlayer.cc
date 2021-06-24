@@ -71,6 +71,11 @@ void AudioPlayer::seekLocation(string time, string type) {
   }
 }
 
+void AudioPlayer::revertSeek() {
+  const char *cmd[] = {"revert-seek", nullptr};
+  checkError(mpv_command(currentCtx, cmd));
+}
+
 void AudioPlayer::nextTrack() {
   const char *cmd[] = {"playlist-next", nullptr};
   checkError(mpv_command(currentCtx, cmd));

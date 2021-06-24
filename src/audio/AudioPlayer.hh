@@ -32,6 +32,7 @@ class AudioPlayer {
   void addPlaylist(std::string filePath, bool append = false);
   void setVolume(int volume);
   void seekLocation(std::string time, std::string type = "relative");
+  void revertSeek();
   void nextTrack();
   void togglePause();
   void setPlaying();

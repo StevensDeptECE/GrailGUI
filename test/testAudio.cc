@@ -17,8 +17,11 @@ class TestAudioPlayer : public GLWin {
         a(nullptr),
         step(0) {}
 
+  // required to ensure that the memory of the audio player is freed
   ~TestAudioPlayer() { delete a; }
 
+  // using the built in timing of GLWin and if statements allows for control
+  // flow of the player with respect to time the program has been running
   void update() {
     double time = getTime();
     if (time > startTime + 1 && step == 0) {
@@ -49,6 +52,13 @@ class TestAudioPlayer : public GLWin {
       startTime = time;
       step++;
     }
+
+    if (time > startTime + 7 && step == 3) {
+      a->setCurrentContext("from youtube");
+      a->revertSeek();
+      startTime = time;
+      step++;
+    }
   }
 
   void init() {
@@ -63,7 +73,7 @@ class TestAudioPlayer : public GLWin {
     // Before performing operations on an mpv context, you have to set the
     // current context of the AudioPlayer object
     a->setCurrentContext("default");
-    a->setVolume(75);
+    a->setVolume(50);
     a->addFile("res/sample1mb.ogg");
 
     // creating a new context, calling it "new context"
