@@ -11,25 +11,77 @@
 #include <xdl/XDLCompiler.hh>
 #include <xdl/std.hh>
 
+#include "util/TypeAlias.hh"
 #include "xdl/SymbolTable.hh"
 
 using namespace std;
 
-template <typename... Args>
-void buildString(std::string& dest, const Args&... args) {
-  dest.clear();
-  int unpack[]{0, (dest += to_string(args), 0)...};
-  static_cast<void>(unpack);
-}
+// base case
+void buildData(Buffer& out, char meta[]) {}
 
-template <typename... Args>
-void buildData(XDLStruct* s, const Args&... args) {
-  XDLIterator i(*s);
-  int unpack[] { 0, (i.assertSameType(args); i++)... };
-  static_cast<void>(unpack);
+// template <typename T, typename... Args>
+// void buildData(Buffer& out, Buffer& meta, T first, const Args&... args) {
+
+template <typename T>
+void buildData2(ArrayOfBytes* a, T arg) {
+  if (constexpr is_base_of_v<XDLType, arg>) {
+    if (constexpr is_base_of_v<XDLBuiltinType, arg>) {
+      a->addMeta(arg->getType());
+      a->addData(arg);
+
+    } else {
+      if (constexpr is_base_of_v<CompoundType, arg>) {
+        arg->addMeta(a->getMeta());
+        arg->addData(a->addData());
+      }
+    }
+    // a->addMeta(arg);
+    if (constexpr is_same_v<uint8_t, arg>)
+      a->addMeta(DataType::U8);
+    else if (constexpr is_same_v<uint16_t, arg>)
+      a->addMeta(DataType::U16);
+    else {
+      args.write(out);
+      args.writeMeta(meta);
+    }
+  }
 }
+template <typename... Args>
+void buildData(DynArray<XDLType*> a, const Args&... args) {
+  ArrayOfBytes* bytes = new ArrayOfBytes();
+  (buildData2(bytes, args), ...);
+  a.add(bytes);
+}
+#if 0
+template <std::size_t datasize, std::size_t metasize, typename... Args>
+void buildData(std::array<uint8_t, size>& data, std::array<uint8_t, size>& meta, const Args&... args) {
+  (out.write(args), out.writeMeta(args), ...);
+}
+#endif
+class Point : XDLType {
+ public:
+  double x, y, z;
+  Point(double x, double y, double z) : x(x), y(y), z(z) {}
+  void write(Buffer& out, const Point& p);
+  void addMeta(DynArray<uint8_t>& a);
+};
+
+void write(Buffer& out, const Point& p);
 
 XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
+  buildData(xdlData, 2_u32, 12345_u64, Point(1, 2, 3));
+
+  ArrayOfBytes* data = buildData(2_u32, 12345_u64, Point(1, 2, 3));
+  xdlData.add(data);
+
+  auto listonums = new List<uint32_t>(100);
+  for (int i = 0; i < 100; i++) listonums->add(i);
+  xdlData.add(listonums);
+
+  auto pointList = new List<Point>(100);
+  for (int i = 0; i < 100; i++) pointList->add(Point(i, 2, 3));
+  xdlData.add(pointList);
+
   // TODO: create all the XDL objects to satisfy requests
   // TODO: for now, ignore the filename and hardcode some objects
 
@@ -50,6 +102,7 @@ XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
   s2->addBuiltin("z", DataType::F32);
   s->addMember("point", s2);
   s->addBuiltin("bach", DataType::F64);
+
   // st->addRoot(s);
   // Buffer ans(32768);
   // ans.write(uint32_t(1));
@@ -92,7 +145,8 @@ XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
   //  for (int i = 0; i < n; i++) quotes->add(new StockQuote(...));
 
   // xdlData.add(quotes);  // hardcoded class which should spew
-  // Metadata LIST16 5Quotes STRUCT8 10StockQuote 6 F32 open F32 hi F32 LOW F32
+  // Metadata LIST16 5Quotes STRUCT8 10StockQuote 6 F32 open F32 hi F32 LOW
+  // F32
 
   // close ...
 
@@ -148,8 +202,8 @@ void XDLRequest::handle(int fd) {
   if (requestId >= xdlData.size()) {
     // srvlog.error(Errcode::ILLEGAL_SERVLETID);
     // commented this line out because it causes an error
-    // ERROR: In function `CSPRequest::handle(int)': CSPRequest.cc:(.text+0xf6):
-    // undefined reference to `srvlog'
+    // ERROR: In function `CSPRequest::handle(int)':
+    // CSPRequest.cc:(.text+0xf6): undefined reference to `srvlog'
     cout << "ERROR::ILLEGAL_SERVLETID\n";
     return;
   }

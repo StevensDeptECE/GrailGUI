@@ -38,7 +38,7 @@ class TestWidgets : public GLWin {
     tw->setDirty();
   }
 
-  void testButton(StyledMultiShape2D *gui, MultiText *guiText) {
+  void testButton(MainCanvas *c, StyledMultiShape2D *gui, MultiText *guiText) {
     const float boxSize = 100;
     const float drawSize = (boxSize / 4) * 5;
 
@@ -50,8 +50,7 @@ class TestWidgets : public GLWin {
     gui->fillRectangle(boxSize * 1.5, boxSize * 1.5, drawSize * .4,
                        drawSize / 5, black);
 
-    // c->addButton("Hello",100,100,100,100);
-    ButtonWidget b(gui, guiText, "hello", 0, 0, 100, 50);
+    ButtonWidget b(c, 0, 0, 100, 50, "hello", "helloWorld");
     b.init();
   }
 

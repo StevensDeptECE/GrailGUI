@@ -786,3 +786,33 @@ class UnImpl : public XDLType {
   void write(Buffer& buf) const override;
   void writeMeta(Buffer& buf) const override;
 };
+
+class ArrayOfBytes : public XDLType {
+ private:
+  uint8_t* currentData;
+  DynArray<uint8_t> data;
+  DynArray<uint8_t> metadata;
+
+ public:
+  ArrayOfBytes(uint32_t dataCapacity = 512, uint32_t metadataCapacity = 16)
+      : data(dataCapacity), metadata(metadataCapacity), currentData(0) {}
+  ArrayOfBytes(const ArrayOfBytes& orig) = delete;
+  ArrayOfBytes& operator=(const ArrayOfBytes& orig) = delete;
+  // TODO: this is for any primitive type NO POINTERS
+  // byte order is whatever is on your machine
+  // TODO: Consider using the std::is_pointer to check for pointers
+  template <typename T>
+  void addData(T data) {
+    for (uint32_t i = 0; i < sizeof(data); i++) data.add(((char*)&data)[i]);
+  }
+
+  void addMeta(DataType t) { metadata.add(uint8_t(t)); }
+  // TODO: string must be len < 256
+  void addMeta(const string& s) {
+    metadata.add(s.length());
+    for (uint32_t i = 0; i < s.length(); i++) metadata.add(s[i]);
+  }
+
+  DynArray<uint8_t>* getMeta() { return &metadata; }
+  DynArray<uint8_t>* getData() { return &data; }
+};
