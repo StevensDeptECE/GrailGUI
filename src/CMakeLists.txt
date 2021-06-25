@@ -5,11 +5,12 @@ add_subdirectory(util)
 add_subdirectory(xdl)
 
 add_library(grail
+						${PROJECT_SOURCE_DIR}/include/glad/glad.c
 						${grail-csp} 
 						${grail-data}
 						${grail-opengl}
 						${grail-util}
-						${grial-xdl})
+						${grail-xdl})
 
 
 if(${GRAIL_EXPERIMENTAL})
@@ -18,7 +19,7 @@ endif()
 
 # GLFW
 target_include_directories(grail INTERFACE ${GLFW_INCLUDE_DIRS})
-target_link_libraries(grail PRIVATE ${GLFW_LIBRARY_DIRS})
+target_link_libraries(grail PRIVATE glfw)
 
 # opengl
 target_include_directories(grail PRIVATE ${OPENGL_INCLUDE_DIRS})
@@ -26,3 +27,6 @@ target_include_directories(grail PRIVATE ${OPENGL_INCLUDE_DIRS})
 # Freetype
 target_link_libraries(grail INTERFACE ${FREETYPE_LIBRARIES})
 target_include_directories(grail PRIVATE ${FREETYPE_INCLUDE_DIRS})
+
+#DL
+target_link_libraries(grail INTERFACE ${CMAKE_DL_LIBS})

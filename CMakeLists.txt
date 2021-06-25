@@ -25,12 +25,12 @@ find_package(OpenGL REQUIRED)
 
 # GLFW
 find_package(glfw3 REQUIRED)
-message(STATUS "Found GLFW3 in ${GLFW3_INCLUDE_DIR}")
+message(STATUS "Found GLFW3 in ${GLFW_INCLUDE_DIRS}")
 
 # GLM
-find_package(GLM REQUIRED)
-include_directories(SYSTEM ${GLM_INCLUDE_DIRS})
-message(STATUS "GLM included at ${GLM_INCLUDE_DIR}")
+#find_package(GLM REQUIRED)
+#include_directories(SYSTEM ${GLM_INCLUDE_DIRS})
+#message(STATUS "GLM included at ${GLM_INCLUDE_DIR}")
 
 # Freetype
 find_package(Freetype REQUIRED)

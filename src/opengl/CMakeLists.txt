@@ -6,6 +6,7 @@ set(grail-opengl
 		ButtonWidget.cc
 		CandlestickChartWidget.cc 
 		Canvas.cc
+		Colors.cc
 		ErrNames.cc
 		ESRIPolygon.cc
 		ESRIShape.cc 
@@ -17,12 +18,16 @@ set(grail-opengl
 		MultiShape.cc 
 		MultiShape2D.cc
 		MultiShape3D.cc
+		MultiText.cc
+		Scale.cc
 		ScrollbarWidget.cc 
 		Shader.cc
 		Shape.cc
 		Shape2D.cc
 		Shapefile.cc 
+		SparklineWidget.cc
 		StyledMultiShape2D.cc
+		Tab.cc
 )
 
 list(TRANSFORM grail-opengl PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
