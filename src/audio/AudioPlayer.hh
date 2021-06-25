@@ -13,6 +13,7 @@ class AudioPlayer {
   std::unordered_map<std::string, mpv_handle *> contexts;
   mpv_handle *currentCtx;
   bool isPlaying;
+  bool isLoaded();
 
   inline void checkError(int status) {
     if (status < 0) {
@@ -33,7 +34,9 @@ class AudioPlayer {
   void setVolume(int volume);
   void seekLocation(std::string time, std::string type = "relative");
   void revertSeek();
-  void nextTrack();
+  void playlistNext();
+  void playlistPrev();
+  void playlistPlayIndex(int index);
   void togglePause();
   void setPlaying();
   void setPaused();

@@ -14,6 +14,20 @@ AudioPlayer::~AudioPlayer() {
   // }
 }
 
+bool AudioPlayer::isLoaded() {
+  bool isLoaded = true;
+  mpv_node result;
+
+  int res = mpv_get_property(currentCtx, "filename", MPV_FORMAT_NODE, &result);
+
+  if (res == -10) {
+    isLoaded = false;
+  }
+
+  mpv_free_node_contents(&result);
+  return isLoaded;
+}
+
 void AudioPlayer::newContext(string name) {
   mpv_handle *ctx = mpv_create();
 
@@ -76,9 +90,33 @@ void AudioPlayer::revertSeek() {
   checkError(mpv_command(currentCtx, cmd));
 }
 
-void AudioPlayer::nextTrack() {
-  const char *cmd[] = {"playlist-next", nullptr};
-  checkError(mpv_command(currentCtx, cmd));
+void AudioPlayer::playlistNext() {
+  if (isLoaded()) {
+    const char *cmd[] = {"playlist-next", nullptr};
+    checkError(mpv_command(currentCtx, cmd));
+  } else {
+    printf("Playlist not yet loaded\n");
+  }
+}
+
+void AudioPlayer::playlistPlayIndex(int index) {
+  if (isLoaded()) {
+    char indexString[67];
+    sprintf(indexString, "%d", index);
+    const char *cmd[] = {"set", "playlist-pos", indexString, nullptr};
+    checkError(mpv_command(currentCtx, cmd));
+  } else {
+    printf("Playlist not yet loaded\n");
+  }
+}
+
+void AudioPlayer::playlistPrev() {
+  if (isLoaded()) {
+    const char *cmd[] = {"playlist-prev", nullptr};
+    checkError(mpv_command(currentCtx, cmd));
+  } else {
+    printf("Playlist not yet loaded\n");
+  }
 }
 
 void AudioPlayer::togglePause() {
@@ -87,11 +125,17 @@ void AudioPlayer::togglePause() {
 }
 
 void AudioPlayer::setPlaying() {
-  if (!isPlaying) checkError(mpv_command_string(currentCtx, "cycle pause"));
+  if (!isPlaying) {
+    checkError(mpv_command_string(currentCtx, "cycle pause"));
+    isPlaying = !isPlaying;
+  }
 }
 
 void AudioPlayer::setPaused() {
-  if (isPlaying) checkError(mpv_command_string(currentCtx, "cycle pause"));
+  if (isPlaying) {
+    checkError(mpv_command_string(currentCtx, "cycle pause"));
+    isPlaying = !isPlaying;
+  }
 }
 
 void AudioPlayer::printCurrentTime() {

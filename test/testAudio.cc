@@ -24,7 +24,9 @@ class TestAudioPlayer : public GLWin {
   // flow of the player with respect to time the program has been running
   void update() {
     double time = getTime();
+
     if (time > startTime + 1 && step == 0) {
+      printf("simultaneous playback\n");
       a->setCurrentContext("default");
       a->setPlaying();
       a->setCurrentContext("new context");
@@ -33,11 +35,12 @@ class TestAudioPlayer : public GLWin {
       step++;
     }
 
-    if (time > startTime + 7 && step == 1) {
+    if (time > startTime + 10 && step == 1) {
+      printf("play from youtube\n");
       a->setCurrentContext("default");
-      a->togglePause();
+      a->setPaused();
       a->setCurrentContext("new context");
-      a->togglePause();
+      a->setPaused();
 
       a->setCurrentContext("from youtube");
       a->setPlaying();
@@ -46,17 +49,61 @@ class TestAudioPlayer : public GLWin {
     }
 
     if (time > startTime + 5 && step == 2) {
+      printf("skip to 1:52 in song\n");
       a->setCurrentContext("from youtube");
       a->seekLocation("1:52", "absolute");
-      a->seekLocation("66", "chicken");
       a->printCurrentTime();
+
+      // this should fail, chicken not valid lmao
+      a->seekLocation("66", "chicken");
+
       startTime = time;
       step++;
     }
 
     if (time > startTime + 7 && step == 3) {
+      printf("revert skip\n");
       a->setCurrentContext("from youtube");
       a->revertSeek();
+      a->printCurrentTime();
+      startTime = time;
+      step++;
+    }
+
+    if (time > startTime + 5 && step == 4) {
+      printf("try to play a playlist from youtube\n");
+      a->setCurrentContext("from youtube");
+      a->setPaused();
+
+      a->setCurrentContext("skyhill");
+      a->setPlaying();
+      startTime = time;
+      step++;
+    }
+
+    if (time > startTime + 10 && step == 5) {
+      printf("next song in playlist\n");
+      a->setCurrentContext("skyhill");
+      // skip to next song in playlist
+      a->playlistNext();
+      startTime = time;
+      step++;
+    }
+
+    if (time > startTime + 10 && step == 6) {
+      printf("go to specific index in playlist\n");
+      a->setCurrentContext("skyhill");
+      // jump to a specific index in playlist
+      a->playlistPlayIndex(6);
+      startTime = time;
+      step++;
+    }
+
+    if (time > startTime + 7 && step == 7) {
+      printf("go to prev track in playlist\n");
+      a->setCurrentContext("skyhill");
+      // go back a track in playlist
+      a->playlistPrev();
       startTime = time;
       step++;
     }
@@ -83,7 +130,7 @@ class TestAudioPlayer : public GLWin {
     a->newContext("new context");
     a->setCurrentContext("new context");
     a->setVolume(50);
-    a->addPlaylist("res/playlist.txt");
+    a->addFile("res/playlist.txt");
 
     // if you try to set a current context that doesn't exist, a message will
     // print telling you what's happened
@@ -96,11 +143,18 @@ class TestAudioPlayer : public GLWin {
     a->addFile("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
     a->setVolume(50);
 
-    // because of how commands are given to mpv, there's a limit on how long the
-    // number for the volume is allowed to be (makes sure a sprintf doesn't
-    // write to memory it doesn't have access to). this limit is
+    // because of how commands are given to mpv, there's a limit on how long
+    // the number for the volume is allowed to be (makes sure a sprintf
+    // doesn't write to memory it doesn't have access to). this limit is
     // between 0 and 999
     a->setVolume(11111);
+
+    a->newContext("skyhill");
+    a->setCurrentContext("skyhill");
+    a->addFile(
+        "https://www.youtube.com/"
+        "playlist?list=PLcKMZE_1oNKHZ5tN8FPiQNkLVTa-LrMpr");
+    a->setVolume(50);
   }
 };
 
