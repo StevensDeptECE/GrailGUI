@@ -28,6 +28,7 @@ set(grail-opengl
 		SparklineWidget.cc
 		StyledMultiShape2D.cc
 		Tab.cc
+		util/TextureArray.cc
 )
 
 list(TRANSFORM grail-opengl PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)

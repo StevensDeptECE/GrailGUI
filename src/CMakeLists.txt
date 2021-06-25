@@ -3,6 +3,7 @@ add_subdirectory(data)
 add_subdirectory(opengl)
 add_subdirectory(util)
 add_subdirectory(xdl)
+add_subdirectory(audio)
 
 add_library(grail
 						${PROJECT_SOURCE_DIR}/include/glad/glad.c
@@ -10,6 +11,7 @@ add_library(grail
 						${grail-data}
 						${grail-opengl}
 						${grail-util}
+						${grail-audio}
 						${grail-xdl})
 
 
@@ -21,6 +23,9 @@ endif()
 target_include_directories(grail INTERFACE ${GLFW_INCLUDE_DIRS})
 target_link_libraries(grail PRIVATE glfw)
 
+# GLM
+target_include_directories(grail INTERFACE ${GLM_INCLUDE_DIRS})
+
 # opengl
 target_include_directories(grail PRIVATE ${OPENGL_INCLUDE_DIRS})
 
@@ -30,3 +35,5 @@ target_include_directories(grail PRIVATE ${FREETYPE_INCLUDE_DIRS})
 
 #DL
 target_link_libraries(grail INTERFACE ${CMAKE_DL_LIBS})
+
+target_link_libraries(grail INTERFACE mpv)
