@@ -1,6 +1,6 @@
 set(grail-data 
-		BlockMapLoader.cc
-		BlockMapLoaderConverters.cc 
+    BlockMapLoader.cc
+    BlockMapLoaderConverters.cc 
 )
 
 list(TRANSFORM grail-data PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)

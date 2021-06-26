@@ -1,5 +1,5 @@
 set(grail-audio
-		AudioPlayer.cc
+    AudioPlayer.cc
 )
 
 list(TRANSFORM grail-audio PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
