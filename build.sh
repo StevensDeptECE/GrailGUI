@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
 
-if [[ $(pwd | awk -F"/" '{print $NF}') == "test" ]]; then
+if [[ -f "Grail_Workspace.code-workspace" ]]; then
+	echo "\"Grail_Workspace.code-workspace\" found, most likely in Grail's root"
+elif [[ $(pwd | awk -F"/" '{print $NF}') == "test" ]]; then
+	echo "Current directory is a test directory, assuming Grail's test"
 	cd ..
-elif [[ -z "$GRAIL" ]]; then # Currently does not find GRAIL
-	cd "$GRAIL" || exit 1
+elif [[ -z "${GRAIL}" ]]; then # Currently does not find GRAIL
+	echo "GRAIL environment variable set"
+	cd "${GRAIL}" || exit 1
+	pwd
 fi
 
 if [ -d "build" ]; then
+	echo "Build directory found"
 	cd "build" || exit 1
 else
 	if [[ -f "CMakeLists.txt" ]]; then
@@ -26,4 +32,9 @@ if [ -f "build.ninja" ]; then
 else
 	cmake -GNinja ..
 	ninja
+fi
+
+cd .. || exit 1
+if [[ ! -L "compile_commands.json" ]]; then
+	ln -s build/compile_commands.json compile_commands.json
 fi
