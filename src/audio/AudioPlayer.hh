@@ -4,7 +4,6 @@
 
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 #include "util/Ex.hh"
 
@@ -13,7 +12,6 @@ class AudioPlayer {
   std::unordered_map<std::string, mpv_handle *> contexts;
   mpv_handle *currentCtx;
   bool isPlaying;
-  bool isLoaded();
 
   inline void checkError(int status) {
     if (status < 0) {
@@ -37,8 +35,13 @@ class AudioPlayer {
   void playlistNext();
   void playlistPrev();
   void playlistPlayIndex(int index);
+  void playlistClear();
+  void playlistRemoveIndex(int index);
+  void playlistMove(int index1, int index2);
+  void playlistShuffle();
   void togglePause();
   void setPlaying();
   void setPaused();
   void printCurrentTime();
+  // void playlistPrintEntries();
 };

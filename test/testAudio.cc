@@ -89,12 +89,10 @@ class TestAudioPlayer : public GLWin {
     });
 
     helper(7, 7, "go to prev track in playlist", [](AudioPlayer *a) {
-
       a->setCurrentContext("skyhill");
       // go back a track in playlist
       a->playlistPrev();
     });
-
   }
 
   void init() {
@@ -107,7 +105,8 @@ class TestAudioPlayer : public GLWin {
 
     // The initial context created with an AudioPlayer is called default
     // Before performing operations on an mpv context, you have to set the
-    // current context of the AudioPlayer object
+    // current context of the AudioPlayer object. Subsequent commands apply to
+    // whatever context was set
     a->setCurrentContext("default");
     a->setVolume(50);
     a->addFile("res/sample1mb.ogg");
@@ -141,8 +140,7 @@ class TestAudioPlayer : public GLWin {
     a->newContext("skyhill");
     a->setCurrentContext("skyhill");
     a->addFile(
-        "https://www.youtube.com/"
-        "playlist?list=PLcKMZE_1oNKHZ5tN8FPiQNkLVTa-LrMpr");
+        "https://www.youtube.com/playlist?list=PLcKMZE_1oNKHZ5tN8FPiQNkLVTa-LrMpr");
     a->setVolume(50);
   }
 };
