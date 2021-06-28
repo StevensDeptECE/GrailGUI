@@ -1,7 +1,5 @@
 #include "opengl/AxisWidget.hh"
 
-#include <cmath>
-
 using namespace std;
 
 AxisWidget::AxisWidget(StyledMultiShape2D *m, MultiText *t, float x, float y,

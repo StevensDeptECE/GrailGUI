@@ -1,10 +1,3 @@
-#define _USE_MATH_DEFINES
-
-#include <cmath>
-#include <string>
-#include <vector>
-
-#include "opengl/AxisWidget.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/LineGraphWidget.hh"
 
@@ -14,17 +7,6 @@ using namespace grail;
 class TestLineGraph : public GLWin {
  public:
   TestLineGraph() : GLWin(0x000000, 0xCCCCCC, "TestLineGraph") {}
-
-#if 0
-  void testAngleText(StyledMultiShape2D *gui, MultiText *guiText, Canvas *c,
-                     const Style *s) {
-    const char thing[] = "hello world";
-    guiText->add(0, 50, s->f, thing, strlen(thing));
-    AngledMultiText *am =
-        c->addLayer(new AngledMultiText(c, s, M_PI / 4, 20, 500));
-    am->add(0, 0, s->f, thing, strlen(thing));
-  }
-#endif
 
   void init() {
     const Style *lineGraphTitleStyle =
@@ -64,7 +46,7 @@ class TestLineGraph : public GLWin {
 
     // x axis stuff
     lgw.setXPoints(times);
-    lgw.createXAxis(AxisType::linear);
+    lgw.createXAxis(GraphWidget::AxisType::linear);
 
     // set x axis parameters
     lgw.xAxis->setBounds(times.front(), times.back());
@@ -78,7 +60,7 @@ class TestLineGraph : public GLWin {
     lgw.xAxis->setTickFormat(3, 1);
 
     // y axis stuff
-    lgw.createYAxis(AxisType::logar);
+    lgw.createYAxis(GraphWidget::AxisType::logar);
     // lgw.setYPoints(values);
     lgw.setYPoints(logValues);
 

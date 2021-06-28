@@ -1,11 +1,6 @@
 #pragma once
 #include "opengl/GrailGUI.hh"
 
-/*
-  Represent a compound object to be drawn using StyledMultiShape2D and MultiText
-
-*/
-
 class StyledMultiShape2D;
 class MultiText;
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "opengl/MultiText.hh"
-#include "opengl/StyledMultiShape2D.hh"
 #include "opengl/Widget2D.hh"
 // potential includes for error handling in the future
 // #include "util/Ex.hh"

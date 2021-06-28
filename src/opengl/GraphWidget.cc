@@ -1,9 +1,13 @@
 #include "opengl/GraphWidget.hh"
-#include "opengl/StyledMultiShape2D.hh"
-#include "opengl/MultiText.hh"
 
 using namespace std;
 
-void GraphWidget::init() {
-  //TODO: draw
+void GraphWidget::setGraphTitle(std::string text) { graphTitle = text; }
+
+void GraphWidget::setXAxisTextStyle(const Style *xAxisTextStyle) {
+  this->xAxisTextStyle = xAxisTextStyle;
+}
+
+void GraphWidget::setYAxisTextStyle(const Style *yAxisTextStyle) {
+  this->yAxisTextStyle = yAxisTextStyle;
 }
