@@ -7,8 +7,19 @@ using namespace grail;
 class TestAudioPlayer : public GLWin {
  private:
   double startTime;
+  double time;
   AudioPlayer *a;
   int step;
+
+  inline void helper(double elapsedTime, int step, string printOut,
+                     void (*fnptr)(AudioPlayer *)) {
+    if (time > startTime + elapsedTime && this->step == step) {
+      printf("%s\n", printOut.c_str());
+      (*fnptr)(a);
+      startTime = time;
+      this->step++;
+    }
+  }
 
  public:
   TestAudioPlayer()
@@ -23,20 +34,16 @@ class TestAudioPlayer : public GLWin {
   // using the built in timing of GLWin and if statements allows for control
   // flow of the player with respect to time the program has been running
   void update() {
-    double time = getTime();
+    time = getTime();
 
-    if (time > startTime + 1 && step == 0) {
-      printf("simultaneous playback\n");
+    helper(1, 0, "simultaneous playback", [](AudioPlayer *a) {
       a->setCurrentContext("default");
       a->setPlaying();
       a->setCurrentContext("new context");
       a->setPlaying();
-      startTime = time;
-      step++;
-    }
+    });
 
-    if (time > startTime + 10 && step == 1) {
-      printf("play from youtube\n");
+    helper(10, 1, "play from youtube", [](AudioPlayer *a) {
       a->setCurrentContext("default");
       a->setPaused();
       a->setCurrentContext("new context");
@@ -44,69 +51,50 @@ class TestAudioPlayer : public GLWin {
 
       a->setCurrentContext("from youtube");
       a->setPlaying();
-      startTime = time;
-      step++;
-    }
+    });
 
-    if (time > startTime + 5 && step == 2) {
-      printf("skip to 1:52 in song\n");
+    helper(5, 2, "skip to 1:52 in song", [](AudioPlayer *a) {
       a->setCurrentContext("from youtube");
       a->seekLocation("1:52", "absolute");
       a->printCurrentTime();
 
       // this should fail, chicken not valid lmao
       a->seekLocation("66", "chicken");
+    });
 
-      startTime = time;
-      step++;
-    }
-
-    if (time > startTime + 7 && step == 3) {
-      printf("revert skip\n");
+    helper(7, 3, "revert skip", [](AudioPlayer *a) {
       a->setCurrentContext("from youtube");
       a->revertSeek();
       a->printCurrentTime();
-      startTime = time;
-      step++;
-    }
+    });
 
-    if (time > startTime + 5 && step == 4) {
-      printf("try to play a playlist from youtube\n");
+    helper(5, 4, "try to play a playlist from youtube", [](AudioPlayer *a) {
       a->setCurrentContext("from youtube");
       a->setPaused();
 
       a->setCurrentContext("skyhill");
       a->setPlaying();
-      startTime = time;
-      step++;
-    }
+    });
 
-    if (time > startTime + 10 && step == 5) {
-      printf("next song in playlist\n");
+    helper(10, 5, "next song in playlist", [](AudioPlayer *a) {
       a->setCurrentContext("skyhill");
       // skip to next song in playlist
       a->playlistNext();
-      startTime = time;
-      step++;
-    }
+    });
 
-    if (time > startTime + 10 && step == 6) {
-      printf("go to specific index in playlist\n");
+    helper(10, 6, "go to specific index in playlist", [](AudioPlayer *a) {
       a->setCurrentContext("skyhill");
       // jump to a specific index in playlist
       a->playlistPlayIndex(6);
-      startTime = time;
-      step++;
-    }
+    });
 
-    if (time > startTime + 7 && step == 7) {
-      printf("go to prev track in playlist\n");
+    helper(7, 7, "go to prev track in playlist", [](AudioPlayer *a) {
+
       a->setCurrentContext("skyhill");
       // go back a track in playlist
       a->playlistPrev();
-      startTime = time;
-      step++;
-    }
+    });
+
   }
 
   void init() {
@@ -149,6 +137,7 @@ class TestAudioPlayer : public GLWin {
     // between 0 and 999
     a->setVolume(11111);
 
+    // TODO: document this
     a->newContext("skyhill");
     a->setCurrentContext("skyhill");
     a->addFile(
