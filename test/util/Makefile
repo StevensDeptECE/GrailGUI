@@ -8,7 +8,10 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all: $(BIN)/testHashMap2 $(BIN)/testDate
+all: $(BIN)/DateDemo #$(BIN)/testHashMap2 $(BIN)/testDate
+
+$(BIN)/DateDemo: DateDemo.cc $(util)/HashMap.hh $(util)/JulianDate.cc
+	$(CXX) $< $(util)/JulianDate.cc -o $@ $(LIBS)
 
 $(BIN)/testHashMap: testHashMap.cc $(util)/HashMap.hh
 	$(CXX) $< -o $@ $(LIBS)
