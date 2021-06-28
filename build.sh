@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 if [[ -f "Grail_Workspace.code-workspace" ]]; then
 	echo "\"Grail_Workspace.code-workspace\" found, most likely in Grail's root"

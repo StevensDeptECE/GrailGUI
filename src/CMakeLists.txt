@@ -33,7 +33,15 @@ target_include_directories(grail PRIVATE ${OPENGL_INCLUDE_DIRS})
 target_link_libraries(grail INTERFACE ${FREETYPE_LIBRARIES})
 target_include_directories(grail PRIVATE ${FREETYPE_INCLUDE_DIRS})
 
-#DL
+# DL
 target_link_libraries(grail INTERFACE ${CMAKE_DL_LIBS})
 
-target_link_libraries(grail INTERFACE mpv)
+# MPV
+target_link_libraries(grail INTERFACE PkgConfig::MPV)
+
+# Shapelib
+target_link_libraries(grail INTERFACE shp)
+
+if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	target_link_libraries(grail INTERFACE wsock32 ws2_32)
+endif()

@@ -30,7 +30,7 @@ check_ipo_supported(RESULT supported OUTPUT error)
 
 if( supported )
     message(STATUS "IPO / LTO enabled")
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+    set(TARGET grail PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 else()
     message(STATUS "IPO / LTO not supported: <${error}>")
 endif()
@@ -38,12 +38,19 @@ endif()
 include(FetchContent)
 include(GrailFunctions)
 
+find_package(PkgConfig REQUIRED) 
+
 # opengl
 find_package(OpenGL REQUIRED)
 
 # GLFW
 find_package(glfw3 REQUIRED)
-message(STATUS "Found GLFW3 in ${GLFW_INCLUDE_DIRS}")
+
+# Freetype
+find_package(Freetype REQUIRED)
+
+# MPV
+pkg_check_modules(MPV REQUIRED IMPORTED_TARGET mpv)
 
 # GLM
 FetchContent_Declare(
@@ -58,19 +65,25 @@ if(NOT glm_POPULATED)
     FetchContent_Populate(glm)
 endif()
 
+# Shapelib
+# Output is not shown, so errors may occur without notice
+option(FETCHCONTENT_QUIET "Enables QUIET option for all content population" ON)
+FetchContent_Declare(
+    shapelib
+    GIT_REPOSITORY https://github.com/OSGeo/shapelib.git
+    #GIT_TAG       The tags have not been updated since 2019, so no tag
+    SOURCE_DIR     ${PROJECT_SOURCE_DIR}/external/shapelib
+)
+FetchContent_MakeAvailable(shapelib)
 
-# Freetype
-find_package(Freetype REQUIRED)
 
 add_subdirectory(src)
 
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/external/glm)
+target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/external)
 
-#if(CMAKE_SYSTEM MATCHES "Linux")
-#	target_link_libraries()
-#endif()
 
 add_subdirectory(test)
 

@@ -3,6 +3,7 @@ set(grail-util
     datatype.cc 
     HashMap.cc
     Prefs.cc
+    Timers.cc
 )
 
 list(TRANSFORM grail-util PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
