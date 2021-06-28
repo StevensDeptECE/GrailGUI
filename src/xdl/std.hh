@@ -81,6 +81,8 @@ class XDLType {
   XDLType(DataType t) : nameOffset(computeNameOffset(t)) {}
   virtual void write(Buffer& b) const = 0;
   virtual void writeMeta(Buffer& buf) const;
+  virtual void addData(DynArray<uint8_t>* data) const;
+  virtual void addMeta(DynArray<uint8_t>* meta) const;
   virtual uint32_t size() const = 0;
   static const XDLType* getBuiltinType(DataType dt) {
     return types[uint32_t(dt)];
@@ -138,21 +140,32 @@ class XDLRaw : public XDLType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
-/*
+class XDLBuiltinType : public XDLType {
+ private:
+  DataType t;
 
-*/
+ public:
+  XDLBuiltinType(const std::string& name, const DataType& t)
+      : XDLType(name), t(t) {}
+  uint32_t size() const override;
+  void write(Buffer& buf) const override;
+  void writeMeta(Buffer& buf) const override;
+  DataType getDataType() const override { return t; }
+  void display(Buffer& binaryIn, Buffer& asciiOut) const;
+  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
+  void addData(DynArray<uint8_t>* data) const override;
+  void addMeta(DynArray<uint8_t>* meta) const override;
+};
+
 class CompoundType : public XDLType {
  public:
   CompoundType(const std::string& name) : XDLType(name) {}
   CompoundType() : XDLType() {}
 };
 
-class U8 : public XDLType {
- private:
-  uint8_t val;
-
+class U8 : public XDLBuiltinType {
  public:
-  U8(uint8_t val = 0) : XDLType("U8"), val(val) {}
+  U8() : XDLBuiltinType("U8", DataType::U8) {}
   DataType getDataType() const;
   uint32_t size() const override;
   void write(Buffer& buf) const;
@@ -160,103 +173,19 @@ class U8 : public XDLType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
-class U16 : public XDLType {
- private:
-  uint16_t val;
-
+class U16 : public XDLBuiltinType {
  public:
-  U16(uint16_t val = 0) : XDLType("U16"), val(val) {}
+  U16() : XDLBuiltinType("U16", DataType::U16) {}
   DataType getDataType() const;
   uint32_t size() const override;
   void write(Buffer& buf) const;
-  friend bool operator==(const U16& a, const U16& b) { return a.val == b.val; }
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
-class U24 : public XDLType {
- private:
-  uint32_t val;
-
+class U24 : public XDLBuiltinType {
  public:
-  U24(uint32_t val = 0) : XDLType("U24"), val(val & 0xFFFFFF) {}
-  DataType getDataType() const;
-  uint32_t size() const override;
-  void write(Buffer& buf) const override;
-  friend bool operator==(const U24& a, const U24& b) { return a.val == b.val; }
-  void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
-};
-
-class U32 : public XDLType {
- private:
-  uint32_t val;
-
- public:
-  U32(uint32_t val = 0) : XDLType("U32"), val(val) {}
-  DataType getDataType() const;
-  uint32_t size() const override;
-  void write(Buffer& buf) const override;
-  friend bool operator==(const U32& a, const U32& b) { return a.val == b.val; }
-  void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
-};
-
-class U64 : public XDLType {
- private:
-  uint64_t val;
-
- public:
-  U64(uint64_t val = 0) : XDLType("U64"), val(val) {}
-  DataType getDataType() const;
-  uint32_t size() const override;
-  void write(Buffer& buf) const override;
-  friend bool operator==(const U64& a, const U64& b) { return a.val == b.val; }
-  void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
-};
-
-class U128 : public XDLType {
- private:
-  uint64_t a, b;
-
- public:
-  U128(uint64_t a = 0, uint64_t b = 0) : XDLType("U128"), a(a), b(b) {}
-  DataType getDataType() const override;
-  uint32_t size() const override;
-  void write(Buffer& buf) const override;
-  friend bool operator==(const U128& a, const U128& b) {
-    return a.a == b.a && a.b == b.b;
-  }
-  void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
-};
-
-class U256 : public XDLType {
- private:
-  uint64_t a, b, c, d;
-
- public:
-  U256(uint64_t a, uint64_t b, uint64_t c, uint64_t d)
-      : XDLType("U256"), a(a), b(b), c(c), d(d) {}
-  U256() : XDLType("U256"), a(0), b(0), c(0), d(0) {}
-  DataType getDataType() const;
-  uint32_t size() const override;
-  friend bool operator==(const U256& a, const U256& b) {
-    return a.a == b.a && a.b == b.b;
-  }
-  void write(Buffer& buf) const override;
-  void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
-};
-
-class I8 : public XDLType {
- private:
-  int8_t val;
-
- public:
-  I8(int8_t val) : XDLType("I8"), val(val) {}
-  I8() : XDLType("I8"), val(0) {}
+  U24() : XDLBuiltinType("U24", DataType::U24) {}
   DataType getDataType() const;
   uint32_t size() const override;
   void write(Buffer& buf) const override;
@@ -264,13 +193,9 @@ class I8 : public XDLType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
-class I16 : public XDLType {
- private:
-  int16_t val;
-
+class U32 : public XDLBuiltinType {
  public:
-  I16(int16_t val) : XDLType("I16"), val(val) {}
-  I16() : XDLType("I16"), val(0) {}
+  U32() : XDLBuiltinType("U32", DataType::U32) {}
   DataType getDataType() const;
   uint32_t size() const override;
   void write(Buffer& buf) const override;
@@ -278,13 +203,9 @@ class I16 : public XDLType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
-class I24 : public XDLType {
- private:
-  int32_t val;
-
+class U64 : public XDLBuiltinType {
  public:
-  I24(int32_t val) : XDLType("I24"), val(val) {}
-  I24() : XDLType("I24"), val(0) {}
+  U64() : XDLBuiltinType("U64", DataType::U64) {}
   DataType getDataType() const;
   uint32_t size() const override;
   void write(Buffer& buf) const override;
@@ -292,28 +213,9 @@ class I24 : public XDLType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
-class I32 : public XDLType {
- private:
-  int32_t val;
-
+class U128 : public XDLBuiltinType {
  public:
-  I32(int32_t val) : XDLType("I32"), val(val) {}
-  I32() : XDLType("I32"), val(0) {}
-  DataType getDataType() const;
-  uint32_t size() const override;
-  void write(Buffer& buf) const override;
-  ;
-  void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
-};
-
-class I64 : public XDLType {
- private:
-  int8_t val;
-
- public:
-  I64(int64_t val) : XDLType("I64"), val(val) {}
-  I64() : XDLType("I64"), val(0) {}
+  U128() : XDLBuiltinType("U128", DataType::U128) {}
   DataType getDataType() const override;
   uint32_t size() const override;
   void write(Buffer& buf) const override;
@@ -321,77 +223,9 @@ class I64 : public XDLType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
-class I128 : public XDLType {
- private:
-  int64_t a;
-  uint64_t b;
-
+class U256 : public XDLBuiltinType {
  public:
-  I128(int64_t a, uint64_t b) : XDLType("I128"), a(a), b(b) {}
-  I128(int64_t b)
-      : XDLType("U128"), a(b < 0 ? 0xFFFFFFFFFFFFFFFFLL : 0), b(b) {}
-  I128() : XDLType("U128"), a(0), b(0) {}
-  DataType getDataType() const;
-  uint32_t size() const override;
-  friend bool operator==(const I128& a, const I128& b) {
-    return a.a == b.a && a.b == b.b;
-  }
-  void write(Buffer& buf) const override;
-  void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
-};
-
-class I256 : public XDLType {
- private:
-  int64_t a;
-  uint64_t b, c, d;
-
- public:
-  I256(int64_t a, uint64_t b, uint64_t c, uint64_t d)
-      : XDLType("I256"), a(a), b(b), c(c), d(d) {}
-  I256() : XDLType("I256"), a(0), b(0), c(0), d(0) {}
-  DataType getDataType() const override;
-  uint32_t size() const override;
-  friend bool operator==(const I256& a, const I256& b) {
-    return a.a == b.a && a.b == b.b;
-  }
-  void write(Buffer& buf) const override;
-  void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
-};
-
-class Bool : public XDLType {
- private:
-  bool val;
-
- public:
-  Bool(bool val = false) : val(val), XDLType("BOOL") {}
-  DataType getDataType() const override;
-  uint32_t size() const override;
-  void write(Buffer& buf) const override;
-  void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
-};
-
-class F32 : public XDLType {
- private:
-  float val;
-
- public:
-  F32(float val = 0) : XDLType("F32"), val(val) {}
-  DataType getDataType() const override;
-  uint32_t size() const override;
-  void write(Buffer& buf) const override;
-  void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
-};
-
-class F64 : public XDLType {
- private:
-  double val;
-
- public:
-  F64(double val = 0) : XDLType("F64"), val(val) {}
+  U256() : XDLBuiltinType("U256", DataType::U256) {}
   DataType getDataType() const;
   uint32_t size() const override;
   void write(Buffer& buf) const override;
@@ -399,14 +233,109 @@ class F64 : public XDLType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
-class Date : public XDLType {
- private:
-  int32_t val;
-  Date(int32_t val) : XDLType("Date"), val(val) {}
-
+class I8 : public XDLBuiltinType {
  public:
-  Date(int32_t year, uint8_t month, uint8_t day);
-  Date() : XDLType("Date"), val(0) {}
+  I8() : XDLBuiltinType("I8", DataType::I8) {}
+  DataType getDataType() const;
+  uint32_t size() const override;
+  void write(Buffer& buf) const override;
+  void display(Buffer& binaryIn, Buffer& asciiOut) const;
+  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
+};
+
+class I16 : public XDLBuiltinType {
+ public:
+  I16() : XDLBuiltinType("I16", DataType::I16) {}
+  DataType getDataType() const;
+  uint32_t size() const override;
+  void write(Buffer& buf) const override;
+  void display(Buffer& binaryIn, Buffer& asciiOut) const;
+  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
+};
+
+class I24 : public XDLBuiltinType {
+ public:
+  I24() : XDLBuiltinType("I24", DataType::I24) {}
+  DataType getDataType() const;
+  uint32_t size() const override;
+  void write(Buffer& buf) const override;
+  void display(Buffer& binaryIn, Buffer& asciiOut) const;
+  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
+};
+
+class I32 : public XDLBuiltinType {
+ public:
+  I32() : XDLBuiltinType("I32", DataType::I32) {}
+  DataType getDataType() const;
+  uint32_t size() const override;
+  void write(Buffer& buf) const override;
+  void display(Buffer& binaryIn, Buffer& asciiOut) const;
+  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
+};
+
+class I64 : public XDLBuiltinType {
+ public:
+  I64() : XDLBuiltinType("I64", DataType::I64) {}
+  DataType getDataType() const override;
+  uint32_t size() const override;
+  void write(Buffer& buf) const override;
+  void display(Buffer& binaryIn, Buffer& asciiOut) const;
+  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
+};
+
+class I128 : public XDLBuiltinType {
+ public:
+  I128() : XDLBuiltinType("U128", DataType::I128) {}
+  DataType getDataType() const;
+  uint32_t size() const override;
+  void write(Buffer& buf) const override;
+  void display(Buffer& binaryIn, Buffer& asciiOut) const;
+  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
+};
+
+class I256 : public XDLBuiltinType {
+ public:
+  I256() : XDLBuiltinType("I256", DataType::I256) {}
+  DataType getDataType() const override;
+  uint32_t size() const override;
+  void write(Buffer& buf) const override;
+  void display(Buffer& binaryIn, Buffer& asciiOut) const;
+  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
+};
+
+class Bool : public XDLBuiltinType {
+ public:
+  Bool() : XDLBuiltinType("BOOL", DataType::BOOL) {}
+  DataType getDataType() const override;
+  uint32_t size() const override;
+  void write(Buffer& buf) const override;
+  void display(Buffer& binaryIn, Buffer& asciiOut) const;
+  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
+};
+
+class F32 : public XDLBuiltinType {
+ public:
+  F32() : XDLBuiltinType("F32", DataType::F32) {}
+  DataType getDataType() const override;
+  uint32_t size() const override;
+  void write(Buffer& buf) const override;
+  void display(Buffer& binaryIn, Buffer& asciiOut) const;
+  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
+};
+
+class F64 : public XDLBuiltinType {
+ public:
+  F64() : XDLBuiltinType("F64", DataType::F64) {}
+  DataType getDataType() const;
+  uint32_t size() const override;
+  void write(Buffer& buf) const override;
+  void display(Buffer& binaryIn, Buffer& asciiOut) const;
+  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
+};
+
+class Date : public XDLBuiltinType {
+ public:
+  Date() : XDLBuiltinType("Date", DataType::DATE) {}
   int32_t getYear() const;
   uint32_t getMonth() const;
   uint32_t getDay() const;
@@ -424,15 +353,9 @@ class Date : public XDLType {
   In Util is a JulianDate class that does the real Date arithmetic. That should
   be brought in here.
 */
-class JulianDate : public XDLType {
- private:
-  double val;
-  JulianDate(double val) : XDLType("JulDate"), val(val) {}
-
+class JulianDate : public XDLBuiltinType {
  public:
-  JulianDate() : XDLType("JulDate"), val(0) {}
-  JulianDate(int32_t year, uint8_t month, uint8_t day, uint8_t hour,
-             uint8_t min, uint8_t sec);
+  JulianDate() : XDLBuiltinType("JulDate", DataType::JULDATE) {}
   int32_t getYear() const;
   uint32_t getMonth() const;
   uint32_t getDay() const;
@@ -446,12 +369,9 @@ class JulianDate : public XDLType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
-class Timestamp : public XDLType {
- private:
-  uint64_t val;
-
+class Timestamp : public XDLBuiltinType {
  public:
-  Timestamp(uint64_t v = 0) : XDLType("Timestamp"), val(v) {}
+  Timestamp() : XDLBuiltinType("Timestamp", DataType::TIMESTAMP) {}
   void write(Buffer& b) const override;
   void writeMeta(Buffer& buf) const override;
   uint32_t size() const override;
@@ -460,13 +380,9 @@ class Timestamp : public XDLType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
-class String8 : public XDLType {
- private:
-  std::string val;
-
+class String8 : public XDLBuiltinType {
  public:
-  String8(const std::string& val) : XDLType("STRING8"), val(val) {}
-  String8() : XDLType("STRING8"), val(empty) {}
+  String8() : XDLBuiltinType("STRING8", DataType::STRING8) {}
   DataType getDataType() const override;
   uint32_t size() const override;
   void write(Buffer& buf) const override;
@@ -474,13 +390,9 @@ class String8 : public XDLType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
-class String16 : public XDLType {
- private:
-  std::string val;
-
+class String16 : public XDLBuiltinType {
  public:
-  String16(const std::string& val) : XDLType("STRING16"), val(val) {}
-  String16() : XDLType("STRING16"), val(empty) {}
+  String16() : XDLBuiltinType("STRING16", DataType::STRING16) {}
   DataType getDataType() const override;
   uint32_t size() const override;
   void write(Buffer& buf) const override;
@@ -488,25 +400,18 @@ class String16 : public XDLType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
-class String32 : public XDLType {
- private:
-  std::string val;
-
+class String32 : public XDLBuiltinType {
  public:
-  String32(string val) : XDLType("STRING32"), val(val) {}
+  String32() : XDLBuiltinType("STRING32", DataType::STRING32) {}
   DataType getDataType() const override;
   uint32_t size() const override;
   void write(Buffer& buf) const override;
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
-
-class String64 : public XDLType {
- private:
-  std::string val;
-
+class String64 : public XDLBuiltinType {
  public:
-  String64(string val) : XDLType("STRING64"), val(val) {}
+  String64() : XDLBuiltinType("STRING64", DataType::STRING64) {}
   DataType getDataType() const override;
   uint32_t size() const override;
   void write(Buffer& buf) const override;
@@ -514,6 +419,8 @@ class String64 : public XDLType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+// Removing example types
+#if 0
 class UserId : public U64 {
  private:
   std::string typeName;
@@ -601,6 +508,7 @@ class User : public XDLType {
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
+#endif
 
 /*
   GenericList is the metadata for a list of unknown type coming in.
@@ -623,6 +531,8 @@ class GenericList : public CompoundType {
   void writeMeta(Buffer& buf) const override;
   void display(Buffer& binaryIn, Buffer& asciiOut) const override;
   XDLIterator* createIterator() override;
+  void addData(DynArray<uint8_t>* data) const override;
+  void addMeta(DynArray<uint8_t>* meta) const override;
 };
 
 template <typename T>
@@ -662,21 +572,6 @@ class List : public XDLType {
   }
   XDLIterator* createIterator() override;
   void display(Buffer& binaryIn, Buffer& asciiOut) const override;
-};
-
-class BuiltinType : public XDLType {
- private:
-  DataType t;
-
- public:
-  BuiltinType(const std::string& name, const DataType& t)
-      : XDLType(name), t(t) {}
-  uint32_t size() const override;
-  void write(Buffer& buf) const override;
-  void writeMeta(Buffer& buf) const override;
-  DataType getDataType() const override { return t; }
-  void display(Buffer& binaryIn, Buffer& asciiOut) const;
-  void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
 class TypeDef : public XDLType {
@@ -759,6 +654,8 @@ class Struct : public CompoundType {
   DataType getDataType() const { return DataType::STRUCT8; }
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
+  void addData(DynArray<uint8_t>* data);
+  void addMeta(DynArray<uint8_t>* meta);
 };
 
 class Regex : public XDLType {
@@ -785,6 +682,7 @@ class UnImpl : public XDLType {
   uint32_t size() const override;
   void write(Buffer& buf) const override;
   void writeMeta(Buffer& buf) const override;
+  DataType getDataType() const override;
 };
 
 class ArrayOfBytes : public XDLType {
@@ -816,3 +714,42 @@ class ArrayOfBytes : public XDLType {
   DynArray<uint8_t>* getMeta() { return &metadata; }
   DynArray<uint8_t>* getData() { return &data; }
 };
+
+template <typename T>
+DataType typeToDataType(T arg) {
+  return DataType::UNIMPL;
+}
+
+DataType typeToDataType(uint8_t) { return DataType::U8; }
+DataType typeToDataType(uint16_t) { return DataType::U16; }
+DataType typeToDataType(uint32_t) { return DataType::U32; }
+DataType typeToDataType(uint64_t) { return DataType::U64; }
+DataType typeToDataType(int8_t) { return DataType::I8; }
+DataType typeToDataType(int16_t) { return DataType::I16; }
+DataType typeToDataType(int32_t) { return DataType::I32; }
+DataType typeToDataType(int64_t) { return DataType::I64; }
+DataType typeToDataType(float) { return DataType::F32; }
+DataType typeToDataType(double) { return DataType::F64; }
+DataType typeToDataType(bool) { return DataType::BOOL; }
+DataType typeToDataType(const std::string& str) {
+  int length = str.length();
+  if (length <= UINT8_MAX)
+    return DataType::STRING8;
+  else if (length <= UINT16_MAX)
+    return DataType::STRING16;
+  else if (length <= UINT32_MAX)
+    return DataType::STRING32;
+  else
+    DataType::STRING64;
+}
+DataType typeToDataType(const char* str) {
+  int length = strlen(str);
+  if (length <= UINT8_MAX)
+    return DataType::STRING8;
+  else if (length <= UINT16_MAX)
+    return DataType::STRING16;
+  else if (length <= UINT32_MAX)
+    return DataType::STRING32;
+  else
+    DataType::STRING64;
+}

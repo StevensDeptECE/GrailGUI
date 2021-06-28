@@ -4,12 +4,12 @@
 
 using namespace std;
 
-constexpr uint32_t operator"" _32(const char* s) {
+constexpr uint32_t operator"" _u32(const char* s) {
   cout << s << '\n';
   return atoi(s);
 }
 
-constexpr uint32_t operator"" _32(uint64_t t) { return t; }
+constexpr uint32_t operator"" _u32(uint64_t t) { return t; }
 
 constexpr uint64_t operator"" _su64(const char* s) {
   cout << s << '\n';

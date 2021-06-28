@@ -87,7 +87,8 @@ enum class DataType {
   BLOB32,    // 4 byte length block of binary data (opaque to us)
   BLOB64,    // 8 byte length block of binary data
   BIGINT,
-  ENUM_SIZE
+  ENUM_SIZE,
+  UNIMPL
 };
 
 extern const char* DataTypeNames[];

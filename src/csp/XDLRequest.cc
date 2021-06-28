@@ -8,11 +8,12 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
-#include <xdl/XDLCompiler.hh>
-#include <xdl/std.hh>
 
 #include "util/TypeAlias.hh"
 #include "xdl/SymbolTable.hh"
+#include "xdl/XDLArray.hh"
+#include "xdl/XDLCompiler.hh"
+#include "xdl/std.hh"
 
 using namespace std;
 
@@ -28,24 +29,18 @@ void buildData2(ArrayOfBytes* a, T arg) {
     if (constexpr is_base_of_v<XDLBuiltinType, arg>) {
       a->addMeta(arg->getType());
       a->addData(arg);
-
     } else {
       if (constexpr is_base_of_v<CompoundType, arg>) {
         arg->addMeta(a->getMeta());
-        arg->addData(a->addData());
+        arg->addData(a->getData());
       }
     }
-    // a->addMeta(arg);
-    if (constexpr is_same_v<uint8_t, arg>)
-      a->addMeta(DataType::U8);
-    else if (constexpr is_same_v<uint16_t, arg>)
-      a->addMeta(DataType::U16);
-    else {
-      args.write(out);
-      args.writeMeta(meta);
-    }
+  } else {
+    a->addMeta(typeToDataType(arg));
+    a->addData(arg);
   }
 }
+
 template <typename... Args>
 void buildData(DynArray<XDLType*> a, const Args&... args) {
   ArrayOfBytes* bytes = new ArrayOfBytes();
@@ -58,21 +53,34 @@ void buildData(std::array<uint8_t, size>& data, std::array<uint8_t, size>& meta,
   (out.write(args), out.writeMeta(args), ...);
 }
 #endif
-class Point : XDLType {
+class Point : public CompoundType {
  public:
   double x, y, z;
-  Point(double x, double y, double z) : x(x), y(y), z(z) {}
-  void write(Buffer& out, const Point& p);
-  void addMeta(DynArray<uint8_t>& a);
+  Point(double x, double y, double z)
+      : CompoundType("Point"), x(x), y(y), z(z) {}
+  void write(Buffer& out) const override;
+
+  DataType getDataType() const { return DataType::STRUCT8; }
+  uint32_t size() const { return 12; }
+
+  void addData(ArrayOfBytes* data) const {
+    data->addData(x);
+    data->addData(y);
+    data->addData(z);
+  }
+
+  void addMeta(XDLArray* meta) const {
+    meta->addStruct("Point", 3);
+    meta->addBuiltinMember(DataType::F64, "x");
+    meta->addBuiltinMember(DataType::F64, "y");
+    meta->addBuiltinMember(DataType::F64, "z");
+  }
 };
 
 void write(Buffer& out, const Point& p);
 
 XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
   buildData(xdlData, 2_u32, 12345_u64, Point(1, 2, 3));
-
-  ArrayOfBytes* data = buildData(2_u32, 12345_u64, Point(1, 2, 3));
-  xdlData.add(data);
 
   auto listonums = new List<uint32_t>(100);
   for (int i = 0; i < 100; i++) listonums->add(i);
