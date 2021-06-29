@@ -9,7 +9,7 @@ include ${GRAIL}/proj/settings.mk
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
 all: $(BIN)/SolarSystem $(BIN)/globe \
-	$(BIN)/testBarChart $(BIN)/testLineGraph $(BIN)/testWidgets $(BIN)/testAxis \
+	$(BIN)/testBarChart $(BIN)/testBoxChart #$(BIN)/testLineGraph $(BIN)/testWidgets $(BIN)/testAxis \
 	$(BIN)/testESRIPolygon $(BIN)/ESRIMapDemo $(BIN)/MapDemo \
 	$(BIN)/testDrawBlockMap \
 	$(BIN)/testStyledMultishape	$(BIN)/simpleDemo $(BIN)/testPolyLines \
@@ -109,6 +109,9 @@ $(BIN)/testAxis: testAxis.cc $(LIBGRAIL)
 	$(CXX) $^  -o $@ $(LIBS)
 
 $(BIN)/testBarChart: testBarChart.cc $(LIBGRAIL)
+	$(CXX) $^  -o $@ $(LIBS)
+
+$(BIN)/testBoxChart: testBoxChart.cc $(LIBGRAIL)
 	$(CXX) $^  -o $@ $(LIBS)
 
 $(BIN)/testLineGraph: testLineGraph.cc $(LIBGRAIL)

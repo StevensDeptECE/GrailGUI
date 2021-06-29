@@ -10,6 +10,7 @@ using namespace std;
 void BarChartWidget::setBarWidth(double width) { barWidth = width; }
 
 void BarChartWidget::setBarColor(glm::vec4 &color) { barColor = color; }
+
 void BarChartWidget::setValues(const vector<double> &values) {
   this->values = values;
 }
@@ -65,13 +66,13 @@ void BarChartWidget::createYAxis(AxisType a) {
 
 void BarChartWidget::init() {
   if (values.size() < 1 || names.size() < 1) {
-    cerr << "names and values vectors cannot be zero length";
+    cerr << "names and values vectors cannot be zero length\n";
     throw(Ex1(Errcode::VECTOR_ZERO_LENGTH));
   }
 
   if (values.size() != names.size()) {
-    cerr << "names and values vectors must be the same length";
-    throw(Ex1(Errcode::VECTOR_ZERO_LENGTH));
+    cerr << "names and values vectors must be the same length\n";
+    throw(Ex1(Errcode::VECTOR_MISMATCHED_LENGTHS));
   }
 
   double min = yAxis->getMinBound();
