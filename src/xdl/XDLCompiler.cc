@@ -34,3 +34,11 @@ XDLCompiler::XDLCompiler(const char filename[])
       lineNumber(0) {
   readfile();
 }
+
+XDLCompiler::XDLCompiler()
+    : symbols(this),
+      errorCount(0),
+      warningCount(0),
+      filename(""),
+      lineNumber(0) {
+}

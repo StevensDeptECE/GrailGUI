@@ -1,12 +1,13 @@
 #include "opengl/MultiText.hh"
 
+#include <algorithm>
+
 #include "glad/glad.h"
-#include "opengl/Style.hh"
 #include "opengl/Canvas.hh"
 #include "opengl/GLWin.hh"
-#include "opengl/Shader.hh"
 #include "opengl/GLWinFonts.hh"
-#include <algorithm>
+#include "opengl/Shader.hh"
+#include "opengl/Style.hh"
 
 using namespace std;
 // todo: fix render to pass everything in the text vert to draw it
@@ -17,18 +18,19 @@ using namespace std;
   The size is the amount of text it can hold. It preallocates 24 floats per
   text to hold the coordinates for texturing
 */
-MultiText::MultiText(const Style *style, uint32_t size)
-    : Shape(), style(style) {
+MultiText::MultiText(Canvas* c, const Style* style, uint32_t size)
+    : Shape(c), style(style) {
   // if !once, once = !once was a thing
   vert.reserve(size * 24);
-  const Font *f = style->f;  // FontFace::getFace(1)->getFont(0);
+  const Font* f = style->f;  // FontFace::getFace(1)->getFont(0);
 }
+
+MultiText::MultiText(Canvas* c, const Style* style) : MultiText(c, style, 16) {}
 
 MultiText::~MultiText() {}
 
-
 void MultiText::init() {
-//  cout << "multitext init" <<endl;
+  //  cout << "multitext init" <<endl;
   textureId = style->f->getTexture();
 
   glGenVertexArrays(1, &vao);
@@ -37,12 +39,12 @@ void MultiText::init() {
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vert.capacity(), (void *)0,
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vert.capacity(), (void*)0,
                GL_DYNAMIC_DRAW);
 
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void *)0);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)0);
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4,
-                        (void *)(sizeof(float) * 2));
+                        (void*)(sizeof(float) * 2));
 
   // Unbind
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -56,13 +58,12 @@ static uint32_t pow10(uint32_t v) {
 static uint32_t pow10arr[10] = {
     0, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
 
-void MultiText::addChar(float x, float y, const Font *f, unsigned char c) {
-  const Font::Glyph *glyph = f->getGlyph(c);
+void MultiText::addChar(float x, float y, const Font* f, unsigned char c) {
+  const Font::Glyph* glyph = f->getGlyph(c);
   cout << "Glyph for char " << c << "\n" << *glyph << '\n';
-  float x0 = x + glyph->bearingX,
-        x1 = x0 + glyph->sizeX;
+  float x0 = x + glyph->bearingX, x1 = x0 + glyph->sizeX;
   float y0 = y - glyph->bearingY, y1 = y0 + glyph->sizeY;
-  //cout << "x=" << x << ", y=" << y << '\n';
+  // cout << "x=" << x << ", y=" << y << '\n';
   addPoint(x0, y0, /* fontLeft */ glyph->u0, glyph->v1);
   addPoint(x0, y1, /* fontLeft */ glyph->u0, glyph->v0);
   addPoint(x1, y1, /* fontRight */ glyph->u1, glyph->v0);
@@ -156,12 +157,31 @@ void MultiText::add(float x, float y, const Font* f, double v) {
   add(x, y, f, s, len);
 }
 
-void MultiText::add(float x, float y, const Font* f, const char s[], uint32_t len) {
+void MultiText::add(float x, float y, const Font* f, double v, int fieldWidth,
+                    int precision) {
+  char fmt[25];
+  sprintf(fmt, "%%%d.%dlf", fieldWidth, precision);
+  char s[25];
+  int len = sprintf(s, fmt, v);
+  add(x, y, f, s, len);
+}
+
+void MultiText::addCentered(float x, float y, float w, float h, const Font* f,
+                            const char s[], uint32_t len) {
+  float textWidth = f->getWidth(s, len);
+  float textHeight = f->getHeight();
+  float xSpace = max(w - textWidth, 0.0f) / 2;
+  float ySpace = max(h - textHeight, 0.0f) / 2;
+
+  add(x + xSpace, y + ySpace, f, s, len);
+}
+void MultiText::add(float x, float y, const Font* f, const char s[],
+                    uint32_t len) {
   for (uint32_t i = 0; i < len; i++) {
-    const Font::Glyph *glyph = f->getGlyph(s[i]);
+    const Font::Glyph* glyph = f->getGlyph(s[i]);
     float x0 = x + glyph->bearingX,
           x1 = x0 + glyph->sizeX;  // TODO: Not maxwidth, should be less for
-                                  // proportional fonts?
+                                   // proportional fonts?
     float y0 = y - glyph->bearingY, y1 = y0 + glyph->sizeY;
     addPoint(x0, y0, /* fontLeft */ glyph->u0, glyph->v1);
     addPoint(x0, y1, /* fontLeft */ glyph->u0, glyph->v0);
@@ -175,34 +195,42 @@ void MultiText::add(float x, float y, const Font* f, const char s[], uint32_t le
 }
 
 /*
-  Draw a string of fixed length with the default font in the style of the MultiText
+  Draw a string of fixed length with the default font in the style of the
+  MultiText
 */
 void MultiText::add(float x, float y, const char s[], uint32_t len) {
   add(x, y, style->f, s, len);
 }
 
 // find the index of the first character over the margin with this font
-uint32_t MultiText::findFirstOverMargin(float x, const Font* f, const char s[], uint32_t len, float rightMargin) {
+uint32_t MultiText::findFirstOverMargin(float x, const Font* f, const char s[],
+                                        uint32_t len, float rightMargin) {
   uint32_t i = 0;
   while (true) {
     const Font::Glyph* g = f->getGlyph(s[i]);
     if (x + g->advance < rightMargin) {
-      x += g->advance; i++;
+      x += g->advance;
+      i++;
     } else {
-      if (x + g->bearingX + g->sizeX > rightMargin)
-        return i;
-      return i+1;
+      if (x + g->bearingX + g->sizeX > rightMargin) return i;
+      return i + 1;
     }
   }
 }
 
-void MultiText::checkAdd(float& x, float& y, const Font* f, const unsigned char c, float leftMargin, float rowSize, float rightMargin) {
+void MultiText::checkAdd(float& x, float& y, const Font* f,
+                         const unsigned char c, float leftMargin, float rowSize,
+                         float rightMargin) {
   const Font::Glyph* g = f->getGlyph(c);
   if (x + g->bearingX + g->sizeX > rightMargin) {
-    x = leftMargin; // really left margin for now, but perhaps later...
+    x = leftMargin;  // really left margin for now, but perhaps later...
     y += rowSize;
   }
   add(x, y, f, c);
+}
+
+const Style* MultiText::getStyle() {
+  return style;
 }
 
 void MultiText::update() {}
@@ -212,19 +240,24 @@ void MultiText::render() {
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
 
-  Shader *s = Shader::useShader(GLWin::TEXT_SHADER);
+  Shader* s = Shader::useShader(GLWin::TEXT_SHADER);
   s->setVec4("textColor", style->getFgColor());
   s->setMat4("projection", *(parentCanvas->getProjection()));
   s->setInt("ourTexture", 0);
 
+  // glPushAttrib(GL_CURRENT_BIT);
+  // glColor3f(0, 0, 255);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, textureId);
 
+  // glPopAttrib();
   // Update data
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  const int windowLen = 128*128*24; // preallocate a
-      46 * (2 + 3 + 6 + 4) * 24;  // TODO: This was too small. We need a better policy?
-  glBufferSubData(GL_ARRAY_BUFFER, 0, vert.size() * sizeof(float), &vert[0]); //TODO: Right now we draw the entire string!
+  const int windowLen = 128 * 128 * 24;  // preallocate a
+  46 * (2 + 3 + 6 + 4) *
+      24;  // TODO: This was too small. We need a better policy?
+  glBufferSubData(GL_ARRAY_BUFFER, 0, vert.size() * sizeof(float),
+                  &vert[0]);  // TODO: Right now we draw the entire string!
   glDrawArrays(GL_TRIANGLES, 0, vert.size());
 
   glDisableVertexAttribArray(1);

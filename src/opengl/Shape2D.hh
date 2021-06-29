@@ -25,7 +25,8 @@ protected:
 public:
   //Shape2D(float x, float y) : Shape2D(x,y,nullptr,nullptr){}
   //Shape2D(float x, float y, Transformation* transform) : Shape2D(x,y,nullptr,transform){}
-  Shape2D(float x, float y,Style* style, Transformation* transform = new Transformation()) : x(x),y(y),style(style),transform(transform)
+  Shape2D(Canvas* c, float x, float y,Style* style, Transformation* transform = new Transformation()) : 
+    Shape(c), x(x),y(y),style(style),transform(transform)
   {}
 
   void addPoint(float x, float y){

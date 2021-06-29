@@ -56,12 +56,12 @@ class MultiShape3D : public MultiShape {
   uint32_t getPointIndex() { return vertices.size() / elemPerVert; }
 
  public:
-  MultiShape3D(Camera* c, const std::vector<const char*>& textureFiles,
+  MultiShape3D(Canvas* canv, Camera* c, const std::vector<const char*>& textureFiles,
                Transformation* t, 
                uint32_t elemPerVert = 3, uint32_t vertCount = 1024,
                uint32_t solidIndCount = 1024, uint32_t lineIndCount = 1024,
                uint32_t pointIndCount = 1024, uint32_t colorIndCount = 1024)
-      : MultiShape(vertCount, solidIndCount, lineIndCount, pointIndCount,
+      : MultiShape(canv, vertCount, solidIndCount, lineIndCount, pointIndCount,
                    colorIndCount),
         camera(c),
         transform(t),
@@ -69,12 +69,12 @@ class MultiShape3D : public MultiShape {
         elemPerVert(elemPerVert) {
     textureIndices.reserve(textureFiles.size());
   }
-  MultiShape3D(Camera* c, const char textureFile[],
+  MultiShape3D(Canvas* canv, Camera* c, const char textureFile[],
                Transformation* t,
                uint32_t elemPerVert = 3, uint32_t vertCount = 1024,
                uint32_t solidIndCount = 1024, uint32_t lineIndCount = 1024,
                uint32_t pointIndCount = 1024, uint32_t colorIndCount = 1024)
-      : MultiShape3D(c, std::vector<const char*>({textureFile}), t,
+      : MultiShape3D(canv, c, std::vector<const char*>({textureFile}), t,
        elemPerVert, vertCount,
        solidIndCount, lineIndCount, pointIndCount, colorIndCount) {}
 

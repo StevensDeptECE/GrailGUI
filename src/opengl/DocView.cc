@@ -14,10 +14,10 @@
 using namespace std;
 using namespace grail;
 
-DocView::DocView(const Style* style, Canvas* const c, const Document* doc)
-    : style(style), doc(doc), pageNum(0) {
-  m = new StyledMultiShape2D(style, 16, 16, 16, 16);
-  t = new MultiText(style, 128 * 128);
+DocView::DocView(Canvas* const c, const Style* style, const Document* doc)
+    : Shape(c), style(style), doc(doc), pageNum(0) {
+  m = new StyledMultiShape2D(c, style, 16, 16, 16, 16);
+  t = new MultiText(c, style, 128 * 128);
   c->addLayer(m);  // add the components to the Canvas
   c->addLayer(t);
   const char faceName[] = "TIMES";
@@ -64,7 +64,7 @@ void DocView::update() {
   uint32_t start = p->getLine(0);
   uint32_t next = p->getLine(1);
   for (uint32_t i = 1; i < p->size(); i++) {
-    t->add(x, y, f, (const char*)(text+start), next-start+1);
+    t->add(x, y, f, (const char*)(text+start), next-start);
 #if 0
     for (uint32_t j = start; j < next; j++) {
       if (text[j] == ' ') {

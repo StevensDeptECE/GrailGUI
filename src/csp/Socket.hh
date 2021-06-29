@@ -20,6 +20,10 @@
 //#include "csp/Request.hh"
 #include "util/Buffer.hh"
 
+#ifdef _WIN32
+#include <winsock2.h>
+#endif
+
 using namespace std;
 
 class Request; // forward reference, all code is included in .cc
@@ -27,8 +31,12 @@ class Socket {
  protected:
   const char* address;
   uint16_t port;
-
-  char sockaddress[16]; // placeholder big enough to hold sockaddr_in structure
+  #ifdef __linux__
+       char sockaddress[16]; // placeholder big enough to hold sockaddr_in structure
+  #elif _WIN32
+      static WSADATA wsaData;
+      struct addrinfo* result;
+  #endif
   Request* req;    // to be called when a request is INCOMING (req->handle() )
   Buffer in, out;  // buffers to send and receive data
 
@@ -43,6 +51,8 @@ class Socket {
   Socket(uint16_t port);  // Constructor for server (addres not specified)
   ~Socket();
 
+  static void classCleanup();
+  static void classInit();
   void attach(Request* r) { req = r; }
 
   Buffer& getOut() { return out; }

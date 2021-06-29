@@ -51,6 +51,8 @@ void SymbolTable::readMeta(Buffer& metadataBuf) {
   string name = metadataBuf.readString8(); // the name of the symbol table, probably 0 with no letters
   uint8_t numElements = metadataBuf.readU8();
   XDLType::readMeta(compiler, metadataBuf, numElements, this);
+  //TODO: this is PATHETIC! reading one extra byte. Let's figure out how to fix the buge eventually...
+  metadataBuf.readU8(); // munch one extra byte which is the empty string on the member name of the symbol table? 
 }
 
 #if 0

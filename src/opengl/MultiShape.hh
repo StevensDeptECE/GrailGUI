@@ -12,8 +12,8 @@ protected:
   std::vector<float> colorIndices;
 
 public:
-  MultiShape(uint32_t vertCount = 1024, uint32_t solidIndCount = 1024,  uint32_t lineIndCount = 1024, 
-              uint32_t pointIndCount = 1024, uint32_t colorIndCount = 1024) {
+  MultiShape(Canvas* parent, uint32_t vertCount = 1024, uint32_t solidIndCount = 1024,  uint32_t lineIndCount = 1024, 
+              uint32_t pointIndCount = 1024, uint32_t colorIndCount = 1024) : Shape(parent) {
     vertices.reserve(vertCount*2);
     solidIndices.reserve(solidIndCount);
     lineIndices.reserve(lineIndCount);

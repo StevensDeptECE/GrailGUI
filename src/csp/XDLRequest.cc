@@ -1,10 +1,16 @@
+#include "csp/XDLRequest.hh"
+
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <csp/csp.hh>
 #include <cstdint>
+#include <fstream>
 #include <iostream>
 #include <xdl/XDLCompiler.hh>
 #include <xdl/std.hh>
 
-#include "csp/XDLRequest.hh"
 #include "xdl/SymbolTable.hh"
 
 using namespace std;
@@ -21,8 +27,18 @@ XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
   s->addMember("z", new F64(3.0));
   s->addMember("bach", new F64(1.23456e+5));
   s->addMember("gnuoncrack", new U32(1));
+  s->addMember("", new U32(1));
   st->addRoot(s);
+
   xdlData.add(st);
+
+  // load page 1
+  addPage("res/aapl.bin");
+#if 0
+	List<Quote> *quotes = new List<StockQuote>();
+  quotes.read("res/aapl.bin");
+  s->addMember("quotes", quotes);
+#endif
 
 #if 0
   st = new SymbolTable(compiler);
@@ -49,11 +65,6 @@ XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
 
   // Replacing this ^--------------------------------------------------------
   xdlData.add(st);
-  #endif
-#if 0
-  List<StockQuote> *quotes = new List<StockQuote>();
-  quotes.read("IBM.dat");
-  xdlData.push_back(quotes);
 #endif
 }
 
@@ -75,10 +86,10 @@ void XDLRequest::handle(int fd) {
     return;
   }
 
-  SymbolTable* st = xdlData[requestId];
+  XDLType* x = xdlData[requestId];
   //Struct* s = (Struct*)st->getSymbol(root);
-  st->writeMeta(out);
-  st->write(out);
+  x->writeMeta(out);
+  x->write(out);
   out.displayRaw();
   out.flush();
 }
@@ -90,3 +101,42 @@ XDLRequest::~XDLRequest() {
   }
 }
 void XDLRequest::handle(int, char const*) {}
+
+void XDLRequest::addPage(const char metaDataFilename[], const char filename[]) {
+}
+#if 1
+void XDLRequest::addPage(const char filename[]) {
+  int fh = open(filename, readBinFlags);
+  if (fh < 0) {
+    cerr << "Error opening file " << filename << '\n';
+    throw Ex1(Errcode::FILE_NOT_FOUND);
+  }
+  struct stat s;
+  fstat(fh, &s);
+  // create an XDLRaw object with all the data in the file
+  char* p = new char[s.st_size];
+  ssize_t bytesRead = read(fh, p, s.st_size);
+  if (bytesRead < s.st_size) {
+    cerr << "Error reading file " << filename << '\n';
+  }
+  xdlData.add(new XDLRaw(p, s.st_size));
+  close(fh);
+}
+#endif
+
+// TODO: Verify that above implementation works on both Linux and Windows.
+//  If so, delete below implementation of addPage
+#if 0
+void XDLRequest::addPage(const char filename[]) {
+	ifstream in(filename, ios::binary| ios::ate);
+  if (!in.good()) {
+		cerr << "Error opening file " << filename << '\n';
+    return;
+  }
+  size_t size = in.tellg();
+	// create an XDLRaw object with all the data in the file
+	char* p = new char[size];
+	in.read(p, size);
+	xdlData.add(new XDLRaw(p, size));
+}
+#endif

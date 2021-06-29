@@ -456,5 +456,6 @@ void MultiShape2D::spline(const std::vector<double> &points, int n){
 	}
 }
 
-
-
+const Style* MultiShape2D::getStyle() {
+  return style;
+}

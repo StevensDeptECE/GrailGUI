@@ -42,7 +42,7 @@ void Config::load(const string& name) {
 				//f[name] = s;
 				//f[name] = new Sym(t, val);
 				//f[name] = Sym(t, const &val);
-				cout << t << ": " << val << '\n';
+				cout << int(t) << ": " << val << '\n';
 			}
 		}
 		reader.close();

@@ -1,0 +1,33 @@
+index
+each country has two numbers: start index in main data, and start year
+gdp for each country
+0	1970		offset to 2nd dataset	startyear
+40	1970
+80	1950
+180	1942
+...
+
+0xFFFFFFFF	0xFFFFFFFF
+
+end index
+
+180 countries, 2 4-byte integers per dataset per country  500 datasets  =
+8 * 500 = 4k * 180 < 800k
+
+
+
+1041
+1926.2
+...
+
+
+
+end
+next data set
+19241.11
+
+
+
+ofstream f("data.dat, ios::binary);
+float x[1024];
+f.write((char*)x, 392 * sizeof(float)); // write 392 floats in binary to output

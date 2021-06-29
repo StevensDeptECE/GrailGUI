@@ -6,10 +6,9 @@ using namespace std;
 class JoeyDrawing : public GLWin {
 public:
 	void init() {
-		Style *s = getDefaultStyle();
-		const Font* font = getDefaultFont();
+		const Style *s = getDefaultStyle();
 		Canvas* c = currentTab()->addCanvas(s, 0, 300, width, height-300);
-		StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(s));
+		StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(c, s));
 	  		
  		//Variables for color cycling
 		bool flagr = false;
@@ -85,5 +84,5 @@ public:
 };
 
 int main(int argc, char *argv[]) {
-  return GLWin::init(new JoeyDrawing(), 1440, 2560);
+  return GLWin::init(new JoeyDrawing());
 }

@@ -39,17 +39,17 @@ void BookViewer::init() {
   Style *s = new Style(font, 1, 1, 1, 0, 0, 0);
   s->setLineWidth(1);
   Canvas *c = currentTab()->getMainCanvas();
-  c->addLayer(new Image(0, 5, 320, 32, "res/toolbar1.png", s));
-  StyledMultiShape2D *m = new StyledMultiShape2D(s);
+  c->addLayer(new Image(c, 0, 5, 320, 32, "res/toolbar1.png", s));
+  StyledMultiShape2D *m = new StyledMultiShape2D(c, s);
   m->fillTriangle(350, 5, 380, 0, 360, 30, green);
   m->fillRoundRect(400, 5, 950, 40, 10, 10, lightblue);
   m->fillRoundRect(405, 7, 940, 36, 10, 10, lightgrey);
   c->addLayer(m);
 
-  PageLayout layout(10, 70, 1300, 1100, 1360, 40, 10, 40, font);
+  PageLayout layout(10, 70, 1350, 1100, 1360, 40, 10, 40, font, 1500);
   doc = new Document(layout);
   doc->appendFile(layout, filename);
-  docView = new DocView(s, c, doc);
+  docView = new DocView(c, s, doc);
   docView->update();
   c->addLayer(docView);
   //c->addLayer(new Image(400, 400, 400, 400, "res/trumpmelania.png", s));

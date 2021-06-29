@@ -8,8 +8,14 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all: $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid    $(BIN)/testGenericTable $(BIN)/JoeyDemo  \
- $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem  $(BIN)/convertASCIITable
+all:    #$(BIN)/TableDemo #$(BIN)/testDrawBlockMap $(BIN)/testWidgets   $(BIN)/testStyledMultishape	\
+	$(BIN)/SolarSystem  $(BIN)/globe \
+ $(BIN)/ESRIMapDemo $(BIN)/testLineGraph $(BIN)/testImage $(BIN)/testAudio\
+  $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
+$(BIN)/testText3 $(BIN)/globe    $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
+  $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/testESRIPolygon \
+	$(BIN)/testPolyLines $(BIN)/StockDemo $(BIN)/testAxis
+
 #$(BIN)/testText 
 #$(BIN)/testDrawing
 #$(BIN)/testGraphViewer
@@ -26,43 +32,84 @@ all: $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid    $(BIN)/testGen
 #plot.o  BarChart.o JulianDate.o TimeSeries.o $(BIN)/test7 $(BIN)/test5 $(BIN)/testText $(BIN)/testJulian $(BIN)/test8 $(BIN)/testTimeSeries $(BIN)/testBin 
 
 $(BIN)/testGrid: testGrid.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
+
+
+$(BIN)/TableDemo: TableDemo.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/simpleDemo: simpleDemo.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
+
+$(BIN)/StockDemo: StockDemo.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testGenericTable: testGenericTable.o $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/JoeyDemo: JoeyDemo.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testCompletePoly: testCompletePoly.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testDisplayBook: testDisplayBook.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testDisplayEntireBook: testDisplayEntireBook.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testDrawing: testDrawing.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testDrawing3D: testDrawing3D.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testDemo3D: testDemo3D.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
+
+$(BIN)/QuentinDemo: QuentinDemo.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)	
+
+$(BIN)/MapDemo: MapDemo.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)	
+
+$(BIN)/testESRIPolygon: testESRIPolygon.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)	
+
+$(BIN)/ESRIMapDemo: ESRIMapDemo.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)	
+
+$(BIN)/testDrawBlockMap: testDrawBlockMap.cc $(data)/BlockMapLoader.cc $(opengl)/MapView2D.cc $(LIBGRAIL) $(opengl)/MapView2D.hh $(data)/BlockMapLoader.hh $(data)/BlockLoader.hh 
+	$(CXX) $< $(data)/BlockMapLoader.cc $(opengl)/MapView2D.cc -o $@ $(LIBS)
 
 $(BIN)/SolarSystem: SolarSystem.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/globe: Globe.cc $(LIBGRAIL)
-	$(CXX) $^ -o $@ $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testStyledMultishape: testStyledMultishape.cc $(LIBGRAIL)
-	$(CXX) testStyledMultishape.cc -o $(BIN)/testStyledMultishape $(LIBS)
+	$(CXX) $< -o $@ $(LIBS)
+
+
+$(BIN)/LuisaDemo: LuisaDemo.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)
+
+$(BIN)/testWidgets: testWidgets.cc $(LIBGRAIL)
+	$(CXX) $^  -o $@ $(LIBS)
+
+$(BIN)/testPolyLines: testPolyLines.cc $(LIBGRAIL)
+	$(CXX) $^  -o $@ $(LIBS)
+
+$(BIN)/testAxis: testAxis.cc $(LIBGRAIL)
+	$(CXX) $^  -o $@ $(LIBS)
+
+$(BIN)/testLineGraph: testLineGraph.cc $(LIBGRAIL)
+	$(CXX) $^  -o $@ $(LIBS)
+
+$(BIN)/testAudio: testAudio.cc $(LIBGRAIL)
+	$(CXX) $^  -o $@ $(LIBS)
 
 $(BIN)/testHeatMap: testHeatMap.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
@@ -70,7 +117,7 @@ $(BIN)/testHeatMap: testHeatMap.cc $(LIBGRAIL)
 $(BIN)/testTable2: testTable2.cc $(LIBGRAIL)
 	$(CXX) testTable2.cc -o $(BIN)/testTable2 $(LIBS)
 
-$(BIN)/convertASCIITable: convertASCIITable.cc QuoteTable.cc $(utilout)/Buffer.o $(LIBGRAIL)
+$(BIN)/convertASCIITable: convertASCIITable.cc QuoteTable.cc  QuoteTable.hh $(utilout)/Buffer.o $(LIBGRAIL)
 	$(CXX) convertASCIITable.cc QuoteTable.cc $(utilout)/Buffer.o -o $(BIN)/convertASCIITable $(LIBS)
 
 $(BIN)/testBin: testBin.cc $(LIBGRAIL)
@@ -96,6 +143,9 @@ $(BIN)/testLoadpage: testLoadpage.cc $(LIBGRAIL)
 
 $(BIN)/testProjection: testProjection.cc $(LIBGRAIL)
 	$(CXX) $^ -o $(BIN)/testProjection $(LIBS)
+
+$(BIN)/testImage: testImage.cc $(LIBGRAIL)
+	$(CXX) $^ -o $(BIN)/testImage $(LIBS)
 
 # create an n x n grid of colorful canvases
 $(BIN)/testColorfulCanvases:	testColorfulCanvases.cc $(LIBGRAIL)
@@ -124,6 +174,7 @@ $(BIN)/testTable: testTable.cc $(LIBGRAIL)
 
 $(BIN)/testJulian: testJulian.cc $(LIBGRAIL)
 	$(CXX) $^  -o $(BIN)/testJulian  $(LIBS)
+
 
 ActionListener.o: ActionListener.hh ActionListener.cc
 	$(CXX) -c ActionListener.cc

@@ -11,6 +11,7 @@
 class PageLayout {
  public:
   float x0, x1;  // left and right margins
+  float xDropDead; // never go beyond this edge, even if no space is found
   float y0, y1;  // top and botton margins
   float w, h;    // width and height of the active part
   float pageNumX, pageNumY;
@@ -21,7 +22,7 @@ class PageLayout {
 
   PageLayout(float x0, float y0, float w, float h, float pageNumX,
              float pageNumY, float paragraphSpacing, uint32_t linesPerPage,
-             const Font *f)
+             const Font *f, float dropDead = 0)
       : x0(x0),
         y0(y0),
         x1(x0 + w),
@@ -32,7 +33,9 @@ class PageLayout {
         pageNumY(pageNumY),
         paragraphSpacing(paragraphSpacing),
         linesPerPage(linesPerPage),
-        f(f) {}
+        f(f),
+        xDropDead(dropDead != 0 ? dropDead : x1)
+        {}
 };
 
 class Page {
@@ -66,6 +69,16 @@ class Document {
       pages;  // TODO: Replace by rope for high performance editable document
 
   PageLayout layout;  // size of the page to render to
+  /*
+   precompute text with each line ending at flush margin, stopping in the middle of
+   a word if necessary
+  */
+  void buildJustifiedText(const PageLayout& layout, unsigned char* text, uint32_t len);
+
+  /*
+   precompute text with each line ending at a space or - if that lies within margin range
+  */
+  void buildRaggedText(const PageLayout& layout, unsigned char* text, uint32_t len);
  public:
   Document(const PageLayout &layout) : layout(layout), text(nullptr) {}
   ~Document() { delete[] text; }

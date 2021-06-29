@@ -1,8 +1,10 @@
-#include <csp/HTTPRequest.hh>
-
-#include "csp/csp.hh"
 #include "util/Buffer.hh"
 
+#include <csp/HTTPRequest.hh>
+
+#include "csp/SocketIO.hh"
+#include "csp/csp.hh"
+#include "xdl/std.hh"
 using namespace std;
 // const string HTTPRequest::GET = "GET";
 
@@ -12,7 +14,9 @@ Buffer::Buffer(size_t initialSize, bool writing)
   preBuffer = new char[size + extra * 2];
   buffer = extra + preBuffer;
   p = buffer;
+  memset(preBuffer, '\0', size + extra * 2);
   fd = -1;
+  isSockBuf = true;
 }
 
 /*
@@ -22,6 +26,7 @@ Buffer::Buffer(const char filename[], size_t initialSize)
     : Buffer(initialSize, true) {
   fd = creat(filename, 0664);
   if (fd < 0) throw Ex1(Errcode::PERMISSION_DENIED);
+  isSockBuf = false;
 }
 
 /*
@@ -30,15 +35,16 @@ Buffer::Buffer(const char filename[], size_t initialSize)
 */
 Buffer::Buffer(const char filename[], size_t initialSize, const char*)
     : Buffer(initialSize, false) {
-  fd = open(filename, O_RDONLY);
+  fd = open(filename, readBinFlags);
   if (fd < 0) throw Ex1(Errcode::PERMISSION_DENIED);
   readNext();
   writing = false;
+  isSockBuf = false;
 }
 
 void Buffer::readNext() {
-  int32_t bytesRead = ::read(fd, buffer, size);
-  if (bytesRead > 0) availSize = bytesRead;
+  int32_t bytesRead = SocketIO::recv(fd, buffer, size, 0);
+  if (bytesRead > 0) availSize -= bytesRead;
   // TODO: do we set p????
   // read really shouldn't return negative but it is, at least on windows...
   // check why This is occurring when there are no bytes to read -- possible
@@ -72,6 +78,12 @@ void Buffer::write(const char* s, uint32_t len) {
   *p++ = len;
   checkAvailableWrite();
   checkAvailableWrite(s, len);
+}
+
+void Buffer::write(XDLRaw& v) {
+  if (p != buffer)
+    flush();
+  ::write(fd, v.data, v.len);
 }
 
 #if 0
@@ -270,14 +282,15 @@ void Buffer::append(const char* v, uint32_t len) {
 void Buffer::displayText(ostream& s) const { s << buffer << '\n'; }
 
 void Buffer::displayRawRead() const {
-  for (uint32_t i = 0; i < availSize; ++i) cout << uint8_t(buffer[i]) << ' ';
+  uint32_t used = size - availSize;  // the number of bytes used
+  for (uint32_t i = 0; i < used; ++i) cout << uint32_t(p[i]) << ' ';
   cout << '\n';
 }
 
 void Buffer::displayRaw() const {
   uint32_t used = size - availSize;  // the number of bytes used
   cout << hex << "\n";
-  for (uint32_t i = 0; i < used; ++i) cout << (uint8_t)buffer[i] << ' ';
+  for (uint32_t i = 0; i < used; ++i) cout << uint32_t(p[i]) << ' ';
   cout << '\n';
   for (uint32_t i = 0; i < used; ++i) {
     if (buffer[i] >= ' ' && buffer[i] <= 127)

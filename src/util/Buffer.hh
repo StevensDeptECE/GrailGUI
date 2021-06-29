@@ -13,8 +13,12 @@
 #include <vector>
 
 #include "csp/cspservlet/Student.hh"
+#include "csp/SocketIO.hh"
 #include "util/List1.hh"
 #include "util/datatype.hh"
+#include "csp/csp.hh"
+
+class XDLRaw;
 
 using namespace std;
 class Buffer {
@@ -48,7 +52,12 @@ class Buffer {
   void displayHTTPRaw();  // TODO: eliminate! die die die
 
   void flush() {  // TODO: this will fail if we overflow slightly
-    ::write(fd, buffer, p - buffer);
+    if(isSockBuf) 
+      SocketIO::send(fd, buffer, p - buffer, 0);
+    else {
+      if(::write(fd, buffer, p-buffer) < 0)
+        throw Ex1(Errcode::FILE_WRITE);
+    }
     p = buffer;
     availSize = size;
   }
@@ -135,6 +144,13 @@ class Buffer {
     availSize -= sizeof(T);
   }
 
+	/**
+	 * Special case for XDLRaw which will write out
+	 * a complete block of bytes directly without copying
+	 *
+	 */
+	void write(XDLRaw& v);
+
   // for writing big objects, don't copy into the buffer, write it to the socket
   // directly
   void specialWrite(const char* buf, const uint32_t len) {
@@ -176,7 +192,27 @@ class Buffer {
       flush();
     }
   }
-  //*********************************//
+
+	  //************ uint8_t uint16_t uint32_t uint64_t array *************//
+  /*
+    The fastest way to write 32k at a time is to write each object into
+		the buffer as long as it is less than the overflow size.
+		Then, after writing, if you have filled the buffer, flush
+		and move the remaining bytes to the beginning of the buffer and start over.
+   */
+  void fastCheckSpace(size_t sz) {
+    if (p > buffer + size ) {  // p>buffer+size
+			uint32_t beyondEnd = p - (buffer+size);
+      flush();
+			memcpy(buffer, buffer+size, beyondEnd);
+			p += beyondEnd;
+			availSize -= beyondEnd;
+    }
+  }
+
+
+
+	//*********************************//
   //************ uint8_t uint16_t uint32_t uint64_t array *************//
 
   template <typename T>
@@ -386,6 +422,7 @@ class Buffer {
 
  private:
   bool writing;
+  bool isSockBuf = false;
   size_t size;
   const size_t extra = 128;
   char* preBuffer;

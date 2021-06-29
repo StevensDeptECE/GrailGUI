@@ -34,6 +34,9 @@ $(out)/Buffer.o : Buffer.cc Buffer.hh
 
 $(out)/datatype.o: datatype.cc datatype.hh
 	$(CXX) -c $< -o $@
+
+$(out)/Timers.o: Timers.cc Timers.hh
+	$(CXX) -c $< -o $@
 	
 #testDynArray: testDynArray.cc DynArray.hh
 #	g++ -g -I .. testDynArray.cc -o testDynArray
