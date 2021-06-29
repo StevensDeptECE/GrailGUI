@@ -8,14 +8,15 @@ class LineGraphWidget : public GraphWidget {
   std::vector<double> yPoints;
   glm::vec4 &pointColor;
   double pointSize;
+  // floats used here because its what StyledMultiShape wants
   void (StyledMultiShape2D::*markerFunction)(float, float, float, glm::vec4 &);
   std::unordered_map<char, void (StyledMultiShape2D::*)(float, float, float,
                                                         glm::vec4 &)>
       map;
 
  public:
-  LineGraphWidget(Canvas *c, StyledMultiShape2D *m, MultiText *t, float x,
-                  float y, float w, float h)
+  LineGraphWidget(Canvas *c, StyledMultiShape2D *m, MultiText *t, double x,
+                  double y, double w, double h)
       : GraphWidget(c, m, t, x, y, w, h),
         xPoints(std::vector<double>()),
         yPoints(std::vector<double>()),
