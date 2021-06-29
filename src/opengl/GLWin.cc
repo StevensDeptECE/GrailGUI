@@ -598,7 +598,7 @@ uint32_t GLWin::internalRegisterAction(const char name[], Security s,
     cerr << "Error! action Table is full for security " << securityIndex
          << '\n';
   }
-  cout << "Setting action " << actNum << " for action " << name << '\n';
+  cout << "Defining action " << actNum << " = " << name << '\n';
   setAction(actNum, action);
   actionNameMap[name] = actNum;
   return actNum;
@@ -685,6 +685,4 @@ void GLWin::loadBindings() {
   // bind2DOrtho();
 }
 
-double GLWin::getTime() {
-  return glfwGetTime();
-}
+double GLWin::getTime() { return glfwGetTime(); }
