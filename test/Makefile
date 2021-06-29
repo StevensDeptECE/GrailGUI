@@ -8,13 +8,16 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all:    #$(BIN)/TableDemo #$(BIN)/testDrawBlockMap $(BIN)/testWidgets   $(BIN)/testStyledMultishape	\
-	$(BIN)/SolarSystem  $(BIN)/globe \
- $(BIN)/ESRIMapDemo $(BIN)/testLineGraph $(BIN)/testImage $(BIN)/testAudio\
-  $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
-$(BIN)/testText3 $(BIN)/globe    $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
-  $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/testESRIPolygon \
-	$(BIN)/testPolyLines $(BIN)/StockDemo $(BIN)/testAxis
+all: $(BIN)/SolarSystem $(BIN)/globe \
+	$(BIN)/testBarChart $(BIN)/testLineGraph $(BIN)/testWidgets $(BIN)/testAxis \
+	$(BIN)/testESRIPolygon $(BIN)/ESRIMapDemo $(BIN)/MapDemo \
+	$(BIN)/testDrawBlockMap \
+	$(BIN)/testStyledMultishape	$(BIN)/simpleDemo $(BIN)/testPolyLines \
+	$(BIN)/testText3 $(BIN)/convertASCIITable $(BIN)/testGrid \
+	$(BIN)/testImage $(BIN)/testAudio \
+	$(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/JoeyDemo \
+	$(BIN)/testDisplayBook $(BIN)/testDisplayEntireBook \
+	$(BIN)/StockDemo
 
 #$(BIN)/testText 
 #$(BIN)/testDrawing
@@ -103,6 +106,9 @@ $(BIN)/testPolyLines: testPolyLines.cc $(LIBGRAIL)
 	$(CXX) $^  -o $@ $(LIBS)
 
 $(BIN)/testAxis: testAxis.cc $(LIBGRAIL)
+	$(CXX) $^  -o $@ $(LIBS)
+
+$(BIN)/testBarChart: testBarChart.cc $(LIBGRAIL)
 	$(CXX) $^  -o $@ $(LIBS)
 
 $(BIN)/testLineGraph: testLineGraph.cc $(LIBGRAIL)

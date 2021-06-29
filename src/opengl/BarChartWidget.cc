@@ -1,50 +1,119 @@
 #include "opengl/BarChartWidget.hh"
-#include "opengl/StyledMultiShape2D.hh"
-#include "opengl/MultiText.hh"
-#include <string>
-#include <iostream>
+
 #include <algorithm>
+
+#include "opengl/AngledMultiText.hh"
+#include "util/Ex.hh"
 
 using namespace std;
 
-void BarChartWidget::init() {
-  m ->drawRectangle(x, y, w, h, grail::black);
+void BarChartWidget::setBarWidth(double width) { barWidth = width; }
+
+void BarChartWidget::setBarColor(glm::vec4 &color) { barColor = color; }
+void BarChartWidget::setValues(const vector<double> &values) {
+  this->values = values;
 }
 
-void BarChartWidget::setTitle(const string& s){
-  const Font* f = FontFace::get("TIMES", 12, FontFace::BOLD);
-    t->add(x, y-10, f , s.c_str(), s.length()); 
+void BarChartWidget::setNames(const vector<string> &names) {
+  this->names = names;
 }
 
-/*
-  draw the bar chart
-  b = vector of heights 
+void BarChartWidget::createXAxis(AxisType a) {
+  xAxisType = a;
+  MultiText *tnew = c->addLayer(new MultiText(c, xAxisTextStyle));
 
-*/
-void BarChartWidget::chart(const vector<float>& b, 
-    const vector<string>& barNames, int rulerInterval){
+  switch (a) {
+    case LINEAR: {
+      cout << "a bar chart can't have a linear x axis\n";
+      throw Ex1(Errcode::BAD_ARGUMENT);
+    }; break;
 
-    yAxis->init(min, max, y+h, -h, rulerInterval);
+    case LOGARITHMIC: {
+      cout << "a bar chart can't have a logarithmic x axis\n";
+      throw Ex1(Errcode::BAD_ARGUMENT);
+    }; break;
 
-
-    float wBar = w/(b.size() + (relativeSpace * (b.size() + 1)));
-    float spaceBetweenBars = relativeSpace * wBar;
-
-    const Font* f = FontFace::get("TIMES", 12, FontFace::BOLD);
-
-    for (int i = 0; i < b.size(); i++){
-      float xBar = (i+1)*spaceBetweenBars + i*wBar + x;
-      float yTopBar = yAxis->transform(b[i]);
-
-      m->fillRectangle(xBar, yTopBar, wBar, y+h-yTopBar, grail::blue);
-      t->add(xBar, y+h+20, f , barNames[i].c_str(), barNames[i].length());
-    }
-
-
-    for (float yTick = min; yTick <= max; yTick = yAxis->next(yTick)) {
-      float yScreen = yAxis->transform(yTick);
-      m->drawLine(tickStart, yScreen, tickStart + tickSize, yScreen, grail::black);
-      t->add(x-40, yScreen,f, (int)yTick);
-    }
-
+    case TEXT: {
+      xAxis = new TextAxisWidget(m, tnew, x, y, w, h);
+      xAxis->setTickLabels(names);
+    }; break;
   }
+}
+
+void BarChartWidget::createYAxis(AxisType a) {
+  yAxisType = a;
+  StyledMultiShape2D *rot90 = c->addLayer(
+      new StyledMultiShape2D(c, m->getStyle(), M_PI / 2, x - w, y + h));
+  AngledMultiText *t90 = c->addLayer(
+      new AngledMultiText(c, yAxisTextStyle, M_PI / 2, x - w, y + h));
+
+  switch (a) {
+    case LINEAR: {
+      yAxis = new LinearAxisWidget(rot90, t90, 0, 0, w, h);
+    }; break;
+
+    case LOGARITHMIC: {
+      yAxis = new LogAxisWidget(rot90, t90, 0, 0, w, h);
+    }; break;
+
+    case TEXT: {
+      cout << "a bar chart can't have a text y axis\n";
+      throw Ex1(Errcode::BAD_ARGUMENT);
+    }; break;
+  }
+}
+
+void BarChartWidget::init() {
+  if (values.size() < 1 || names.size() < 1) {
+    cerr << "names and values vectors cannot be zero length";
+    throw(Ex1(Errcode::VECTOR_ZERO_LENGTH));
+  }
+
+  if (values.size() != names.size()) {
+    cerr << "names and values vectors must be the same length";
+    throw(Ex1(Errcode::VECTOR_ZERO_LENGTH));
+  }
+
+  double min = yAxis->getMinBound();
+  double max = yAxis->getMaxBound();
+
+  double axisInterval = yAxis->getTickInterval();
+  double scale;
+  double base;
+
+  if (yAxisType == AxisType::LOGARITHMIC) {
+    base = 1 / log(axisInterval);
+    scale = -h / abs(log(max) * base - log(min) * base);
+    transform(
+        values.begin(), values.end(), values.begin(),
+        [=](double d) -> double { return y + h + scale * log(d) * base; });
+  } else {
+    scale = -h / abs(max - min);
+    transform(values.begin(), values.end(), values.begin(),
+              [=](double d) -> double { return y + h + scale * d; });
+  }
+
+  double barCorrection = (yAxisType == AxisType::LINEAR)
+                             ? -scale * yAxis->getMinBound()
+                             : -scale * log(yAxis->getMinBound()) * base;
+
+  double xscale = w / (values.size() + 1);
+  double halfBarWidth = barWidth / 2;
+  for (int i = 1; i < values.size() + 1; i++) {
+    double barXLocation = x + xscale * i - halfBarWidth;
+    double barYLocation = values[i - 1] + barCorrection;
+
+    m->fillRectangle(barXLocation, barYLocation, barWidth, y + h - barYLocation,
+                     barColor);
+  }
+
+  // last things to draw
+  if (graphTitle.size())
+    t->addCentered(x, y - m->getStyle()->f->getHeight(), w,
+                   m->getStyle()->f->getHeight() + 10, m->getStyle()->f,
+                   graphTitle.c_str(), graphTitle.size());
+  m->drawLine(x, y, x + w, y, grail::black);
+  m->drawLine(x + w, y, x + w, y + h, grail::black);
+  xAxis->init();
+  yAxis->init();
+}
