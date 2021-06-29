@@ -1,12 +1,9 @@
 #pragma once
 #include "BlockLoader.hh"
+#include "data/BoundRect.hh"
 
 class BlockMapLoader : public BlockLoader {
  public:
-  struct BoundRect {
-    float xMin, xMax, yMin, yMax;
-  };
-
   struct BlockMapHeader {
     uint32_t numNamedEntities;
     uint32_t numRegionContainers;

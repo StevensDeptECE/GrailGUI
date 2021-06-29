@@ -41,7 +41,6 @@ class FontFace {
   // save all font faces to a fast binary file for instant retrieval later
   static void saveFonts(const uint8_t* combinedBitmap, uint32_t sizeX,
                         uint32_t sizeY);
-  static bool combineFaces();
 
  public:
   uint32_t maxWidthIndex;

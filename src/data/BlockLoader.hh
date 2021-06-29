@@ -9,62 +9,69 @@
 */
 class BlockLoader {
  public:
-  // std::unique_ptr<uint64_t> mem;
-  uint64_t* mem;  // hating unique pointers right now
+  uint64_t* mem;  // In C++20 we can have an unzeroed unique_ptr
   uint64_t size;
+  char* align(const char* p) { return (char*)((uint64_t)p + 7) & ~7ULL; }
+
+  enum class Type { gismap, hashmap, compressed_trie, gapminder, financial_db };
+  enum CompressionType { none, lzma, bzip2 };
   struct GeneralHeader {
-    uint32_t magic;         // magic number for all block loaders
-    uint32_t type : 16;     // type of block loader
-    uint32_t version : 16;  // version
+    uint32_t magic;    // magic number for all block loaders
+    uint16_t type;     // type of block loader
+    uint16_t version;  // version
+    // TODO: copyright, copyleft, no protection? (full reference in server where
+    // authenticated?)
+    uint64_t copyright : 1;       // true if copyright is asserted
+    uint64_t securityHeader : 1;  // if true, there is a security header
+    // the number of hashmaps in the optional HashmapHeader
+    // used for named entities
+    uint64_t numComponents : 16;
+    uint64_t compressionType : 8;  // lzma, bzip2, etc.
+    GeneralHeader(uint16_t type, uint16_t version, bool copyright = false,
+                  bool securityHeader = false, uint8_t numComponents = 0,
+                  uint8_t compressionType = 0)
+        : magic(0x644C4221),  // "!Bld" magic number for block loaders
+          type(type),
+          version(version),
+          copyright(copyright),
+          securityHeader(securityHeader),
+          numComponents(numComponents),
+          compressionType(compressionType)
   };
-  struct SecurityHeaderV0 {
-    uint64_t yoho;  // TODO: put something in
+  struct SecurityHeaderV1 {
+    uint8_t hash[32];  // SHA256 hash signed by author
+    // SHA256 hash of alternate region in data signed by author
+    uint8_t hash2[32];
+    uint8_t id[32];  // id of author
   };
-#if 0
-	struct SecurityHeaderV1 {
-		uint8_t hash[32];  // SHA256 hash signed by author
-		uint8_t hash2[32]; // SHA256 hash of alternate region in data signed by author
-		uint8_t id[32]; // id of author
-	};
-#endif
+
+  /*
+    optional header for a hash map of strings
+
+  */
+  struct HashMapHeader {
+    uint32_t symbolSize;  // total number of bytes used for symbols
+    uint32_t nodeSize;    // total number of nodes used
+    uint32_t tableSize;   // number of bins, must be power of 2
+  };
 
   GeneralHeader* generalHeader;
-  SecurityHeaderV0* securityHeader;
-  enum class Type { gismap, hashmap };
+  SecurityHeaderV1* securityHeader;
 
  protected:
-  /*
-    TODO: Find better way than uninitialized parent?
-    problem: We need to allocate memory in base class to share
-    memory allocation and common headers among all BlockLoaders.
-    But we don't know how much memory we need until we open the file
-    read all the information from ESRI and create.
-    In any file format, there will be this problem. There must be a
-    temporary object structure while you read in and figure out how big
-    the data is. Then, once the data is known, you can read in a single
-    contiguous block of memory, fill it and save that out to disk for
-    rapid loading later.
-
-    One way to eliminate this problem might be to allocate the header and
-    what for us is the segment information for the map with lots of
-    extra space at the end. We make the list as big as it needs to be and
-    just keep an extra data structure with the points. Then, when done
-    growing define a pointer to the points at the end and copy in.
-
-    The uninitialized protected constructor is only for use by children
-    who first figure out how big, then call init() to initialize their
-    parent. The only alternative would be to call the parent constructor
-    passing in the information (type and version is easy, number of bytes
-    requires knowing everything before call) This would require returning
-    a structure with those 3 items. Should probably just do that.
-  */
-  BlockLoader() {}
   struct Info {
     uint64_t bytes;
-    Type t;
+    Type type;
     uint32_t version;
   };
   BlockLoader(const Info& info);
+  void BlockLoader::init(uint64_t* mem, uint64_t size) {
+    this->mem = mem;
+    this->size = size;
+    this->generalHeader = (GeneralHeader*)mem;
+    this->securityHeader =
+        (SecurityHeaderV1*)((uint64_t*)mem + sizeof(GeneralHeader) / 8);
+  }
 
  public:
   BlockLoader(const char filename[]);
@@ -72,25 +79,25 @@ class BlockLoader {
   BlockLoader(const BlockLoader& orig) = delete;
   BlockLoader& operator=(const BlockLoader& orig) = delete;
 
-  void init(uint64_t* mem, uint64_t size);
-  void init(uint64_t bytes, Type t, uint32_t version);
-  // Fast load a blockfile
-  void readBlockFile(const char filename[]);
+  /*
+   * build a new blockloader in memory using all the information needed to build
+   * it the number of bytes the child needs, the type of loader, and the version
+   */
+  BlockLoader(Info inf)
+      : mem(new uint64_t[(getHeaderSize() + (inf.bytes + 7) / 8)]) {
+    generalHeader = (GeneralHeader*)mem;  // header is the first chunk of bytes
+    // "!Bld" magic number for block loaders
+    generalHeader->magic = 0x644C4221;
+    generalHeader->type = uint16_t(inf.type);
+    generalHeader->version = inf.version;
+    securityHeader =
+        (SecurityHeaderV1*)((uint64_t*)mem + sizeof(GeneralHeader) / 8);
+  }
   // get the size of the SecurityHeader for any BlockLoader
-  uint32_t getAuthHeaderSize() const { return sizeof(SecurityHeaderV0); }
+  uint32_t getAuthHeaderSize() const { return sizeof(SecurityHeaderV1); }
   uint32_t getHeaderSize() const {
-    return sizeof(GeneralHeader) + sizeof(SecurityHeaderV0);
+    return sizeof(GeneralHeader) + sizeof(SecurityHeaderV1);
   }
   bool authenticate() const;
-  BlockLoader(uint64_t bytes, Type t, uint32_t version)
-      : mem(new uint64_t[(getHeaderSize() + (bytes + 7) / 8)]) {
-    // std::make_unique<uint64_t[]>(getHeaderSize() + (bytes + 7) / 8)) {
-    generalHeader = (GeneralHeader*)mem;  // header is the first chunk of bytes
-    generalHeader->magic = ((((('!' << 8) + 'B') << 8) + 'L') << 8) +
-                           'd';  // magic number for all block loaders
-    generalHeader->type = uint32_t(t);
-    generalHeader->version = version;
-    securityHeader =
-        (SecurityHeaderV0*)((uint64_t*)mem + sizeof(GeneralHeader) / 8);
-  }
+  void save(const char filename[]) const;
 };
