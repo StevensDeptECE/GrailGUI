@@ -79,12 +79,12 @@ class testAxis : public GLWin {
     StyledMultiShape2D *gui = c->getGui();
     MultiText *guiText = c->addLayer(new MultiText(c, s));
 
-    // testLinearAxis(gui, guiText, s);
-    // testLogAxis(gui, guiText, s);
-    // testTextAxis(gui, guiText, s);
-    testRotatedAxis(c, guiText, s);
-    gui->drawRectangle(100, 100, 100, 100, grail::green);
-    gui->drawCircle(100, 100, 3.5, 3, glm::vec4(0, 0, 1, 1));
+    testLinearAxis(gui, guiText, s);
+    testLogAxis(gui, guiText, s);
+    testTextAxis(gui, guiText, s);
+    // testRotatedAxis(c, guiText, s);
+    // gui->drawRectangle(100, 100, 100, 100, grail::green);
+    // gui->drawCircle(100, 100, 3.5, 3, glm::vec4(0, 0, 1, 1));
   }
 };
 
