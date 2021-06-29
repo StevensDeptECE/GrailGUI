@@ -49,6 +49,7 @@ class Style;
 class MultiShape2d;
 class MultiText;
 class XDLIterator;
+class ArrayOfBytes;
 
 class UnImpl;
 class XDLType {
@@ -81,8 +82,8 @@ class XDLType {
   XDLType(DataType t) : nameOffset(computeNameOffset(t)) {}
   virtual void write(Buffer& b) const = 0;
   virtual void writeMeta(Buffer& buf) const;
-  virtual void addData(DynArray<uint8_t>* data) const;
-  virtual void addMeta(DynArray<uint8_t>* meta) const;
+  virtual void addData(ArrayOfBytes* data) const;
+  virtual void addMeta(ArrayOfBytes* meta) const;
   virtual uint32_t size() const = 0;
   static const XDLType* getBuiltinType(DataType dt) {
     return types[uint32_t(dt)];
@@ -153,8 +154,8 @@ class XDLBuiltinType : public XDLType {
   DataType getDataType() const override { return t; }
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
-  void addData(DynArray<uint8_t>* data) const override;
-  void addMeta(DynArray<uint8_t>* meta) const override;
+  void addData(ArrayOfBytes* data) const override;
+  void addMeta(ArrayOfBytes* meta) const override;
 };
 
 class CompoundType : public XDLType {
@@ -531,8 +532,8 @@ class GenericList : public CompoundType {
   void writeMeta(Buffer& buf) const override;
   void display(Buffer& binaryIn, Buffer& asciiOut) const override;
   XDLIterator* createIterator() override;
-  void addData(DynArray<uint8_t>* data) const override;
-  void addMeta(DynArray<uint8_t>* meta) const override;
+  void addData(ArrayOfBytes* data) const override;
+  void addMeta(ArrayOfBytes* meta) const override;
 };
 
 template <typename T>
@@ -542,7 +543,7 @@ class List : public XDLType {
 
  public:
   List(uint32_t size = 16) : XDLType("LIST16"), impl(size) {}
-  DataType getDataType() const { return DataType::LIST8; }
+  DataType getDataType() const { return DataType::LIST16; }
   void add(const T& e) { impl.push_back(e); }
 #if 0
   template <class... Args>
@@ -553,15 +554,8 @@ class List : public XDLType {
   uint32_t size() const override {
     return impl.size();  // TODO: * T.size();
   }
-  void write(Buffer& buf) const override {
-    buf.write(uint16_t(impl.size()));
-    for (uint32_t i = 0; i < impl.size(); i++) impl[i].write(buf);
-  }
-  void writeMeta(Buffer& buf) const override {
-    buf.write(DataType::LIST16);
-    if (impl.size() == 0) return;
-    impl[0].writeMeta(buf);
-  }
+  void write(Buffer& buf) const override;
+  void writeMeta(Buffer& buf) const override;
   void read(Buffer& buf) {
     uint32_t len = buf._readU16();
     T val;
@@ -654,8 +648,8 @@ class Struct : public CompoundType {
   DataType getDataType() const { return DataType::STRUCT8; }
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
-  void addData(DynArray<uint8_t>* data);
-  void addMeta(DynArray<uint8_t>* meta);
+  void addData(ArrayOfBytes* data);
+  void addMeta(ArrayOfBytes* meta);
 };
 
 class Regex : public XDLType {
@@ -752,4 +746,28 @@ DataType typeToDataType(const char* str) {
     return DataType::STRING32;
   else
     DataType::STRING64;
+}
+
+template <typename T>
+void List<T>::writeMeta(Buffer& buf) const {
+  buf.write(DataType::LIST16);
+  if (constexpr typeToDataType(impl[0]) != DataType::UNIMPL) {
+    buf.write(typeToDataType(impl[0]);
+  } else if (is_base_of_v<XDLType, T>) {
+    impl[0].writeMeta(buf);
+  }
+}
+
+template <typename T>
+void List<T>::write(Buffer& buf) const {
+  buf.write(uint16_t(impl.size()));
+  for (uint32_t i = 0; i < impl.size(); i++) {
+    if (constexpr typeToDataType(impl[i]) != DataType::UNIMPL) {
+      buf.write(impl[i])
+    } else if (is_base_of_v<XDLType, T>) {
+      impl[i].write(buf);
+    } else {
+      throw Ex1(Errcode::UNDEFINED_TYPE);
+    }
+  }
 }

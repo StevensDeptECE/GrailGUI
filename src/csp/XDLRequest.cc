@@ -24,15 +24,15 @@ void buildData(Buffer& out, char meta[]) {}
 // void buildData(Buffer& out, Buffer& meta, T first, const Args&... args) {
 
 template <typename T>
-void buildData2(ArrayOfBytes* a, T arg) {
+void buildData2(ArrayOfBytes* a, const T& arg) {
   if (constexpr is_base_of_v<XDLType, arg>) {
     if (constexpr is_base_of_v<XDLBuiltinType, arg>) {
-      a->addMeta(arg->getType());
+      a->addMeta(arg.getType());
       a->addData(arg);
     } else {
       if (constexpr is_base_of_v<CompoundType, arg>) {
-        arg->addMeta(a->getMeta());
-        arg->addData(a->getData());
+        arg.addMeta(a);
+        arg.addData(a);
       }
     }
   } else {

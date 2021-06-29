@@ -188,14 +188,14 @@ inline void Struct::addStructMember(const std::string& memberName,
 // TODO: implement!
 const Struct* XDLType::read(Buffer& in) { return nullptr; }
 
-void Struct::addData(DynArray<uint8_t>* data) {
+void Struct::addData(ArrayOfBytes* data) {
   for (int i = 0; i < members.size(); i++) {
     members[i].type->addData(data);
   }
 }
 
-void Struct::addMeta(DynArray<uint8_t>* meta) {
-  meta->add((uint8_t)this->getDataType());
+void Struct::addMeta(ArrayOfBytes* meta) {
+  meta->addMeta(this->getDataType());
   for (int i = 0; i < members.size(); i++) {
     members[i].type->addMeta(meta);
   }
@@ -806,6 +806,4 @@ void F64::display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
 
   DataType UnImpl::getDataType() const { return DataType::UNIMPL; }
 
-  void XDLBuiltinType::addMeta(DynArray<uint8_t> * meta) {
-    meta->add((uint8_t)t);
-  }
+  void XDLBuiltinType::addMeta(ArrayOfBytes * meta) { meta->add((uint8_t)t); }
