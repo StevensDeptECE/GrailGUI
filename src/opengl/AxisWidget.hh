@@ -28,8 +28,8 @@ class AxisWidget : public Widget2D {
 
  public:
   // TODO: initialize title and other style bits to some kind of sane default
-  AxisWidget(StyledMultiShape2D *m, MultiText *t, float x, float y, float w,
-             float h, double minBound = 0, double maxBound = 0,
+  AxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y, double w,
+             double h, double minBound = 0, double maxBound = 0,
              double tickInterval = 1, double tickDrawSize = 5,
              bool showTicks = true, bool isVert = false,
              std::string axisTitle = "",
@@ -53,8 +53,8 @@ class AxisWidget : public Widget2D {
 
 class LinearAxisWidget : public AxisWidget {
  public:
-  LinearAxisWidget(StyledMultiShape2D *m, MultiText *t, float x, float y,
-                   float w, float h);
+  LinearAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
+                   double w, double h);
   void setBounds(double minBound, double maxBound) override;
   void setTickInterval(double tickInterval) override;
   void init() override;
@@ -65,8 +65,8 @@ class LogAxisWidget : public AxisWidget {
   int base, power;
 
  public:
-  LogAxisWidget(StyledMultiShape2D *m, MultiText *t, float x, float y, float w,
-                float h);
+  LogAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y, double w,
+                double h);
   void setBounds(double minBound, double maxBound) override;
   void setTickInterval(double tickInterval) override;
   void init() override;
@@ -81,8 +81,8 @@ class TextAxisWidget : public AxisWidget {
   std::vector<std::string> tickLabels;
 
  public:
-  TextAxisWidget(StyledMultiShape2D *m, MultiText *t, float x, float y, float w,
-                 float h);
+  TextAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y, double w,
+                 double h);
   void setTickLabels(std::vector<std::string> tickLabels);
   void init() override;
 };

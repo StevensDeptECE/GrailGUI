@@ -2,8 +2,8 @@
 
 using namespace std;
 
-AxisWidget::AxisWidget(StyledMultiShape2D *m, MultiText *t, float x, float y,
-                       float w, float h, double minBound, double maxBound,
+AxisWidget::AxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
+                       double w, double h, double minBound, double maxBound,
                        double tickInterval, double tickDrawSize, bool showTicks,
                        bool isVert, std::string axisTitle,
                        const glm::vec4 &axisColor, const glm::vec4 &tickColor,
@@ -54,8 +54,8 @@ void AxisWidget::addAxisTitle() {
   }
 }
 
-LinearAxisWidget::LinearAxisWidget(StyledMultiShape2D *m, MultiText *t, float x,
-                                   float y, float w, float h)
+LinearAxisWidget::LinearAxisWidget(StyledMultiShape2D *m, MultiText *t,
+                                   double x, double y, double w, double h)
     : AxisWidget(m, t, x, y, w, h) {}
 
 void LinearAxisWidget::setBounds(double minBound, double maxBound) {
@@ -68,13 +68,15 @@ void LinearAxisWidget::setTickInterval(double tickInterval) {
 }
 
 void LinearAxisWidget::init() {
-  float scale = w / abs(maxBound - minBound);
+  double scale = w / abs(maxBound - minBound);
   bottomOffset = tickDrawSize + m->getStyle()->f->getHeight();
   if (isVert) bottomOffset = -bottomOffset;
-  m->drawLine(x, y + h, x + scale * maxBound, y + h, axisColor);
+  m->drawLine(x, y + h, x + w, y + h, axisColor);
 
-  for (float tick = minBound; tick <= maxBound; tick += tickInterval) {
-    float draw = x + scale * tick;
+  double counter = 0;
+  for (double tick = minBound; tick <= maxBound;
+       tick += tickInterval, counter += tickInterval) {
+    double draw = x + scale * counter;
 
     if (showTicks)
       m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
@@ -87,8 +89,8 @@ void LinearAxisWidget::init() {
   addAxisTitle();
 }
 
-LogAxisWidget::LogAxisWidget(StyledMultiShape2D *m, MultiText *t, float x,
-                             float y, float w, float h)
+LogAxisWidget::LogAxisWidget(StyledMultiShape2D *m, MultiText *t, double x,
+                             double y, double w, double h)
     : AxisWidget(m, t, x, y, w, h), base(10), power(0) {}
 
 void LogAxisWidget::setBounds(double minBound, double maxBound) {
@@ -101,14 +103,16 @@ void LogAxisWidget::setTickInterval(double tickInterval) {
 }
 
 void LogAxisWidget::init() {
-  float base = 1 / log(tickInterval);
-  float scale = w / abs(log(maxBound) * base - log(minBound) * base);
+  double base = 1 / log(tickInterval);
+  double scale = w / abs(log(maxBound) * base - log(minBound) * base);
   bottomOffset = tickDrawSize + m->getStyle()->f->getHeight();
   if (isVert) bottomOffset = -bottomOffset;
-  m->drawLine(x, y + h, x + scale * log(maxBound) * base, y + h, axisColor);
+  m->drawLine(x, y + h, x + w, y + h, axisColor);
 
-  for (float tick = minBound; tick <= maxBound; tick *= tickInterval) {
-    float draw = x + scale * log(tick) * base;
+  double counter = 1;
+  for (double tick = minBound; tick <= maxBound;
+       tick *= tickInterval, counter *= tickInterval) {
+    double draw = x + scale * log(counter) * base;
 
     if (showTicks)
       m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
@@ -121,8 +125,8 @@ void LogAxisWidget::init() {
   addAxisTitle();
 }
 
-TextAxisWidget::TextAxisWidget(StyledMultiShape2D *m, MultiText *t, float x,
-                               float y, float w, float h)
+TextAxisWidget::TextAxisWidget(StyledMultiShape2D *m, MultiText *t, double x,
+                               double y, double w, double h)
     : AxisWidget(m, t, x, y, w, h), tickLabels(vector<string>()) {}
 
 void TextAxisWidget::setTickLabels(vector<string> tickLabels) {
