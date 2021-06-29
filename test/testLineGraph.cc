@@ -46,7 +46,7 @@ class TestLineGraph : public GLWin {
 
     // x axis stuff
     lgw.setXPoints(times);
-    lgw.createXAxis(GraphWidget::AxisType::linear);
+    lgw.createXAxis(GraphWidget::AxisType::LINEAR);
 
     // set x axis parameters
     lgw.xAxis->setBounds(times.front(), times.back());
@@ -60,7 +60,7 @@ class TestLineGraph : public GLWin {
     lgw.xAxis->setTickFormat(3, 1);
 
     // y axis stuff
-    lgw.createYAxis(GraphWidget::AxisType::logar);
+    lgw.createYAxis(GraphWidget::AxisType::LOGARITHMIC);
     // lgw.setYPoints(values);
     lgw.setYPoints(logValues);
 

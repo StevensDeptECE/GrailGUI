@@ -26,55 +26,53 @@ void LineGraphWidget::createXAxis(AxisType a) {
   MultiText *tnew = c->addLayer(new MultiText(c, xAxisTextStyle));
 
   switch (a) {
-    case linear: {
+    case LINEAR: {
       xAxis = new LinearAxisWidget(m, tnew, x, y, w, h);
     }; break;
 
-    case logar: {
+    case LOGARITHMIC: {
       xAxis = new LogAxisWidget(m, tnew, x, y, w, h);
+    }; break;
+
+    case TEXT: {
+      cout << "a line graph can't have a text axis\n";
+      throw Ex1(Errcode::BAD_ARGUMENT);
     }; break;
   }
 }
 
 void LineGraphWidget::createYAxis(AxisType a) {
   yAxisType = a;
+  StyledMultiShape2D *rot90 = c->addLayer(
+      new StyledMultiShape2D(c, m->getStyle(), M_PI / 2, x - w, y + h));
+  AngledMultiText *t90 = c->addLayer(
+      new AngledMultiText(c, yAxisTextStyle, M_PI / 2, x - w, y + h));
 
   switch (a) {
-    case linear: {
-      StyledMultiShape2D *rot90 = c->addLayer(
-          new StyledMultiShape2D(c, m->getStyle(), M_PI / 2, x - w, y + h));
-
-      AngledMultiText *t90 = c->addLayer(
-          new AngledMultiText(c, yAxisTextStyle, M_PI / 2, x - w, y + h));
-
+    case LINEAR: {
       yAxis = new LinearAxisWidget(rot90, t90, 0, 0, w, h);
     }; break;
 
-    case logar: {
-      StyledMultiShape2D *rot90 = c->addLayer(
-          new StyledMultiShape2D(c, m->getStyle(), M_PI / 2, x - w, y + h));
-
-      AngledMultiText *t90 = c->addLayer(
-          new AngledMultiText(c, yAxisTextStyle, M_PI / 2, x - w, y + h));
-
+    case LOGARITHMIC: {
       yAxis = new LogAxisWidget(rot90, t90, 0, 0, w, h);
     }; break;
+
+    case TEXT: {
+      cout << "a line graph can't have a text axis\n";
+      throw Ex1(Errcode::BAD_ARGUMENT);
+    }; break;
   }
-}
-void LineGraphWidget::setGraphTitle(std::string text) { graphTitle = text; }
-
-void LineGraphWidget::setXAxisTextStyle(const Style *xAxisTextStyle) {
-  this->xAxisTextStyle = xAxisTextStyle;
-}
-
-void LineGraphWidget::setYAxisTextStyle(const Style *yAxisTextStyle) {
-  this->yAxisTextStyle = yAxisTextStyle;
 }
 
 void LineGraphWidget::init() {
   if (xPoints.size() < 1 || yPoints.size() < 1) {
     cerr << "x and y vectors cannot be zero length";
     throw(Ex1(Errcode::VECTOR_ZERO_LENGTH));
+  }
+
+  if (xPoints.size() != yPoints.size()) {
+    cerr << "x and y vectors must be the same length";
+    throw(Ex1(Errcode::VECTOR_MISMATCHED_LENGTHS));
   }
 
   double xMin = xAxis->getMinBound();
@@ -85,7 +83,7 @@ void LineGraphWidget::init() {
   double xInterval = xAxis->getTickInterval();
   double yInterval = yAxis->getTickInterval();
 
-  if (xAxisType == AxisType::logar) {
+  if (xAxisType == AxisType::LOGARITHMIC) {
     double base = 1 / log(xInterval);
     double scale = w / abs(log(xMax) * base - log(xMin) * base);
     transform(xPoints.begin(), xPoints.end(), xPoints.begin(),
@@ -96,7 +94,7 @@ void LineGraphWidget::init() {
               [=](double d) -> double { return x + scale * d; });
   }
 
-  if (yAxisType == AxisType::logar) {
+  if (yAxisType == AxisType::LOGARITHMIC) {
     double base = 1 / log(yInterval);
     double scale = -h / abs(log(yMax) * base - log(yMin) * base);
     transform(

@@ -2,19 +2,13 @@
 
 #include "opengl/GraphWidget.hh"
 
-class Style;
-
 class LineGraphWidget : public GraphWidget {
  private:
   std::vector<double> xPoints;
   std::vector<double> yPoints;
-  std::string graphTitle;
   glm::vec4 &pointColor;
   double pointSize;
   void (StyledMultiShape2D::*markerFunction)(float, float, float, glm::vec4 &);
-  AxisType xAxisType;
-  AxisType yAxisType;
-
   std::unordered_map<char, void (StyledMultiShape2D::*)(float, float, float,
                                                         glm::vec4 &)>
       map;
@@ -40,8 +34,5 @@ class LineGraphWidget : public GraphWidget {
   void setYPoints(const std::vector<double> &yPoints);
   void createXAxis(AxisType a) override;
   void createYAxis(AxisType a) override;
-  void setGraphTitle(std::string text);
-  void setXAxisTextStyle(const Style *xAxisTextStyle);
-  void setYAxisTextStyle(const Style *yAxisTextStyle);
   void init() override;
 };

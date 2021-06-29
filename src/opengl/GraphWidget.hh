@@ -9,21 +9,25 @@
 class Style;
 
 class GraphWidget : public SuperWidget2D {
- protected:
-  std::string graphTitle;
-  const Style* xAxisTextStyle;
-  const Style* yAxisTextStyle;
-
  public:
   enum AxisType {
-    linear,
-    logar,
-    text,
+    LINEAR,
+    LOGARITHMIC,
+    TEXT,
   };
-  AxisWidget* xAxis;
-  AxisWidget* yAxis;
 
-  GraphWidget(Canvas* c, StyledMultiShape2D* m, MultiText* t, float x, float y,
+ protected:
+  std::string graphTitle;
+  const Style *xAxisTextStyle;
+  const Style *yAxisTextStyle;
+  AxisType xAxisType;
+  AxisType yAxisType;
+
+ public:
+  AxisWidget *xAxis;
+  AxisWidget *yAxis;
+
+  GraphWidget(Canvas *c, StyledMultiShape2D *m, MultiText *t, float x, float y,
               float w, float h)
       : SuperWidget2D(c, m, t, x, y, w, h),
         xAxisTextStyle(new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0)),
@@ -33,6 +37,6 @@ class GraphWidget : public SuperWidget2D {
   virtual void createXAxis(AxisType a) = 0;
   virtual void createYAxis(AxisType a) = 0;
   void setGraphTitle(std::string text);
-  void setXAxisTextStyle(const Style* xAxisTextStyle);
-  void setYAxisTextStyle(const Style* yAxisTextStyle);
+  void setXAxisTextStyle(const Style *xAxisTextStyle);
+  void setYAxisTextStyle(const Style *yAxisTextStyle);
 };
