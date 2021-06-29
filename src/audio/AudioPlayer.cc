@@ -14,20 +14,6 @@ AudioPlayer::~AudioPlayer() {
   // }
 }
 
-bool AudioPlayer::isLoaded() {
-  bool isLoaded = true;
-  mpv_node result;
-
-  int res = mpv_get_property(currentCtx, "filename", MPV_FORMAT_NODE, &result);
-
-  if (res == -10) {
-    isLoaded = false;
-  }
-
-  mpv_free_node_contents(&result);
-  return isLoaded;
-}
-
 void AudioPlayer::newContext(string name) {
   mpv_handle *ctx = mpv_create();
 
@@ -91,32 +77,46 @@ void AudioPlayer::revertSeek() {
 }
 
 void AudioPlayer::playlistNext() {
-  if (isLoaded()) {
-    const char *cmd[] = {"playlist-next", nullptr};
-    checkError(mpv_command(currentCtx, cmd));
-  } else {
-    printf("Playlist not yet loaded\n");
-  }
+  const char *cmd[] = {"playlist-next", nullptr};
+  checkError(mpv_command(currentCtx, cmd));
 }
 
 void AudioPlayer::playlistPlayIndex(int index) {
-  if (isLoaded()) {
-    char indexString[67];
-    sprintf(indexString, "%d", index);
-    const char *cmd[] = {"set", "playlist-pos", indexString, nullptr};
-    checkError(mpv_command(currentCtx, cmd));
-  } else {
-    printf("Playlist not yet loaded\n");
-  }
+  char indexString[67];
+  sprintf(indexString, "%d", index);
+  const char *cmd[] = {"set", "playlist-pos", indexString, nullptr};
+  checkError(mpv_command(currentCtx, cmd));
 }
 
 void AudioPlayer::playlistPrev() {
-  if (isLoaded()) {
-    const char *cmd[] = {"playlist-prev", nullptr};
-    checkError(mpv_command(currentCtx, cmd));
-  } else {
-    printf("Playlist not yet loaded\n");
-  }
+  const char *cmd[] = {"playlist-prev", nullptr};
+  checkError(mpv_command(currentCtx, cmd));
+}
+
+void AudioPlayer::playlistClear() {
+  const char *cmd[] = {"playlist-clear", nullptr};
+  checkError(mpv_command(currentCtx, cmd));
+}
+
+void AudioPlayer::playlistRemoveIndex(int index) {
+  char indexString[67];
+  sprintf(indexString, "%d", index);
+  const char *cmd[] = {"playlist-remove", indexString, nullptr};
+  checkError(mpv_command(currentCtx, cmd));
+}
+
+void AudioPlayer::playlistMove(int index1, int index2) {
+  char index1String[67];
+  char index2String[67];
+  sprintf(index1String, "%d", index1);
+  sprintf(index2String, "%d", index2);
+  const char *cmd[] = {"playlist-move", index1String, index2String, nullptr};
+  checkError(mpv_command(currentCtx, cmd));
+}
+
+void AudioPlayer::playlistShuffle() {
+  const char *cmd[] = {"playlist-shuffle", nullptr};
+  checkError(mpv_command(currentCtx, cmd));
 }
 
 void AudioPlayer::togglePause() {
@@ -146,3 +146,29 @@ void AudioPlayer::printCurrentTime() {
   printf("Track Time Elapsed in Seconds: %.2f\n", result.u.double_);
   mpv_free_node_contents(&result);
 }
+
+// as of now get_property on playlist/count returns one, and getting the
+// filename at that entry gives the filepath to the playlist.txt file, or the
+// youtube playlist link, instead of the components of these things
+#if 0
+void AudioPlayer::playlistPrintEntries() {
+  mpv_node result;
+  checkError(
+      mpv_get_property(currentCtx, "playlist/count", MPV_FORMAT_NODE, &result));
+  int numEntries = result.u.flag;
+  printf("num entries: %d", numEntries);
+  string entryNames[numEntries];
+  char property[85];
+
+  for (int i = 0; i < numEntries; i++) {
+    sprintf(property, "playlist/%d/filename", i);
+    checkError(
+        mpv_get_property(currentCtx, property, MPV_FORMAT_NODE, &result));
+    entryNames[i] = result.u.string;
+  }
+
+  for (auto &name : entryNames) {
+    printf("%s\n", name.c_str());
+  }
+}
+#endif
