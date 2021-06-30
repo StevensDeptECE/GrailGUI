@@ -27,8 +27,8 @@ class GraphWidget : public SuperWidget2D {
   AxisWidget *xAxis;
   AxisWidget *yAxis;
 
-  GraphWidget(Canvas *c, StyledMultiShape2D *m, MultiText *t, double x, double y,
-              double w, double h)
+  GraphWidget(Canvas *c, StyledMultiShape2D *m, MultiText *t, double x,
+              double y, double w, double h)
       : SuperWidget2D(c, m, t, x, y, w, h),
         xAxisTextStyle(new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0)),
         yAxisTextStyle(new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0)),

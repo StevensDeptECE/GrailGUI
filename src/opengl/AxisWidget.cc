@@ -50,7 +50,7 @@ void AxisWidget::addAxisTitle() {
         x + w / 2,
         y + h +
             ((isVert) ? (bottomOffset -= 10 + m->getStyle()->f->getHeight())
-                      : (bottomOffset += 10)),
+                      : (bottomOffset += 10 + m->getStyle()->f->getHeight())),
         m->getStyle()->f, axisTitle.c_str(), axisTitle.size());
   }
 }
