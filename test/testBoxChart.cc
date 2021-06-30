@@ -32,10 +32,10 @@ class TestBoxChart : public GLWin {
         c->addLayer(new MultiText(c, lineGraphTitleStyle));
 
     vector<double> data = {150, 350, 222, 100, 300,  //
-                          130, 300, 250, 190, 170,  //
-                          100, 50,  20,  150, 200,  //
-                          330, 200, 270, 180, 300,  //
-                          49,  247, 325, 114, 89};
+                           130, 300, 250, 190, 170,  //
+                           100, 50,  20,  150, 200,  //
+                           330, 200, 270, 180, 300,  //
+                           49,  247, 325, 114, 89};
 
     vector<string> names = {"red", "orange", "yellow", "green", "blue"};
 

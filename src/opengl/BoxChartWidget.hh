@@ -7,6 +7,10 @@ class BoxChartWidget : public GraphWidget {
   std::vector<double> data;
   std::vector<std::string> names;
   glm::vec4 &boxColor;
+  // glm::vec4 &whiskerColors;
+  // glm::vec4 rectOutlineColor;
+  // StyledMultiShape2D *rectOutlineStyle;
+
   double boxWidth;
   int pointsPerBox;
 
@@ -28,8 +32,5 @@ class BoxChartWidget : public GraphWidget {
   void setNames(const std::vector<std::string> &names);
   void createXAxis(AxisType a = AxisType::TEXT) override;
   void createYAxis(AxisType a = AxisType::LINEAR) override;
-
-  // void chart(const std::vector<float>& b, int rulerInterval,
-  //            int dataPointsPerBox, const std::vector<std::string>& boxNames);
   void init() override;
 };

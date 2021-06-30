@@ -97,48 +97,65 @@ void BoxChartWidget::init() {
   double barCorrection = -yscale * min;
   double halfBoxWidth = boxWidth / 2;
 
-  vector<Stats1D<double> *> summaries;
-
-  for (int i = 0; i < data.size(); i += pointsPerBox) {
+  for (int i = 0, counter = 1; i < data.size(); i += pointsPerBox, counter++) {
     auto first = data.begin() + i;
     auto last = data.begin() + i + pointsPerBox;
     vector<double> currentBoxData(first, last);
+    // TODO: remove this when stats1d is able to sort itself
+    sort(currentBoxData.begin(), currentBoxData.end());
     cout << "Box Number " << i + 1 << " Data: \n";
     for (auto &a : currentBoxData) {
       cout << a << '\n';
     }
+
+    Stats1D<double> untransformedData(&currentBoxData[0], pointsPerBox);
+    cout << untransformedData << '\n';
+
     transform(currentBoxData.begin(), currentBoxData.end(),
               currentBoxData.begin(),
               [=](double d) -> double { return y + h + yscale * d; });
+    cout << "Transformed Number " << i + 1 << " Data: \n";
+    for (auto &a : currentBoxData) {
+      cout << a << '\n';
+    }
 
+    // TODO: stats1d has a bug where its 5 num summary is reversed from normal,
+    // which is actually good for what I want to do here, but not for the rest
+    // of statistics, once stats1d is updated, this code will need to get
+    // changed
     Stats1D<double> dataSummary(&currentBoxData[0], pointsPerBox);
     cout << dataSummary << '\n';
-    summaries.push_back(&dataSummary);
-  }
 
-  for (int i = 1; i < names.size() + 1; i++) {
-    double xLocation = x + xscale * i - halfBoxWidth;
-    double yTopLine = summaries[i - 1]->getSummary().max;
-    double yBottomLine = summaries[i - 1]->getSummary().min;
-    double yMedianLine = summaries[i - 1]->getSummary().median;
-    double yBoxTop = summaries[i - 1]->getSummary().q1;
-    double yBoxBottom = summaries[i - 1]->getSummary().q3;
+    double xLocation = x + xscale * counter - halfBoxWidth;
+    double yTopLine = dataSummary.getSummary().min;
+    double yBottomLine = dataSummary.getSummary().max;
+    double yMedianLine = dataSummary.getSummary().median;
+    double yBoxTop = dataSummary.getSummary().q1;
+    double yBoxBottom = dataSummary.getSummary().q3;
 
     // top whisker line
+    //
     m->drawLine(xLocation, yTopLine, xLocation + boxWidth, yTopLine,
                 grail::black);
     // bottom whisker line
     m->drawLine(xLocation, yBottomLine, xLocation + boxWidth, yBottomLine,
                 grail::black);
 
+    // median line
+    m->drawLine(xLocation, yMedianLine, xLocation + boxWidth, yMedianLine,
+                grail::black);
+
+    // central lines
+    m->drawLine(xLocation + halfBoxWidth, yBottomLine, xLocation + halfBoxWidth,
+                yBoxBottom, grail::black);
+    m->drawLine(xLocation + halfBoxWidth, yTopLine, xLocation + halfBoxWidth,
+                yBoxTop, grail::black);
+
     // rounded rectangle box
     m->fillRoundRect(xLocation, yBoxTop, boxWidth, -yBoxTop + yBoxBottom, 5, 5,
                      boxColor);
     m->drawRoundRect(xLocation, yBoxTop, boxWidth, -yBoxTop + yBoxBottom, 5, 5,
                      grail::black);
-
-    m->drawLine(xLocation, yMedianLine, xLocation + boxWidth, yMedianLine,
-                grail::black);
   }
 
   // last things to draw
