@@ -5,10 +5,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "g++ - Build and debug active file",
+      "name": "g++ - run a.exe",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${fileDirname}/a.out",
+      "program": "${fileDirname}/a.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
@@ -22,8 +22,7 @@
           "ignoreFailures": true
         }
       ],
-      "preLaunchTask": "C/C++: g++ build active file",
-      "miDebuggerPath": "/mingw64/bin/gdb"
+      "miDebuggerPath": "C:\\msys64\\mingw64\\bin\\gdb.exe"
     }
   ]
 }
