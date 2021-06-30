@@ -160,8 +160,7 @@ void BoxChartWidget::init() {
 
   // last things to draw
   if (graphTitle.size())
-    t->addCentered(x, y - m->getStyle()->f->getHeight(), w,
-                   m->getStyle()->f->getHeight() + 10, m->getStyle()->f,
+    t->addCentered(x+w/2, y - m->getStyle()->f->getHeight(), m->getStyle()->f,
                    graphTitle.c_str(), graphTitle.size());
   m->drawLine(x, y, x + w, y, grail::black);
   m->drawLine(x + w, y, x + w, y + h, grail::black);
