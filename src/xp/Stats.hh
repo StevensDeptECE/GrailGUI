@@ -187,8 +187,8 @@ struct Stats1D<T>::Summary Stats1D<T>::getSummary() {
     sorted = !sorted;
   }
   struct Summary fn;
-  fn.min = array[0];
-  fn.max = array[size - 1];
+  fn.min = sorted_array[0];
+  fn.max = sorted_array[size - 1];
 
   double q1_ind = .25 * size;
   double mid_ind = .5 * size;
@@ -196,25 +196,25 @@ struct Stats1D<T>::Summary Stats1D<T>::getSummary() {
   double epsilon = 1 / 10000;
   cout << floor(q1_ind) << " " << ceil(q1_ind);
   if (fmod(q1_ind, 1) > epsilon)
-    fn.q1 = (array[static_cast<uint32_t>(floor(q1_ind))] +
-             array[static_cast<uint32_t>(ceil(q1_ind))]) /
+    fn.q1 = (sorted_array[static_cast<uint32_t>(floor(q1_ind))] +
+             sorted_array[static_cast<uint32_t>(ceil(q1_ind))]) /
             2.0;
   else
-    fn.q1 = array[static_cast<uint32_t>(q1_ind)];
+    fn.q1 = sorted_array[static_cast<uint32_t>(q1_ind)];
 
   if (fmod(mid_ind, 1) > epsilon)
-    fn.median = (array[static_cast<uint32_t>(floor(mid_ind))] +
-                 array[static_cast<uint32_t>(ceil(mid_ind))]) /
+    fn.median = (sorted_array[static_cast<uint32_t>(floor(mid_ind))] +
+                 sorted_array[static_cast<uint32_t>(ceil(mid_ind))]) /
                 2.0;
   else
-    fn.median = array[static_cast<uint32_t>(mid_ind)];
+    fn.median = sorted_array[static_cast<uint32_t>(mid_ind)];
 
   if (fmod(q3_ind, 1) > epsilon)
-    fn.q3 = (array[static_cast<uint32_t>(floor(q3_ind))] +
-             array[static_cast<uint32_t>(ceil(q3_ind))]) /
+    fn.q3 = (sorted_array[static_cast<uint32_t>(floor(q3_ind))] +
+             sorted_array[static_cast<uint32_t>(ceil(q3_ind))]) /
             2.0;
   else
-    fn.q3 = array[static_cast<uint32_t>(q3_ind)];
+    fn.q3 = sorted_array[static_cast<uint32_t>(q3_ind)];
 
   fivenum = make_unique<struct Summary>(fn);
   return *fivenum.get();

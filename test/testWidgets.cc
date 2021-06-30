@@ -81,16 +81,16 @@ class TestWidgets : public GLWin {
     chart.init();
   }
 
-  void testBoxChart(StyledMultiShape2D *gui, MultiText *guiText) {
-    vector<float> y = {150, 350, 222, 100, 300, 130, 300, 250, 190,
-                       170, 100, 50,  20,  150, 200, 330, 200, 270,
-                       180, 300, 49,  247, 325, 114, 89};
-    vector<string> labels2 = {"box 1", "box 2", "box 3", "box 4", "box 5"};
-    BoxChartkWidget chart(gui, guiText, 50, 320, 400, 200, y);
-    chart.chart(y, 50, 5, labels2);
-    chart.setTitle("Title");
-    chart.init();
-  }
+  // void testBoxChart(StyledMultiShape2D *gui, MultiText *guiText) {
+  //   vector<float> y = {150, 350, 222, 100, 300, 130, 300, 250, 190,
+  //                      170, 100, 50,  20,  150, 200, 330, 200, 270,
+  //                      180, 300, 49,  247, 325, 114, 89};
+  //   vector<string> labels2 = {"box 1", "box 2", "box 3", "box 4", "box 5"};
+  //   BoxChartWidget chart(gui, guiText, 50, 320, 400, 200, y);
+  //   chart.chart(y, 50, 5, labels2);
+  //   chart.setTitle("Title");
+  //   chart.init();
+  // }
 
   void testGapMinder(StyledMultiShape2D *gui, MultiText *guiText) {
     vector<float> x = {100, 220, 50, 150, 300, 290, 230};
@@ -157,7 +157,7 @@ class TestWidgets : public GLWin {
 
     const Style *graphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
     testCandlestick(gui, guiText);
-    testBoxChart(gui, guiText);
+    //testBoxChart(gui, guiText);
     testGapMinder(gui, guiText);
     testSparkline(gui, guiText);
     // testButton(gui, guiText);
