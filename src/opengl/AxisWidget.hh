@@ -47,11 +47,24 @@ class AxisWidget : public Widget2D {
   double getTickInterval();
   double getMinBound();
   double getMaxBound();
+  // these three functions are declared as purely virtual, and it will be up to
+  // the children to implement them if they make sense, or set them to be
+  // private so that the compiler yells at you when using a function that
+  // doesn't make sense for that axis type
   virtual void setBounds(double minBound, double maxBound) = 0;
   virtual void setTickInterval(double tickInterval) = 0;
+  virtual void setTickLabels(std::vector<std::string> tickLabels) = 0;
 };
 
 class LinearAxisWidget : public AxisWidget {
+  // it doesn't make sense for a linear axis to be able to set its tick labels,
+  // logically they should be numbers instead of labels, so the function is set
+  // to private so that the compiler complains if a linear axis uses it, and if
+  // this somehow gets past the compiler then its an empty definition so no
+  // damage can be done
+  using AxisWidget::setTickLabels;
+  void setTickLabels(std::vector<std::string>) override{};
+
  public:
   LinearAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
                    double w, double h);
@@ -63,10 +76,12 @@ class LinearAxisWidget : public AxisWidget {
 class LogAxisWidget : public AxisWidget {
  private:
   int base, power;
+  using AxisWidget::setTickLabels;
+  void setTickLabels(std::vector<std::string>) override{};
 
  public:
-  LogAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y, double w,
-                double h);
+  LogAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
+                double w, double h);
   void setBounds(double minBound, double maxBound) override;
   void setTickInterval(double tickInterval) override;
   void init() override;
@@ -81,8 +96,8 @@ class TextAxisWidget : public AxisWidget {
   std::vector<std::string> tickLabels;
 
  public:
-  TextAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y, double w,
-                 double h);
-  void setTickLabels(std::vector<std::string> tickLabels);
+  TextAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
+                 double w, double h);
+  void setTickLabels(std::vector<std::string> tickLabels) override;
   void init() override;
 };

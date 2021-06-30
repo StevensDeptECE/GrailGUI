@@ -15,7 +15,6 @@ class BoxChartWidget : public GraphWidget {
   int pointsPerBox;
 
  public:
-  TextAxisWidget *xAxis;
   BoxChartWidget(Canvas *c, StyledMultiShape2D *m, MultiText *t, double x,
                  double y, double w, double h)
       : GraphWidget(c, m, t, x, y, w, h),

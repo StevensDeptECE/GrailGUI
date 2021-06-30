@@ -23,6 +23,8 @@ class GraphWidget : public SuperWidget2D {
   AxisType xAxisType;
   AxisType yAxisType;
 
+  void commonRender();
+
  public:
   AxisWidget *xAxis;
   AxisWidget *yAxis;
