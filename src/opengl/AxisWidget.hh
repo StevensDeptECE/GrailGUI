@@ -35,7 +35,7 @@ class AxisWidget : public Widget2D {
              std::string axisTitle = "",
              const glm::vec4 &axisColor = grail::black,
              const glm::vec4 &tickColor = grail::black, int tickFormatWidth = 2,
-             int tickFormatPrecision = 2);
+             int tickFormatPrecision = 2, double bottomOffset = 0);
 
   void setTickDrawSize(double i);
   void setShowTicks(bool b);
