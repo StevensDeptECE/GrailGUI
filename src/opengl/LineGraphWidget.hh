@@ -4,6 +4,7 @@
 
 class LineGraphWidget : public GraphWidget {
  private:
+  const Style *dataStyle;
   std::vector<double> xPoints;
   std::vector<double> yPoints;
   glm::vec4 &pointColor;
@@ -15,9 +16,9 @@ class LineGraphWidget : public GraphWidget {
       map;
 
  public:
-  LineGraphWidget(Canvas *c, StyledMultiShape2D *m, MultiText *t, double x,
-                  double y, double w, double h)
-      : GraphWidget(c, m, t, x, y, w, h),
+  LineGraphWidget(Canvas *c, double x, double y, double w, double h)
+      : GraphWidget(c, x, y, w, h),
+        dataStyle(nullptr),
         xPoints(std::vector<double>()),
         yPoints(std::vector<double>()),
         pointColor(grail::blue),
@@ -30,6 +31,8 @@ class LineGraphWidget : public GraphWidget {
     map['p'] = &StyledMultiShape2D::drawPentagonMarker;
     map['c'] = &StyledMultiShape2D::drawCrossMarker;
   }
+
+  void setDataStyle(const Style *s);
   void setPointFormat(char pt, double size, glm::vec4 &color);
   void setXPoints(const std::vector<double> &xPoints);
   void setYPoints(const std::vector<double> &yPoints);

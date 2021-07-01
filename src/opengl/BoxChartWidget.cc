@@ -9,6 +9,8 @@
 
 using namespace std;
 
+void BoxChartWidget::setDataStyle(const Style *s) { dataStyle = s; }
+
 void BoxChartWidget::setBoxWidth(double width) { boxWidth = width; }
 
 void BoxChartWidget::setBoxColors(vector<glm::vec4> &colors) {
@@ -21,10 +23,6 @@ void BoxChartWidget::setOutlineColors(vector<glm::vec4> &colors) {
   outlineColors = colors;
 }
 
-// void BoxChartWidget::setOutlineThickness(int n) { outlineThickness = n; }
-
-// void BoxChartWidget::setWhiskerThickness(int n) { whiskerThickness = n; }
-
 void BoxChartWidget::setPointsPerBox(int n) { pointsPerBox = n; }
 
 void BoxChartWidget::setData(const vector<double> &data) { this->data = data; }
@@ -36,6 +34,7 @@ void BoxChartWidget::setNames(const ::vector<std::string> &names) {
 void BoxChartWidget::createXAxis(AxisType a) {
   xAxisType = a;
 
+  StyledMultiShape2D *mnew = c->addLayer(new StyledMultiShape2D(c, xAxisStyle));
   MultiText *tnew = c->addLayer(new MultiText(c, xAxisTextStyle));
 
   switch (a) {
@@ -50,7 +49,7 @@ void BoxChartWidget::createXAxis(AxisType a) {
     }; break;
 
     case TEXT: {
-      xAxis = new TextAxisWidget(m, tnew, x, y, w, h);
+      xAxis = new TextAxisWidget(mnew, tnew, x, y, w, h);
       xAxis->setTickLabels(names);
     }; break;
   }
@@ -60,7 +59,7 @@ void BoxChartWidget::createYAxis(AxisType a) {
   yAxisType = a;
 
   StyledMultiShape2D *rot90 = c->addLayer(
-      new StyledMultiShape2D(c, m->getStyle(), numbers::pi / 2, x - w, y + h));
+      new StyledMultiShape2D(c, yAxisStyle, numbers::pi / 2, x - w, y + h));
   AngledMultiText *t90 = c->addLayer(
       new AngledMultiText(c, yAxisTextStyle, numbers::pi / 2, x - w, y + h));
 
@@ -99,6 +98,8 @@ void BoxChartWidget::init() {
     throw(Ex1(Errcode::VECTOR_MISMATCHED_LENGTHS));
   }
 
+  StyledMultiShape2D *m = c->addLayer(new StyledMultiShape2D(c, dataStyle));
+
   double min = yAxis->getMinBound();
   double max = yAxis->getMaxBound();
 
@@ -111,9 +112,6 @@ void BoxChartWidget::init() {
   auto currentBoxColor = boxColors.begin();
   auto currentWhiskerColor = whiskerColors.begin();
   auto currentOutlineColor = outlineColors.begin();
-
-  // StyledMultiShape2D *whisker = c->addLayer(new StyledMultiShape2D(c, new
-  // Style("TIMES")))
 
   for (int i = 0, counter = 1; i < data.size(); i += pointsPerBox, counter++) {
     auto first = data.begin() + i;
