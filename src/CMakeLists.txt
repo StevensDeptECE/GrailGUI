@@ -5,7 +5,7 @@ add_subdirectory(opengl)
 add_subdirectory(util)
 add_subdirectory(xdl)
 
-add_library(grail SHARED
+add_library(grail
             ${PROJECT_SOURCE_DIR}/include/glad/glad.c
             ${grail-audio}
             ${grail-csp} 

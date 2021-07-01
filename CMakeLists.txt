@@ -22,11 +22,12 @@ set(CMAKE_DEBUG_POSTFIX d)
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_lower)
 
-if(build_type_lower EQUAL "debug")
-    message(STATUS "Debug mode:")
+message(STATUS "Build mode: ${CMAKE_BUILD_TYPE}")
+if(build_type_lower MATCHES "debug")
     message(STATUS "Building shared libs")
     option(BUILD_SHARED_LIBS ON)
 else()
+
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
     include(CheckIPOSupported)
     check_ipo_supported(RESULT supported OUTPUT error)
