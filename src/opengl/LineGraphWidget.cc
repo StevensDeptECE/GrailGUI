@@ -51,11 +51,11 @@ void LineGraphWidget::createYAxis(AxisType a) {
 
   switch (a) {
     case LINEAR: {
-      yAxis = new LinearAxisWidget(rot90, t90, 0, 0, w, h);
+      yAxis = new LinearAxisWidget(rot90, t90, 0, 0, h, w);
     }; break;
 
     case LOGARITHMIC: {
-      yAxis = new LogAxisWidget(rot90, t90, 0, 0, w, h);
+      yAxis = new LogAxisWidget(rot90, t90, 0, 0, h, w);
     }; break;
 
     case TEXT: {

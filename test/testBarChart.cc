@@ -39,7 +39,7 @@ class TestBarChart : public GLWin {
     vector<glm::vec4> colors = {grail::red,   grail::darkred, grail::yellow,
                                 grail::green, grail::blue,    grail::purple};
 
-    BarChartWidget bcw(c, m, barChartTitleText, 100, 100, 800, 800);
+    BarChartWidget bcw(c, m, barChartTitleText, 200, 200, 600, 600);
 
     // setting general things for the graph
     // the axis text styles must be set before

@@ -11,15 +11,25 @@ using namespace std;
 
 void BoxChartWidget::setBoxWidth(double width) { boxWidth = width; }
 
-void BoxChartWidget::setBoxColor(glm::vec4 &color) { boxColor = color; }
+void BoxChartWidget::setBoxColors(vector<glm::vec4> &colors) {
+  boxColors = colors;
+}
+void BoxChartWidget::setWhiskerColors(vector<glm::vec4> &colors) {
+  whiskerColors = colors;
+}
+void BoxChartWidget::setOutlineColors(vector<glm::vec4> &colors) {
+  outlineColors = colors;
+}
+
+// void BoxChartWidget::setOutlineThickness(int n) { outlineThickness = n; }
+
+// void BoxChartWidget::setWhiskerThickness(int n) { whiskerThickness = n; }
 
 void BoxChartWidget::setPointsPerBox(int n) { pointsPerBox = n; }
 
-void BoxChartWidget::setData(const std::vector<double> &data) {
-  this->data = data;
-}
+void BoxChartWidget::setData(const vector<double> &data) { this->data = data; }
 
-void BoxChartWidget::setNames(const std::vector<std::string> &names) {
+void BoxChartWidget::setNames(const ::vector<std::string> &names) {
   this->names = names;
 }
 
@@ -56,7 +66,7 @@ void BoxChartWidget::createYAxis(AxisType a) {
 
   switch (a) {
     case LINEAR: {
-      yAxis = new LinearAxisWidget(rot90, t90, 0, 0, w, h);
+      yAxis = new LinearAxisWidget(rot90, t90, 0, 0, h, w);
     }; break;
 
     case LOGARITHMIC: {
@@ -98,34 +108,25 @@ void BoxChartWidget::init() {
   double barCorrection = -yscale * min;
   double halfBoxWidth = boxWidth / 2;
 
+  auto currentBoxColor = boxColors.begin();
+  auto currentWhiskerColor = whiskerColors.begin();
+  auto currentOutlineColor = outlineColors.begin();
+
+  // StyledMultiShape2D *whisker = c->addLayer(new StyledMultiShape2D(c, new
+  // Style("TIMES")))
+
   for (int i = 0, counter = 1; i < data.size(); i += pointsPerBox, counter++) {
     auto first = data.begin() + i;
     auto last = data.begin() + i + pointsPerBox;
     vector<double> currentBoxData(first, last);
-    // TODO: remove this when stats1d is able to sort itself
-    sort(currentBoxData.begin(), currentBoxData.end());
-    cout << "Box Number " << i + 1 << " Data: \n";
-    for (auto &a : currentBoxData) {
-      cout << a << '\n';
-    }
 
     Stats1D<double> untransformedData(&currentBoxData[0], pointsPerBox);
-    cout << untransformedData << '\n';
 
     transform(currentBoxData.begin(), currentBoxData.end(),
               currentBoxData.begin(),
               [=, this](double d) -> double { return y + h + yscale * d; });
-    cout << "Transformed Number " << i + 1 << " Data: \n";
-    for (auto &a : currentBoxData) {
-      cout << a << '\n';
-    }
 
-    // TODO: stats1d has a bug where its 5 num summary is reversed from normal,
-    // which is actually good for what I want to do here, but not for the rest
-    // of statistics, once stats1d is updated, this code will need to get
-    // changed
     Stats1D<double> dataSummary(&currentBoxData[0], pointsPerBox);
-    cout << dataSummary << '\n';
 
     double xLocation = x + xscale * counter - halfBoxWidth;
     double yTopLine = dataSummary.getSummary().min;
@@ -135,28 +136,37 @@ void BoxChartWidget::init() {
     double yBoxBottom = dataSummary.getSummary().q3;
 
     // top whisker line
-    //
     m->drawLine(xLocation, yTopLine, xLocation + boxWidth, yTopLine,
-                grail::black);
+                *currentWhiskerColor);
     // bottom whisker line
     m->drawLine(xLocation, yBottomLine, xLocation + boxWidth, yBottomLine,
-                grail::black);
+                *currentWhiskerColor);
 
     // median line
     m->drawLine(xLocation, yMedianLine, xLocation + boxWidth, yMedianLine,
-                grail::black);
+                *currentOutlineColor);
 
     // central lines
     m->drawLine(xLocation + halfBoxWidth, yBottomLine, xLocation + halfBoxWidth,
-                yBoxBottom, grail::black);
+                yBoxBottom, *currentWhiskerColor);
     m->drawLine(xLocation + halfBoxWidth, yTopLine, xLocation + halfBoxWidth,
-                yBoxTop, grail::black);
+                yBoxTop, *currentWhiskerColor);
 
     // rounded rectangle box
     m->fillRoundRect(xLocation, yBoxTop, boxWidth, -yBoxTop + yBoxBottom, 5, 5,
-                     boxColor);
+                     *currentBoxColor);
     m->drawRoundRect(xLocation, yBoxTop, boxWidth, -yBoxTop + yBoxBottom, 5, 5,
-                     grail::black);
+                     *currentOutlineColor);
+
+    currentBoxColor++;
+    currentWhiskerColor++;
+    currentOutlineColor++;
+
+    if (currentBoxColor == boxColors.end()) currentBoxColor = boxColors.begin();
+    if (currentWhiskerColor == whiskerColors.end())
+      currentWhiskerColor = whiskerColors.begin();
+    if (currentOutlineColor == outlineColors.end())
+      currentOutlineColor = outlineColors.begin();
   }
 
   commonRender();
