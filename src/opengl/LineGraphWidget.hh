@@ -1,8 +1,5 @@
 #pragma once
 
-#define _USE_MATH_DEFINES
-#include <cmath>
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
