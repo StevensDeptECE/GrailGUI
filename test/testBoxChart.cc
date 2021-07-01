@@ -42,7 +42,7 @@ class TestBoxChart : public GLWin {
     vector<glm::vec4> whiskerColors = {grail::cyan, grail::purple};
     vector<glm::vec4> outlineColors = {grail::darkblue, grail::darkgreen};
 
-    BoxChartWidget bcw(c, m, boxChartTitleText, 100, 100, 800, 800);
+    BoxChartWidget bcw(c, m, boxChartTitleText, 300, 300, 400, 200);
 
     // setting general things for the graph
     // the axis text styles must be set before

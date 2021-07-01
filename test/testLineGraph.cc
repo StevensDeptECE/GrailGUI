@@ -35,7 +35,7 @@ class TestLineGraph : public GLWin {
     vector<double> values = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20};
     vector<double> logValues = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
 
-    LineGraphWidget lgw(c, m, lineGraphTitleText, 100, 100, 800, 800);
+    LineGraphWidget lgw(c, m, lineGraphTitleText, 200, 200, 300, 500);
     // setting general things for the graph
     // the axis text styles must be set before
     // creating the axes

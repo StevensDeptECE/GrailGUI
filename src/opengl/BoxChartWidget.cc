@@ -65,7 +65,7 @@ void BoxChartWidget::createYAxis(AxisType a) {
 
   switch (a) {
     case LINEAR: {
-      yAxis = new LinearAxisWidget(rot90, t90, 0, 0, w, h);
+      yAxis = new LinearAxisWidget(rot90, t90, 0, 0, h, w);
     }; break;
 
     case LOGARITHMIC: {
@@ -119,26 +119,13 @@ void BoxChartWidget::init() {
     auto last = data.begin() + i + pointsPerBox;
     vector<double> currentBoxData(first, last);
 
-    cout << "Box Number " << i + 1 << " Data: \n";
-    for (auto &a : currentBoxData) {
-      cout << a << '\n';
-    }
-
     Stats1D<double> untransformedData(&currentBoxData[0], pointsPerBox);
-
-    cout << untransformedData << '\n';
 
     transform(currentBoxData.begin(), currentBoxData.end(),
               currentBoxData.begin(),
               [=](double d) -> double { return y + h + yscale * d; });
 
-    cout << "Transformed Number " << i + 1 << " Data: \n";
-    for (auto &a : currentBoxData) {
-      cout << a << '\n';
-    }
-
     Stats1D<double> dataSummary(&currentBoxData[0], pointsPerBox);
-    cout << dataSummary << '\n';
 
     double xLocation = x + xscale * counter - halfBoxWidth;
     double yTopLine = dataSummary.getSummary().min;
