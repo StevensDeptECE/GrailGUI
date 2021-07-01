@@ -36,5 +36,5 @@ fi
 
 cd .. || exit 1
 if [[ ! -L "compile_commands.json" ]]; then
-	ln -s build/compile_commands.json compile_commands.json
+	cp build/compile_commands.json compile_commands.json
 fi

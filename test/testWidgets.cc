@@ -1,6 +1,5 @@
-#define _USE_MATH_DEFINES
-
 #include <cmath>
+#include <numbers>
 #include <string>
 #include <vector>
 
@@ -135,7 +134,7 @@ class TestWidgets : public GLWin {
     const char thing[] = "hello world";
     // guiText->add(0, 50, s->f, thing, strlen(thing));
     AngledMultiText *am =
-        c->addLayer(new AngledMultiText(c, s, M_PI / 2, 20, 500));
+        c->addLayer(new AngledMultiText(c, s, numbers::pi / 2, 20, 500));
     am->add(200, 600, s->f, thing, strlen(thing));
   }
 
@@ -153,11 +152,11 @@ class TestWidgets : public GLWin {
     MultiText *guiText = c->addLayer(new MultiText(c, s));
 
     StyledMultiShape2D *p =
-        c->addLayer(new StyledMultiShape2D(c, s, -M_PI / 4, 0, 0));
+        c->addLayer(new StyledMultiShape2D(c, s, -numbers::pi / 4, 0, 0));
 
     const Style *graphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
     testCandlestick(gui, guiText);
-    //testBoxChart(gui, guiText);
+    // testBoxChart(gui, guiText);
     testGapMinder(gui, guiText);
     testSparkline(gui, guiText);
     // testButton(gui, guiText);

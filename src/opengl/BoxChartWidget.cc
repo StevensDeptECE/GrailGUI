@@ -1,6 +1,7 @@
 #include "opengl/BoxChartWidget.hh"
 
 #include <algorithm>
+#include <numbers>
 
 #include "opengl/AngledMultiText.hh"
 #include "util/Ex.hh"
@@ -49,9 +50,9 @@ void BoxChartWidget::createYAxis(AxisType a) {
   yAxisType = a;
 
   StyledMultiShape2D *rot90 = c->addLayer(
-      new StyledMultiShape2D(c, m->getStyle(), M_PI / 2, x - w, y + h));
+      new StyledMultiShape2D(c, m->getStyle(), numbers::pi / 2, x - w, y + h));
   AngledMultiText *t90 = c->addLayer(
-      new AngledMultiText(c, yAxisTextStyle, M_PI / 2, x - w, y + h));
+      new AngledMultiText(c, yAxisTextStyle, numbers::pi / 2, x - w, y + h));
 
   switch (a) {
     case LINEAR: {
@@ -113,7 +114,7 @@ void BoxChartWidget::init() {
 
     transform(currentBoxData.begin(), currentBoxData.end(),
               currentBoxData.begin(),
-              [=,this](double d) -> double { return y + h + yscale * d; });
+              [=, this](double d) -> double { return y + h + yscale * d; });
     cout << "Transformed Number " << i + 1 << " Data: \n";
     for (auto &a : currentBoxData) {
       cout << a << '\n';
