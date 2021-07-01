@@ -36,6 +36,8 @@ class TestBarChart : public GLWin {
 
     vector<string> names = {"red",   "orange", "yellow",
                             "green", "blue",   "purple"};
+    vector<glm::vec4> colors = {grail::red,   grail::darkred, grail::yellow,
+                                grail::green, grail::blue,    grail::purple};
 
     BarChartWidget bcw(c, m, barChartTitleText, 100, 100, 800, 800);
 
@@ -44,6 +46,7 @@ class TestBarChart : public GLWin {
     // creating the axes
     bcw.setGraphTitle("Test Title");
     bcw.setBarWidth(45);
+    bcw.setBarColors(colors);
     bcw.setXAxisTextStyle(xAxisTitleStyle);
     bcw.setYAxisTextStyle(yAxisTitleStyle);
 

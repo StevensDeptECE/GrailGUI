@@ -6,7 +6,7 @@ class BarChartWidget : public GraphWidget {
  private:
   std::vector<std::string> names;
   std::vector<double> values;
-  glm::vec4 &barColor;
+  std::vector<glm::vec4> barColors;
   double barWidth;
 
  public:
@@ -15,11 +15,11 @@ class BarChartWidget : public GraphWidget {
       : GraphWidget(c, m, t, x, y, w, h),
         values(std::vector<double>()),
         names(std::vector<std::string>()),
-        barColor(grail::blue),
+        barColors({grail::blue}),
         barWidth(20) {}
 
   void setBarWidth(double width);
-  void setBarColor(glm::vec4 &color);
+  void setBarColors(const std::vector<glm::vec4> &colors);
   void setValues(const std::vector<double> &values);
   void setNames(const std::vector<std::string> &names);
   void createXAxis(AxisType a = AxisType::TEXT) override;

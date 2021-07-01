@@ -9,8 +9,9 @@ using namespace std;
 
 void BarChartWidget::setBarWidth(double width) { barWidth = width; }
 
-void BarChartWidget::setBarColor(glm::vec4 &color) { barColor = color; }
-
+void BarChartWidget::setBarColors(const std::vector<glm::vec4> &colors) {
+  barColors = colors;
+}
 void BarChartWidget::setValues(const vector<double> &values) {
   this->values = values;
 }
@@ -100,12 +101,18 @@ void BarChartWidget::init() {
 
   double xscale = w / (values.size() + 1);
   double halfBarWidth = barWidth / 2;
+
+  auto currentColor = barColors.begin();
   for (int i = 1; i < values.size() + 1; i++) {
     double barXLocation = x + xscale * i - halfBarWidth;
     double barYLocation = values[i - 1] + barCorrection;
 
     m->fillRectangle(barXLocation, barYLocation, barWidth, y + h - barYLocation,
-                     barColor);
+                     *currentColor);
+    currentColor++;
+    if (currentColor == barColors.end()) {
+      currentColor = barColors.begin();
+    }
   }
 
   commonRender();
