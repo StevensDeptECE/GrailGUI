@@ -12,6 +12,11 @@ void BarChartWidget::setBarWidth(double width) { barWidth = width; }
 void BarChartWidget::setBarColors(const std::vector<glm::vec4> &colors) {
   barColors = colors;
 }
+
+void BarChartWidget::setBarOutlineColors(const std::vector<glm::vec4> &colors) {
+  barOutlineColors = colors;
+}
+
 void BarChartWidget::setValues(const vector<double> &values) {
   this->values = values;
 }
@@ -22,6 +27,7 @@ void BarChartWidget::setNames(const vector<string> &names) {
 
 void BarChartWidget::createXAxis(AxisType a) {
   xAxisType = a;
+  StyledMultiShape2D *mnew = c->addLayer(new StyledMultiShape2D(c, xAxisStyle));
   MultiText *tnew = c->addLayer(new MultiText(c, xAxisTextStyle));
 
   switch (a) {
@@ -36,7 +42,7 @@ void BarChartWidget::createXAxis(AxisType a) {
     }; break;
 
     case TEXT: {
-      xAxis = new TextAxisWidget(m, tnew, x, y, w, h);
+      xAxis = new TextAxisWidget(mnew, tnew, x, y, w, h);
       xAxis->setTickLabels(names);
     }; break;
   }
@@ -45,7 +51,7 @@ void BarChartWidget::createXAxis(AxisType a) {
 void BarChartWidget::createYAxis(AxisType a) {
   yAxisType = a;
   StyledMultiShape2D *rot90 = c->addLayer(
-      new StyledMultiShape2D(c, m->getStyle(), M_PI / 2, x - w, y + h));
+      new StyledMultiShape2D(c, yAxisStyle, M_PI / 2, x - w, y + h));
   AngledMultiText *t90 = c->addLayer(
       new AngledMultiText(c, yAxisTextStyle, M_PI / 2, x - w, y + h));
 
@@ -76,6 +82,8 @@ void BarChartWidget::init() {
     throw(Ex1(Errcode::VECTOR_MISMATCHED_LENGTHS));
   }
 
+  StyledMultiShape2D *m = c->addLayer(new StyledMultiShape2D(c, dataStyle));
+
   double min = yAxis->getMinBound();
   double max = yAxis->getMaxBound();
 
@@ -102,16 +110,23 @@ void BarChartWidget::init() {
   double xscale = w / (values.size() + 1);
   double halfBarWidth = barWidth / 2;
 
-  auto currentColor = barColors.begin();
+  auto barColor = barColors.begin();
+  auto outlineColor = barOutlineColors.begin();
   for (int i = 1; i < values.size() + 1; i++) {
     double barXLocation = x + xscale * i - halfBarWidth;
     double barYLocation = values[i - 1] + barCorrection;
 
+    m->drawRectangle(barXLocation, barYLocation, barWidth, y + h - barYLocation,
+                     *outlineColor);
     m->fillRectangle(barXLocation, barYLocation, barWidth, y + h - barYLocation,
-                     *currentColor);
-    currentColor++;
-    if (currentColor == barColors.end()) {
-      currentColor = barColors.begin();
+                     *barColor);
+    barColor++;
+    outlineColor++;
+    if (barColor == barColors.end()) {
+      barColor = barColors.begin();
+    }
+    if (outlineColor == barOutlineColors.end()) {
+      outlineColor = barOutlineColors.begin();
     }
   }
 
