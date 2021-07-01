@@ -38,6 +38,9 @@ class TestBoxChart : public GLWin {
                            49,  247, 325, 114, 89};
 
     vector<string> names = {"red", "orange", "yellow", "green", "blue"};
+    vector<glm::vec4> boxColors = {grail::red, grail::green, grail::blue};
+    vector<glm::vec4> whiskerColors = {grail::cyan, grail::purple};
+    vector<glm::vec4> outlineColors = {grail::darkblue, grail::darkgreen};
 
     BoxChartWidget bcw(c, m, boxChartTitleText, 100, 100, 800, 800);
 
@@ -47,6 +50,9 @@ class TestBoxChart : public GLWin {
     bcw.setGraphTitle("Test Title");
     bcw.setBoxWidth(45);
     bcw.setPointsPerBox(5);
+    bcw.setBoxColors(boxColors);
+    bcw.setWhiskerColors(whiskerColors);
+    bcw.setOutlineColors(outlineColors);
     bcw.setXAxisTextStyle(xAxisTitleStyle);
     bcw.setYAxisTextStyle(yAxisTitleStyle);
 
