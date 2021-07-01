@@ -14,12 +14,14 @@ class BarChartWidget : public GraphWidget {
  public:
   BarChartWidget(Canvas *c, double x, double y, double w, double h)
       : GraphWidget(c, x, y, w, h),
+        dataStyle(nullptr),
         values(std::vector<double>()),
         names(std::vector<std::string>()),
         barColors({grail::blue}),
         barOutlineColors({grail::black}),
         barWidth(20) {}
 
+    void setDataStyle(const Style *s);
   void setBarWidth(double width);
   void setBarColors(const std::vector<glm::vec4> &colors);
   void setBarOutlineColors(const std::vector<glm::vec4> &colors);

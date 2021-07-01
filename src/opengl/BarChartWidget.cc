@@ -7,6 +7,8 @@
 
 using namespace std;
 
+void BarChartWidget::setDataStyle(const Style *s) { dataStyle = s; }
+
 void BarChartWidget::setBarWidth(double width) { barWidth = width; }
 
 void BarChartWidget::setBarColors(const std::vector<glm::vec4> &colors) {

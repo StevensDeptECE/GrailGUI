@@ -21,6 +21,7 @@ class TestLineGraph : public GLWin {
     delete xAxisTextStyle;
     delete yAxisStyle;
     delete yAxisTextStyle;
+    delete dataStyle;
   }
 
   void init() {

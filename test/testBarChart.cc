@@ -15,6 +15,14 @@ class TestBarChart : public GLWin {
 
  public:
   TestBarChart() : GLWin(0x000000, 0xCCCCCC, "TestBarChart") {}
+  ~TestBarChart() {
+    delete baseGraphStyle;
+    delete xAxisStyle;
+    delete xAxisTextStyle;
+    delete yAxisStyle;
+    delete yAxisTextStyle;
+    delete dataStyle;
+  }
 
   void init() {
     // two lines and the overall title
@@ -59,6 +67,7 @@ class TestBarChart : public GLWin {
     bcw.setYAxisStyle(yAxisStyle);
     bcw.setXAxisTextStyle(xAxisTextStyle);
     bcw.setYAxisTextStyle(yAxisTextStyle);
+    bcw.setDataStyle(dataStyle);
 
     // bar chart widget specific bits
     bcw.setBarColors(colors);

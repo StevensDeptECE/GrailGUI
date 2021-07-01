@@ -5,31 +5,44 @@ using namespace std;
 using namespace grail;
 
 class TestBoxChart : public GLWin {
+ private:
+  const Style *baseGraphStyle;
+  const Style *xAxisStyle;
+  const Style *xAxisTextStyle;
+  const Style *yAxisStyle;
+  const Style *yAxisTextStyle;
+  const Style *dataStyle;
+
  public:
   TestBoxChart() : GLWin(0x000000, 0xCCCCCC, "TestBarChart") {}
+  ~TestBoxChart() {
+    delete baseGraphStyle;
+    delete xAxisStyle;
+    delete xAxisTextStyle;
+    delete yAxisStyle;
+    delete yAxisTextStyle;
+    delete dataStyle;
+  }
 
   void init() {
-    const Style *lineGraphTitleStyle =
-        new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
+    // two lines and the overall title
+    baseGraphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0, 5);
 
-    const Style *xAxisTitleStyle =
-        new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 0);  // should be red
+    // will control how thick lines for x axis are drawn
+    xAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 1, 0, 4);
 
-    // const Style *xAxisLabelStyle =
-    //     new Style("TIMES", 12, 1, 0, 0, 0, 0, 1, 0);  // should be green
+    // controls the font, size, and color of x axis text
+    xAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 0, 3);
 
-    const Style *yAxisTitleStyle =
-        new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 1);  // should be blue
+    // will control how thick lines for y axis are drawn
+    yAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 1, 2);
 
-    // const Style *yAxisLabelStyle =
-    //     new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1);  // should be purple
+    // controls the font, size, and color of y axis text
+    yAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 1);
 
+    // controls the thickness of lines drawn by LineGraphWidget
+    dataStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 3);
     MainCanvas *c = currentTab()->getMainCanvas();
-
-    StyledMultiShape2D *m = c->getGui();
-
-    MultiText *boxChartTitleText =
-        c->addLayer(new MultiText(c, lineGraphTitleStyle));
 
     vector<double> data = {150, 350, 222, 100, 300,  //
                            130, 300, 250, 190, 170,  //
@@ -42,19 +55,25 @@ class TestBoxChart : public GLWin {
     vector<glm::vec4> whiskerColors = {grail::cyan, grail::purple};
     vector<glm::vec4> outlineColors = {grail::darkblue, grail::darkgreen};
 
-    BoxChartWidget bcw(c, m, boxChartTitleText, 300, 300, 400, 200);
+    BoxChartWidget bcw(c, 300, 300, 400, 200);
 
     // setting general things for the graph
     // the axis text styles must be set before
     // creating the axes
     bcw.setGraphTitle("Test Title");
+    bcw.setBaseStyle(baseGraphStyle);
+    bcw.setXAxisStyle(xAxisStyle);
+    bcw.setYAxisStyle(yAxisStyle);
+    bcw.setXAxisTextStyle(xAxisTextStyle);
+    bcw.setYAxisTextStyle(yAxisTextStyle);
+    bcw.setDataStyle(dataStyle);
+
+    // bar chart widget specific bits
     bcw.setBoxWidth(45);
     bcw.setPointsPerBox(5);
     bcw.setBoxColors(boxColors);
     bcw.setWhiskerColors(whiskerColors);
     bcw.setOutlineColors(outlineColors);
-    bcw.setXAxisTextStyle(xAxisTitleStyle);
-    bcw.setYAxisTextStyle(yAxisTitleStyle);
 
     // create x axis (categories)
     bcw.setNames(names);
