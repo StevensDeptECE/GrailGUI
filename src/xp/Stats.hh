@@ -188,8 +188,8 @@ struct Stats1D<T>::Summary Stats1D<T>::getSummary() {
     sorted = !sorted;
   }
   struct Summary fn;
-  fn.min = array[0];
-  fn.max = array[size - 1];
+  fn.min = sorted_array[0];
+  fn.max = sorted_array[size - 1];
 
   // double q1_ind = .25 * size;
   // double mid_ind = .5 * size;

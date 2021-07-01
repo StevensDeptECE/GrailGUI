@@ -10,6 +10,7 @@ class Style;
 class MapView2D : public Shape {
  private:
   const Style* style;
+  float centerX, centerY, scaleX, scaleY;
   glm::mat4 originalTransform;
   glm::mat4 transform;
   // pointer to map loader object has advantage of opaqueness in header file
@@ -18,6 +19,15 @@ class MapView2D : public Shape {
   uint32_t numIndicesToDraw;
 
  public:
+  void setProjection() {
+    transform = glm::ortho(centerX - scaleX, centerX + scaleX, centerY - scaleY,
+                           centerY + scaleY);
+  }
+  void translate(float percentX, float percentY) {
+    centerX += percentX * scaleX;
+    centerY += percentY * scaleY;
+  }
+  void uniformZoom(float s) { scaleX *= s, scaleY *= s; }
   MapView2D(Canvas* parent, const Style* s, BlockMapLoader* bml = nullptr)
       : Shape(parent), style(s), bml(bml), transform(1.0f) {
     const BlockMapLoader::BoundRect& bounds = bml->getBlockMapHeader()->bounds;
@@ -34,9 +44,14 @@ class MapView2D : public Shape {
     std::cout << "shift: " << shiftX << " " << shiftY << "\n";
     std::cout << "scale: " << scaleX << " " << scaleY << "\n";
 
+#if 0
     transform = glm::mat4(1.0f);
     transform = glm::translate(transform, glm::vec3(shiftX, shiftY, 0));
     transform = glm::scale(transform, glm::vec3(scaleX, scaleY, 0));
+#endif
+    this->centerX = -74, this->centerY = 40;
+    this->scaleX = 70 / 2, this->scaleY = 70 / 2;
+    setProjection();
   }
   glm::mat4& getTransform() { return transform; }
   void init() override;

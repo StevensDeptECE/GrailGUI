@@ -27,18 +27,49 @@ class TestDrawBlockMap : public GLWin {
   constexpr static float zoomVal = 1.2;
   static void mapZoomIn(GLWin* w) {
     TestDrawBlockMap* map = ((TestDrawBlockMap*)w);
-    glm::mat4& t = map->mv->getTransform();
-    t = glm::translate(t, glm::vec3(-74, +40, 0));
-    t = glm::scale(t, glm::vec3(1.2f));
-    t = glm::translate(t, glm::vec3(+74, -40, 0) / 1.2f);
+    MapView2D* mv = map->mv;
+    //    glm::mat4& t = mv->getTransform();
+    mv->uniformZoom(1 / 1.2f);
+    mv->setProjection();
+    //    t = glm::translate(t, glm::vec3(-74, +40, 0));
+    // t = glm::scale(t, glm::vec3(1.2f));
+    // t = glm::translate(t, glm::vec3(+74, -40, 0) / 1.2f);
   }
 
   static void mapZoomOut(GLWin* w) {
     TestDrawBlockMap* map = ((TestDrawBlockMap*)w);
-    glm::mat4& t = map->mv->getTransform();
-    t = glm::translate(t, glm::vec3(-74, +40, 0));
-    t = glm::scale(t, glm::vec3(1 / 1.2f));
-    t = glm::translate(t, glm::vec3(+74, -40, 0) * 1.2f);
+    MapView2D* mv = map->mv;
+    mv->uniformZoom(1.2f);
+    mv->setProjection();
+    //    glm::mat4& t = map->mv->getTransform();
+    // t = glm::translate(t, glm::vec3(-74, +40, 0));
+    // t = glm::scale(t, glm::vec3(1 / 1.2f));
+    // t = glm::translate(t, glm::vec3(+74, -40, 0) * 1.2f);
+  }
+
+  static void mapPanRight(GLWin* w) {
+    TestDrawBlockMap* map = ((TestDrawBlockMap*)w);
+    MapView2D* mv = map->mv;
+    mv->translate(0.2, 0);
+    mv->setProjection();
+  }
+  static void mapPanLeft(GLWin* w) {
+    TestDrawBlockMap* map = ((TestDrawBlockMap*)w);
+    MapView2D* mv = map->mv;
+    mv->translate(-0.2, 0);
+    mv->setProjection();
+  }
+  static void mapPanUp(GLWin* w) {
+    TestDrawBlockMap* map = ((TestDrawBlockMap*)w);
+    MapView2D* mv = map->mv;
+    mv->translate(0, 0.2);
+    mv->setProjection();
+  }
+  static void mapPanDown(GLWin* w) {
+    TestDrawBlockMap* map = ((TestDrawBlockMap*)w);
+    MapView2D* mv = map->mv;
+    mv->translate(0, -0.2);
+    mv->setProjection();
   }
 
   static void nextCounty(GLWin* w) {
@@ -80,6 +111,10 @@ class TestDrawBlockMap : public GLWin {
     mv = c->addLayer(new MapView2D(c, s2, new BlockMapLoader(filename)));
     bindEvent(Inputs::WHEELUP, mapZoomIn);
     bindEvent(Inputs::WHEELDOWN, mapZoomOut);
+    bindEvent(Inputs::RARROW, mapPanRight);
+    bindEvent(Inputs::LARROW, mapPanLeft);
+    bindEvent(Inputs::UPARROW, mapPanUp);
+    bindEvent(Inputs::DOWNARROW, mapPanDown);
     update();
   }
 
@@ -87,5 +122,6 @@ class TestDrawBlockMap : public GLWin {
 };
 
 int main(int argc, char* argv[]) {
-  return GLWin::init(new TestDrawBlockMap("uscounties.bml"), 2000, 2000);
+  return GLWin::init(new TestDrawBlockMap("res/maps/uscounties.bml"), 2000,
+                     2000);
 }

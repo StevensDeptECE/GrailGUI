@@ -1,7 +1,5 @@
 #pragma once
 
-#include "opengl/MultiText.hh"
-#include "opengl/StyledMultiShape2D.hh"
 #include "opengl/Widget2D.hh"
 // potential includes for error handling in the future
 // #include "util/Ex.hh"
@@ -30,14 +28,14 @@ class AxisWidget : public Widget2D {
 
  public:
   // TODO: initialize title and other style bits to some kind of sane default
-  AxisWidget(StyledMultiShape2D *m, MultiText *t, float x, float y, float w,
-             float h, double minBound = 0, double maxBound = 0,
+  AxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y, double w,
+             double h, double minBound = 0, double maxBound = 0,
              double tickInterval = 1, double tickDrawSize = 5,
              bool showTicks = true, bool isVert = false,
              std::string axisTitle = "",
              const glm::vec4 &axisColor = grail::black,
              const glm::vec4 &tickColor = grail::black, int tickFormatWidth = 2,
-             int tickFormatPrecision = 2);
+             int tickFormatPrecision = 2, double bottomOffset = 0);
 
   void setTickDrawSize(double i);
   void setShowTicks(bool b);
@@ -49,14 +47,27 @@ class AxisWidget : public Widget2D {
   double getTickInterval();
   double getMinBound();
   double getMaxBound();
+  // these three functions are declared as purely virtual, and it will be up to
+  // the children to implement them if they make sense, or set them to be
+  // private so that the compiler yells at you when using a function that
+  // doesn't make sense for that axis type
   virtual void setBounds(double minBound, double maxBound) = 0;
   virtual void setTickInterval(double tickInterval) = 0;
+  virtual void setTickLabels(std::vector<std::string> tickLabels) = 0;
 };
 
 class LinearAxisWidget : public AxisWidget {
+  // it doesn't make sense for a linear axis to be able to set its tick labels,
+  // logically they should be numbers instead of labels, so the function is set
+  // to private so that the compiler complains if a linear axis uses it, and if
+  // this somehow gets past the compiler then its an empty definition so no
+  // damage can be done
+  using AxisWidget::setTickLabels;
+  void setTickLabels(std::vector<std::string>) override{};
+
  public:
-  LinearAxisWidget(StyledMultiShape2D *m, MultiText *t, float x, float y,
-                   float w, float h);
+  LinearAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
+                   double w, double h);
   void setBounds(double minBound, double maxBound) override;
   void setTickInterval(double tickInterval) override;
   void init() override;
@@ -65,10 +76,12 @@ class LinearAxisWidget : public AxisWidget {
 class LogAxisWidget : public AxisWidget {
  private:
   int base, power;
+  using AxisWidget::setTickLabels;
+  void setTickLabels(std::vector<std::string>) override{};
 
  public:
-  LogAxisWidget(StyledMultiShape2D *m, MultiText *t, float x, float y, float w,
-                float h);
+  LogAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
+                double w, double h);
   void setBounds(double minBound, double maxBound) override;
   void setTickInterval(double tickInterval) override;
   void init() override;
@@ -83,8 +96,8 @@ class TextAxisWidget : public AxisWidget {
   std::vector<std::string> tickLabels;
 
  public:
-  TextAxisWidget(StyledMultiShape2D *m, MultiText *t, float x, float y, float w,
-                 float h);
-  void setTickLabels(std::vector<std::string> tickLabels);
+  TextAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
+                 double w, double h);
+  void setTickLabels(std::vector<std::string> tickLabels) override;
   void init() override;
 };

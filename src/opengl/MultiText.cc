@@ -159,21 +159,32 @@ void MultiText::add(float x, float y, const Font* f, double v) {
 
 void MultiText::add(float x, float y, const Font* f, double v, int fieldWidth,
                     int precision) {
-  char fmt[25];
+  char fmt[35];
   sprintf(fmt, "%%%d.%dlf", fieldWidth, precision);
-  char s[25];
+  char s[35];
   int len = sprintf(s, fmt, v);
   add(x, y, f, s, len);
 }
 
-void MultiText::addCentered(float x, float y, float w, float h, const Font* f,
-                            const char s[], uint32_t len) {
+void MultiText::addCentered(float x, float y, const Font* f, double v,
+                            int fieldWidth, int precision) {
+  char fmt[35];
+  sprintf(fmt, "%%%d.%dlf", fieldWidth, precision);
+  char s[35];
+  int len = sprintf(s, fmt, v);
+
   float textWidth = f->getWidth(s, len);
   float textHeight = f->getHeight();
-  float xSpace = max(w - textWidth, 0.0f) / 2;
-  float ySpace = max(h - textHeight, 0.0f) / 2;
 
-  add(x + xSpace, y + ySpace, f, s, len);
+  add(x - textWidth / 2, y - textHeight / 2, f, s, len);
+}
+
+void MultiText::addCentered(float x, float y, const Font* f, const char s[],
+                            uint32_t len) {
+  float textWidth = f->getWidth(s, len);
+  float textHeight = f->getHeight();
+
+  add(x - textWidth / 2, y - textHeight / 2, f, s, len);
 }
 void MultiText::add(float x, float y, const Font* f, const char s[],
                     uint32_t len) {
@@ -229,9 +240,7 @@ void MultiText::checkAdd(float& x, float& y, const Font* f,
   add(x, y, f, c);
 }
 
-const Style* MultiText::getStyle() {
-  return style;
-}
+const Style* MultiText::getStyle() { return style; }
 
 void MultiText::update() {}
 
