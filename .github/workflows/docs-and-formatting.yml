@@ -23,7 +23,7 @@ jobs:
       - name: Generate Documentation
         uses: mattnotmitt/doxygen-action@v1.3.1
         with:
-          doxyfile-path: 'docs/Doxygen/doxygen.conf'
+          doxyfile-path: 'docs/doxygen/doxygen.conf'
 
       # Runs a single command using the runners shell
       # - name: Run a one-line script
