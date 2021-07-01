@@ -13,6 +13,7 @@ set(grail-opengl
     GapMinderWidget.cc
     GLWin.cc
     GLWinFonts.cc 
+    Image.cc
     LineGraphWidget.cc
     MapView2D.cc
     MultiShape.cc 

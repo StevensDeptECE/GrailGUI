@@ -5,7 +5,7 @@ if [[ -f "Grail_Workspace.code-workspace" ]]; then
 elif [[ $(pwd | awk -F"/" '{print $NF}') == "test" ]]; then
 	echo "Current directory is a test directory, assuming Grail's test"
 	cd ..
-elif [[ -z "${GRAIL}" ]]; then # Currently does not find GRAIL
+elif [[ -z ${GRAIL} ]]; then # Currently does not find GRAIL
 	echo "GRAIL environment variable set"
 	cd "${GRAIL}" || exit 1
 	pwd
@@ -30,7 +30,7 @@ fi
 if [ -f "build.ninja" ]; then
 	ninja
 else
-	cmake -GNinja ..
+	cmake -GNinja -DCMAKE_BUILD_TYPE=DEBUG ..
 	ninja
 fi
 

@@ -19,21 +19,25 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 option(CMAKE_LINK_WHAT_YOU_USE ON)
 set(GRAIL_EXPERIMENTAL "OFF")
 set(CMAKE_DEBUG_POSTFIX d)
-set(CMAKE_BUILD_TYPE DEBUG)
 
-if(DEFINED CMAKE_BUILD_TYPE)
-set(CMAKE_BUILD_TYPE Debug)
-endif()
+string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_lower)
 
-include(CheckIPOSupported)
-check_ipo_supported(RESULT supported OUTPUT error)
-
-if( supported )
-    message(STATUS "IPO / LTO enabled")
-    set(TARGET grail PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+if(build_type_lower EQUAL "debug")
+    message(STATUS "Debug mode:")
+    message(STATUS "Building shared libs")
+    option(BUILD_SHARED_LIBS ON)
 else()
-    message(STATUS "IPO / LTO not supported: <${error}>")
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT supported OUTPUT error)
+
+    if( supported )
+        message(STATUS "IPO / LTO enabled")
+        set(TARGET grail PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    else()
+        message(STATUS "IPO / LTO not supported: <${error}>")
+    endif()
 endif()
+
 
 include(FetchContent)
 include(GrailFunctions)
@@ -66,17 +70,18 @@ if(NOT glm_POPULATED)
 endif()
 
 # Shapelib
-# Output is not shown, so errors may occur without notice
-option(FETCHCONTENT_QUIET "Enables QUIET option for all content population" ON)
-FetchContent_Declare(
-    shapelib
-    GIT_REPOSITORY https://github.com/OSGeo/shapelib.git
-    #GIT_TAG       The tags have not been updated since 2019, so no tag
-    SOURCE_DIR     ${PROJECT_SOURCE_DIR}/external/shapelib
-)
-FetchContent_MakeAvailable(shapelib)
+# Currently manually compiled due to compiler warnings
+## Output is not shown, so errors may occur without notice
+##option(FETCHCONTENT_QUIET "Enables QUIET option for all content population" ON)
+##FetchContent_Declare(
+##    shapelib
+##    GIT_REPOSITORY https://github.com/OSGeo/shapelib.git
+##    #GIT_TAG       The tags have not been updated since 2019, so no tag
+##    SOURCE_DIR     ${PROJECT_SOURCE_DIR}/external/shapelib
+##)
+##FetchContent_MakeAvailable(shapelib)
 
-
+add_subdirectory(include/libshape)
 add_subdirectory(src)
 
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/src)
