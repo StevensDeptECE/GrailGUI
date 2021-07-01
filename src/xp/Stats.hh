@@ -266,20 +266,26 @@ double Stats1D<T>::getVariance() {
 /**
  * @brief getQuantile - Gets a quantile of the sorted array
  *
+ * This looks like it implements the R-6 algorithm for finding quantiles, but it
+ * is actually R-7. Upon reviewing the relevant paper, the index functions refer
+ * to an array with a starting index of 1, but C++ is 0-indexed. As such, the
+ * added one that is expected in R-7 has been negated. (Hyndman and Fan, 1997).
+ *
  * @param percentile The percentile to look for
  * @return double The resultant quantile
  **/
 template <typename T>
 double Stats1D<T>::getQuantile(double percentile) {
-  double h = (sorted_array.size() - 1) * percentile + 1;
+  double h = (sorted_array.size() - 1) * percentile;
   return sorted_array[floor(h)] +
-         (h - floor(h)) * (sorted_array[ceil(h)] - sorted_array(floor(h)));
+         (h - floor(h)) * (sorted_array[ceil(h)] - sorted_array[floor(h)]);
 }
 
 template <typename T>
 ostream& operator<<(ostream& os, Stats1D<T>& stats) {
   struct Stats1D<T>::Summary fivenum = stats.getSummary();
-  os << "Mean: " << stats.getMean() << "\nStdDev: " << stats.getStdDev()
+  os << "# Points: " << stats.sorted_array.size()
+     << "\nMean: " << stats.getMean() << "\nStdDev: " << stats.getStdDev()
      << "\nVariance: " << stats.getVariance()
      << "\nFive Number Summary:\n\tMinimum: " << fivenum.min
      << "\n\tFirst Quartile: " << fivenum.q1 << "\n\tMedian: " << fivenum.median

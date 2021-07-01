@@ -113,7 +113,7 @@ void BoxChartWidget::init() {
 
     transform(currentBoxData.begin(), currentBoxData.end(),
               currentBoxData.begin(),
-              [=](double d) -> double { return y + h + yscale * d; });
+              [=,this](double d) -> double { return y + h + yscale * d; });
     cout << "Transformed Number " << i + 1 << " Data: \n";
     for (auto &a : currentBoxData) {
       cout << a << '\n';

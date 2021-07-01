@@ -13,6 +13,7 @@ set(grail-opengl
     ESRIPolygon.cc
     ESRIShape.cc 
     GapMinderWidget.cc
+    GraphWidget.cc
     GLWin.cc
     GLWinFonts.cc 
     Image.cc
