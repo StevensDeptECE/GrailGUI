@@ -2,7 +2,11 @@
 
 using namespace std;
 
+void GraphWidget::setBaseStyle(const Style *s) { baseStyle = s; }
+
 void GraphWidget::commonRender() {
+  StyledMultiShape2D *m = c->addLayer(new StyledMultiShape2D(c, baseStyle));
+  MultiText *t = c->addLayer(new MultiText(c, baseStyle));
   if (graphTitle.size())
     t->addCentered(x + w / 2, y - m->getStyle()->f->getHeight(),
                    m->getStyle()->f, graphTitle.c_str(), graphTitle.size());
@@ -21,4 +25,12 @@ void GraphWidget::setXAxisTextStyle(const Style *xAxisTextStyle) {
 
 void GraphWidget::setYAxisTextStyle(const Style *yAxisTextStyle) {
   this->yAxisTextStyle = yAxisTextStyle;
+}
+
+void GraphWidget::setXAxisStyle(const Style *xAxisStyle) {
+  this->xAxisStyle = xAxisStyle;
+}
+
+void GraphWidget::setYAxisStyle(const Style *yAxisStyle) {
+  this->yAxisStyle = yAxisStyle;
 }
