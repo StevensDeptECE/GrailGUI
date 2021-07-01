@@ -27,6 +27,7 @@ if(build_type_lower EQUAL "debug")
     message(STATUS "Building shared libs")
     option(BUILD_SHARED_LIBS ON)
 else()
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
     include(CheckIPOSupported)
     check_ipo_supported(RESULT supported OUTPUT error)
 

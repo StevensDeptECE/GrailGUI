@@ -7,6 +7,8 @@ set(grail-opengl
     CandlestickChartWidget.cc 
     Canvas.cc
     Colors.cc
+    Document.cc
+    DocView.cc
     ErrNames.cc
     ESRIPolygon.cc
     ESRIShape.cc 
