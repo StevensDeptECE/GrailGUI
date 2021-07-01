@@ -5,30 +5,42 @@ using namespace std;
 using namespace grail;
 
 class TestLineGraph : public GLWin {
+ private:
+  const Style *baseGraphStyle;
+  const Style *xAxisStyle;
+  const Style *xAxisTextStyle;
+  const Style *yAxisStyle;
+  const Style *yAxisTextStyle;
+  const Style *dataStyle;
+
  public:
   TestLineGraph() : GLWin(0x000000, 0xCCCCCC, "TestLineGraph") {}
+  ~TestLineGraph() {
+    delete baseGraphStyle;
+    delete xAxisStyle;
+    delete xAxisTextStyle;
+    delete yAxisStyle;
+    delete yAxisTextStyle;
+  }
 
   void init() {
     // two lines and the overall title
-    const Style *baseGraphStyle =
-        new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0, 5);
+    baseGraphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0, 5);
 
     // will control how thick lines for x axis are drawn
-    const Style *xAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 1, 0, 4);
+    xAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 1, 0, 4);
 
     // controls the font, size, and color of x axis text
-    const Style *xAxisTextStyle =
-        new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 0, 3);
+    xAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 0, 3);
 
     // will control how thick lines for y axis are drawn
-    const Style *yAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 1, 2);
+    yAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 1, 2);
 
     // controls the font, size, and color of y axis text
-    const Style *yAxisTextStyle =
-        new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 1);
+    yAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 1);
 
     // controls the thickness of lines drawn by LineGraphWidget
-    const Style *dataStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 3);
+    dataStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 3);
 
     MainCanvas *c = currentTab()->getMainCanvas();
 
@@ -40,6 +52,7 @@ class TestLineGraph : public GLWin {
 
     // Graph Superclass settings
     lgw.setGraphTitle("Test Title");
+    lgw.setBaseStyle(baseGraphStyle);
     lgw.setXAxisStyle(xAxisStyle);
     lgw.setYAxisStyle(yAxisStyle);
     lgw.setXAxisTextStyle(xAxisTextStyle);

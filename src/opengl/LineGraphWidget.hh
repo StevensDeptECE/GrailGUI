@@ -18,7 +18,7 @@ class LineGraphWidget : public GraphWidget {
  public:
   LineGraphWidget(Canvas *c, double x, double y, double w, double h)
       : GraphWidget(c, x, y, w, h),
-        dataStyle(new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0, 1)),
+        dataStyle(nullptr),
         xPoints(std::vector<double>()),
         yPoints(std::vector<double>()),
         pointColor(grail::blue),
