@@ -1,9 +1,6 @@
 #pragma once
 
 #include "opengl/Widget2D.hh"
-// potential includes for error handling in the future
-// #include "util/Ex.hh"
-// #include "opengl/Errcode.hh"
 
 class AxisWidget : public Widget2D {
  protected:
@@ -27,7 +24,6 @@ class AxisWidget : public Widget2D {
   void addAxisTitle();
 
  public:
-  // TODO: initialize title and other style bits to some kind of sane default
   AxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y, double w,
              double h, double minBound = 0, double maxBound = 0,
              double tickInterval = 1, double tickDrawSize = 5,
