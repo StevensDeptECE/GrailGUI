@@ -37,6 +37,7 @@ class Stats1D {
   struct Summary getSummary();
   double getStdDev();
   double getVariance();
+  double getQuantile(double percentile);
   template <typename U>
   friend std::ostream& operator<<(std::ostream& os, Stats1D<U>& stats);
 };
@@ -190,31 +191,34 @@ struct Stats1D<T>::Summary Stats1D<T>::getSummary() {
   fn.min = sorted_array[0];
   fn.max = sorted_array[size - 1];
 
-  double q1_ind = .25 * size;
-  double mid_ind = .5 * size;
-  double q3_ind = .75 * size;
-  double epsilon = 1 / 10000;
-  cout << floor(q1_ind) << " " << ceil(q1_ind);
-  if (fmod(q1_ind, 1) > epsilon)
-    fn.q1 = (sorted_array[static_cast<uint32_t>(floor(q1_ind))] +
-             sorted_array[static_cast<uint32_t>(ceil(q1_ind))]) /
-            2.0;
-  else
-    fn.q1 = sorted_array[static_cast<uint32_t>(q1_ind)];
+  // double q1_ind = .25 * size;
+  // double mid_ind = .5 * size;
+  // double q3_ind = .75 * size;
+  // double epsilon = 1 / 10000;
+  // if (fmod(q1_ind, 1) > epsilon)
+  //   fn.q1 = (array[static_cast<uint32_t>(floor(q1_ind))] +
+  //            array[static_cast<uint32_t>(ceil(q1_ind))]) /
+  //           2.0;
+  // else
+  //   fn.q1 = array[static_cast<uint32_t>(q1_ind)];
 
-  if (fmod(mid_ind, 1) > epsilon)
-    fn.median = (sorted_array[static_cast<uint32_t>(floor(mid_ind))] +
-                 sorted_array[static_cast<uint32_t>(ceil(mid_ind))]) /
-                2.0;
-  else
-    fn.median = sorted_array[static_cast<uint32_t>(mid_ind)];
+  // if (fmod(mid_ind, 1) > epsilon)
+  //   fn.median = (array[static_cast<uint32_t>(floor(mid_ind))] +
+  //                array[static_cast<uint32_t>(ceil(mid_ind))]) /
+  //               2.0;
+  // else
+  //   fn.median = array[static_cast<uint32_t>(mid_ind)];
 
-  if (fmod(q3_ind, 1) > epsilon)
-    fn.q3 = (sorted_array[static_cast<uint32_t>(floor(q3_ind))] +
-             sorted_array[static_cast<uint32_t>(ceil(q3_ind))]) /
-            2.0;
-  else
-    fn.q3 = sorted_array[static_cast<uint32_t>(q3_ind)];
+  // if (fmod(q3_ind, 1) > epsilon)
+  //   fn.q3 = (array[static_cast<uint32_t>(floor(q3_ind))] +
+  //            array[static_cast<uint32_t>(ceil(q3_ind))]) /
+  //           2.0;
+  // else
+  //   fn.q3 = array[static_cast<uint32_t>(q3_ind)];
+
+  fn.q1 = getQuantile(.25);
+  fn.median = getQuantile(.50);
+  fn.q3 = getQuantile(.75);
 
   fivenum = make_unique<struct Summary>(fn);
   return *fivenum.get();
@@ -259,10 +263,29 @@ double Stats1D<T>::getVariance() {
   return *variance.get();
 }
 
+/**
+ * @brief getQuantile - Gets a quantile of the sorted array
+ *
+ * This looks like it implements the R-6 algorithm for finding quantiles, but it
+ * is actually R-7. Upon reviewing the relevant paper, the index functions refer
+ * to an array with a starting index of 1, but C++ is 0-indexed. As such, the
+ * added one that is expected in R-7 has been negated. (Hyndman and Fan, 1997).
+ *
+ * @param percentile The percentile to look for
+ * @return double The resultant quantile
+ **/
+template <typename T>
+double Stats1D<T>::getQuantile(double percentile) {
+  double h = (sorted_array.size() - 1) * percentile;
+  return sorted_array[floor(h)] +
+         (h - floor(h)) * (sorted_array[ceil(h)] - sorted_array[floor(h)]);
+}
+
 template <typename T>
 ostream& operator<<(ostream& os, Stats1D<T>& stats) {
   struct Stats1D<T>::Summary fivenum = stats.getSummary();
-  os << "Mean: " << stats.getMean() << "\nStdDev: " << stats.getStdDev()
+  os << "# Points: " << stats.sorted_array.size()
+     << "\nMean: " << stats.getMean() << "\nStdDev: " << stats.getStdDev()
      << "\nVariance: " << stats.getVariance()
      << "\nFive Number Summary:\n\tMinimum: " << fivenum.min
      << "\n\tFirst Quartile: " << fivenum.q1 << "\n\tMedian: " << fivenum.median
