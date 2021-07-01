@@ -7,6 +7,8 @@
 
 using namespace std;
 
+void LineGraphWidget::setDataStyle(const Style *s) { dataStyle = s; }
+
 void LineGraphWidget::setPointFormat(char pt, double size, glm::vec4 &color) {
   pointSize = size;
   markerFunction = map[pt];
@@ -23,15 +25,16 @@ void LineGraphWidget::setYPoints(const std::vector<double> &yPoints) {
 
 void LineGraphWidget::createXAxis(AxisType a) {
   xAxisType = a;
+  StyledMultiShape2D *mnew = c->addLayer(new StyledMultiShape2D(c, xAxisStyle));
   MultiText *tnew = c->addLayer(new MultiText(c, xAxisTextStyle));
 
   switch (a) {
     case LINEAR: {
-      xAxis = new LinearAxisWidget(m, tnew, x, y, w, h);
+      xAxis = new LinearAxisWidget(mnew, tnew, x, y, w, h);
     }; break;
 
     case LOGARITHMIC: {
-      xAxis = new LogAxisWidget(m, tnew, x, y, w, h);
+      xAxis = new LogAxisWidget(mnew, tnew, x, y, w, h);
     }; break;
 
     case TEXT: {
@@ -44,7 +47,7 @@ void LineGraphWidget::createXAxis(AxisType a) {
 void LineGraphWidget::createYAxis(AxisType a) {
   yAxisType = a;
   StyledMultiShape2D *rot90 = c->addLayer(
-      new StyledMultiShape2D(c, m->getStyle(), M_PI / 2, x - w, y + h));
+      new StyledMultiShape2D(c, yAxisStyle, M_PI / 2, x - w, y + h));
   AngledMultiText *t90 = c->addLayer(
       new AngledMultiText(c, yAxisTextStyle, M_PI / 2, x - w, y + h));
 
@@ -74,6 +77,8 @@ void LineGraphWidget::init() {
     cerr << "x and y vectors must be the same length";
     throw(Ex1(Errcode::VECTOR_MISMATCHED_LENGTHS));
   }
+
+  StyledMultiShape2D *m = c->addLayer(new StyledMultiShape2D(c, dataStyle));
 
   double xMin = xAxis->getMinBound();
   double xMax = xAxis->getMaxBound();

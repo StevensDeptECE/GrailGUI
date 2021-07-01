@@ -9,39 +9,44 @@ class TestLineGraph : public GLWin {
   TestLineGraph() : GLWin(0x000000, 0xCCCCCC, "TestLineGraph") {}
 
   void init() {
-    const Style *lineGraphTitleStyle =
-        new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
+    // two lines and the overall title
+    const Style *baseGraphStyle =
+        new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0, 5);
 
-    const Style *xAxisTitleStyle =
-        new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 0);  // should be red
+    // will control how thick lines for x axis are drawn
+    const Style *xAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 1, 0, 4);
 
-    // const Style *xAxisLabelStyle =
-    //     new Style("TIMES", 12, 1, 0, 0, 0, 0, 1, 0);  // should be green
+    // controls the font, size, and color of x axis text
+    const Style *xAxisTextStyle =
+        new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 0, 3);
 
-    const Style *yAxisTitleStyle =
-        new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 1);  // should be blue
+    // will control how thick lines for y axis are drawn
+    const Style *yAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 1, 2);
 
-    // const Style *yAxisLabelStyle =
-    //     new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1);  // should be purple
+    // controls the font, size, and color of y axis text
+    const Style *yAxisTextStyle =
+        new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 1);
+
+    // controls the thickness of lines drawn by LineGraphWidget
+    const Style *dataStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 3);
 
     MainCanvas *c = currentTab()->getMainCanvas();
-
-    StyledMultiShape2D *m = c->getGui();
-
-    MultiText *lineGraphTitleText =
-        c->addLayer(new MultiText(c, lineGraphTitleStyle));
 
     vector<double> times = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     vector<double> values = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20};
     vector<double> logValues = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
 
-    LineGraphWidget lgw(c, m, lineGraphTitleText, 200, 200, 300, 500);
-    // setting general things for the graph
-    // the axis text styles must be set before
-    // creating the axes
+    LineGraphWidget lgw(c, 200, 200, 500, 300);
+
+    // Graph Superclass settings
     lgw.setGraphTitle("Test Title");
-    lgw.setXAxisTextStyle(xAxisTitleStyle);
-    lgw.setYAxisTextStyle(yAxisTitleStyle);
+    lgw.setXAxisStyle(xAxisStyle);
+    lgw.setYAxisStyle(yAxisStyle);
+    lgw.setXAxisTextStyle(xAxisTextStyle);
+    lgw.setYAxisTextStyle(yAxisTextStyle);
+
+    // LineGraphWidget specific settings
+    lgw.setDataStyle(dataStyle);
     lgw.setPointFormat('t', 5, grail::red);
 
     // x axis stuff
