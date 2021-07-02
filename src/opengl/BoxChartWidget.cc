@@ -9,16 +9,20 @@
 
 using namespace std;
 
-void BoxChartWidget::setDataStyle(const Style *s) { dataStyle = s; }
+void BoxChartWidget::setWhiskerStyle(const Style *s) { whiskerStyle = s; }
+
+void BoxChartWidget::setBoxStyle(const Style *s) { boxStyle = s; }
 
 void BoxChartWidget::setBoxWidth(double width) { boxWidth = width; }
 
 void BoxChartWidget::setBoxColors(vector<glm::vec4> &colors) {
   boxColors = colors;
 }
+
 void BoxChartWidget::setWhiskerColors(vector<glm::vec4> &colors) {
   whiskerColors = colors;
 }
+
 void BoxChartWidget::setOutlineColors(vector<glm::vec4> &colors) {
   outlineColors = colors;
 }
@@ -98,7 +102,8 @@ void BoxChartWidget::init() {
     throw(Ex1(Errcode::VECTOR_MISMATCHED_LENGTHS));
   }
 
-  StyledMultiShape2D *m = c->addLayer(new StyledMultiShape2D(c, dataStyle));
+  StyledMultiShape2D *whiskers = c->addLayer(new StyledMultiShape2D(c, whiskerStyle));
+  StyledMultiShape2D *boxes = c->addLayer(new StyledMultiShape2D(c, boxStyle));
 
   double min = yAxis->getMinBound();
   double max = yAxis->getMaxBound();
@@ -134,26 +139,26 @@ void BoxChartWidget::init() {
     double yBoxBottom = dataSummary.getSummary().q3;
 
     // top whisker line
-    m->drawLine(xLocation, yTopLine, xLocation + boxWidth, yTopLine,
+    whiskers->drawLine(xLocation, yTopLine, xLocation + boxWidth, yTopLine,
                 *currentWhiskerColor);
     // bottom whisker line
-    m->drawLine(xLocation, yBottomLine, xLocation + boxWidth, yBottomLine,
+    whiskers->drawLine(xLocation, yBottomLine, xLocation + boxWidth, yBottomLine,
                 *currentWhiskerColor);
 
     // median line
-    m->drawLine(xLocation, yMedianLine, xLocation + boxWidth, yMedianLine,
+    boxes->drawLine(xLocation, yMedianLine, xLocation + boxWidth, yMedianLine,
                 *currentOutlineColor);
 
     // central lines
-    m->drawLine(xLocation + halfBoxWidth, yBottomLine, xLocation + halfBoxWidth,
+    whiskers->drawLine(xLocation + halfBoxWidth, yBottomLine, xLocation + halfBoxWidth,
                 yBoxBottom, *currentWhiskerColor);
-    m->drawLine(xLocation + halfBoxWidth, yTopLine, xLocation + halfBoxWidth,
+    whiskers->drawLine(xLocation + halfBoxWidth, yTopLine, xLocation + halfBoxWidth,
                 yBoxTop, *currentWhiskerColor);
 
     // rounded rectangle box
-    m->fillRoundRect(xLocation, yBoxTop, boxWidth, -yBoxTop + yBoxBottom, 5, 5,
+    boxes->fillRoundRect(xLocation, yBoxTop, boxWidth, -yBoxTop + yBoxBottom, 5, 5,
                      *currentBoxColor);
-    m->drawRoundRect(xLocation, yBoxTop, boxWidth, -yBoxTop + yBoxBottom, 5, 5,
+    boxes->drawRoundRect(xLocation, yBoxTop, boxWidth, -yBoxTop + yBoxBottom, 5, 5,
                      *currentOutlineColor);
 
     currentBoxColor++;
