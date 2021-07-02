@@ -8,7 +8,8 @@ class BoxChartWidget : public GraphWidget {
   // variable thicknesses for the min and max lines, possibly the center lines
   // connecting them to the main box, and the thickness of the outline of the
   // main box
-  const Style *dataStyle;
+  const Style *whiskerStyle;
+  const Style *boxStyle;
   std::vector<double> data;
   std::vector<std::string> names;
   std::vector<glm::vec4> boxColors;
@@ -21,7 +22,8 @@ class BoxChartWidget : public GraphWidget {
  public:
   BoxChartWidget(Canvas *c, double x, double y, double w, double h)
       : GraphWidget(c, x, y, w, h),
-        dataStyle(nullptr),
+        whiskerStyle(nullptr),
+        boxStyle(nullptr),
         data(std::vector<double>()),
         names(std::vector<std::string>()),
         boxColors({grail::blue}),
@@ -30,7 +32,8 @@ class BoxChartWidget : public GraphWidget {
         boxWidth(20),
         pointsPerBox(3) {}
 
-  void setDataStyle(const Style *s);
+  void setWhiskerStyle(const Style *s);
+  void setBoxStyle(const Style *s);
   void setBoxWidth(double width);
   void setBoxColors(std::vector<glm::vec4> &colors);
   void setWhiskerColors(std::vector<glm::vec4> &colors);

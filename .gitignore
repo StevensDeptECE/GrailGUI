@@ -166,3 +166,4 @@ compile_commands.json
 # Block Map Loader
 *.bml
 
+external/

@@ -4,7 +4,7 @@
 
 class BarChartWidget : public GraphWidget {
  private:
-  const Style *dataStyle;
+  const Style *barStyle;  // for the thickness of bar outlines
   std::vector<std::string> names;
   std::vector<double> values;
   std::vector<glm::vec4> barColors;
@@ -14,14 +14,14 @@ class BarChartWidget : public GraphWidget {
  public:
   BarChartWidget(Canvas *c, double x, double y, double w, double h)
       : GraphWidget(c, x, y, w, h),
-        dataStyle(nullptr),
+        barStyle(nullptr),
         values(std::vector<double>()),
         names(std::vector<std::string>()),
         barColors({grail::blue}),
-        barOutlineColors({grail::black}),
+        barOutlineColors({grail::blue}),
         barWidth(20) {}
 
-    void setDataStyle(const Style *s);
+  void setBarStyle(const Style *s);
   void setBarWidth(double width);
   void setBarColors(const std::vector<glm::vec4> &colors);
   void setBarOutlineColors(const std::vector<glm::vec4> &colors);

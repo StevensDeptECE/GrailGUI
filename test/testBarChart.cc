@@ -11,7 +11,7 @@ class TestBarChart : public GLWin {
   const Style *xAxisTextStyle;
   const Style *yAxisStyle;
   const Style *yAxisTextStyle;
-  const Style *dataStyle;
+  const Style *barStyle;
 
  public:
   TestBarChart() : GLWin(0x000000, 0xCCCCCC, "TestBarChart") {}
@@ -21,7 +21,7 @@ class TestBarChart : public GLWin {
     delete xAxisTextStyle;
     delete yAxisStyle;
     delete yAxisTextStyle;
-    delete dataStyle;
+    delete barStyle;
   }
 
   void init() {
@@ -41,7 +41,7 @@ class TestBarChart : public GLWin {
     yAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 1);
 
     // controls the thickness of lines drawn by LineGraphWidget
-    dataStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 3);
+    barStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 3);
 
     MainCanvas *c = currentTab()->getMainCanvas();
 
@@ -56,7 +56,7 @@ class TestBarChart : public GLWin {
 
     vector<glm::vec4> outline{grail::green, grail::blue, grail::purple};
 
-    BarChartWidget bcw(c, 200, 200, 600, 600);
+    BarChartWidget bcw(c, 200, 200, 400, 400);
 
     // setting general things for the graph
     // the axis text styles must be set before
@@ -67,7 +67,7 @@ class TestBarChart : public GLWin {
     bcw.setYAxisStyle(yAxisStyle);
     bcw.setXAxisTextStyle(xAxisTextStyle);
     bcw.setYAxisTextStyle(yAxisTextStyle);
-    bcw.setDataStyle(dataStyle);
+    bcw.setBarStyle(barStyle);
 
     // bar chart widget specific bits
     bcw.setBarColors(colors);
@@ -95,7 +95,7 @@ class TestBarChart : public GLWin {
     bcw.yAxis->setIsVert(true);
 
     // linear
-    bcw.yAxis->setBounds(2, 20);
+    bcw.yAxis->setBounds(0, 60);
     bcw.yAxis->setTickInterval(2);
 
     // logarithmic

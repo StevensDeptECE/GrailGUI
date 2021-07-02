@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void BarChartWidget::setDataStyle(const Style *s) { dataStyle = s; }
+void BarChartWidget::setBarStyle(const Style *s) { barStyle = s; }
 
 void BarChartWidget::setBarWidth(double width) { barWidth = width; }
 
@@ -85,7 +85,7 @@ void BarChartWidget::init() {
     throw(Ex1(Errcode::VECTOR_MISMATCHED_LENGTHS));
   }
 
-  StyledMultiShape2D *m = c->addLayer(new StyledMultiShape2D(c, dataStyle));
+  StyledMultiShape2D *m = c->addLayer(new StyledMultiShape2D(c, barStyle));
 
   double min = yAxis->getMinBound();
   double max = yAxis->getMaxBound();
