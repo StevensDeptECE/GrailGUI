@@ -20,6 +20,7 @@ add_executable(testPolyLines testPolyLines.cc)
 add_executable(testStyledMultishape testStyledMultishape.cc)
 add_executable(testText3 testText3.cc)
 add_executable(testWidgets testWidgets.cc)
+add_executable(lzmaBlockDecompressor ../src/xp/decompressBlockLoader.cc)
 #add_executable(testAxis testAxis.cc)
 
 target_link_libraries(ESRIMapDemo grail)
@@ -42,6 +43,7 @@ target_link_libraries(testPolyLines grail)
 target_link_libraries(testStyledMultishape grail)
 target_link_libraries(testText3 grail)
 target_link_libraries(testWidgets grail)
+target_link_libraries(lzmaBlockDecompressor grail lzma)
 #target_link_libraries(testAxis grail)
 
 # setting up a new executable, only needs the two lines
