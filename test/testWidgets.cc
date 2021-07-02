@@ -4,13 +4,10 @@
 #include <vector>
 
 #include "opengl/AngledMultiText.hh"
-#include "opengl/BarChartWidget.hh"
-#include "opengl/BoxChartWidget.hh"
 #include "opengl/ButtonWidget.hh"
 #include "opengl/CandlestickChartWidget.hh"
 #include "opengl/GapMinderWidget.hh"
 #include "opengl/GrailGUI.hh"
-#include "opengl/LineGraphWidget.hh"
 #include "opengl/ScrollbarWidget.hh"
 #include "opengl/SparklineWidget.hh"
 #include "opengl/util/Transformation.hh"
@@ -55,6 +52,7 @@ class TestWidgets : public GLWin {
     b.init();
   }
 
+#if 0
   void testCandlestick(StyledMultiShape2D *gui, MultiText *guiText) {
     vector<float> y = {
         153.25, 154.16, 152.99, 153.68, 153.34, 153.73, 152.15, 152.73, 152.66,
@@ -79,17 +77,7 @@ class TestWidgets : public GLWin {
     chart.setTitle("Title");
     chart.init();
   }
-
-  // void testBoxChart(StyledMultiShape2D *gui, MultiText *guiText) {
-  //   vector<float> y = {150, 350, 222, 100, 300, 130, 300, 250, 190,
-  //                      170, 100, 50,  20,  150, 200, 330, 200, 270,
-  //                      180, 300, 49,  247, 325, 114, 89};
-  //   vector<string> labels2 = {"box 1", "box 2", "box 3", "box 4", "box 5"};
-  //   BoxChartWidget chart(gui, guiText, 50, 320, 400, 200, y);
-  //   chart.chart(y, 50, 5, labels2);
-  //   chart.setTitle("Title");
-  //   chart.init();
-  // }
+#endif
 
   void testGapMinder(StyledMultiShape2D *gui, MultiText *guiText) {
     vector<float> x = {100, 220, 50, 150, 300, 290, 230};
@@ -155,8 +143,7 @@ class TestWidgets : public GLWin {
         c->addLayer(new StyledMultiShape2D(c, s, -numbers::pi / 4, 0, 0));
 
     const Style *graphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
-    testCandlestick(gui, guiText);
-    // testBoxChart(gui, guiText);
+    //testCandlestick(gui, guiText);
     testGapMinder(gui, guiText);
     testSparkline(gui, guiText);
     // testButton(gui, guiText);
