@@ -159,7 +159,6 @@ int main(int argc, char** argv) {
     string argv_mod = argv[i];
     int ind = argv_mod.find_last_of('.');
     argv_mod.resize(ind);
-    argv_mod.append("bin");
 
     decomp.decompressFile(argv[i], argv_mod.c_str());
   }
