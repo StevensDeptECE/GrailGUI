@@ -4,7 +4,8 @@
 
 class CandlestickChartWidget : public GraphWidget {
  private:
-  const Style *dataStyle;
+  const Style *lineStyle;
+  const Style *boxStyle;
   std::vector<std::string> names;
   std::vector<double> data;
   std::vector<glm::vec4> boxColors;
@@ -15,13 +16,15 @@ class CandlestickChartWidget : public GraphWidget {
  public:
   CandlestickChartWidget(Canvas *c, double x, double y, double w, double h)
       : GraphWidget(c, x, y, w, h),
-        dataStyle(nullptr),
+        lineStyle(nullptr),
+        boxStyle(nullptr),
         data(std::vector<double>()),
         boxColors({grail::blue}),
         outlineColors({grail::black}),
         boxWidth(3) {}
 
-  void setDataStyle(const Style *s);
+  void setLineStyle(const Style *s);
+  void setBoxStyle(const Style *s);
   void setBoxWidth(double width);
   void setBoxColors(const std::vector<glm::vec4> &colors);
   void setBoxOutlineColors(const std::vector<glm::vec4> &colors);

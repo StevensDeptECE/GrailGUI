@@ -8,7 +8,9 @@
 
 using namespace std;
 
-void CandlestickChartWidget::setDataStyle(const Style *s) { dataStyle = s; }
+void CandlestickChartWidget::setLineStyle(const Style *s) { lineStyle = s; }
+
+void CandlestickChartWidget::setBoxStyle(const Style *s) { boxStyle = s; }
 
 void CandlestickChartWidget::setBoxWidth(double width) { boxWidth = width; }
 
@@ -37,12 +39,12 @@ void CandlestickChartWidget::createXAxis(AxisType a) {
 
   switch (a) {
     case LINEAR: {
-      cout << "a bar chart can't have a linear x axis\n";
+      cout << "a candlestick chart can't have a linear x axis\n";
       throw Ex1(Errcode::BAD_ARGUMENT);
     }; break;
 
     case LOGARITHMIC: {
-      cout << "a bar chart can't have a logarithmic x axis\n";
+      cout << "a candlestick chart can't have a logarithmic x axis\n";
       throw Ex1(Errcode::BAD_ARGUMENT);
     }; break;
 
@@ -66,23 +68,26 @@ void CandlestickChartWidget::createYAxis(AxisType a) {
     }; break;
 
     case LOGARITHMIC: {
-      yAxis = new LogAxisWidget(rot90, t90, 0, 0, h, w);
+      cout << "a candlestick chart can't have a logarithmic y axis\n";
+      throw Ex1(Errcode::BAD_ARGUMENT);
     }; break;
 
     case TEXT: {
-      cout << "a bar chart can't have a text y axis\n";
+      cout << "a candlestick chart can't have a text y axis\n";
       throw Ex1(Errcode::BAD_ARGUMENT);
     }; break;
   }
 }
 
 void CandlestickChartWidget::init() {
-  if (data.size() < 1) {
-    cerr << "values vector cannot be zero length\n";
+  if (data.size() < 4) {
+    cerr << "the data vector must contain at least one data set (minimum 4 "
+            "points)\n";
     throw(Ex1(Errcode::VECTOR_ZERO_LENGTH));
   }
 
-  StyledMultiShape2D *m = c->addLayer(new StyledMultiShape2D(c, dataStyle));
+  StyledMultiShape2D *lines = c->addLayer(new StyledMultiShape2D(c, lineStyle));
+  StyledMultiShape2D *boxes = c->addLayer(new StyledMultiShape2D(c, boxStyle));
 
   double min = yAxis->getMinBound();
   double max = yAxis->getMaxBound();
@@ -122,16 +127,16 @@ void CandlestickChartWidget::init() {
          << "\nClose: " << yBoxBottom << "\nMin: " << yBottomLine << "\n";
 
     // central lines
-    m->drawLine(xLocation + halfBoxWidth, yBottomLine, xLocation + halfBoxWidth,
-                yBoxBottom, grail::black);
-    m->drawLine(xLocation + halfBoxWidth, yTopLine, xLocation + halfBoxWidth,
-                yBoxTop, grail::black);
+    lines->drawLine(xLocation + halfBoxWidth, yBottomLine,
+                    xLocation + halfBoxWidth, yBoxBottom, grail::black);
+    lines->drawLine(xLocation + halfBoxWidth, yTopLine,
+                    xLocation + halfBoxWidth, yBoxTop, grail::black);
 
     // rounded rectangle box
-    m->fillRectangle(xLocation, yBoxTop, boxWidth, -yBoxTop + yBoxBottom,
-                     *currentBoxColor);
-    m->drawRectangle(xLocation, yBoxTop, boxWidth, -yBoxTop + yBoxBottom,
-                     *currentOutlineColor);
+    boxes->fillRectangle(xLocation, yBoxTop, boxWidth, -yBoxTop + yBoxBottom,
+                         *currentBoxColor);
+    boxes->drawRectangle(xLocation, yBoxTop, boxWidth, -yBoxTop + yBoxBottom,
+                         *currentOutlineColor);
 
     currentBoxColor++;
     currentOutlineColor++;
