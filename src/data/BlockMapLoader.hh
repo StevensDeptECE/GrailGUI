@@ -36,11 +36,6 @@ class BlockMapLoader : public BlockLoader {
     uint32_t offset;      // if entityType=REGION_CONTAINER, then offset into
                           // regionContainers, ...
   };
-  struct NamedEntities {
-    uint32_t numNames;  // TODO: redundant with the number in the BlockMapHeader
-    uint32_t nameSizes;  // amount of memory used for all names
-    NamedEntry entry[];
-  };
   struct RegionContainer {
     uint32_t startRegion, endRegion;  // the range of regions
     BoundRect bounds;
@@ -64,17 +59,18 @@ class BlockMapLoader : public BlockLoader {
 
  private:
   BlockMapHeader* blockMapHeader;
+  HashMap<NamedEntry>* namedEntries;
   RegionContainer* regionContainers;
   Region* regions;
   Segment* segments;
   float* points;
-  static constexpr uint16_t version = 0x0401;  // 0.4.0.1
+  static constexpr uint16_t version = 0x0501;  // 0.5.0.1
+  // TODO: proposed way to handle fast calling of different types of segments
+  // right now the only supported type is polygon
   typedef void (BlockMapLoader::*Method)();
   const static Method methods[];
 
  public:
-  void init(const uint64_t* mem, uint64_t size);
-  void init(uint32_t numLists, uint32_t numPoints);
   // fast load a blockmap from a .bml file
   BlockMapLoader(const char filename[]);
 
@@ -83,11 +79,10 @@ class BlockMapLoader : public BlockLoader {
   static BlockMapLoader loadCompressed(const char filename[]);
   // TODO: const RegionContainers* getRegionContainers() const { return
   // regionContainers; }
-
+  const Region* getRegionContainers() const { return regionContainers; }
   const Region* getRegions() const { return regions; }
   const Segment* getSegments() const { return segments; }
   // save a fast blockmap file
-  void save(const char filename[]);
 
   void filterX(double xMin, double xMax);
   void filterY(double yMin, double yMax);

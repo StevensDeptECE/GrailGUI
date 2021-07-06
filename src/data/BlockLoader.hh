@@ -28,7 +28,7 @@ class BlockLoader {
     uint64_t numComponents : 16;
     uint64_t compressionType : 8;  // lzma, bzip2, etc.
     GeneralHeader(uint16_t type, uint16_t version, bool copyright = false,
-                  bool securityHeader = false, uint8_t numComponents = 0,
+                  bool securityHeader = false, uint8_t numComponents = 1,
                   uint8_t compressionType = 0)
         : magic(0x644C4221),  // "!Bld" magic number for block loaders
           type(type),
@@ -63,6 +63,7 @@ class BlockLoader {
     uint64_t bytes;
     Type type;
     uint32_t version;
+    uint16_t numComponents;
   };
   BlockLoader(const Info& info);
   void BlockLoader::init(uint64_t* mem, uint64_t size) {
@@ -87,7 +88,8 @@ class BlockLoader {
       : mem(new uint64_t[(getHeaderSize() + (inf.bytes + 7) / 8)]) {
     generalHeader = (GeneralHeader*)mem;  // header is the first chunk of bytes
     // "!Bld" magic number for block loaders
-    generalHeader->magic = 0x644C4221;
+    *generalHeader = GeneralHeader(inf.type, inf.version) generalHeader->magic =
+        0x644C4221;
     generalHeader->type = uint16_t(inf.type);
     generalHeader->version = inf.version;
     securityHeader =

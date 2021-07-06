@@ -53,4 +53,6 @@ class Date {
   uint32_t getMonth() const { return 0; }
 
   uint32_t getDay() const { return 0; }
+  // return a number meaning the day of the week
+  uint32_t getWeekday() const { return (date+3) % 7; }
 };
