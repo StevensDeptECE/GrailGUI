@@ -24,6 +24,7 @@ $(cspout)/SocketIO.o 		\
 $(xdlout)/XDLCompiler.o			\
 $(xdlout)/SymbolTable.o			\
 $(xdlout)/std.o				\
+$(audioout)/AudioPlayer.o \
 $(out)/ErrNames.o			\
 $(out)/Tab.o 				\
 $(out)/Canvas.o 			\
@@ -39,18 +40,11 @@ $(out)/Shapefile.o $(out)/ESRIShape.o $(out)/ESRIPolygon.o\
 $(out)/LineGraphWidget.o $(out)/BarChartWidget.o \
 $(out)/ButtonWidget.o $(out)/Scale.o $(out)/CandlestickChartWidget.o\
 $(out)/AngledMultiText.o $(out)/BoxChartWidget.o \
-$(out)/ScrollbarWidget.o $(out)/AxisWidget.o $(out)/GapMinderWidget.o
+$(out)/ScrollbarWidget.o $(out)/AxisWidget.o $(out)/GapMinderWidget.o \
+$(out)/SparklineWidget.o
 
 SHAPEOBJS := $(libshapeout)/dbfopen.o $(libshapeout)/safileio.o \
 $(libshapeout)/sbnsearch.o $(libshapeout)/shpopen.o $(libshapeout)/shptree.o
-
-
-#$(out)/AxesWidget.o $(out)/AxisWidget.o \
-$(out)/LineGraphWidget.o $(out)/BarChartWidget.o $(out)/CandlestickChartWidget.o $(out)/BoxChartWidget.o $(out)/GapMinderWidget.o \
-$(out)/ButtonWidget.o $(out)/Scale.o \
-$(out)/AngledMultiText.o \
-$(out)/ScrollbarWidget.o \
-$(out)/AxisWidget.o \
 
 # heatmap does not yet work, so commented out until Dov or someone else gets it going. But it's VERY COOL!
 #$(out)/HeatMap.o
@@ -64,6 +58,9 @@ $(out)/Glad.o:
 	echo "*****"
 	echo $(out)
 	$(CXX) -g -std=c++11 -c -I $(GRAIL)/include $(GRAIL)/include/glad/glad.c -o $@
+
+$(audioout)/AudioPlayer.o: $(audio)/AudioPlayer.cc $(audio)/AudioPlayer.hh
+	$(COMP) $< -o $@
 
 $(LIBGRAIL): $(SHARED)
 	cd $(out) ; ar rs $(LIBGRAIL) $(SHARED)
@@ -191,6 +188,9 @@ $(out)/BoxChartWidget.o: BoxChartWidget.cc BoxChartWidget.hh
 	$(COMP) $< -o $@
 
 $(out)/GapMinderWidget.o: GapMinderWidget.cc GapMinderWidget.hh
+	$(COMP) $< -o $@
+
+$(out)/SparklineWidget.o: SparklineWidget.cc SparklineWidget.hh
 	$(COMP) $< -o $@
 
 $(out)/ButtonWidget.o: ButtonWidget.cc ButtonWidget.hh

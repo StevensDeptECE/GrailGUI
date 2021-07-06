@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <iostream>
 #include <string>
+#include "opengl/Errcode.hh"
 //#include "util/Log.hh"
 /*
         Represent an exception class that outputs a numeric error code into

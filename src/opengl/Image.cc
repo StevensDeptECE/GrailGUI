@@ -1,21 +1,20 @@
 #include "opengl/Image.hh"
 
-//#define STB_IMAGE_IMPLEMENTATION
-#include "stb/stb_image.h"
-//#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <string>
 
 #include "glad/glad.h"
 #include "opengl/Canvas.hh"
+#include "opengl/Errcode.hh"
 #include "opengl/GLWin.hh"
 #include "opengl/Shader.hh"
 #include "opengl/Style.hh"
+#include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
 #include "util/Ex.hh"
 using namespace std;
 
 Image::Image(Canvas* c, float x, float y, float width, float height,
-             uint32_t textureId, Style* s)
+             uint32_t textureId, const Style* s)
     : Shape(c),
       x(x),
       y(y),
@@ -28,7 +27,7 @@ Image::Image(Canvas* c, float x, float y, float width, float height,
 }
 
 Image::Image(Canvas* c, float x, float y, float width, float height,
-             const char* filePath, Style* s)
+             const char* filePath, const Style* s)
     : Shape(c), x(x), y(y), rWidth(width), rHeight(height), style(s) {
   stbi_set_flip_vertically_on_load(
       true);  // tell stb_image.h to flip loaded texture's on the y-axis.
@@ -39,6 +38,34 @@ Image::Image(Canvas* c, float x, float y, float width, float height,
 
   textureID = 0;
   addImage(x, y, width, height);
+}
+
+void Image::change(const char* filePath) {
+  data = stbi_load(filePath, &tWidth, &tHeight, &bpp, 0);
+  if (!data) {
+    throw Ex2(Errcode::IMAGE_LOAD, filePath);
+  }
+  textureID = 0;
+  addImage(x, y, rWidth, rHeight);
+
+  // Generate Texture object
+  glGenTextures(1, &textureID);
+  glBindTexture(GL_TEXTURE_2D, textureID);
+  // set texture wrapping to GL_REPEAT (default wrapping method)
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  // set texture filtering parameters
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  if (bpp == 1) {
+    GLint swiz[] = {GL_RED, GL_RED, GL_RED, GL_ONE};
+    glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swiz);
+  }
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tWidth, tHeight, 0, GL_RGB,
+               GL_UNSIGNED_BYTE, data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  stbi_image_free(data);
 }
 
 //? Adds cropped sections of image

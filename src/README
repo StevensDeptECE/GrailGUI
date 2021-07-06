@@ -1,30 +1,71 @@
 Grail is designed to be the "holy grail" of user interfaces.
+A single unified GUI that would work across platforms, that is both
+a web front end and a GUI on a local machine. Why should the two be different
+after all?
+Security is built into the web component of Grail. There are no
+interpreted languages like JavaScript riddled with security holes. This means that
+it might not be possible to generate a general program in Grail like videogames currently
+written in JavaScript. But it is more than capable of rendering a typical web page, 
+and for a local application, the arbitrary code can be in the application.
 
-Easy to use like HTML, but generating fast OpenGL code.
+This library is the core of Grail, the rendering engine that implments drawing
+text, 2d graphics, 3d graphics and supports networking to transmit data in binary
+bidirectionally between server and client.
 
-Generates optimal web pages that download an app to a client once,
-then send only the dynamic (changing) data every time the page is hit.
-
-Contains embedded graphics for 2d, 3d, and eventually 3d models.
-
-Supports fixed format like pdf.
-
-Designed originally as a web programming language, but now envisioned as a
-portable GUI
+The web components of grail are not in this package and are still in development.
 
 Written in C++ and designed with extreme simplicity in mind, the code
 base is small, compact, and very, very fast. It is expected that pages should
 render in milliseconds, thousands of times faster than current web pages.
 
-Security is built into the web component of Grail. There are no
-interpreted languages like JavaScript riddled with security holes.
+Demos that currently work:
+
+simpleDemo        shows a minimal Grail app drawing a single rectangle
+testStyledMultiShape  shows lots of 2d drawing that grail can do
+testText3         shows multiple fonts in a single color
+testDisplayBook   An extremely minimal book viewer
+testDisplayEntireBook res/Annatest.txt  Display all pages of Anna Karenina VERY FAST (60fps using < 2% of CPU/GPU capability)
+SolarSystem       Display somple planets, with standard keyboard inputs for speed/slow time, zoom in/out, pan left/right
+globe             Display a spinning globe with very few lines of C++
+
+Eventually all demos shown here as C++ would be implementable using only a web-safe language equivalent to HTML (GrailML)
+
+Inspirations for this work
+The itch to build grail came from a number of drivers:
+1. The web is insecure and having to use JavaScript for everything is awful, both from a security point of view and as a programmer.
+Add to this the constant attacks, 
+and it becomes obvious that something has to be done. No one should let their child download a game on their computer in their browser, and 
+use that same browser to do their banking. No one should have to use JavaScript at all, yet we all must or be locked out of all major websites.
+No one should use a browser with plugins to access secure websites.
+
+2. While Shaders are amazing in terms of performance, modern OpenGL and AJAX web programming share the feature that they are incredibly complex.
+It is much easier to write a single program than two programs that communicate. And in both systems, 
+not only do multiple systems have to communicate, they have to do so with code in C++ on the client, shader language on the GPU, 
+and with HTML/CSS/JavaScript on the client, and whatever is on the server.
+
+3. Software is sluggish and horribly inefficient, with each layer added on the next adding to the mess. Loading a 100k table with 4 columns in
+Chrome takes 1.2Gb as measured in their own task manager. Grail will be able to render this example using 4Mb.
+
+4. Transmitting data as ASCII is absurd today. If we want to view what is being transmitted a simple monitor can transform the data.
+Requiring data to be transmitted in ASCII means the server has to read the binary data and print it out, then transmit the (larger) data to the other side,
+where it often must be stored back in binary for efficiency. The only time data should be stored in binary is for human viewing.
+
+As envisioned by Alan Kay, a small kernel of code, written to provide a cohesive set of primitives can do a surprising amount in a very small,
+manageable codebase, which can be used to create what he called the Dynabook. GrailGUI is proof of that premise. Right now it is 450kb of code
+or approximately 17k lines of C++. It is envisioned that this could easily double by the time we have a full GUI with many widgets, and code that
+ports to not only Windows and Linux, but MacOSX, Android and iOS.
+Having this single, coherent API would mean that a new generation of tools, including word processors, spreadsheets, book viewers, web browsers could 
+be implemented with far less effort and far higher performance.
 
 
-While this project is just a demonstration, and is not going to
-implement every feature, the hope is that this demonstrates that
-eventually, Grail should be a replacement for HTML, CSS, GUIs like
-Java FX and older Java Swing, as well as pdf. While Grail does not
-replace OpenGL, it is a layer above it, and hopefully it will provide
-a portable GUI implemented in OpenGL so that standard menus,
-scrollbars and the like can eventually be portable and fit well in
-OpenGL code.
+Are you a programmer? The Grail team needs your help! There is a huge amount to do. We want to add graphical components like heatmaps which 
+require shader, OpenGL and C++ knowledge. We want to add a full suite of GUI components implemented in GrailGUI so this becomes a full user
+interface, open source. And we need to create a set of display transformations that will allow the GrailGUI front end to display data 
+being transmitted from the back end in any desired format.
+
+
+
+
+
+
+

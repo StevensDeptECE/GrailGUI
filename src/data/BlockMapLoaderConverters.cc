@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "data/BlockMapLoader.hh"
-#include "libshape/shapefil.h"
+#include "shapelib/shapefil.h"
 using namespace std;
 
 // extra parameter calls loader from ESRI Shapefile

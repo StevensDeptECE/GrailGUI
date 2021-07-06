@@ -11,7 +11,9 @@ util	:=	$(SRC)/util
 opengl:=	$(SRC)/opengl
 csp		:=	$(SRC)/csp
 xdl		:=	$(SRC)/xdl
+audio := $(SRC)/audio
 data	:=	$(SRC)/data
+xp    :=  $(SRC)/xp
 libshape := $(BASE)/include/libshape
 
 test	:=  ${GRAIL}/test
@@ -22,7 +24,9 @@ utilout 		:= $(build)/util
 openglout		:= $(build)/opengl
 cspout			:= $(build)/csp
 xdlout			:= $(build)/xdl
+audioout		:= $(build)/audio
 dataout			:= $(build)/data
+xpout       := $(build)/xp
 libshapeout := $(build)/libshape
 
 
@@ -44,13 +48,13 @@ COMP	:=	$(CXX) -c
 #LIBS	:=	-lgrail -lfreetype -lglfw -lGL -lX11 -ldl -pthread 
 LD	:=	g++ $(VERS) $(CCFLAGS) $(LIBSPEC)
 
-# Note that any recipes in this file will cause all makefiles to stop working
 ifeq ($(OS),Windows_NT)
-	LIBS	:=	$(LIBSPEC) -lgrail -lOpenGL32 -lz -mwindows -lfreetype -lglfw3 -lWs2_32 -lshape
+# Note that any recipes in this file will cause all makefiles to stop working
+	LIBS	:=	$(LIBSPEC) -lgrail -lOpenGL32 -lz -mwindows -lfreetype -lglfw3 -lWs2_32 -lshape -lmpv
 	# @echo "WINDOWS DETECTED"
 else
 	#assuming if not windows, then linux. This will break for unsupported OS or OS that does not declare properly. This will break on OSX.
-	LIBS	:=	$(LIBSPEC) -L /usr/lib/x86_64-linux-gnu/ -lgrail -lfreetype -lglfw -lGL -pthread -ldl -lshape
+	LIBS	:=	$(LIBSPEC) -L /usr/lib/x86_64-linux-gnu/ -lgrail -lfreetype -lglfw -lGL -pthread -ldl -lshape -lmpv
 	# @echo "LINUX DETECTED"
 endif
 

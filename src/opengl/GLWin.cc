@@ -690,3 +690,7 @@ void GLWin::loadBindings() {
   bind3D();
   // bind2DOrtho();
 }
+
+double GLWin::getTime() {
+  return glfwGetTime();
+}

@@ -81,4 +81,8 @@ public:
   void polygonPoints(float x, float y, float xRad, float yRad, float n);
   void circlePoints(float x ,float y, float rad, float angleInc);
   void ellipsePoints(float x, float y, float xRad, float yRad, float angleInc);
+
+  // getter for style
+  const Style* getStyle();
+
 };

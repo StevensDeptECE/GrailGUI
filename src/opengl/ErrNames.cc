@@ -59,4 +59,6 @@ const char* Ex::errNames[] = {"FILE_READ",
                               "STRING_TOO_LONG",
                               "VECTOR_MISMATCHED_LENGTHS",
                               "VECTOR_ZERO_LENGTH",
-                              "NONEXISTENT_ACTION"};
+                              "MPV_FAILURE",
+                              "NONEXISTENT_ACTION",
+                              "BAD_ARGUMENT"};

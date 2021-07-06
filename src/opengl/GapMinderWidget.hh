@@ -23,27 +23,30 @@ private:
   float tickSize;
   float tickStart;
   Scale *yAxis;
+  Scale *xAxis;
+  float minMultiplier;
 
 public:
   GapMinderWidget(StyledMultiShape2D* m, MultiText* t,
    float x, float y, float w, float h,
    const std::string& title, const Style *titleStyle,
    const Style *barStyle, 
-   float minX, float maxX, float minY, float maxY , float maxMultiplier,
+   float minX, float maxX, float minY, float maxY , float maxMultiplier, float minMultiplier,
    float tickSize, float tickStart, Scale *yAxis, Scale *xAxis) : 
     Widget2D(m, t, x, y, w, h), title(title), titleStyle(titleStyle), 
-    barStyle(barStyle), minX(minX), maxX(maxX), minY(minY), maxY(maxY), maxMultiplier(maxMultiplier),
-    tickSize(tickSize), tickStart(tickStart), yAxis(yAxis){}
+    barStyle(barStyle), minX(minX), maxX(maxX), minY(minY), maxY(maxY), 
+    maxMultiplier(maxMultiplier), minMultiplier(minMultiplier),
+    tickSize(tickSize), tickStart(tickStart), yAxis(yAxis), xAxis(xAxis){}
 
   GapMinderWidget(StyledMultiShape2D* m, MultiText* t, float x, float y, float w, float h) :
     GapMinderWidget(m,t, x, y, w, h, std::string (""), nullptr, nullptr,
-    0, 100, 0, 100, 1.25, 10, x, new LinearScale(), new LinearScale()){} 
+    0, 100, 0, 100, 1.25, 10, 10, x, new LinearScale(), new LinearScale()){} 
 
 
   GapMinderWidget(StyledMultiShape2D* m, MultiText* t, float x, float y, float w, float h, 
   const std::vector<float>& xLocations, const std::vector<float>& yLocations) :
     GapMinderWidget(m,t, x, y, w, h, "", nullptr, nullptr,
-    0, 0, 0, 0, 1.25, 10, x, new LinearScale(), new LinearScale()){
+    0, 0, 0, 0, 1.25, 10, 10, x, new LinearScale(), new LinearScale()){
       maxY = maxMultiplier*(*max_element(yLocations.begin(), yLocations.end()));
       maxX = maxMultiplier*(*max_element(xLocations.begin(), xLocations.end()));
     }  
@@ -55,8 +58,8 @@ public:
   }
   void setAxisScale(Scale *yAxis){this->yAxis = yAxis;}
   void setTitleStyle(const Style* s) { titleStyle = s;}
-  void chart(const std::vector<float>& yLocations, 
-    const std::vector<float>& xLocations, int rulerInterval);
+  void chart(const std::vector<float>& yLocations, const std::vector<float>& xLocations, 
+  const std::vector<float>& sizes,int rulerInterval, const std::vector <glm::vec4>& c);
   //void chartLog(const float b[], int size, float relativeSpace, const std::string barNames[], int logBase);
   void setTitle(const std::string& s);
   void init() override;
