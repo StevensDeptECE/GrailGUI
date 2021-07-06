@@ -9,7 +9,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "util/TypeAlias.hh"
+//#include "util/TypeAlias.hh"
 #include "xdl/SymbolTable.hh"
 #include "xdl/XDLArray.hh"
 #include "xdl/XDLCompiler.hh"
@@ -25,12 +25,12 @@ void buildData(Buffer& out, char meta[]) {}
 
 template <typename T>
 void buildData2(ArrayOfBytes* a, const T& arg) {
-  if (constexpr is_base_of_v<XDLType, arg>) {
-    if (constexpr is_base_of_v<XDLBuiltinType, arg>) {
+  if (is_base_of_v<XDLType, arg>) {
+    if (is_base_of_v<XDLBuiltinType, arg>) {
       a->addMeta(arg.getType());
       a->addData(arg);
     } else {
-      if (constexpr is_base_of_v<CompoundType, arg>) {
+      if (is_base_of_v<CompoundType, arg>) {
         arg.addMeta(a);
         arg.addData(a);
       }
@@ -53,6 +53,7 @@ void buildData(std::array<uint8_t, size>& data, std::array<uint8_t, size>& meta,
   (out.write(args), out.writeMeta(args), ...);
 }
 #endif
+
 class Point : public CompoundType {
  public:
   double x, y, z;
@@ -80,11 +81,12 @@ class Point : public CompoundType {
 void write(Buffer& out, const Point& p);
 
 XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
-  buildData(xdlData, 2_u32, 12345_u64, Point(1, 2, 3));
+  buildData(xdlData, Point(1, 2, 3));
 
-  auto listonums = new List<uint32_t>(100);
-  for (int i = 0; i < 100; i++) listonums->add(i);
-  xdlData.add(listonums);
+  // Create list later
+  // auto listonums = new List<uint32_t>(100);
+  // for (int i = 0; i < 100; i++) listonums->add(i);
+  // xdlData.add(listonums);
 
   auto pointList = new List<Point>(100);
   for (int i = 0; i < 100; i++) pointList->add(Point(i, 2, 3));

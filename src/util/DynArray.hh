@@ -51,7 +51,6 @@ class DynArray {
   }
   const T& operator[](uint32_t i) const { return data[i]; }
   T& operator[](uint32_t i) { return data[i]; }
-  T& operator[](uint32_t i) { return data[i]; }
   uint32_t size() const { return size_; }
   const T& last() const { return data[size_ - 1]; }
   friend std::ostream& operator<<(std::ostream& s, const DynArray& d) {

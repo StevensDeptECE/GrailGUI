@@ -807,3 +807,7 @@ void F64::display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
   DataType UnImpl::getDataType() const { return DataType::UNIMPL; }
 
   void XDLBuiltinType::addMeta(ArrayOfBytes * meta) { meta->add((uint8_t)t); }
+
+  void ArrayOfBytes::write(Buffer & b) { return; }
+  uint32_t ArrayOfBytes::size() { return data.size() + metadata.size(); }
+  DataType ArrayOfBytes::getDataType() { return DataType::STRUCT16; }

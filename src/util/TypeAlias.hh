@@ -2,6 +2,9 @@
 #include <iostream>
 
 using namespace std;
+
+// TODO: find out why this doesn't compile
+// TODO: Remove cout
 constexpr uint32_t operator"" _u32(const char* s) {
   cout << s << '\n';
   return atoi(s);

@@ -49,7 +49,11 @@ class Style;
 class MultiShape2d;
 class MultiText;
 class XDLIterator;
+
+// ArrayOfBytes currently commented out, no forward reference
+#if 1
 class ArrayOfBytes;
+#endif
 
 class UnImpl;
 class XDLType {
@@ -687,7 +691,10 @@ class ArrayOfBytes : public XDLType {
 
  public:
   ArrayOfBytes(uint32_t dataCapacity = 512, uint32_t metadataCapacity = 16)
-      : data(dataCapacity), metadata(metadataCapacity), currentData(0) {}
+      : data(dataCapacity),
+        metadata(metadataCapacity),
+        currentData(0),
+        XDLType(DataType::STRUCT16) {}
   ArrayOfBytes(const ArrayOfBytes& orig) = delete;
   ArrayOfBytes& operator=(const ArrayOfBytes& orig) = delete;
   // TODO: this is for any primitive type NO POINTERS
@@ -751,8 +758,8 @@ DataType typeToDataType(const char* str) {
 template <typename T>
 void List<T>::writeMeta(Buffer& buf) const {
   buf.write(DataType::LIST16);
-  if (constexpr typeToDataType(impl[0]) != DataType::UNIMPL) {
-    buf.write(typeToDataType(impl[0]);
+  if (typeToDataType(impl[0]) != DataType::UNIMPL) {
+    buf.write(typeToDataType(impl[0]));
   } else if (is_base_of_v<XDLType, T>) {
     impl[0].writeMeta(buf);
   }
@@ -762,8 +769,8 @@ template <typename T>
 void List<T>::write(Buffer& buf) const {
   buf.write(uint16_t(impl.size()));
   for (uint32_t i = 0; i < impl.size(); i++) {
-    if (constexpr typeToDataType(impl[i]) != DataType::UNIMPL) {
-      buf.write(impl[i])
+    if (typeToDataType(impl[i]) != DataType::UNIMPL) {
+      buf.write(impl[i]);
     } else if (is_base_of_v<XDLType, T>) {
       impl[i].write(buf);
     } else {
