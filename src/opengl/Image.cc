@@ -4,73 +4,39 @@
 
 #include "glad/glad.h"
 #include "opengl/Canvas.hh"
-#include "opengl/Errcode.hh"
-#include "opengl/GLWin.hh"
-#include "opengl/Shader.hh"
-#include "opengl/Style.hh"
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
 #include "util/Ex.hh"
 using namespace std;
 
-Image::Image(Canvas* c, float x, float y, float width, float height,
-             uint32_t textureId, const Style* s)
+Image::Image(Canvas *c, float x, float y, float width, float height,
+             uint32_t textureID)
     : Shape(c),
       x(x),
       y(y),
-      rWidth(width),
-      rHeight(height),
-      textureID(textureId),
-      style(s) {
+      drawWidth(width),
+      drawHeight(height),
+      textureID(textureID) {
   vertices.reserve(16);
-  addImage(x, y, width, height);
+  setupBuffers(x, y, width, height);
+  setupTexture();
 }
 
-Image::Image(Canvas* c, float x, float y, float width, float height,
-             const char* filePath, const Style* s)
-    : Shape(c), x(x), y(y), rWidth(width), rHeight(height), style(s) {
-  stbi_set_flip_vertically_on_load(
-      true);  // tell stb_image.h to flip loaded texture's on the y-axis.
-  data = stbi_load(filePath, &tWidth, &tHeight, &bpp, 0);
-  if (!data) {
-    throw Ex2(Errcode::IMAGE_LOAD, filePath);
-  }
-
-  textureID = 0;
-  addImage(x, y, width, height);
+Image::Image(Canvas *c, float x, float y, float width, float height,
+             const char *filePath, uint32_t textureID)
+    : Shape(c),
+      x(x),
+      y(y),
+      drawWidth(width),
+      drawHeight(height),
+      textureID(textureID) {
+  vertices.reserve(16);
+  setupBuffers(x, y, width, height);
+  setupTexture();
+  addImage(filePath);
 }
 
-void Image::change(const char* filePath) {
-  data = stbi_load(filePath, &tWidth, &tHeight, &bpp, 0);
-  if (!data) {
-    throw Ex2(Errcode::IMAGE_LOAD, filePath);
-  }
-  textureID = 0;
-  addImage(x, y, rWidth, rHeight);
-
-  // Generate Texture object
-  glGenTextures(1, &textureID);
-  glBindTexture(GL_TEXTURE_2D, textureID);
-  // set texture wrapping to GL_REPEAT (default wrapping method)
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  // set texture filtering parameters
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  if (bpp == 1) {
-    GLint swiz[] = {GL_RED, GL_RED, GL_RED, GL_ONE};
-    glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swiz);
-  }
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tWidth, tHeight, 0, GL_RGB,
-               GL_UNSIGNED_BYTE, data);
-  glGenerateMipmap(GL_TEXTURE_2D);
-
-  stbi_image_free(data);
-}
-
-//? Adds cropped sections of image
-void Image::addImage(float x, float y, float width, float height, float u0,
-                     float v0, float u1, float v1) {
+void Image::setupBuffers(float u0, float v0, float u1, float v1) {
   uint32_t offset = vertices.size() / 4;
 
   vertices.push_back(x);
@@ -79,16 +45,16 @@ void Image::addImage(float x, float y, float width, float height, float u0,
   vertices.push_back(v1);
 
   vertices.push_back(x);
-  vertices.push_back(y + height);
+  vertices.push_back(y + drawHeight);
   vertices.push_back(u0);
   vertices.push_back(v0);
 
-  vertices.push_back(x + width);
-  vertices.push_back(y + height);
+  vertices.push_back(x + drawWidth);
+  vertices.push_back(y + drawHeight);
   vertices.push_back(u1);
   vertices.push_back(v0);
 
-  vertices.push_back(x + width);
+  vertices.push_back(x + drawWidth);
   vertices.push_back(y);
   vertices.push_back(u1);
   vertices.push_back(v1);
@@ -101,28 +67,43 @@ void Image::addImage(float x, float y, float width, float height, float u0,
   indices.push_back(offset + 3);
 }
 
-void Image::init() {
-  // Choosing between RGB and RGBA
-  GLint internal = (bpp == 3) ? GL_RGB : GL_RGBA;
-  GLint format;
-  switch (bpp) {
-    case 1:
-      format = GL_RED;
-      break;
-    case 2:
-      format = GL_RG;
-      break;
-    case 3:
-      format = GL_RGB;
-      break;
-    case 4:
-      format = GL_RGBA;
-      break;
-    default:
-      format = GL_RGB;
-      break;
-  }
+void Image::setupTexture() {
+  // glGenTextures takes an input for how many textures we want to make, and
+  // stored them in an unsigned int array, given as the second argument (we just
+  // do a single unsigned int)
+  glGenTextures(1, &textureID);
+  // we need to bind the newly created object so future texture commands will
+  // target this one
+  glBindTexture(GL_TEXTURE_2D, textureID);
 
+  // set texture wrapping to GL_REPEAT (default wrapping method)
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+  // set texture filtering parameters
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
+void Image::addImage(const char *filePath) {
+  // stbi_load take a filepath as input, and outputs values to textureWidth,
+  // textureheight, and nrChannels
+  data = stbi_load(filePath, &textureWidth, &textureHeight, &nrChannels, 0);
+  if (data) {
+    // after these calls, the currently bound texture object will have the
+    // texture image attached to it
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0,
+                 GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+  } else {
+    throw Ex2(Errcode::IMAGE_LOAD, filePath);
+  }
+  // we don't need this data any more, its being held by opengl, so we can free
+  // what we've got
+  stbi_image_free(data);
+}
+
+void Image::init() {
   // Creating rect VAO
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
@@ -139,32 +120,10 @@ void Image::init() {
                &indices[0], GL_STATIC_DRAW);
 
   // position attribute
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
   // texture coord attribute
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
-                        (void*)(2 * sizeof(float)));
-
-  // Add Texture if this was not already done
-  if (textureID == 0) {
-    // Generate Texture object
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    // set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    if (bpp == 1) {
-      GLint swiz[] = {GL_RED, GL_RED, GL_RED, GL_ONE};
-      glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swiz);
-    }
-    glTexImage2D(GL_TEXTURE_2D, 0, internal, tWidth, tHeight, 0, format,
-                 GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    stbi_image_free(data);
-  }
+                        (void *)(2 * sizeof(float)));
 }
 
 void Image::render() {
@@ -172,7 +131,7 @@ void Image::render() {
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
 
-  Shader* s = Shader::useShader(GLWin::TEXTURE_SHADER);
+  Shader *s = Shader::useShader(GLWin::TEXTURE_SHADER);
   s->setMat4("projection", *(parentCanvas->getProjection()));
   s->setInt("ourTexture", 0);
   glActiveTexture(GL_TEXTURE0);
@@ -186,14 +145,15 @@ void Image::render() {
   glBindVertexArray(0);
 }
 
-void Image::combineImage(const vector<string>& images) {
+#if 0
+void Image::combineImage(const vector<string> &images) {
   int w, h, c;
   int w_total = 0, h_total = 0;
   std::vector<unsigned char> combinedImageData;
   combinedImageData.reserve(images.size() * 256 * 256);
   for (int i = 0; i < images.size(); i++) {
     string file = images.at(i);
-    unsigned char* img = stbi_load(file.c_str(), &w, &h, &c, STBI_rgb_alpha);
+    unsigned char *img = stbi_load(file.c_str(), &w, &h, &c, STBI_rgb_alpha);
     if (w > w_total) w_total = w;
     h_total += h;
     const uint32_t image_size = w * h * c;
@@ -207,3 +167,4 @@ void Image::combineImage(const vector<string>& images) {
   stbi_write_jpg("test.jpg", w_total, h_total, STBI_rgb_alpha,
                  combinedImageData.data(), 100);
 }
+#endif
