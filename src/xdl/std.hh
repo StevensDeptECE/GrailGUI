@@ -49,11 +49,7 @@ class Style;
 class MultiShape2d;
 class MultiText;
 class XDLIterator;
-
-// ArrayOfBytes currently commented out, no forward reference
-#if 1
 class ArrayOfBytes;
-#endif
 
 class UnImpl;
 class XDLType {
