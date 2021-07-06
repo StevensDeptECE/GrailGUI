@@ -1,4 +1,4 @@
-#include "Shapefile.hh"
+#include "opengl/Shapefile.hh"
 
 #include <algorithm>
 

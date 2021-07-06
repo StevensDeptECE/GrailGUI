@@ -1,6 +1,5 @@
 #include "util/JulianDate.hh"
 
-#include "opengl/Errcode.hh"
 #include "util/Ex.hh"
 
 const double JulianDate::epoch = 2000;

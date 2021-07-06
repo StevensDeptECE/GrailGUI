@@ -1,17 +1,47 @@
 #pragma once
 
-#include "opengl/Widget2D.hh"
-#include <string>
+#include "opengl/AxisWidget.hh"
+#include "opengl/SuperWidget2D.hh"
 
 class Style;
-class GraphWidget : public Widget2D {
-private:
-  std::string text;
-  const Style* titleStyle;
-  const Style* lineStyle;
-public:
-  GraphWidget(StyledMultiShape2D* m, MultiText* t, float x, float y, float w, float h) : Widget2D(m,t, x, y, w, h) {}
-  void setTitleStyle(const Style* s) { titleStyle = s; }
-  void setLineStyle( const Style* s) { lineStyle = s;  }
-  void init() override;
+
+class GraphWidget : public SuperWidget2D {
+ public:
+  enum AxisType {
+    LINEAR,
+    LOGARITHMIC,
+    TEXT,
+  };
+
+ protected:
+  std::string graphTitle;
+  const Style *baseStyle;
+  const Style *xAxisStyle;
+  const Style *xAxisTextStyle;
+  const Style *yAxisStyle;
+  const Style *yAxisTextStyle;
+  AxisType xAxisType;
+  AxisType yAxisType;
+
+  void commonRender();
+
+ public:
+  AxisWidget *xAxis;
+  AxisWidget *yAxis;
+
+  GraphWidget(Canvas *c, double x, double y, double w, double h,
+              Style *baseStyle = nullptr, Style *xAxisStyle = nullptr,
+              Style *xAxisTextStyle = nullptr, Style *yAxisStyle = nullptr,
+              Style *yAxisTextStyle = nullptr);
+  ~GraphWidget();
+
+  virtual void createXAxis(AxisType a) = 0;
+  virtual void createYAxis(AxisType a) = 0;
+  void setBaseStyle(const Style *s);
+  void setGraphTitle(std::string text);
+  void setXAxisTextStyle(const Style *xAxisTextStyle);
+  void setYAxisTextStyle(const Style *yAxisTextStyle);
+  void setXAxisStyle(const Style *xAxisStyle);
+  void setYAxisStyle(const Style *yAxisStyle);
+  virtual void init() = 0;
 };

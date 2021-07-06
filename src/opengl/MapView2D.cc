@@ -56,11 +56,12 @@ void MapView2D::render() {
   Shader* shader = Shader::useShader(GLWin::COMMON_SHADER);
   shader->setVec4("solidColor", style->getFgColor());
 
-  shader->setMat4("projection", *parentCanvas->getProjection() * transform);
-  glm::mat4 t = *parentCanvas->getProjection() * transform;
-  debug(transform, 0, 0, 0);
-  debug(t, 100, 0, 0);
-  debug(t, 0, 70, 0);
+  // shader->setMat4("projection", *parentCanvas->getProjection() * transform);
+  // glm::mat4 t = *parentCanvas->getProjection() * transform;
+  // debug(transform, 0, 0, 0);
+  // debug(t, 100, 0, 0);
+  // debug(t, 0, 70, 0);
+  shader->setMat4("projection", transform);
 
   // quick debugging rectangle in old immediate mode
   glBegin(GL_QUADS);

@@ -37,8 +37,10 @@ class MultiText : public Shape {
   void add(float x, float y, const Font* f, double v);
   void add(float x, float y, const Font* f, double v, int fieldWidth,
            int precision);
-  void addCentered(float x, float y, float w, float h, const Font* f,
-                   const char s[], uint32_t len);
+  void addCentered(float x, float, const Font* f, double v,
+                              int fieldWidth, int precision);
+  void addCentered(float x, float y, const Font* f, const char s[],
+                   uint32_t len);
   void checkAdd(float& x, float& y, const Font* f, const unsigned char c,
                 float endMargin, float rowSize, float startOverMargin);
   uint32_t findFirstOverMargin(float x, const Font* f, const char s[],

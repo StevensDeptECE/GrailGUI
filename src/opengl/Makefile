@@ -42,7 +42,7 @@ $(out)/LineGraphWidget.o $(out)/BarChartWidget.o \
 $(out)/ButtonWidget.o $(out)/Scale.o $(out)/CandlestickChartWidget.o\
 $(out)/AngledMultiText.o $(out)/BoxChartWidget.o \
 $(out)/ScrollbarWidget.o $(out)/AxisWidget.o $(out)/GapMinderWidget.o \
-$(out)/SparklineWidget.o
+$(out)/SparklineWidget.o $(out)/GraphWidget.o
 
 SHAPEOBJS := $(libshapeout)/dbfopen.o $(libshapeout)/safileio.o \
 $(libshapeout)/sbnsearch.o $(libshapeout)/shpopen.o $(libshapeout)/shptree.o
@@ -175,8 +175,11 @@ $(out)/ESRIPolygon.o: ESRIPolygon.cc Shapefile.hh
 
 $(out)/ESRIShape.o: ESRIShape.cc Shapefile.hh
 	$(COMP) $< -o $@
-	
+
 $(out)/Shapefile.o: Shapefile.cc Shapefile.hh
+	$(COMP) $< -o $@
+
+$(out)/GraphWidget.o: GraphWidget.cc GraphWidget.hh
 	$(COMP) $< -o $@
 
 $(out)/LineGraphWidget.o: LineGraphWidget.cc LineGraphWidget.hh

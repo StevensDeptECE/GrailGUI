@@ -1,3 +1,5 @@
+#include <numbers>
+
 #include "opengl/AxisWidget.hh"
 #include "opengl/GrailGUI.hh"
 
@@ -56,7 +58,7 @@ class testAxis : public GLWin {
 
   void testRotatedAxis(Canvas *c, MultiText *guiText, const Style *style) {
     StyledMultiShape2D *rot90 =
-        c->addLayer(new StyledMultiShape2D(c, style, M_PI/2, 0, 200));
+        c->addLayer(new StyledMultiShape2D(c, style, numbers::pi / 2, 0, 200));
     LinearAxisWidget axis(rot90, guiText, 0, 0, 100, 100);
 
     // linear specific
@@ -79,12 +81,12 @@ class testAxis : public GLWin {
     StyledMultiShape2D *gui = c->getGui();
     MultiText *guiText = c->addLayer(new MultiText(c, s));
 
-    // testLinearAxis(gui, guiText, s);
-    // testLogAxis(gui, guiText, s);
-    // testTextAxis(gui, guiText, s);
-    testRotatedAxis(c, guiText, s);
-    gui->drawRectangle(100, 100, 100, 100, grail::green);
-    gui->drawCircle(100, 100, 3.5, 3, glm::vec4(0, 0, 1, 1));
+    testLinearAxis(gui, guiText, s);
+    testLogAxis(gui, guiText, s);
+    testTextAxis(gui, guiText, s);
+    // testRotatedAxis(c, guiText, s);
+    // gui->drawRectangle(100, 100, 100, 100, grail::green);
+    // gui->drawCircle(100, 100, 3.5, 3, glm::vec4(0, 0, 1, 1));
   }
 };
 
