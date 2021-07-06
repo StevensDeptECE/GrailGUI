@@ -8,7 +8,7 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all:    $(BIN)/testBlockMapLoader  $(BIN)/testFastMapLoad 
+all: $(BIN)/testGapMinder $(BIN)/testGapMinderLoader $(BIN)/testWidgetGapMinder #$(BIN)/testBlockMapLoader  $(BIN)/testFastMapLoad 
 
 $(BIN)/testDrawBlockMap: testDrawBlockMap.cc $(data)/BlockMapLoader.cc $(opengl)/MapView2D.cc $(LIBGRAIL) $(opengl)/MapView2D.hh $(data)/BlockMapLoader.hh $(data)/BlockLoader.hh 
 	$(CXX) $< $(data)/BlockMapLoader.cc $(opengl)/MapView2D.cc -o $@ $(LIBS)
@@ -18,6 +18,15 @@ $(BIN)/testBlockMapLoader: testBlockMapLoader.cc $(data)/BlockMapLoader.cc $(dat
 
 $(BIN)/testFastMapLoad: testFastMapLoad.cc $(data)/BlockMapLoader.cc $(data)/BlockMapLoaderConverters.cc $(LIBGRAIL) $(data)/BlockMapLoader.hh $(data)/BlockLoader.hh 
 	$(CXX)  $< $(data)/BlockMapLoader.cc $(data)/BlockMapLoaderConverters.cc -o $@ $(LIBS)
+
+$(BIN)/testGapMinder: testGapMinder.cc $(data)/GapMinderBinaryDB.hh $(data)/GapMinderBinaryDB.cc $(data)/Dataset.hh
+	$(CXX)  $< $(data)/GapMinderBinaryDB.cc -o  $@
+
+$(BIN)/testGapMinderLoader: testGapMinderLoader.cc $(data)/GapMinderLoader.hh $(data)/GapMinderLoader.cc $(data)/BlockMapLoader.cc $(data)/Dataset.hh
+	$(CXX)  $< $(data)/GapMinderLoader.cc $(data)/BlockMapLoader.cc -o  $@
+
+$(BIN)/testWidgetGapMinder: testWidgetGapMinder.cc $(data)/GapMinderLoader.hh $(data)/GapMinderLoader.cc $(data)/BlockMapLoader.cc $(data)/Dataset.hh $(opengl)/GLWin.cc $(opengl)/GapMinderWidget.hh $(opengl)/GapMinderWidget.cc
+	$(CXX)  $< $(data)/GapMinderLoader.cc $(data)/BlockMapLoader.cc $(opengl)/GapMinderWidget.cc -o  $@ $(LIBS)
 
 
 clean:

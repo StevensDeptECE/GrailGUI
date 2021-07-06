@@ -13,6 +13,7 @@
 #include "opengl/GrailGUI.hh"
 #include "opengl/LineGraphWidget.hh"
 #include "opengl/ScrollbarWidget.hh"
+#include "opengl/SparklineWidget.hh"
 #include "opengl/util/Transformation.hh"
 
 using namespace std;
@@ -111,15 +112,34 @@ class TestWidgets : public GLWin {
   }
 
   void testGapMinder(StyledMultiShape2D *gui, MultiText *guiText) {
-    vector<float> x = {100, 10, 50, 150, 300};
-    vector<float> y = {150, 350, 222, 100, 300};
+    vector<float> x = {100, 220, 50, 150, 300, 290, 230};
+    vector<float> y = {150, 350, 222, 100, 290, 60, 200};
+    vector<float> s = {3, 2, 6, 5, 4, 10, 15};
+    vector<glm::vec4> c = {grail::red,  grail::blue,   grail::green,
+                           grail::cyan, grail::purple, grail::darkblue};
 
-    GapMinderWidget chart(gui, guiText, 550, 320, 400, 200, y, x);
-    chart.chart(y, x, 50);
+    GapMinderWidget chart(gui, guiText, 550, 320, 400, 200, x, y);
+    chart.chart(y, x, s, 50, 50, c);
+
     chart.setTitle("Title");
     chart.init();
   }
 
+  void testSparkline(StyledMultiShape2D *gui, MultiText *guiText) {
+    vector<float> x = {0, 50, 100, 150, 200, 250, 300};
+    vector<float> y = {150, 350, 222, 100, 290, 60, 200};
+    vector<float> y2 = {20, 74, 42, 80, 20, 60, 37};
+
+    SparklineWidget chart(gui, guiText, 550, 50, 150, 50, x, y);
+    chart.chart(y, x, grail::blue);
+    chart.init();
+
+    SparklineWidget chart2(gui, guiText, 550, 110, 150, 50, x, y2);
+    chart2.chart(y2, x, grail::red);
+    chart2.init();
+  }
+
+#if 0
   void testLineGraphLinear(StyledMultiShape2D *gui, MultiText *guiText) {
     vector<float> x = {20, 40, 100, 200};
     vector<float> y = {100, 200, 50, 325};
@@ -129,7 +149,9 @@ class TestWidgets : public GLWin {
     chart.title("Title");
     chart.init();
   }
+#endif
 
+#if 0
   void testLineGraphLog(StyledMultiShape2D *gui, MultiText *guiText) {
     vector<float> x = {20, 40, 100, 200};
     vector<float> y = {100, 1000, 10000, 10000000};
@@ -139,6 +161,7 @@ class TestWidgets : public GLWin {
     chart.title("Title");
     chart.init();
   }
+#endif
 
   void testScrollBar(StyledMultiShape2D *gui, MultiText *guiText) {
     const uint32_t scrollBarWidth = 50;
@@ -153,10 +176,10 @@ class TestWidgets : public GLWin {
   void testAngleText(StyledMultiShape2D *gui, MultiText *guiText, Canvas *c,
                      const Style *s) {
     const char thing[] = "hello world";
-    guiText->add(0, 50, s->f, thing, strlen(thing));
+    // guiText->add(0, 50, s->f, thing, strlen(thing));
     AngledMultiText *am =
-        c->addLayer(new AngledMultiText(c, s, M_PI / 4, 20, 500));
-    am->add(0, 0, s->f, thing, strlen(thing));
+        c->addLayer(new AngledMultiText(c, s, M_PI / 2, 20, 500));
+    am->add(200, 600, s->f, thing, strlen(thing));
   }
 
   void init() {
@@ -176,14 +199,16 @@ class TestWidgets : public GLWin {
         c->addLayer(new StyledMultiShape2D(c, s, -M_PI / 4, 0, 0));
 
     const Style *graphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
-    testBarChart(gui, guiText);
+    // testBarChart(gui, guiText);
     testCandlestick(gui, guiText);
     testBoxChart(gui, guiText);
-    // testGapMinder(gui, guiText);
+    testGapMinder(gui, guiText);
+    testSparkline(gui, guiText);
     // testButton(gui, guiText);
     // testLineGraphLinear(gui, guiText);
     // testLineGraphLog(gui, guiText);
     // testLinearAxesWidget(gui, guiText, graphStyle);
+    // testAngleText(gui, guiText, c, s);
 
     testScrollBar(gui, guiText);
 

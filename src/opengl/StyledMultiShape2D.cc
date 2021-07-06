@@ -397,6 +397,33 @@ void StyledMultiShape2D::drawHexGrid(float x, float y, float w, float h,
                                      uint32_t numHorizHexagons,
                                      const glm::vec4& c) {}
 
+// Markers for Graphs
+void StyledMultiShape2D::drawCircleMarker(float x, float y, float size,
+                                          glm::vec4& color) {
+  fillCircle(x, y, size, 3, color);
+}
+void StyledMultiShape2D::drawTriangleMarker(float x, float y, float size,
+                                            glm::vec4& color) {
+  fillPolygon(x, y, size, size, 3, color);
+}
+void StyledMultiShape2D::drawSquareMarker(float x, float y, float size,
+                                          glm::vec4& color) {
+  fillPolygon(x, y, size, size, 4, color);
+}
+void StyledMultiShape2D::drawPentagonMarker(float x, float y, float size,
+                                            glm::vec4& color) {
+  fillPolygon(x, y, size, size, 5, color);
+}
+void StyledMultiShape2D::drawHexagonMarker(float x, float y, float size,
+                                           glm::vec4& color) {
+  fillPolygon(x, y, size, size, 6, color);
+}
+void StyledMultiShape2D::drawCrossMarker(float x, float y, float size,
+                                         glm::vec4& color) {
+  drawLine(x, y + size, x, y - size, color);
+  drawLine(x - size, y, x + size, y, color);
+}
+
 // drawBezier, end bezier,grid
 
 void StyledMultiShape2D::drawPolyline(const float xy[], uint32_t n,

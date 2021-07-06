@@ -58,6 +58,7 @@ class MultiText : public Shape {
     // y+=velY;
 #endif
   }
+  const Style* getStyle();
   void update() override;
   void render() override;
 };

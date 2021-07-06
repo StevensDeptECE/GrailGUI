@@ -8,12 +8,12 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all:    $(BIN)/testDrawBlockMap $(BIN)/testWidgets   $(BIN)/testStyledMultishape	\
+all:    $(BIN)/testDrawBlockMap $(BIN)/testWidgets #  $(BIN)/testStyledMultishape	\
 	$(BIN)/SolarSystem  $(BIN)/globe
 # $(BIN)/ESRIMapDemo \
   $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
 $(BIN)/testText3 $(BIN)/globe    $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
-  $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/TestESRIPolygon \
+  $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/testESRIPolygon \
 	$(BIN)/testPolyLines $(BIN)/StockDemo $(BIN)/testAxis
 
 #$(BIN)/testText 
@@ -70,7 +70,7 @@ $(BIN)/QuentinDemo: QuentinDemo.cc $(LIBGRAIL)
 $(BIN)/MapDemo: MapDemo.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)	
 
-$(BIN)/TestESRIPolygon: TestESRIPolygon.cc $(LIBGRAIL)
+$(BIN)/testESRIPolygon: testESRIPolygon.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)	
 
 $(BIN)/ESRIMapDemo: ESRIMapDemo.cc $(LIBGRAIL)
@@ -101,14 +101,8 @@ $(BIN)/testPolyLines: testPolyLines.cc $(LIBGRAIL)
 $(BIN)/testAxis: testAxis.cc $(LIBGRAIL)
 	$(CXX) $^  -o $@ $(LIBS)
 
-# $(opengl)/ButtonWidget.o: $(opengl)/ButtonWidget.cc
-# 	$(CXX) -c $< -o $@
-
-# $(opengl)/LineGraphWidget.o: $(opengl)/LineGraphWidget.cc
-# 	$(CXX) -c $< -o $@
-
-# $(opengl)/BarChartWidget.o: $(opengl)/BarChartWidget.cc $(opengl)/BarChartWidget.hh $(opengl)/StyledMultiShape2D.hh $(opengl)/MultiText.hh
-# 	$(CXX) -c $< -o $@
+$(BIN)/testLineGraph: testLineGraph.cc $(LIBGRAIL)
+	$(CXX) $^  -o $@ $(LIBS)
 
 $(BIN)/testHeatMap: testHeatMap.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
@@ -142,6 +136,9 @@ $(BIN)/testLoadpage: testLoadpage.cc $(LIBGRAIL)
 
 $(BIN)/testProjection: testProjection.cc $(LIBGRAIL)
 	$(CXX) $^ -o $(BIN)/testProjection $(LIBS)
+
+$(BIN)/testImage: testImage.cc $(LIBGRAIL)
+	$(CXX) $^ -o $(BIN)/testImage $(LIBS)
 
 # create an n x n grid of colorful canvases
 $(BIN)/testColorfulCanvases:	testColorfulCanvases.cc $(LIBGRAIL)
