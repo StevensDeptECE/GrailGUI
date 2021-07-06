@@ -20,7 +20,7 @@ class MapView2D : public Shape {
  public:
   MapView2D(Canvas* parent, const Style* s, BlockMapLoader* bml = nullptr)
       : Shape(parent), style(s), bml(bml), transform(1.0f) {
-    const BlockMapLoader::BoundRect& bounds = bml->getBlockMapHeader()->bounds;
+    const BoundRect& bounds = bml->getBlockMapHeader()->bounds;
     float centerX = (bounds.xMin + bounds.xMax) * 0.5;
     float centerY = (bounds.yMin + bounds.yMax) * 0.5;
 
