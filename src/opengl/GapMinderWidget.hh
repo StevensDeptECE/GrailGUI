@@ -48,6 +48,11 @@ public:
     GapMinderWidget(m,t, x, y, w, h, "", nullptr, nullptr,
     0, 0, 0, 0, 1.25, 10, 10, x, new LinearScale(), new LinearScale()){
       maxY = maxMultiplier*(*max_element(yLocations.begin(), yLocations.end()));
+      //for (int i = 0; i < yLocations.size(); i++){
+        //std::vector <float>::const_iterator start = yLocations.begin()+i;
+        //std::vector <float>::const_iterator end = yLocations.end();
+        //std::cout << *max_element(start, end) << "\n";
+      //}
       maxX = maxMultiplier*(*max_element(xLocations.begin(), xLocations.end()));
     }  
 
@@ -59,7 +64,7 @@ public:
   void setAxisScale(Scale *yAxis){this->yAxis = yAxis;}
   void setTitleStyle(const Style* s) { titleStyle = s;}
   void chart(const std::vector<float>& yLocations, const std::vector<float>& xLocations, 
-  const std::vector<float>& sizes,int rulerInterval, const std::vector <glm::vec4>& c);
+  const std::vector<float>& sizes, int rulerIntervalX, int rulerIntervalY, const std::vector <glm::vec4>& c);
   //void chartLog(const float b[], int size, float relativeSpace, const std::string barNames[], int logBase);
   void setTitle(const std::string& s);
   void init() override;

@@ -20,11 +20,11 @@ void GapMinderWidget::setTitle(const string& s){
 
 */
 void GapMinderWidget::chart(const vector<float>& yLocations, 
-    const vector<float>& xLocations, const vector<float>& sizes, int rulerInterval,
+    const vector<float>& xLocations, const vector<float>& sizes, int rulerIntervalX, int rulerIntervalY,
     const vector <glm::vec4>& c){
 
-    yAxis->init(minY, maxY, y+h, -h, rulerInterval);
-    xAxis->init(minX, maxX, x, w, rulerInterval);
+    yAxis->init(minY, maxY, y+h, -h, rulerIntervalY);
+    xAxis->init(minX, maxX, x, w, rulerIntervalX);
 
     const Font* f = FontFace::get("TIMES", 12, FontFace::BOLD);
 
@@ -52,6 +52,7 @@ void GapMinderWidget::chart(const vector<float>& yLocations,
       float yPoint = yAxis->transform(yLocations[i]);
 
       m->fillCircle(xPoint, yPoint, rad[i], 3, c[i]);
+      m->drawCircle(xPoint, yPoint, rad[i], 3, grail::black);
     }
 
 

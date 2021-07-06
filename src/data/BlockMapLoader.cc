@@ -29,9 +29,9 @@ BlockLoader::BlockLoader(const char filename[]) {
   if (fh < 0) throw "Can't open file";  // TODO: Use Ex.hh to report location
   struct stat s;
   fstat(fh, &s);
-  size = (s.st_size + 7) & ~7ULL;
+  size = s.st_size;
 
-  mem = new uint64_t[size / 8];
+  mem = new uint64_t[(size + 7) / 8];
   int bytesRead = read(fh, (char*)mem, size);
   if (bytesRead != size)
     throw "Could not read entire file";  // TODO: Use Ex.hh to report location

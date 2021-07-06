@@ -123,7 +123,7 @@ void GLWin::mouseButtonCallback(GLFWwindow *win, int button, int action,
 }
 
 void GLWin::scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
-  cout << "xoffset=" << xoffset << " yoffset=" << yoffset << '\n';
+  //cout << "xoffset=" << xoffset << " yoffset=" << yoffset << '\n';
   // todo: we would have to copy offsets into the object given the way this is
   uint32_t input = 400;
   doit(winMap[win], input + int(yoffset));
@@ -204,6 +204,7 @@ void GLWin::startWindow() {
   glfwMakeContextCurrent(win);
   glfwSetWindowSizeCallback(win, resize);
   //	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+  
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     throw "Failed to initialize GLAD";
@@ -598,7 +599,7 @@ uint32_t GLWin::internalRegisterAction(const char name[], Security s,
     cerr << "Error! action Table is full for security " << securityIndex
          << '\n';
   }
-  cout << "Setting action " << actNum << " for action " << name << '\n';
+  //cout << "Setting action " << actNum << " for action " << name << '\n';
   setAction(actNum, action);
   actionNameMap[name] = actNum;
   return actNum;

@@ -3,12 +3,16 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cstring>
+#include "data/BlockLoader.hh"
 
 
 constexpr float NaN = 0xffffffff;
 
-class GapMinderBinaryDB {
+class GapMinderBinaryDB{
 public:
+
+constexpr static uint32_t numberCountries = 249;
 
 struct Header{
   uint32_t numCountries;
@@ -17,32 +21,17 @@ struct Header{
 };
 
 private:
-  std::vector<std::string> countryCodes;
 
+int debugLevel;
+
+  std::vector<std::string> countryCodes;
+  std::vector<uint8_t> continents;
   /*
     Dataset represents one variable for all countries
 
    */
-  class Dataset {
-  public:
-    std::string name;    // name of the data set (variable)
-    // this might be useful summary data, not required
-    uint32_t startYear;  // OPTIONAL starting year (earliest) for this dataset for ALL countries
-    uint32_t completeStartYear; //the latest start year in the database
-    uint32_t endYear;    // OPTIONAL end year (latest) for this dataset, ANY country
-    uint32_t startIndex; // start index within data
-    uint32_t endIndex;   // end index within data (this variable between startIndex,endIndex
-    struct Country {
-      uint32_t startIndex; // start of the country's data within data
-      uint32_t startYear;  // year corresponding to first datapoint. TODO: ASSUMED sequential
-    };
-    std::vector<Country> countries; 
-
-    Dataset(uint32_t numCountries,const std::string& name) : countries(numCountries) {
-      startYear = endYear = startIndex = endIndex = 0;
-    }
-
-  };
+  
+  #include "Dataset.hh"
   
   class Index {
   private:
@@ -50,6 +39,18 @@ private:
   public:
     Index();
     void addDataSet(const Dataset& d);
+
+    uint32_t size() const{
+      return datasets.size();
+    }
+
+    Dataset& get(uint32_t index){
+      return datasets[index];
+    }
+
+    Dataset& operator[](uint32_t index){
+      return datasets[index];
+    }
   };
 
   Index index;
@@ -58,11 +59,14 @@ private:
 public:
   GapMinderBinaryDB(const char filename[]);
   void loadDir(const char filename[]); // opendir, readdir, closedir https://man7.org/linux/man-pages/man3/opendir.3.html
-  Dataset loadOneFile(const char filename[]);
+  void loadOneFile(const char filename[]);
   /*
     save the file in binary so that it can be loaded in a single memory read next time
   */
-  void saveBinary(const char binaryData[], Dataset d);
+
+  void fill(std::ofstream &f, uint32_t size);
+
+  void saveBinary(const char binaryData[]);
 
   void loadCountryCodes();
 
@@ -73,7 +77,7 @@ public:
   }
 
   float getData(uint32_t countryIndex, uint32_t year, const Dataset* d) const{
-    if(d->countries.size() < countryIndex){
+    if(numberCountries < countryIndex){
       return NaN;
     }
     if (year < d->countries[countryIndex].startYear ){
@@ -97,7 +101,7 @@ public:
       return vec;
     }
 
-    for (int i = 0; i < d->countries.size(); i++){
+    for (int i = 0; i < numberCountries; i++){
       uint32_t index = d->countries[i].startIndex + year - d->countries[i].startYear;
       if (i >= d->countries[i+1].startIndex){
         vec.push_back(0xffffffff);
@@ -114,7 +118,7 @@ public:
 
   std::vector<float> getAllDataOneCountry(uint32_t countryIndex, const Dataset* d){
     std::vector<float> vec;
-    if(d->countries.size() < countryIndex){
+    if(numberCountries < countryIndex){
       vec = {NaN};
       return vec;
     }
