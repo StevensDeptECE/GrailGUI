@@ -134,6 +134,15 @@ void GLWin::windowRefreshCallback(GLFWwindow *win) {
   w->dirty = true;
 }
 
+void GLAPIENTRY messageCallback(GLenum source, GLenum type, GLuint id,
+                                GLenum severity, GLsizei length,
+                                const GLchar *message, const void *userParam) {
+  fprintf(stderr,
+          "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+          (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity,
+          message);
+}
+
 #if 0
 void GLWin::enableMouse() {
   glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -254,6 +263,9 @@ void GLWin::startWindow() {
   hasBeenInitialized = true;
 }
 void GLWin::baseInit() {
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(messageCallback, 0);
+  glLineWidth(1);
   Shader::setDir(prefs.getShaderDir());
   Shader::load("solid.bin", "common.vs", "common.fs");    // Solid Color
   Shader::load("pervert.bin", "vColor.vs", "common.fs");  // Color per vertex
@@ -682,8 +694,6 @@ void GLWin::loadBindings() {
   // bind2DOrtho();
 }
 
-double GLWin::getTime() {
-  return glfwGetTime();
-}
+double GLWin::getTime() { return glfwGetTime(); }
 
 void GLWin::renderVideo() {}
