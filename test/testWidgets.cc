@@ -1,17 +1,13 @@
-#define _USE_MATH_DEFINES
-
 #include <cmath>
+#include <numbers>
 #include <string>
 #include <vector>
 
 #include "opengl/AngledMultiText.hh"
-#include "opengl/BarChartWidget.hh"
-#include "opengl/BoxChartWidget.hh"
 #include "opengl/ButtonWidget.hh"
 #include "opengl/CandlestickChartWidget.hh"
 #include "opengl/GapMinderWidget.hh"
 #include "opengl/GrailGUI.hh"
-#include "opengl/LineGraphWidget.hh"
 #include "opengl/ScrollbarWidget.hh"
 #include "opengl/SparklineWidget.hh"
 #include "opengl/util/Transformation.hh"
@@ -55,25 +51,7 @@ class TestWidgets : public GLWin {
     b.init();
   }
 
-  void testBarChart(StyledMultiShape2D *gui, MultiText *guiText) {
-    vector<float> x = {100, 10, 1000, 150, 10000};
-    vector<float> y = {150, 350, 222, 100, 300};
-
-    vector<string> labels = {"bar", "big bar", "other bar", "small bar",
-                             "barrr"};
-    BarChartWidget chart(gui, guiText, 550, 320, 400, 200, y);
-    chart.chart(y, labels, 50);
-    chart.setTitle("Title");
-    chart.init();
-
-    vector<string> labels2 = {"bar 1", "bar 2", "bar 3", "bar 4", "bar 5"};
-    BarChartWidget chart2(gui, guiText, 550, 50, 400, 200, x);
-    chart2.setAxisScale(new LogScale());
-    chart2.chart(x, labels2, 10);
-    chart2.setTitle("Title Log graph");
-    chart2.init();
-  }
-
+#if 0
   void testCandlestick(StyledMultiShape2D *gui, MultiText *guiText) {
     vector<float> y = {
         153.25, 154.16, 152.99, 153.68, 153.34, 153.73, 152.15, 152.73, 152.66,
@@ -98,17 +76,7 @@ class TestWidgets : public GLWin {
     chart.setTitle("Title");
     chart.init();
   }
-
-  void testBoxChart(StyledMultiShape2D *gui, MultiText *guiText) {
-    vector<float> y = {150, 350, 222, 100, 300, 130, 300, 250, 190,
-                       170, 100, 50,  20,  150, 200, 330, 200, 270,
-                       180, 300, 49,  247, 325, 114, 89};
-    vector<string> labels2 = {"box 1", "box 2", "box 3", "box 4", "box 5"};
-    BoxChartkWidget chart(gui, guiText, 50, 320, 400, 200, y);
-    chart.chart(y, 50, 5, labels2);
-    chart.setTitle("Title");
-    chart.init();
-  }
+#endif
 
   void testGapMinder(StyledMultiShape2D *gui, MultiText *guiText) {
     vector<float> x = {100, 220, 50, 150, 300, 290, 230};
@@ -138,30 +106,6 @@ class TestWidgets : public GLWin {
     chart2.init();
   }
 
-#if 0
-  void testLineGraphLinear(StyledMultiShape2D *gui, MultiText *guiText) {
-    vector<float> x = {20, 40, 100, 200};
-    vector<float> y = {100, 200, 50, 325};
-
-    LineGraphWidget chart(gui, guiText, 50, 320, 400, 200);
-    chart.chart(x, y, 50, 50, new LinearScale(), new LinearScale());
-    chart.title("Title");
-    chart.init();
-  }
-#endif
-
-#if 0
-  void testLineGraphLog(StyledMultiShape2D *gui, MultiText *guiText) {
-    vector<float> x = {20, 40, 100, 200};
-    vector<float> y = {100, 1000, 10000, 10000000};
-
-    LineGraphWidget chart(gui, guiText, 50, 320, 400, 200);
-    chart.chart(x, y, 50, 50, new LinearScale(), new LogScale());
-    chart.title("Title");
-    chart.init();
-  }
-#endif
-
   void testScrollBar(StyledMultiShape2D *gui, MultiText *guiText) {
     const uint32_t scrollBarWidth = 50;
     //    ScrollbarWidget scrollBar(gui, guiText, getWidth() - scrollBarWidth,
@@ -177,7 +121,7 @@ class TestWidgets : public GLWin {
     const char thing[] = "hello world";
     // guiText->add(0, 50, s->f, thing, strlen(thing));
     AngledMultiText *am =
-        c->addLayer(new AngledMultiText(c, s, M_PI / 2, 20, 500));
+        c->addLayer(new AngledMultiText(c, s, numbers::pi / 2, 20, 500));
     am->add(200, 600, s->f, thing, strlen(thing));
   }
 
@@ -195,18 +139,13 @@ class TestWidgets : public GLWin {
     MultiText *guiText = c->addLayer(new MultiText(c, s));
 
     StyledMultiShape2D *p =
-        c->addLayer(new StyledMultiShape2D(c, s, -M_PI / 4, 0, 0));
+        c->addLayer(new StyledMultiShape2D(c, s, -numbers::pi / 4, 0, 0));
 
     const Style *graphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
-    // testBarChart(gui, guiText);
-    testCandlestick(gui, guiText);
-    testBoxChart(gui, guiText);
+    //testCandlestick(gui, guiText);
     testGapMinder(gui, guiText);
     testSparkline(gui, guiText);
     // testButton(gui, guiText);
-    // testLineGraphLinear(gui, guiText);
-    // testLineGraphLog(gui, guiText);
-    // testLinearAxesWidget(gui, guiText, graphStyle);
     // testAngleText(gui, guiText, c, s);
 
     testScrollBar(gui, guiText);

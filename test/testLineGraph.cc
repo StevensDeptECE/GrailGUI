@@ -1,10 +1,3 @@
-#define _USE_MATH_DEFINES
-
-#include <cmath>
-#include <string>
-#include <vector>
-
-#include "opengl/AxisWidget.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/LineGraphWidget.hh"
 
@@ -12,59 +5,67 @@ using namespace std;
 using namespace grail;
 
 class TestLineGraph : public GLWin {
+ private:
+  const Style *baseGraphStyle;
+  const Style *xAxisStyle;
+  const Style *xAxisTextStyle;
+  const Style *yAxisStyle;
+  const Style *yAxisTextStyle;
+  const Style *dataStyle;
+
  public:
   TestLineGraph() : GLWin(0x000000, 0xCCCCCC, "TestLineGraph") {}
-
-#if 0
-  void testAngleText(StyledMultiShape2D *gui, MultiText *guiText, Canvas *c,
-                     const Style *s) {
-    const char thing[] = "hello world";
-    guiText->add(0, 50, s->f, thing, strlen(thing));
-    AngledMultiText *am =
-        c->addLayer(new AngledMultiText(c, s, M_PI / 4, 20, 500));
-    am->add(0, 0, s->f, thing, strlen(thing));
+  ~TestLineGraph() {
+    delete baseGraphStyle;
+    delete xAxisStyle;
+    delete xAxisTextStyle;
+    delete yAxisStyle;
+    delete yAxisTextStyle;
+    delete dataStyle;
   }
-#endif
 
   void init() {
-    const Style *lineGraphTitleStyle =
-        new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
+    // two lines and the overall title
+    baseGraphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0, 5);
 
-    const Style *xAxisTitleStyle =
-        new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 0);  // should be red
+    // will control how thick lines for x axis are drawn
+    xAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 1, 0, 4);
 
-    // const Style *xAxisLabelStyle =
-    //     new Style("TIMES", 12, 1, 0, 0, 0, 0, 1, 0);  // should be green
+    // controls the font, size, and color of x axis text
+    xAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 0, 3);
 
-    const Style *yAxisTitleStyle =
-        new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 1);  // should be blue
+    // will control how thick lines for y axis are drawn
+    yAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 1, 2);
 
-    // const Style *yAxisLabelStyle =
-    //     new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1);  // should be purple
+    // controls the font, size, and color of y axis text
+    yAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 1);
+
+    // controls the thickness of lines drawn by LineGraphWidget
+    dataStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 3);
 
     MainCanvas *c = currentTab()->getMainCanvas();
-
-    StyledMultiShape2D *m = c->getGui();
-
-    MultiText *lineGraphTitleText =
-        c->addLayer(new MultiText(c, lineGraphTitleStyle));
 
     vector<double> times = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     vector<double> values = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20};
     vector<double> logValues = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
 
-    LineGraphWidget lgw(c, m, lineGraphTitleText, 100, 100, 800, 800);
-    // setting general things for the graph
-    // the axis text styles must be set before
-    // creating the axes
+    LineGraphWidget lgw(c, 200, 200, 500, 300);
+
+    // Graph Superclass settings
     lgw.setGraphTitle("Test Title");
-    lgw.setXAxisTextStyle(xAxisTitleStyle);
-    lgw.setYAxisTextStyle(yAxisTitleStyle);
+    lgw.setBaseStyle(baseGraphStyle);
+    lgw.setXAxisStyle(xAxisStyle);
+    lgw.setYAxisStyle(yAxisStyle);
+    lgw.setXAxisTextStyle(xAxisTextStyle);
+    lgw.setYAxisTextStyle(yAxisTextStyle);
+
+    // LineGraphWidget specific settings
+    lgw.setDataStyle(dataStyle);
     lgw.setPointFormat('t', 5, grail::red);
 
     // x axis stuff
     lgw.setXPoints(times);
-    lgw.createXAxis(AxisType::linear);
+    lgw.createXAxis(GraphWidget::AxisType::LINEAR);
 
     // set x axis parameters
     lgw.xAxis->setBounds(times.front(), times.back());
@@ -78,14 +79,15 @@ class TestLineGraph : public GLWin {
     lgw.xAxis->setTickFormat(3, 1);
 
     // y axis stuff
-    lgw.createYAxis(AxisType::logar);
-    // lgw.setYPoints(values);
-    lgw.setYPoints(logValues);
+    lgw.createYAxis(GraphWidget::AxisType::LINEAR);
+    lgw.setYPoints(values);
+    // lgw.createYAxis(GraphWidget::AxisType::LOGARITHMIC);
+    // lgw.setYPoints(logValues);
 
     // set y axis parameters
 
-    // lgw.yAxis->setBounds(values.front(), values.back());
-    lgw.yAxis->setBounds(logValues.front(), logValues.back());
+    lgw.yAxis->setBounds(values.front(), values.back());
+    // lgw.yAxis->setBounds(logValues.front(), logValues.back());
     lgw.yAxis->setIsVert(true);
     // linear
     // lgw.yAxis->setTickInterval(3);

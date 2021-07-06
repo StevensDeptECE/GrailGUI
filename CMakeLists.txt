@@ -17,23 +17,44 @@ option(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 option(CMAKE_LINK_WHAT_YOU_USE ON)
-set(GRAIL_EXPERIMENTAL "OFF")
+option(GRAIL_EXPERIMENTAL ON)
 set(CMAKE_DEBUG_POSTFIX d)
-set(CMAKE_BUILD_TYPE DEBUG)
 
-if(DEFINED CMAKE_BUILD_TYPE)
-set(CMAKE_BUILD_TYPE Debug)
+string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_lower)
+
+# Set a default build type if none was specified
+set(default_build_type "Release")
+if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
+  set(default_build_type "Debug")
 endif()
 
-include(CheckIPOSupported)
-check_ipo_supported(RESULT supported OUTPUT error)
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
+  set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
+      STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+    "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
 
-if( supported )
-    message(STATUS "IPO / LTO enabled")
-    set(TARGET grail PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+message(STATUS "Build mode: ${CMAKE_BUILD_TYPE}")
+if(build_type_lower MATCHES "debug")
+    message(STATUS "Building shared libs")
+    option(BUILD_SHARED_LIBS ON)
 else()
-    message(STATUS "IPO / LTO not supported: <${error}>")
+
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT supported OUTPUT error)
+
+    if( supported )
+        message(STATUS "IPO / LTO enabled")
+        set(TARGET grail PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    else()
+        message(STATUS "IPO / LTO not supported: <${error}>")
+    endif()
 endif()
+
 
 include(FetchContent)
 include(GrailFunctions)
@@ -66,17 +87,18 @@ if(NOT glm_POPULATED)
 endif()
 
 # Shapelib
-# Output is not shown, so errors may occur without notice
-option(FETCHCONTENT_QUIET "Enables QUIET option for all content population" ON)
-FetchContent_Declare(
-    shapelib
-    GIT_REPOSITORY https://github.com/OSGeo/shapelib.git
-    #GIT_TAG       The tags have not been updated since 2019, so no tag
-    SOURCE_DIR     ${PROJECT_SOURCE_DIR}/external/shapelib
-)
-FetchContent_MakeAvailable(shapelib)
+# Currently manually compiled due to compiler warnings
+## Output is not shown, so errors may occur without notice
+##option(FETCHCONTENT_QUIET "Enables QUIET option for all content population" ON)
+##FetchContent_Declare(
+##    shapelib
+##    GIT_REPOSITORY https://github.com/OSGeo/shapelib.git
+##    #GIT_TAG       The tags have not been updated since 2019, so no tag
+##    SOURCE_DIR     ${PROJECT_SOURCE_DIR}/external/shapelib
+##)
+##FetchContent_MakeAvailable(shapelib)
 
-
+add_subdirectory(include/libshape)
 add_subdirectory(src)
 
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/src)

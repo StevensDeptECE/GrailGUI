@@ -3,8 +3,8 @@
 #include <memory>
 #include <vector>
 
+#include "libshape/shapefil.h"
 #include "opengl/Errcode.hh"
-#include "shapelib/shapefil.h"
 #include "util/Ex.hh"
 
 class Shapefile {

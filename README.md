@@ -7,21 +7,21 @@
 
     - Make sure you are running the correct executable or else you will have trouble with the C++ compiler not recognizing your system correctly.
 
- 3. `pacman -S git nano make cmake mingw64/mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb mingw-w64-x86_64-gcc mingw-w64-x86_64-toolchain mingw-w64-x86_64-zlib mingw-w64-x86_64-freetype mingw-w64-x86_64-glfw mingw-w64-x86_64-mpv mingw-w64-x86_64-youtube-dl bison flex`
+ 3. `pacman -S git nano make mingw64/mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb mingw-w64-x86_64-gcc mingw-w64-x86_64-toolchain mingw64-w64-x86_64-cmake mingw64-w64-x86_64-ninja mingw-w64-x86_64-zlib mingw-w64-x86_64-freetype mingw-w64-x86_64-glfw mingw-w64-x86_64-mpv mingw-w64-x86_64-youtube-dl bison flex`
 
-     - If you are having troubles: the full list I installed was: `pacman -S git nano make cmake mingw64/mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb mingw-w64-x86_64-gcc mingw-w64-x86_64-toolchain mingw-w64-x86_64-zlib mingw-w64-x86_64-freetype mingw-w64-x86_64-glfw bison flex python pkg-config mingw-w64-x86_64-gcc mingw-w64-x86_64-eigen3 mingw-w64-x86_64-qt5 mingw-w64-x86_64-mpv mingw-w64-x86_64-youtube-dl`
+     - If you are having troubles: the full list I installed was: `pacman -S git nano make cmake mingw64/mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb mingw-w64-x86_64-gcc mingw-w64-x86_64-toolchain mingw64-w64-x86_64-cmake mingw64-w64-x86_64-ninja mingw-w64-x86_64-zlib mingw-w64-x86_64-freetype mingw-w64-x86_64-glfw bison flex python pkg-config mingw-w64-x86_64-gcc mingw-w64-x86_64-eigen3 mingw-w64-x86_64-qt5 mingw-w64-x86_64-mpv mingw-w64-x86_64-youtube-dl`
 
  4. Edit `~/.bashrc` to include `export GRAIL=/path/to/GRAIL` and `export PATH=$PATH:$GRAIL/bin` on the following line. `source ~/.bashrc` the first time.
 
 ## Getting Set Up - Ubuntu
 
-1. Install Dependencies: `sudo apt install make libglfw3-dev libfreetype-dev mpv libmpv-dev flex bison`
+1. Install Dependencies: `sudo apt install make cmake ninja-build libglfw3-dev libfreetype-dev mpv libmpv-dev flex bison`
 
 2. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to set up the environment variables.
 
 ## Getting Set Up - Arch-Based Linux
 
-1. Install Dependencies: `sudo pacman -S glfw-x11 freetype2 base-devel mpv youtube-dl`
+1. Install Dependencies: `sudo pacman -S glfw-x11 freetype2 base-devel cmake ninja mpv youtube-dl`
 
     - If you are using Wayland, there install `glfw-wayland` instead of `glfw-x11`. Wayland support is currently unconfirmed.
   
@@ -29,12 +29,18 @@
 
 ## Compiling
 
-1. `cd $GRAIL/ ; make`
+- To compile with default settings, run `./build.sh`
+- For those who want to modify the default configuration and compile themselves, we use the following:
+
+``` shell
+cmake -S . -Bbuild -GNinja
+cmake --build build
+```
 
 ## Running
 
-1. Update `$GRAIL/test/Makefile` to compile the file you want to compile.
-2. `cd $GRAIL/test/ && testDrawing`
+1. Update `test/CMakeLists.txt` to compile the file you want to compile and link it to grail.
+2. `cd test && testWidgets`
 
      - Cursors and other features might not work for other tests as they are not 100% Linux/Windows compatible yet.
 
@@ -62,4 +68,4 @@ This error is most commonly scene when attempting to run Grail on a Windows virt
 
 ### Everything Else
 
-If you have an issue not on this list, and feel it should be included on the list of frequent issues, open an issue and let us know!
+If you have an issue not on this list, and feel it should be included in the list of frequent issues, open an issue and let us know!

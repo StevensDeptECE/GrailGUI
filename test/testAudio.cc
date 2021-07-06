@@ -7,8 +7,19 @@ using namespace grail;
 class TestAudioPlayer : public GLWin {
  private:
   double startTime;
+  double time;
   AudioPlayer *a;
   int step;
+
+  inline void helper(double elapsedTime, int step, string printOut,
+                     void (*fnptr)(AudioPlayer *)) {
+    if (time > startTime + elapsedTime && this->step == step) {
+      printf("%s\n", printOut.c_str());
+      (*fnptr)(a);
+      startTime = time;
+      this->step++;
+    }
+  }
 
  public:
   TestAudioPlayer()
@@ -17,27 +28,71 @@ class TestAudioPlayer : public GLWin {
         a(nullptr),
         step(0) {}
 
+  // required to ensure that the memory of the audio player is freed
   ~TestAudioPlayer() { delete a; }
 
+  // using the built in timing of GLWin and if statements allows for control
+  // flow of the player with respect to time the program has been running
   void update() {
-    double time = getTime();
-    // printf("current time: %f\n", time);
-    // printf("startTime: %f\n", startTime);
-    if (time > startTime + 1 && step == 0) {
-      a->setCurrentContext(0);
-      a->togglePause();
-      a->setCurrentContext(1);
-      a->togglePause();
-      startTime = time;
-      step++;
-    }
+    time = getTime();
 
-    if (time > startTime + 15 && step == 1) {
-      a->setCurrentContext(0);
-      a->togglePause();
-      startTime = time;
-      step++;
-    }
+    helper(1, 0, "simultaneous playback", [](AudioPlayer *a) {
+      a->setCurrentContext("default");
+      a->setPlaying();
+      a->setCurrentContext("new context");
+      a->setPlaying();
+    });
+
+    helper(10, 1, "play from youtube", [](AudioPlayer *a) {
+      a->setCurrentContext("default");
+      a->setPaused();
+      a->setCurrentContext("new context");
+      a->setPaused();
+
+      a->setCurrentContext("from youtube");
+      a->setPlaying();
+    });
+
+    helper(5, 2, "skip to 1:52 in song", [](AudioPlayer *a) {
+      a->setCurrentContext("from youtube");
+      a->seekLocation("1:52", "absolute");
+      a->printCurrentTime();
+
+      // this should fail, chicken not valid lmao
+      a->seekLocation("66", "chicken");
+    });
+
+    helper(7, 3, "revert skip", [](AudioPlayer *a) {
+      a->setCurrentContext("from youtube");
+      a->revertSeek();
+      a->printCurrentTime();
+    });
+
+    helper(5, 4, "try to play a playlist from youtube", [](AudioPlayer *a) {
+      a->setCurrentContext("from youtube");
+      a->setPaused();
+
+      a->setCurrentContext("skyhill");
+      a->setPlaying();
+    });
+
+    helper(10, 5, "next song in playlist", [](AudioPlayer *a) {
+      a->setCurrentContext("skyhill");
+      // skip to next song in playlist
+      a->playlistNext();
+    });
+
+    helper(10, 6, "go to specific index in playlist", [](AudioPlayer *a) {
+      a->setCurrentContext("skyhill");
+      // jump to a specific index in playlist
+      a->playlistPlayIndex(6);
+    });
+
+    helper(7, 7, "go to prev track in playlist", [](AudioPlayer *a) {
+      a->setCurrentContext("skyhill");
+      // go back a track in playlist
+      a->playlistPrev();
+    });
   }
 
   void init() {
@@ -48,14 +103,45 @@ class TestAudioPlayer : public GLWin {
 
     a = new AudioPlayer();
 
-    a->setCurrentContext(0);
-    a->setVolume(75);
+    // The initial context created with an AudioPlayer is called default
+    // Before performing operations on an mpv context, you have to set the
+    // current context of the AudioPlayer object. Subsequent commands apply to
+    // whatever context was set
+    a->setCurrentContext("default");
+    a->setVolume(50);
     a->addFile("res/sample1mb.ogg");
 
-    a->newContext();
-    a->setCurrentContext(1);
+    // creating a new context, calling it "new context"
+    // set the current context to the new one, give it a playlist that mpv can
+    // understand (see playlist.txt in test/res/)
+    a->newContext("new context");
+    a->setCurrentContext("new context");
     a->setVolume(50);
-    a->addPlaylist("res/playlist.txt");
+    a->addFile("res/playlist.txt");
+
+    // if you try to set a current context that doesn't exist, a message will
+    // print telling you what's happened
+    a->setCurrentContext("i should print something");
+
+    // mpv can play things from the internet utilizing youtube-dl, here's an
+    // example of how to do it
+    a->newContext("from youtube");
+    a->setCurrentContext("from youtube");
+    a->addFile("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    a->setVolume(50);
+
+    // because of how commands are given to mpv, there's a limit on how long
+    // the number for the volume is allowed to be (makes sure a sprintf
+    // doesn't write to memory it doesn't have access to). this limit is
+    // between 0 and 999
+    a->setVolume(11111);
+
+    // TODO: document this
+    a->newContext("skyhill");
+    a->setCurrentContext("skyhill");
+    a->addFile(
+        "https://www.youtube.com/playlist?list=PLcKMZE_1oNKHZ5tN8FPiQNkLVTa-LrMpr");
+    a->setVolume(50);
   }
 };
 

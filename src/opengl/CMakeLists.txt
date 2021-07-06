@@ -7,12 +7,16 @@ set(grail-opengl
     CandlestickChartWidget.cc 
     Canvas.cc
     Colors.cc
+    Document.cc
+    DocView.cc
     ErrNames.cc
     ESRIPolygon.cc
     ESRIShape.cc 
     GapMinderWidget.cc
+    GraphWidget.cc
     GLWin.cc
     GLWinFonts.cc 
+    Image.cc
     LineGraphWidget.cc
     MapView2D.cc
     MultiShape.cc 
