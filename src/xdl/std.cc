@@ -14,6 +14,7 @@ using namespace std;
 DynArray<string> XDLType::typeNames(1024);
 DynArray<const XDLType*> XDLType::types(1024);
 const string XDLType::empty = "";
+const UnImpl* XDLType::unimpl = new UnImpl();
 
 HashMap<uint32_t> XDLType::byName(1024);
 inline void XDLType::addType(const XDLType* type) {
@@ -55,7 +56,7 @@ void XDLType::classInit() {
   addType(new JulianDate());
   addType(new Timestamp());
   addType(new String8());
-  const UnImpl* ui = unimpl = new UnImpl();
+  const UnImpl* ui = unimpl;
   addType(ui);  //  addType(new String16());
   addType(ui);  // addType(new String32());
   addType(ui);  // addType(new String64());
@@ -188,13 +189,13 @@ inline void Struct::addStructMember(const std::string& memberName,
 // TODO: implement!
 const Struct* XDLType::read(Buffer& in) { return nullptr; }
 
-void Struct::addData(ArrayOfBytes* data) {
+void Struct::addData(ArrayOfBytes* data) const {
   for (int i = 0; i < members.size(); i++) {
     members[i].type->addData(data);
   }
 }
 
-void Struct::addMeta(ArrayOfBytes* meta) {
+void Struct::addMeta(ArrayOfBytes* meta) const {
   meta->addMeta(this->getDataType());
   for (int i = 0; i < members.size(); i++) {
     members[i].type->addMeta(meta);
@@ -310,8 +311,8 @@ const XDLType* XDLType::readMeta(XDLCompiler* compiler, Buffer& in) {
     }
       //        case DataType::List16:
       //        case DataType::List32
-      return unimpl;
   }
+  return unimpl;
 }
 
 DataType U8::getDataType() const { return DataType::U8; }
@@ -809,8 +810,88 @@ void UnImpl::writeMeta(Buffer& buf) const { throw Ex1(Errcode::UNIMPLEMENTED); }
 
 DataType UnImpl::getDataType() const { return DataType::UNIMPL; }
 
-void XDLBuiltinType::addMeta(ArrayOfBytes* meta) { meta->add((uint8_t)t); }
+void XDLBuiltinType::addMeta(ArrayOfBytes* meta) const { meta->addMeta(t); }
 
-void ArrayOfBytes::write(Buffer& b) { return; }
-uint32_t ArrayOfBytes::size() { return data.size() + metadata.size(); }
-DataType ArrayOfBytes::getDataType() { return DataType::STRUCT16; }
+void ArrayOfBytes::write(Buffer& b) const { return; }
+uint32_t ArrayOfBytes::size() const { return data.size() + metadata.size(); }
+DataType ArrayOfBytes::getDataType() const { return DataType::STRUCT16; }
+
+void U8::addData(ArrayOfBytes* data) const { data->addData(val); }
+void U16::addData(ArrayOfBytes* data) const { data->addData(val); }
+void U24::addData(ArrayOfBytes* data) const { data->addData(val); }
+void U32::addData(ArrayOfBytes* data) const { data->addData(val); }
+void U64::addData(ArrayOfBytes* data) const { data->addData(val); }
+void U128::addData(ArrayOfBytes* data) const {
+  data->addData(a);
+  data->addData(b);
+}
+void U256::addData(ArrayOfBytes* data) const {
+  data->addData(a);
+  data->addData(b);
+  data->addData(c);
+  data->addData(d);
+}
+void I8::addData(ArrayOfBytes* data) const { data->addData(val); }
+void I16::addData(ArrayOfBytes* data) const { data->addData(val); }
+void I24::addData(ArrayOfBytes* data) const { data->addData(val); }
+void I32::addData(ArrayOfBytes* data) const { data->addData(val); }
+void I64::addData(ArrayOfBytes* data) const { data->addData(val); }
+void I128::addData(ArrayOfBytes* data) const {
+  data->addData(a);
+  data->addData(b);
+}
+void I256::addData(ArrayOfBytes* data) const {
+  data->addData(a);
+  data->addData(b);
+  data->addData(c);
+  data->addData(d);
+}
+void Bool::addData(ArrayOfBytes* data) const { data->addData(val); }
+void F32::addData(ArrayOfBytes* data) const { data->addData(val); }
+void F64::addData(ArrayOfBytes* data) const { data->addData(val); }
+void Date::addData(ArrayOfBytes* data) const { data->addData(val); }
+void JulianDate::addData(ArrayOfBytes* data) const { data->addData(val); }
+void Timestamp::addData(ArrayOfBytes* data) const { data->addData(val); }
+void String8::addData(ArrayOfBytes* data) const { data->addData(val); }
+void String16::addData(ArrayOfBytes* data) const { data->addData(val); }
+void String32::addData(ArrayOfBytes* data) const { data->addData(val); }
+void String64::addData(ArrayOfBytes* data) const { data->addData(val); }
+void UnImpl::addMeta(ArrayOfBytes* meta) const {
+  throw Ex1(Errcode::UNIMPLEMENTED);
+}
+void UnImpl::addData(ArrayOfBytes* data) const {
+  throw Ex1(Errcode::UNIMPLEMENTED);
+}
+void TypeDef::addData(ArrayOfBytes* data) const { type->addData(data); }
+void TypeDef::addMeta(ArrayOfBytes* meta) const {
+  meta->addMeta(DataType::TYPEDEF);
+  meta->addMeta(getTypeName());
+  type->addMeta(meta);
+}
+void Regex::addData(ArrayOfBytes* data) const { data->addData(rexp); }
+void Regex::addMeta(ArrayOfBytes* meta) const {
+  meta->addMeta(DataType::REGEX);
+  meta->addMeta(getTypeName());
+}
+void XDLRaw::addMeta(ArrayOfBytes* meta) const {
+  throw Ex1(Errcode::UNIMPLEMENTED);
+}
+void XDLRaw::addData(ArrayOfBytes* data) const {
+  throw Ex1(Errcode::UNIMPLEMENTED);
+}
+void GenericList::addMeta(ArrayOfBytes* meta) const {
+  throw Ex1(Errcode::UNIMPLEMENTED);
+}
+void GenericList::addData(ArrayOfBytes* data) const {
+  throw Ex1(Errcode::UNIMPLEMENTED);
+}
+void ArrayOfBytes::addStruct(const char name[], uint8_t numElements) {
+  addMeta(DataType::STRUCT8);
+  addMeta(name);
+  metadata.add(numElements);
+}
+
+void ArrayOfBytes::addBuiltinMember(DataType t, const char str[]) {
+  addMeta(t);
+  addMeta(str);
+}

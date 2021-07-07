@@ -80,9 +80,8 @@ void Buffer::write(const char* s, uint32_t len) {
   checkAvailableWrite(s, len);
 }
 
-void Buffer::write(XDLRaw& v) {
-  if (p != buffer)
-    flush();
+void Buffer::write(const XDLRaw& v) {
+  if (p != buffer) flush();
   ::write(fd, v.data, v.len);
 }
 

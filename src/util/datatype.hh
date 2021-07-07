@@ -88,6 +88,7 @@ enum class DataType {
   BLOB64,    // 8 byte length block of binary data
   BIGINT,
   ENUM_SIZE,
+  TYPEDEF,
   UNIMPL
 };
 

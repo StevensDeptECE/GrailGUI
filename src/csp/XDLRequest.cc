@@ -25,12 +25,12 @@ void buildData(Buffer& out, char meta[]) {}
 
 template <typename T>
 void buildData2(ArrayOfBytes* a, const T& arg) {
-  if (is_base_of_v<XDLType, arg>) {
-    if (is_base_of_v<XDLBuiltinType, arg>) {
-      a->addMeta(arg.getType());
+  if (is_base_of_v<XDLType, T>) {
+    if (is_base_of_v<XDLBuiltinType, T>) {
+      a->addMeta(arg.getDataType());
       a->addData(arg);
     } else {
-      if (is_base_of_v<CompoundType, arg>) {
+      if (is_base_of_v<CompoundType, T>) {
         arg.addMeta(a);
         arg.addData(a);
       }
@@ -60,6 +60,7 @@ class Point : public CompoundType {
   Point(double x, double y, double z)
       : CompoundType("Point"), x(x), y(y), z(z) {}
   void write(Buffer& out) const override;
+  void writeMeta(Buffer& buf) const override;
 
   DataType getDataType() const { return DataType::STRUCT8; }
   uint32_t size() const { return 12; }
@@ -70,7 +71,7 @@ class Point : public CompoundType {
     data->addData(z);
   }
 
-  void addMeta(XDLArray* meta) const {
+  void addMeta(ArrayOfBytes* meta) const {
     meta->addStruct("Point", 3);
     meta->addBuiltinMember(DataType::F64, "x");
     meta->addBuiltinMember(DataType::F64, "y");

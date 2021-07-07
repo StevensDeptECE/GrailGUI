@@ -61,4 +61,5 @@ const char* Ex::errNames[] = {"FILE_READ",
                               "VECTOR_ZERO_LENGTH",
                               "MPV_FAILURE",
                               "NONEXISTENT_ACTION",
-                              "BAD_ARGUMENT"};
+                              "BAD_ARGUMENT",
+                              "UNIMPLEMENTED"};

@@ -1,5 +1,5 @@
 #include "xdl/XDLArray.hh"
-
+// TODO: Delete class, contents should be rotated over to ArrayOfBytes in std.hh
 void XDLArray::addString(const string& str) {
   add(str.length());
   for (int i = 0; i < str.length(); i++) {
