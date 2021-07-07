@@ -29,6 +29,9 @@ class VideoPlayer : public Shape {
   // standard mpv context for playing things
   mpv_handle *mpv;
 
+  // mpv render context that will draw video frames into fbo
+  mpv_render_context *mpv_gl;
+
   // struct with 3 internal bits
   mpv_opengl_fbo fboParams;
   // struct where we only end up setting one value
@@ -60,14 +63,6 @@ class VideoPlayer : public Shape {
   bool isPlaying;
 
  public:
-  // TODO: this shouldn't be public.
-  // currently it needs to be public so that a child of GLWin can use it in its
-  // update function to determine whether or not to setDirty(). I want to do
-  // that from within Video Player, but currently no way to do that exists.
-  // update, a function now exists within canvas to get a pointer to the GLwin
-  // instance, just need to implement it
-  mpv_render_context *mpv_gl;
-
   VideoPlayer(Canvas *c, float x, float y, int width, int height);
   ~VideoPlayer();
 
@@ -81,12 +76,16 @@ class VideoPlayer : public Shape {
 
   void loadFile(std::string filePath);
   void loadPlaylist(std::string filePath, bool append = false);
+
   void setVolume(int volume);
   void seekLocation(std::string time, std::string type = "relative");
   void revertSeek();
+
   void playlistNext();
   void playlistPrev();
+
   void cropVideo(float xLeft, float xRight, float yTop, float yBottom);
+
   void setPaused();
   void setPlaying();
   void togglePause();

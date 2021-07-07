@@ -21,7 +21,8 @@ VideoPlayer::VideoPlayer(Canvas *c, float x, float y, int width, int height)
       xLeft(0),
       xRight(0),
       yTop(0),
-      yBottom(0) {
+      yBottom(0),
+      isPlaying(true) {
   // create a standard mpv handle
   mpv = mpv_create();
   // if we failed to make one, die
@@ -129,7 +130,7 @@ VideoPlayer::~VideoPlayer() {
   // destroy the mpv handle
   mpv_detach_destroy(mpv);
   // indictes that we've cleaned up everything that VideoPlayer created
-  printf("videoplayer has terminated succesfully");
+  printf("videoplayer has terminated succesfully\n");
 }
 
 void VideoPlayer::init() {}
@@ -181,7 +182,7 @@ void VideoPlayer::render() {
 }
 
 void VideoPlayer::loadFile(string filePath) {
-  const char *cmd[] = {"loadfile", filePath.c_str(), nullptr};
+  const char *cmd[] = {"loadfile", filePath.c_str(), "append", nullptr};
   checkError(mpv_command_async(mpv, 0, cmd));
   setPaused();
 }
@@ -211,6 +212,21 @@ void VideoPlayer::seekLocation(string time, string type) {
   }
 }
 
+void VideoPlayer::revertSeek() {
+  const char *cmd[] = {"revert-seek", nullptr};
+  checkError(mpv_command(mpv, cmd));
+}
+
+void VideoPlayer::playlistNext() {
+  const char *cmd[] = {"playlist-next", nullptr};
+  checkError(mpv_command(mpv, cmd));
+}
+
+void VideoPlayer::playlistPrev() {
+  const char *cmd[] = {"playlist-prev", nullptr};
+  checkError(mpv_command(mpv, cmd));
+}
+
 void VideoPlayer::cropVideo(float xLeft, float xRight, float yTop,
                             float yBottom) {
   this->xLeft = xLeft;
@@ -221,21 +237,18 @@ void VideoPlayer::cropVideo(float xLeft, float xRight, float yTop,
 
 void VideoPlayer::setPaused() {
   if (isPlaying) {
-    const char *cmd[] = {"cycle", "pause", nullptr};
-    checkError(mpv_command_async(mpv, 0, cmd));
-    isPlaying = !isPlaying;
+    togglePause();
   }
 }
 
 void VideoPlayer::setPlaying() {
   if (!isPlaying) {
-    const char *cmd[] = {"cycle", "pause", nullptr};
-    checkError(mpv_command_async(mpv, 0, cmd));
-    isPlaying = !isPlaying;
+    togglePause();
   }
 }
 
 void VideoPlayer::togglePause() {
   const char *cmd[] = {"cycle", "pause", nullptr};
   checkError(mpv_command_async(mpv, 0, cmd));
+  isPlaying = !isPlaying;
 }

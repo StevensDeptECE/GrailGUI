@@ -109,7 +109,7 @@ class TestAudioPlayer : public GLWin {
     // whatever context was set
     a->setCurrentContext("default");
     a->setVolume(50);
-    a->addFile("res/sample1mb.ogg");
+    a->loadFile("res/sample1mb.ogg");
 
     // creating a new context, calling it "new context"
     // set the current context to the new one, give it a playlist that mpv can
@@ -117,7 +117,7 @@ class TestAudioPlayer : public GLWin {
     a->newContext("new context");
     a->setCurrentContext("new context");
     a->setVolume(50);
-    a->addFile("res/playlist.txt");
+    a->loadFile("res/playlist.txt");
 
     // if you try to set a current context that doesn't exist, a message will
     // print telling you what's happened
@@ -127,20 +127,21 @@ class TestAudioPlayer : public GLWin {
     // example of how to do it
     a->newContext("from youtube");
     a->setCurrentContext("from youtube");
-    a->addFile("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    a->loadFile("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
     a->setVolume(50);
 
     // because of how commands are given to mpv, there's a limit on how long
     // the number for the volume is allowed to be (makes sure a sprintf
     // doesn't write to memory it doesn't have access to). this limit is
     // between 0 and 999
-    a->setVolume(11111);
+    // a->setVolume(11111);
 
     // TODO: document this
     a->newContext("skyhill");
     a->setCurrentContext("skyhill");
-    a->addFile(
-        "https://www.youtube.com/playlist?list=PLcKMZE_1oNKHZ5tN8FPiQNkLVTa-LrMpr");
+    a->loadFile(
+        "https://www.youtube.com/"
+        "playlist?list=PLcKMZE_1oNKHZ5tN8FPiQNkLVTa-LrMpr");
     a->setVolume(50);
   }
 };
