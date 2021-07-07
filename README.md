@@ -15,7 +15,42 @@
 
 ## Getting Set Up - Ubuntu
 
-1. Install Dependencies: `sudo apt install make cmake ninja-build libglfw3-dev libfreetype-dev mpv libmpv-dev flex bison`
+### Ubuntu 18.04
+
+1. Install gcc-11 and g++-11
+
+``` shell
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt-get update
+sudo apt-get install gcc-11 g++-11
+```
+
+2. If the default version of CMake is installed, purge it from `apt`
+
+``` shell
+sudo apt purge --auto-remove cmake
+```
+
+3. Install the latest version of CMake
+
+``` shell
+wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ bionic main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
+sudo rm /etc/apt/trusted.gpg.d/kitware.gpg
+sudo apt install kitware-archive-keyring
+sudo apt update
+sudo apt install cmake
+```
+
+4. Install other dependencies
+
+``` shell
+sudo apt install ninja-build libglfw3-dev libfreetype6-dev mpv libmpv-dev liblzma-dev flex bison pkg-config
+```
+
+### Ubuntu 20.04
+
+1. Install Dependencies: `sudo apt install make cmake ninja-build libglfw3-dev libfreetype-dev mpv libmpv-dev liblzma-dev flex bison`
 
 2. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to set up the environment variables.
 
@@ -30,6 +65,13 @@
 ## Compiling
 
 - To compile with default settings, run `./build.sh`
+- For versions of Ubuntu with custom versions of gcc (such as Ubuntu 18.04), you must specify the compiler when the project is generated:
+
+``` shell
+CC=gcc-11 CXX=g++-11 cmake -S . -Bbuild -GNinja
+cmake --build build
+```
+
 - For those who want to modify the default configuration and compile themselves, we use the following:
 
 ``` shell
