@@ -1,5 +1,7 @@
 # TODO Add function that accepts bin name and file name, then links to grail
 
+add_subdirectory(data)
+
 add_executable(ESRIMapDemo ESRIMapDemo.cc)
 add_executable(JoeyDemo JoeyDemo.cc)
 add_executable(MapDemo MapDemo.cc)
