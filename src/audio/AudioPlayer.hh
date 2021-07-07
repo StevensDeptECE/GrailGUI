@@ -9,9 +9,14 @@
 
 class AudioPlayer {
  private:
-  std::unordered_map<std::string, mpv_handle *> contexts;
-  mpv_handle *currentCtx;
-  bool isPlaying;
+  struct context {
+    std::string name;
+    mpv_handle *handle;
+    bool playing;
+  };
+
+  std::unordered_map<std::string, context> contexts;
+  struct context *currentCtx;
 
   inline void checkError(int status) {
     if (status < 0) {
