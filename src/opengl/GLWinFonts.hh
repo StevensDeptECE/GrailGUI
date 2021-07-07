@@ -1,17 +1,19 @@
 #pragma once
 
-#include <ft2build.h>
+// #include <ft2build.h>
 
 #include <glm/glm.hpp>
 #include <iostream>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include FT_FREETYPE_H
-#include FT_GLYPH_H
+// #include FT_FREETYPE_H
+// #include FT_GLYPH_H
 
 class GLWin;
 class Font;
+typedef struct FT_LibraryRec_  *FT_Library;
+typedef struct FT_FaceRec_*  FT_Face;
 
 class FontFace {
  private:
