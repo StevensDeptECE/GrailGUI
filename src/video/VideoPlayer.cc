@@ -1,4 +1,6 @@
-#include "audio/VideoPlayer.hh"
+#include "video/VideoPlayer.hh"
+
+#include "opengl/Canvas.hh"
 
 extern "C" {
 static void *get_proc_address_mpv(void *fn_ctx, const char *name) {

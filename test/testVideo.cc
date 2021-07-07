@@ -1,4 +1,4 @@
-#include "audio/VideoPlayer.hh"
+#include "video/VideoPlayer.hh"
 #include "opengl/GrailGUI.hh"
 
 using namespace std;

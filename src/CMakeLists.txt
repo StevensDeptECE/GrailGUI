@@ -4,6 +4,7 @@ add_subdirectory(data)
 add_subdirectory(opengl)
 add_subdirectory(util)
 add_subdirectory(xdl)
+add_subdirectory(video)
 
 add_library(grail
             ${PROJECT_SOURCE_DIR}/include/glad/glad.c
@@ -12,7 +13,8 @@ add_library(grail
             ${grail-data}
             ${grail-opengl}
             ${grail-util}
-            ${grail-xdl})
+            ${grail-xdl}
+            ${grail-video})
 
 
 if(${GRAIL_EXPERIMENTAL})
