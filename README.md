@@ -50,6 +50,8 @@
     ``` shell
     sudo apt install ninja-build libglfw3-dev libfreetype6-dev mpv libmpv-dev liblzma-dev flex bison pkg-config
     ```
+    
+2. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to set up the environment variables.
 
 ### Ubuntu 20.04
 
