@@ -28,6 +28,21 @@
     sudo apt-get install gcc-11 g++-11
     ```
 
+    - Preferred, but optional
+        1. Set gcc-11 and g++-11 as default compiler
+
+            ``` shell
+            sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 11
+            sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 11
+            ```
+
+        2. Confirm that the default versions of gcc and g++ are correct
+
+            ``` shell
+            sudo update-alternatives --config gcc
+            sudo update-alternatives --config g++
+            ```
+
 2. If the default version of CMake is installed, purge it from `apt`
 
     ``` shell
@@ -50,19 +65,41 @@
     ``` shell
     sudo apt install ninja-build libglfw3-dev libfreetype6-dev mpv libmpv-dev liblzma-dev flex bison pkg-config
     ```
-    
-    
-2. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to set up the environment variables.
+
+5. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to set up the environment variables.
 
 ### Ubuntu 20.04
 
-1. Install dependencies
+1. Install gcc-11 and g++-11
+
+    ``` shell
+    sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+    sudo apt-get update
+    sudo apt-get install gcc-11 g++-11
+    ```
+
+    - Preferred, but optional
+        1. Set gcc-11 and g++-11 as default compiler
+
+            ``` shell
+            sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 11
+            sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 11
+            ```
+
+        2. Confirm that the default versions of gcc and g++ are correct
+
+            ``` shell
+            sudo update-alternatives --config gcc
+            sudo update-alternatives --config g++
+            ```
+
+2. Install dependencies
 
     ``` shell
     sudo apt install make cmake ninja-build libglfw3-dev libfreetype-dev mpv libmpv-dev liblzma-dev flex bison
     ```
 
-2. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to set up the environment variables.
+3. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to set up the environment variables.
 
 ## Getting Set Up - Arch-Based Linux
 
@@ -80,7 +117,7 @@
 ## Compiling
 
 - To compile with default settings, run `./build.sh`
-- For versions of Ubuntu with custom versions of gcc (such as Ubuntu 18.04), you must specify the compiler when the project is generated:
+- For versions of Ubuntu with custom versions of gcc, but did not set the default compiler with update-alternatives:
 
     ``` shell
     CC=gcc-11 CXX=g++-11 cmake -S . -Bbuild -GNinja
@@ -113,7 +150,9 @@ In this instance, you'll need to change the remote url that git is pointing to. 
 
 Git command:
 
-        git remote set-url origin git@github.com:StevensDeptECE/GrailGUI.git
+``` shell
+git remote set-url origin git@github.com:StevensDeptECE/GrailGUI.git
+```
 
 ### Compile Time Error:  `Makefile:1: /proj/settings.mk: No such file or directory`
 
