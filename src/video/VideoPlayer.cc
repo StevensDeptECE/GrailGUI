@@ -134,7 +134,10 @@ VideoPlayer::~VideoPlayer() {
 
 void VideoPlayer::init() {}
 
-void VideoPlayer::update() {}
+void VideoPlayer::update() {
+  uint64_t flags = mpv_render_context_update(mpv_gl);
+  if (flags & MPV_RENDER_UPDATE_FRAME) parentCanvas->getWin()->setDirty();
+}
 
 void VideoPlayer::render() {
   // bind the current framebuffer to our created fbo
@@ -180,7 +183,8 @@ void VideoPlayer::render() {
 void VideoPlayer::loadFile(string filePath) {
   const char *cmd[] = {"loadfile", filePath.c_str(), nullptr};
   checkError(mpv_command_async(mpv, 0, cmd));
-  setPaused();
+  // togglePause();
+  //setPaused();
 }
 
 void VideoPlayer::loadPlaylist(string filePath, bool append) {

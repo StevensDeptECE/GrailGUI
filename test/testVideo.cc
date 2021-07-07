@@ -17,14 +17,7 @@ class TestVideoPlayer : public GLWin {
 
   ~TestVideoPlayer() { delete v; }
 
-  void update() {
-    auto flags = mpv_render_context_update(v->mpv_gl);
-    if (flags & MPV_RENDER_UPDATE_FRAME) setDirty();
-    // double time = getTime();
-
-    // if (time > startTime + 1 && step == 0) {
-    // }
-  }
+  void update() { v->update(); }
 
   void init() {
     startTime = getTime();
@@ -34,10 +27,8 @@ class TestVideoPlayer : public GLWin {
 
     // playing a link from youtube (and maybe other places idk) requires you to
     // have youtube-dl installed
-    v->loadFile(
-        "https://www.youtube.com/"
-        "playlist?list=PLFsQleAWXsj_4yDeebiIADdH5FMayBiJo");
-    v->togglePause();
+    v->loadFile("res/badapple.mkv");
+    // v->togglePause();
     v->cropVideo(0, 0, 60, 60);
     v->setVolume(50);
   }
