@@ -13,9 +13,13 @@ VideoPlayer::VideoPlayer(Canvas *c, float x, float y, int width, int height)
     : Shape(c),
       x(x),
       y(y),
-      drawWidth(width),
-      drawHeight(height),
-      advancedControl(1) {
+      width(width),
+      height(height),
+      advancedControl(1),
+      xLeft(0),
+      xRight(0),
+      yTop(0),
+      yBottom(0) {
   // create a standard mpv handle
   mpv = mpv_create();
   // if we failed to make one, die
@@ -45,7 +49,7 @@ VideoPlayer::VideoPlayer(Canvas *c, float x, float y, int width, int height)
   // allocate memory for the texture of a width and height that the user has
   // provided, but don't put anything in there, hence the nullptr at the end
   // (mpv will put data in here for us later)
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, drawWidth, drawHeight, 0, GL_RGB,
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
                GL_UNSIGNED_BYTE, nullptr);
   // set some parameters for the texture, from what I understand these relate to
   // how it will scale by getting bigger or smaller (linear is a way to scale
@@ -159,9 +163,9 @@ void VideoPlayer::render() {
   // bottom left hand corner of the screen, whereas the rest of grail considers
   // the top left hand corner of the screen to be (0, 0) and positive y going
   // upwards, and positive y to be going downwards
-  glBlitFramebuffer(0, 0, drawWidth, drawHeight, x,
-                    parentCanvas->getHeight() - y, x + drawWidth,
-                    parentCanvas->getHeight() - (y + drawHeight),
+  glBlitFramebuffer(xLeft, yBottom, width - xRight, height - yTop, x,
+                    parentCanvas->getHeight() - y, x + width,
+                    parentCanvas->getHeight() - (y + height),
                     GL_COLOR_BUFFER_BIT, GL_LINEAR);
 }
 
@@ -173,6 +177,14 @@ void VideoPlayer::setVid(std::string filePath) {
   checkError(mpv_command_string(mpv, "cycle pause"));
   const char *cmd[] = {"loadfile", filePath.c_str(), nullptr};
   mpv_command_async(mpv, 0, cmd);
+}
+
+void VideoPlayer::cropImage(float xLeft, float xRight, float yTop,
+                            float yBottom) {
+  this->xLeft = xLeft;
+  this->xRight = xRight;
+  this->yBottom = yBottom;
+  this->yTop = yTop;
 }
 
 void VideoPlayer::togglePause() {

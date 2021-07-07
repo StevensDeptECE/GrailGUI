@@ -19,10 +19,9 @@ class VideoPlayer : public Shape {
   // address to point to
   int advancedControl;
 
-  float x, y, drawWidth, drawHeight;
+  float x, y, width, height;
+  float xLeft, xRight, yTop, yBottom;
   uint32_t fbo, texture;
-  std::vector<float> vertices;
-  std::vector<uint32_t> indices;
 
   mpv_handle *mpv;
 
@@ -71,6 +70,7 @@ class VideoPlayer : public Shape {
   VideoPlayer &operator=(const VideoPlayer &orig) = delete;
 
   void setVid(std::string filePath);
+  void cropImage(float xLeft, float xRight, float yTop, float yBottom);
   void togglePause();
 
   void init();
