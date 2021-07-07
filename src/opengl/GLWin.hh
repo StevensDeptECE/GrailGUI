@@ -312,5 +312,4 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   static void releaseWidget(GLWin* w);
 
   double getTime();
-  virtual void renderVideo();
 };

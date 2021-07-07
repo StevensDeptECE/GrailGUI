@@ -349,7 +349,6 @@ void GLWin::mainLoop() {
   double startTime = glfwGetTime();  // get time now for calculating FPS
   double renderTime;
   dirty = true;
-  dirty2 = false;
   while (!glfwWindowShouldClose(win)) {
     //    bool modified = Queue::dump_render();
     //    dt = current - lastFrame;
@@ -360,7 +359,6 @@ void GLWin::mainLoop() {
       float startRender = glfwGetTime();
       glClearColor(1.0f, 1.0f, 1.0f, 1.0f);  // Clear the colorbuffer and depth
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      renderVideo();
       render();
       renderTime += glfwGetTime() - startRender;
       glfwSwapBuffers(win);  // Swap buffer so the scene shows on screen
@@ -695,5 +693,3 @@ void GLWin::loadBindings() {
 }
 
 double GLWin::getTime() { return glfwGetTime(); }
-
-void GLWin::renderVideo() {}
