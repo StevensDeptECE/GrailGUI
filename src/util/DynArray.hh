@@ -14,7 +14,7 @@ class DynArray {
     if (size_ >= capacity) {
       T* old = data;
       data = (T*)malloc(sizeof(T) * (capacity = capacity * 2 + 1));
-      memcpy(data, old, size_ * sizeof(T));
+      memcpy((void*)data, old, size_ * sizeof(T));
       delete[](char*) old;
     }
   }
@@ -24,7 +24,7 @@ class DynArray {
       : capacity(capacity), size_(0), data((T*)malloc(capacity * sizeof(T))) {}
   ~DynArray() {
     for (int i = 0; i < size_; i++) data[i].~T();
-    free(data);
+    free((void*)data);
   }
   void clear() {
     for (int i = 0; i < size_; i++) data[i].~T();
@@ -40,7 +40,7 @@ class DynArray {
   DynArray& operator=(const DynArray& orig) = delete;
   void add(const T& v) {
     checkGrow();
-    new (data + size_++) T(v);
+    new ((char*)data + size_++) T(v);
   }
 
   T removeEnd() {

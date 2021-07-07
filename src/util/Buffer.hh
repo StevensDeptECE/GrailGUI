@@ -437,6 +437,8 @@ class Buffer {
       p = buffer - overflowSize;
     }
   }
+
+ public:
   void checkAvailableWrite() {
     if (p > buffer + size) {
       uint32_t overflow = p - (buffer + size);
@@ -446,6 +448,8 @@ class Buffer {
       availSize -= overflow;
     }
   }
+
+ private:
   void checkAvailableWrite(const char* ptr, uint32_t len) {
     if (p + len > buffer + size) {
       memcpy(p, ptr, availSize);

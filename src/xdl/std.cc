@@ -498,7 +498,7 @@ void F64::display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
 
 DataType Date::getDataType() const { return DataType::DATE; }
 uint32_t Date::size() const { return 4; }
-void Date::write(Buffer& buf) const { buf.write(val); }
+void Date::write(Buffer& buf) const { buf.write(date); }
 void Date::display(Buffer& binaryIn, Buffer& asciiOut) const {
   Date d(binaryIn.readU32());
   // TODO: support many formats
@@ -510,7 +510,8 @@ void Date::display(Buffer& binaryIn, Buffer& asciiOut) const {
 }
 
 int32_t Date::getYear() const {
-  return val / 365;  // TODO: needs lots of work
+  int32_t dy = int32_t(date / 365.2425);
+  return 2000 + dy;
 }
 
 uint32_t Date::getMonth() const { return 0; }
@@ -518,22 +519,41 @@ uint32_t Date::getMonth() const { return 0; }
 uint32_t Date::getDay() const { return 0; }
 
 int32_t JulianDate::getYear() const {
-  return val / 365;  // TODO: needs lots of work
+  int64_t ddate = int64_t(date);
+  int32_t dy = ddate / 365 + ddate / 4 - ddate / 100 + ddate / 400;
+  std::cout << dy;
+  std::cout << (dy = ddate / 365.2425);
+  return epoch + dy;
+  //    uint32_t month = (E < 13.5) ? E - 1 : E - 13;
+  //    return (month > 2.5) ? C - 4716 : C - 4715;
 }
-
-uint32_t JulianDate::getMonth() const { return 0; }
-
-uint32_t JulianDate::getDay() const { return 0; }
-
-uint32_t JulianDate::getHour() const { return 0; }
-
-uint32_t JulianDate::getMin() const { return 0; }
-
-double JulianDate::getSecond() const { return 0; }
+uint32_t JulianDate::getMonth() const {
+  double ddate = floor(date);
+  int32_t mm = ddate - floor(floor(ddate / 365.2425) * 365.2425);
+  return mm;
+  //     return (E < 13.5) ? E - 1 : E - 13;
+}
+uint32_t JulianDate::getDay() const {
+  double ddate = floor(date);
+  int32_t dd = ddate - floor(floor(ddate / 365.2425) * 365.2425);
+  return dd;  // TODO: this is completely wrong
+}
+uint32_t JulianDate::getHour() const {
+  double frac = date - floor(date);
+  return uint32_t(frac * 24);
+}
+uint32_t JulianDate::getMinute() const {
+  double frac = date - floor(date);
+  return uint32_t(frac * (24 * 60)) % 60;
+}
+double JulianDate::getSecond() const {
+  double frac = date - floor(date);
+  return uint32_t(frac * (24 * 60 * 60)) % 60;
+}
 
 DataType JulianDate::getDataType() const { return DataType::JULDATE; }
 uint32_t JulianDate::size() const { return 8; }
-void JulianDate::write(Buffer& buf) const { buf.write(val); }
+void JulianDate::write(Buffer& buf) const { buf.write(date); }
 void JulianDate::display(Buffer& binaryIn, Buffer& asciiOut) const {
   JulianDate d(binaryIn.readF64());
   // TODO: FIx format!!!
@@ -849,8 +869,8 @@ void I256::addData(ArrayOfBytes* data) const {
 void Bool::addData(ArrayOfBytes* data) const { data->addData(val); }
 void F32::addData(ArrayOfBytes* data) const { data->addData(val); }
 void F64::addData(ArrayOfBytes* data) const { data->addData(val); }
-void Date::addData(ArrayOfBytes* data) const { data->addData(val); }
-void JulianDate::addData(ArrayOfBytes* data) const { data->addData(val); }
+void Date::addData(ArrayOfBytes* data) const { data->addData(date); }
+void JulianDate::addData(ArrayOfBytes* data) const { data->addData(date); }
 void Timestamp::addData(ArrayOfBytes* data) const { data->addData(val); }
 void String8::addData(ArrayOfBytes* data) const { data->addData(val); }
 void String16::addData(ArrayOfBytes* data) const { data->addData(val); }
@@ -873,6 +893,9 @@ void Regex::addMeta(ArrayOfBytes* meta) const {
   meta->addMeta(DataType::REGEX);
   meta->addMeta(getTypeName());
 }
+
+// TODO: Does any CompoundType except for Struct use this?
+// If not, abstract it out
 void XDLRaw::addMeta(ArrayOfBytes* meta) const {
   throw Ex1(Errcode::UNIMPLEMENTED);
 }
@@ -885,6 +908,12 @@ void GenericList::addMeta(ArrayOfBytes* meta) const {
 void GenericList::addData(ArrayOfBytes* data) const {
   throw Ex1(Errcode::UNIMPLEMENTED);
 }
+void Calendar::addMeta(ArrayOfBytes* meta) const {
+  throw Ex1(Errcode::UNIMPLEMENTED);
+}
+void Calendar::addData(ArrayOfBytes* data) const {
+  throw Ex1(Errcode::UNIMPLEMENTED);
+}
 void ArrayOfBytes::addStruct(const char name[], uint8_t numElements) {
   addMeta(DataType::STRUCT8);
   addMeta(name);
@@ -894,4 +923,89 @@ void ArrayOfBytes::addStruct(const char name[], uint8_t numElements) {
 void ArrayOfBytes::addBuiltinMember(DataType t, const char str[]) {
   addMeta(t);
   addMeta(str);
+}
+
+int32_t Date::epochYear = 2000;
+Date::Date(const JulianDate& jd)
+    : XDLBuiltinType("Date", DataType::DATE), date(uint32_t(double(jd))) {}
+Date::operator JulianDate() const { return JulianDate(date); }
+Date::Date(int32_t year, uint32_t month, uint32_t day)
+    : XDLBuiltinType("Date", DataType::DATE) {
+  if (month < 1 || month > 12 || day < 1 ||
+      day > JulianDate::daysInMonth[day]) {
+    throw Ex1(Errcode::BAD_DATE);
+  }
+
+  int32_t dY = year - epochYear;
+  int32_t leapYears = dY / 4 - dY / 100 + dY / 400;  // is this true
+  date = dY * 365 + leapYears + JulianDate::daysUpTo[month - 1] + day;
+}
+const double JulianDate::epoch = 2000;
+
+const char* JulianDate::monthNames[12] = {
+    "January", "February", "March",     "April",   "May",      "June",
+    "July",    "August",   "September", "October", "November", "December"};
+const char* JulianDate::monthAbbr[12] = {"Jan", "Feb", "Mar", "Apr",
+                                         "May", "Jun", "Jul", "Aug",
+                                         "Sep", "Oct", "Nov", "Dec"};
+
+const uint16_t JulianDate::daysUpTo[12] = {
+    0,    // Jan
+    31,   // Feb
+    59,   // Mar
+    90,   // Apr
+    120,  // May
+    151,  // Jun
+    181,  // Jul
+    212,  // Aug
+    243,  // Sep
+    273,  // Oct
+    304,  // Nov
+    334   // Dec
+};
+const uint16_t JulianDate::daysInMonth[12] = {
+    31,  // Jan
+    28,  // Feb
+    31,  // Mar
+    30,  // Apr
+    31,  // May
+    30,  // Jun
+    31,  // Jul
+    31,  // Aug
+    30,  // Sep
+    31,  // Oct
+    30,  // Nov
+    31   // Dec
+};
+JulianDate::JulianDate(int32_t year, uint32_t month, uint32_t day,
+                       uint32_t hour, uint32_t min, uint32_t second)
+    : XDLBuiltinType("JulDate", DataType::JULDATE) {
+  if (month < 1 || month > 12 || day < 1 ||
+      day > daysInMonth[month - 1] &&
+          !(month == 2 && day == 29 && isLeap(year))) {
+    throw Ex1(Errcode::BAD_DATE);
+  }
+
+  int32_t dY = year - epoch;
+  int32_t leapYears = dY / 4 - dY / 100 + dY / 400;  // is this true
+  int32_t extraDay = isLeap(year) && month > 2;
+  date = dY * 365 + leapYears + daysUpTo[month - 1] + int32_t(day) +
+         (hour * 3600 + min * 60 + second) * invSecondsPerDay + extraDay - 1;
+}
+void Calendar::setHoliday(const Date& d) { holidays.push_back(d); }
+void Calendar::setHoliday(const Date& from, const Date& to) {
+  for (Date d = from; d <= to; d++) {
+    holidays.push_back(d);
+  }
+}
+
+void Calendar::setRepeatingHoliday(int32_t yearStart, int32_t yearEnd,
+                                   uint32_t month, uint32_t day) {}
+
+bool Calendar::isHoliday(const Date& d) const { return false; }
+Date Calendar::addBusinessDays(const Date& d, int32_t delta) const {
+  return d + delta;
+}
+int32_t Calendar::businessDaysBetween(const Date& d1, const Date& d2) const {
+  return d2 - d1;
 }

@@ -15,6 +15,7 @@
 */
 #pragma once
 
+#include <cmath>
 #include <cstdint>
 #include <string>
 
@@ -427,14 +428,64 @@ class F64 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+class JulianDate;
 class Date : public XDLBuiltinType {
  private:
-  int32_t val;
-  Date(int32_t val) : XDLBuiltinType("Date", DataType::DATE), val(val) {}
+  int32_t date;
+  static int32_t epochYear;
+  Date(int32_t d) : XDLBuiltinType("Date", DataType::DATE), date(d) {}
 
  public:
-  Date(int32_t year, uint8_t month, uint8_t day);
-  Date() : XDLBuiltinType("Date", DataType::DATE), val(0) {}
+  Date(const JulianDate& jd);
+  operator JulianDate() const;
+  Date() : XDLBuiltinType("Date", DataType::DATE), date(0) {}
+  Date(int32_t year, uint32_t month, uint32_t day);
+  Date operator+(int32_t days) const { return Date(date + days); }
+  friend int32_t operator-(const Date& d1, const Date& d2) {
+    return d1.date - d2.date;
+  }
+  Date operator-(int32_t days) const { return Date(date - days); }
+  Date operator+=(int32_t days) {
+    date += days;
+    return *this;
+  }
+  Date operator-=(int32_t days) {
+    date -= days;
+    return *this;
+  }
+  bool operator==(const Date& d) const = default;
+  // TODO: Revisit default comparison with later versions of C++
+  // As of gcc 10.3.0, C++ 20 deletes the following function when
+  // =default is used
+  bool operator<=(const Date& d) const { return date <= d.date; }
+
+  // Prefix increment
+  Date& operator++() {
+    ++date;
+    return *this;  // return new value by reference
+  }
+
+  // Postfix increment
+  Date operator++(int) {
+    Date old = *this;  // copy old value
+    operator++();      // prefix increment
+    return old;        // return old value
+  }
+
+  // Prefix decrement
+  Date& operator--() {
+    --date;
+    return *this;  // return new value by reference
+  }
+
+  // Postfix decrement
+  Date operator--(int) {
+    Date old = *this;  // copy old value
+    operator--();      // prefix increment
+    return old;        // return old value
+  }
+
+  // TODO: implement date extraction math
   int32_t getYear() const;
   uint32_t getMonth() const;
   uint32_t getDay() const;
@@ -446,29 +497,89 @@ class Date : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
-/*
-  Represent a Julian Date which uses a single double precision number to
-  represent a date relative to a known "0-day" called the epoch.
-
-  In Util is a JulianDate class that does the real Date arithmetic. That should
-  be brought in here.
-*/
 class JulianDate : public XDLBuiltinType {
+ public:
+  friend class Date;
+  static const double epoch;
+  static const uint16_t daysUpTo[12];
+  static const uint16_t daysInMonth[12];
+  static const char* monthAbbr[12];
+  static const char* monthNames[12];
+
  private:
-  double val;
-  JulianDate(double val)
-      : XDLBuiltinType("JulDate", DataType::JULDATE), val(val) {}
+  double date;
+#if 0
+  uint32_t Z;
+  double F;
+  uint32_t alpha;
+  uint32_t A;
+  uint32_t B;
+  uint32_t C;
+  uint32_t D;
+  uint32_t E;
+#endif
+  static constexpr double invSecondsPerDay = 1.0 / 86400;
+  JulianDate(double d)
+      : XDLBuiltinType("JulDate", DataType::JULDATE), date(d) {}
 
  public:
-  JulianDate() : XDLBuiltinType("JulDate", DataType::JULDATE), val(0) {}
-  JulianDate(int32_t year, uint8_t month, uint8_t day, uint8_t hour,
-             uint8_t min, uint8_t sec);
+  // ex: 1900 is NOT a leap year (divisible by 100) 1904
+  // is a leap year 2000 is a leap year (% 400)
+  bool static isLeap(uint32_t year) {
+    return year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
+  }
+  JulianDate(int32_t year, uint32_t month, uint32_t day, uint32_t hour = 0,
+             uint32_t min = 0, uint32_t second = 0);
+  JulianDate() : XDLBuiltinType("JulDate", DataType::JULDATE), date(0) {}
+
+  JulianDate operator+(double days) const { return JulianDate(date + days); }
+  friend double operator-(JulianDate a, JulianDate b) {
+    return a.date - b.date;
+  }
+  JulianDate operator-(double days) const { return JulianDate(date - days); }
+  JulianDate operator+=(double days) { return date += days; }
+  JulianDate operator-=(double days) { return date -= days; }
+  // TODO: Decide when two dates are equal
+  // Right now 1/80 of a msec
+  bool operator==(JulianDate orig) { return abs(date - orig.date) < 0.0000125; }
+  operator double() const { return date; }
+  // TODO: need to implement extraction of date info
   int32_t getYear() const;
   uint32_t getMonth() const;
   uint32_t getDay() const;
   uint32_t getHour() const;
-  uint32_t getMin() const;
+  uint32_t getMinute() const;
   double getSecond() const;
+  // write a Julian date into the string at dest
+  void format(char dest[]) {}
+
+  //	void format(MultiText* text, uint32_t style);
+  double getJulDate() const { return date; }
+  void extract(int32_t* year, uint32_t* mm, uint32_t* dd, uint32_t* hh,
+               uint32_t* min, uint32_t* ss) {
+    double ddate = floor(date);
+    int32_t dy = ddate / 365 + ddate / 4 - ddate / 100 + ddate / 400;
+    *year = epoch + dy;
+    int32_t month = ddate - floor(floor(ddate / 365.2425) * 365.2425);
+    *mm = month;
+    *dd = 0;  // TODO: use a single lookup table for both month and day,
+              // easy
+    double whole = floor(date);
+    double frac = date - whole;
+    uint32_t h = uint32_t(frac *= 24);
+    frac -= h;
+    *hh = h;
+    uint32_t m = uint32_t(frac *= 60);
+    *min = m;
+    frac -= m;
+    *ss = frac * 60;
+  }
+
+  friend std::ostream& operator<<(std::ostream& s, const JulianDate& jd) {
+    s << JulianDate::monthAbbr[jd.getMonth() - 1];
+    return s;
+  }
+  friend class Date;
   DataType getDataType() const override;
   uint32_t size() const override;
   void write(Buffer& buf) const override;
@@ -673,44 +784,6 @@ class GenericList : public CompoundType {
   void addMeta(ArrayOfBytes* meta) const override;
 };
 
-template <typename T>
-class List : public XDLType {
- private:
-  DynArray<T> impl;
-
- public:
-  List(uint32_t size = 16) : XDLType("LIST16"), impl(size) {}
-  DataType getDataType() const { return DataType::LIST16; }
-  void add(const T& e) { impl.add(e); }
-#if 0
-  template <class... Args>
-  void add(Args&&... args) {
-    impl.emplace_back(args);
-  }
-#endif
-  uint32_t size() const override {
-    return impl.size();  // TODO: * T.size();
-  }
-  void write(Buffer& buf) const override;
-  void writeMeta(Buffer& buf) const override;
-  void read(Buffer& buf) {
-    uint32_t len = buf._readU16();
-    T val;
-    for (uint32_t i = 0; i < len; i++) {
-      val.read(buf);
-      add(val);
-    }
-  }
-  XDLIterator* createIterator() override;
-  void display(Buffer& binaryIn, Buffer& asciiOut) const override;
-  void addMeta(ArrayOfBytes* meta) const override {
-    throw Ex1(Errcode::UNIMPLEMENTED);
-  }
-  void addData(ArrayOfBytes* data) const override {
-    throw Ex1(Errcode::UNIMPLEMENTED);
-  }
-};
-
 class BuiltinType : public XDLType {
  private:
   DataType t;
@@ -843,6 +916,34 @@ class UnImpl : public XDLType {
   void addMeta(ArrayOfBytes* meta) const override;
 };
 
+// TODO: Add leap years
+class Calendar : public CompoundType {
+ private:
+  std::string calendarName;  // name of this calendar
+  Date start;
+  uint32_t weekendDays : 7;
+  // Index into the holiday table for each year in the calendar
+  std::vector<Date> holidays;  // offset for each holiday in a given year
+ public:
+  Calendar(const std::string& name)
+      : CompoundType("Calendar"), calendarName(name) {}
+  void save(const char filename[]) const;
+  void setHoliday(const Date& d);
+  void setHoliday(const Date& from, const Date& to);
+  void setRepeatingHoliday(int32_t yearStart, int32_t yearEnd, uint32_t month,
+                           uint32_t day);
+  bool isHoliday(const Date& d) const;
+
+  Date addBusinessDays(const Date& d, int32_t delta) const;
+  int32_t businessDaysBetween(const Date& d1, const Date& d2) const;
+
+  void writeMeta(Buffer& b);
+  void write(Buffer& b);
+
+  void addData(ArrayOfBytes* data) const;
+  void addMeta(ArrayOfBytes* meta) const;
+};
+
 class ArrayOfBytes : public CompoundType {
  private:
   uint8_t* currentData;
@@ -923,28 +1024,4 @@ inline DataType typeToDataType(const char* str) {
 template <typename T>
 inline DataType typeToDataType(T arg) {
   return DataType::UNIMPL;
-}
-
-template <typename T>
-void List<T>::writeMeta(Buffer& buf) const {
-  buf.write(DataType::LIST16);
-  if (typeToDataType(impl[0]) != DataType::UNIMPL) {
-    buf.write(typeToDataType(impl[0]));
-  } else if (is_base_of<XDLType, T>::value) {
-    impl[0].writeMeta(buf);
-  }
-}
-
-template <typename T>
-void List<T>::write(Buffer& buf) const {
-  buf.write(uint16_t(impl.size()));
-  for (uint32_t i = 0; i < impl.size(); i++) {
-    if (typeToDataType(impl[i]) != DataType::UNIMPL) {
-      buf.write(impl[i]);
-    } else if (is_base_of<XDLType, T>::value) {
-      impl[i].write(buf);
-    } else {
-      throw Ex1(Errcode::UNDEFINED_TYPE);
-    }
-  }
 }

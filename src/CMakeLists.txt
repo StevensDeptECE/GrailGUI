@@ -14,7 +14,6 @@ add_library(grail
             ${grail-util}
             ${grail-xdl})
 
-
 if(${GRAIL_EXPERIMENTAL})
 add_subdirectory(xp)
 endif()
