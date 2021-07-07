@@ -2,6 +2,8 @@
 
 #include "opengl/Canvas.hh"
 
+using namespace std;
+
 static void *get_proc_address_mpv(void *fn_ctx, const char *name) {
   return (void *)glfwGetProcAddress(name);
 }
@@ -130,15 +132,21 @@ VideoPlayer::~VideoPlayer() {
   printf("properly terminated\n");
 }
 
+void VideoPlayer::init() {}
+
+void VideoPlayer::update() {}
+
 void VideoPlayer::render() {
   // bind the current framebuffer to our created fbo
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  // TODO: throw some exception here if the framebuffer somehow isn't complete
-  // check whether fbo is complete, it always should be so we don't throw an
-  // exception here if it isn't
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!"
-              << std::endl;
+  // if the framebuffer somehow isn't complete, throw an exception, the program
+  // shouldn't proceed
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    printf(
+        "Framebuffer created for MPV is not complete, welcome to undefined "
+        "behavior\n");
+    throw Ex1(Errcode::MPV_FAILURE);
+  }
 
   // try to render the current video frame into the fbo
   // if we fail, die
@@ -169,17 +177,26 @@ void VideoPlayer::render() {
                     GL_COLOR_BUFFER_BIT, GL_LINEAR);
 }
 
-void VideoPlayer::update() {}
-
-void VideoPlayer::init() {}
-
-void VideoPlayer::setVid(std::string filePath) {
-  checkError(mpv_command_string(mpv, "cycle pause"));
+void VideoPlayer::loadFile(string filePath) {
   const char *cmd[] = {"loadfile", filePath.c_str(), nullptr};
-  mpv_command_async(mpv, 0, cmd);
+  checkError(mpv_command_async(mpv, 0, cmd));
+  setPaused();
 }
 
-void VideoPlayer::cropImage(float xLeft, float xRight, float yTop,
+void VideoPlayer::loadPlaylist(string filePath, bool append) {
+  const char *cmd[] = {"loadlist", filePath.c_str(),
+                       (append) ? "append" : "replace", nullptr};
+  checkError(mpv_command_async(mpv, 0, cmd));
+}
+
+void VideoPlayer::setVolume(int volume) {
+  char intString[33];
+  sprintf(intString, "%d", volume);
+  const char *cmd[] = {"set", "volume", intString, nullptr};
+  checkError(mpv_command_async(mpv, 0, cmd));
+}
+
+void VideoPlayer::cropVideo(float xLeft, float xRight, float yTop,
                             float yBottom) {
   this->xLeft = xLeft;
   this->xRight = xRight;
@@ -188,5 +205,6 @@ void VideoPlayer::cropImage(float xLeft, float xRight, float yTop,
 }
 
 void VideoPlayer::togglePause() {
-  checkError(mpv_command_string(mpv, "cycle pause"));
+  const char *cmd[] = {"cycle", "pause", nullptr};
+  checkError(mpv_command_async(mpv, 0, cmd));
 }

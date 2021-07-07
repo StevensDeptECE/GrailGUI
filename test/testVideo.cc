@@ -1,5 +1,5 @@
-#include "video/VideoPlayer.hh"
 #include "opengl/GrailGUI.hh"
+#include "video/VideoPlayer.hh"
 
 using namespace std;
 using namespace grail;
@@ -30,15 +30,16 @@ class TestVideoPlayer : public GLWin {
     startTime = getTime();
     MainCanvas *c = currentTab()->getMainCanvas();
 
-    // StyledMultiShape2D *m = c->getGui();
-
     v = c->addLayer(new VideoPlayer(c, 100, 100, 500, 500));
 
     // playing a link from youtube (and maybe other places idk) requires you to
     // have youtube-dl installed
-    v->setVid("res/badapple.mkv");
+    v->loadFile(
+        "https://www.youtube.com/"
+        "playlist?list=PLFsQleAWXsj_4yDeebiIADdH5FMayBiJo");
     v->togglePause();
-    v->cropImage(0, 0, 55, 55);
+    v->cropVideo(0, 0, 60, 60);
+    v->setVolume(50);
   }
 };
 
