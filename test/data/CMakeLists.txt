@@ -1,0 +1,5 @@
+add_executable(testBlockMapLoader testBlockMapLoader.cc)
+add_executable(testFastMapLoad testFastMapLoad.cc)
+
+target_link_libraries(testBlockMapLoader grail)
+target_link_libraries(testFastMapLoad grail)

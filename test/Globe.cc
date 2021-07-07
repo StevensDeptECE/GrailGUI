@@ -7,6 +7,7 @@ class Globe : public GLWin {
  private:
   Transformation tEarth;
   float earthRotationAngle;
+
  public:
   void init() {
     earthRotationAngle = .01;
@@ -17,6 +18,7 @@ class Globe : public GLWin {
     earth->genOBJModel("models/sphere.obj");
   }
   void update() {
+    currentTab()->getMainCanvas()->getWin()->setDirty();
     tEarth.setRotate(-23.5f * DEG2RAD<float>, 0.0f, 0.0f,
                      1.0f);  // rotate axis by 23.5 degrees
     tEarth.rotate((float)(earthRotationAngle * time()), 0.0f, 1.0f, 0.0f);

@@ -134,6 +134,15 @@ void GLWin::windowRefreshCallback(GLFWwindow *win) {
   w->dirty = true;
 }
 
+void GLAPIENTRY messageCallback(GLenum source, GLenum type, GLuint id,
+                                GLenum severity, GLsizei length,
+                                const GLchar *message, const void *userParam) {
+  fprintf(stderr,
+          "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+          (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity,
+          message);
+}
+
 #if 0
 void GLWin::enableMouse() {
   glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -254,6 +263,9 @@ void GLWin::startWindow() {
   hasBeenInitialized = true;
 }
 void GLWin::baseInit() {
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(messageCallback, 0);
+  glLineWidth(1);
   Shader::setDir(prefs.getShaderDir());
   Shader::load("solid.bin", "common.vs", "common.fs");    // Solid Color
   Shader::load("pervert.bin", "vColor.vs", "common.fs");  // Color per vertex
@@ -266,8 +278,6 @@ void GLWin::baseInit() {
     tabs[i]->init();
   }
 }
-
-float GLWin::getTime() const { return glfwGetTime(); }
 
 int GLWin::init(GLWin *g, uint32_t w, uint32_t h, uint32_t exitAfter) {
   try {
@@ -339,36 +349,33 @@ void GLWin::mainLoop() {
   double startTime = glfwGetTime();  // get time now for calculating FPS
   double renderTime;
   dirty = true;
-  dirty2 = false;
   while (!glfwWindowShouldClose(win)) {
     //    bool modified = Queue::dump_render();
     //    dt = current - lastFrame;
     float startRender = glfwGetTime();
     glfwPollEvents();  // Check and call events
 
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);  // Clear the colorbuffer and depth
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    render();
-    glfwSwapBuffers(win);  // Swap buffer so the scene shows on screen
-    float endRender = glfwGetTime();
-    renderTime += endRender - startRender;
-    if (frameCount >= 150) {
-      double endTime = glfwGetTime();
-      double elapsed = endTime - startTime;
-      cerr << "Elapsed=" << elapsed << " FPS= " << frameCount / elapsed
-           << " render=" << renderTime << '\n';
-      frameCount = 0;
-      renderTime = 0;
-      startTime = endTime;
-      if (exitAfter != 0 && frameCount >= exitAfter) break;
-    } else {
-      frameCount++;
-    }
+    if (dirty) {
+      float startRender = glfwGetTime();
+      glClearColor(1.0f, 1.0f, 1.0f, 1.0f);  // Clear the colorbuffer and depth
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      render();
+      renderTime += glfwGetTime() - startRender;
+      glfwSwapBuffers(win);  // Swap buffer so the scene shows on screen
+      if (frameCount >= 150) {
+        double endTime = glfwGetTime();
+        double elapsed = endTime - startTime;
+        cerr << "Elapsed=" << elapsed << " FPS= " << frameCount / elapsed
+             << " render=" << renderTime << '\n';
+        frameCount = 0;
+        renderTime = 0;
+        startTime = endTime;
+        if (exitAfter != 0 && frameCount >= exitAfter) break;
+      } else {
+        frameCount++;
+      }
 
-    dirty = false;
-    if (dirty2) {
-      dirty = true;
-      dirty2 = false;
+      dirty = false;
     }
     t += dt;
     update();
@@ -685,6 +692,4 @@ void GLWin::loadBindings() {
   // bind2DOrtho();
 }
 
-double GLWin::getTime() {
-  return glfwGetTime();
-}
+double GLWin::getTime() { return glfwGetTime(); }
