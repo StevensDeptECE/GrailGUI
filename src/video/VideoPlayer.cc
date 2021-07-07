@@ -129,7 +129,7 @@ VideoPlayer::~VideoPlayer() {
   // destroy the mpv handle
   mpv_detach_destroy(mpv);
   // indictes that we've cleaned up everything that VideoPlayer created
-  printf("properly terminated\n");
+  printf("videoplayer has terminated succesfully");
 }
 
 void VideoPlayer::init() {}
@@ -183,8 +183,7 @@ void VideoPlayer::render() {
 void VideoPlayer::loadFile(string filePath) {
   const char *cmd[] = {"loadfile", filePath.c_str(), nullptr};
   checkError(mpv_command_async(mpv, 0, cmd));
-  // togglePause();
-  //setPaused();
+  setPaused();
 }
 
 void VideoPlayer::loadPlaylist(string filePath, bool append) {
@@ -200,12 +199,40 @@ void VideoPlayer::setVolume(int volume) {
   checkError(mpv_command_async(mpv, 0, cmd));
 }
 
+void VideoPlayer::seekLocation(string time, string type) {
+  if (type == "relative" || type == "absolute" || type == "relative-percent" ||
+      type == "absolute-percent") {
+    const char *cmd[] = {"seek", time.c_str(), type.c_str(), nullptr};
+    checkError(mpv_command_async(mpv, 0, cmd));
+  } else {
+    printf(
+        "Please provide one of the following for seek type: \nrelative, "
+        "absolute, relative-percent, absolute-percent\n");
+  }
+}
+
 void VideoPlayer::cropVideo(float xLeft, float xRight, float yTop,
                             float yBottom) {
   this->xLeft = xLeft;
   this->xRight = xRight;
   this->yBottom = yBottom;
   this->yTop = yTop;
+}
+
+void VideoPlayer::setPaused() {
+  if (isPlaying) {
+    const char *cmd[] = {"cycle", "pause", nullptr};
+    checkError(mpv_command_async(mpv, 0, cmd));
+    isPlaying = !isPlaying;
+  }
+}
+
+void VideoPlayer::setPlaying() {
+  if (!isPlaying) {
+    const char *cmd[] = {"cycle", "pause", nullptr};
+    checkError(mpv_command_async(mpv, 0, cmd));
+    isPlaying = !isPlaying;
+  }
 }
 
 void VideoPlayer::togglePause() {

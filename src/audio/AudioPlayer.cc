@@ -119,11 +119,13 @@ void AudioPlayer::playlistShuffle() {
   checkError(mpv_command(currentCtx, cmd));
 }
 
+// TODO: update this to follow videoplayer
 void AudioPlayer::togglePause() {
   checkError(mpv_command_string(currentCtx, "cycle pause"));
   isPlaying = !isPlaying;
 }
 
+// TODO: update this to follow vieoplayer
 void AudioPlayer::setPlaying() {
   if (!isPlaying) {
     checkError(mpv_command_string(currentCtx, "cycle pause"));
@@ -131,6 +133,7 @@ void AudioPlayer::setPlaying() {
   }
 }
 
+// TODO: update this to follow videoplayer
 void AudioPlayer::setPaused() {
   if (isPlaying) {
     checkError(mpv_command_string(currentCtx, "cycle pause"));
