@@ -518,6 +518,7 @@ uint32_t Date::getMonth() const { return 0; }
 
 uint32_t Date::getDay() const { return 0; }
 
+// TODO: better naming convention than ddate
 int32_t JulianDate::getYear() const {
   int64_t ddate = int64_t(date);
   int32_t dy = ddate / 365 + ddate / 4 - ddate / 100 + ddate / 400;
