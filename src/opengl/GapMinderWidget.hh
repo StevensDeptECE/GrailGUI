@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include "data/GapMinderLoader.hh"
 
 class Style;
 class GapMinderWidget : public Widget2D {
@@ -25,6 +26,13 @@ private:
   Scale *yAxis;
   Scale *xAxis;
   float minMultiplier;
+
+  GapMinderLoader *gml;
+  const GapMinderLoader::Dataset* d;
+  const GapMinderLoader::Dataset* d2;
+  const GapMinderLoader::Dataset* d3;
+  int startYear;
+  int endYear;
 
 public:
   GapMinderWidget(StyledMultiShape2D* m, MultiText* t,
@@ -65,6 +73,8 @@ public:
   void setTitleStyle(const Style* s) { titleStyle = s;}
   void chart(const std::vector<float>& yLocations, const std::vector<float>& xLocations, 
   const std::vector<float>& sizes, int rulerIntervalX, int rulerIntervalY, const std::vector <glm::vec4>& c);
+  void loadData(std::string sy, std::string sx, std::string ss, int startYear, int endYear);
+  void animate(int rulerIntervalX, int rulerIntervalY);
   //void chartLog(const float b[], int size, float relativeSpace, const std::string barNames[], int logBase);
   void setTitle(const std::string& s);
   void init() override;

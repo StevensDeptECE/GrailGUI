@@ -32,15 +32,17 @@ $(out)/Shape.o 				\
 $(out)/Colors.o 			\
 $(out)/Line.o  $(out)/Rectangle.o $(out)/Sector.o \
 $(out)/Image.o \
-$(out)/MultiShape.o $(out)/StyledMultiShape2D.o $(out)/MultiShape2D.o \
+$(out)/MultiShape.o $(out)/StyledMultiShape2D.o $(out)/StyledMultiShape25D.o $(out)/MultiShape2D.o \
 $(out)/MultiText.o $(out)/MultiShape3D.o $(out)/TextureArray.o \
 $(out)/Document.o $(out)/DocView.o \
 $(out)/Shapefile.o $(out)/ESRIShape.o $(out)/ESRIPolygon.o\
 $(out)/LineGraphWidget.o $(out)/BarChartWidget.o \
 $(out)/ButtonWidget.o $(out)/Scale.o $(out)/CandlestickChartWidget.o\
 $(out)/AngledMultiText.o $(out)/BoxChartWidget.o \
+$(out)/GapMinderLoader.o \
 $(out)/ScrollbarWidget.o $(out)/AxisWidget.o $(out)/GapMinderWidget.o \
-$(out)/SparklineWidget.o
+$(out)/SparklineWidget.o 
+
 
 SHAPEOBJS := $(libshapeout)/dbfopen.o $(libshapeout)/safileio.o \
 $(libshapeout)/sbnsearch.o $(libshapeout)/shpopen.o $(libshapeout)/shptree.o
@@ -147,6 +149,9 @@ $(out)/MultiShape2D.o: MultiShape2D.cc MultiShape2D.hh
 $(out)/StyledMultiShape2D.o: StyledMultiShape2D.cc StyledMultiShape2D.hh 
 	$(COMP) $< -o $@
 
+$(out)/StyledMultiShape25D.o: StyledMultiShape25D.cc StyledMultiShape25D.hh 
+	$(COMP) $< -o $@
+
 $(out)/MultiShape3D.o: MultiShape3D.cc MultiShape3D.hh 
 	$(COMP) $< -o $@
 
@@ -183,7 +188,10 @@ $(out)/CandlestickChartWidget.o: CandlestickChartWidget.cc CandlestickChartWidge
 $(out)/BoxChartWidget.o: BoxChartWidget.cc BoxChartWidget.hh
 	$(COMP) $< -o $@
 
-$(out)/GapMinderWidget.o: GapMinderWidget.cc GapMinderWidget.hh
+$(out)/GapMinderWidget.o: GapMinderWidget.cc GapMinderWidget.hh $(data)/GapMinderLoader.hh $(data)/GapMinderLoader.cc
+	$(COMP) $< -o $@
+
+$(out)/GapMinderLoader.o: $(data)/GapMinderLoader.hh $(data)/GapMinderLoader.cc
 	$(COMP) $< -o $@
 
 $(out)/SparklineWidget.o: SparklineWidget.cc SparklineWidget.hh
