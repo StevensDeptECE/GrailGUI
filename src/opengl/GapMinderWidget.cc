@@ -52,6 +52,8 @@ void GapMinderWidget::chart(const vector<float>& yLocations,
       float xPoint = xAxis->transform(xLocations[i]);
       float yPoint = yAxis->transform(yLocations[i]);
 
+      cout << "hello indide draw" << endl;
+
       m->fillCircle(xPoint, yPoint, rad[i], 3, c[i]);
       m->drawCircle(xPoint, yPoint, rad[i], 3, grail::black);
     }
@@ -87,8 +89,10 @@ void GapMinderWidget::chart(const vector<float>& yLocations,
       return;
     }
 
-    m->clear();
-    t->clear();
+    cout << "hello inside animate" << endl;
+
+    //m->clear();
+    //t->clear();
 
     vector<float> x1 = gml->getAllDataOneYear(startYear, d);
 

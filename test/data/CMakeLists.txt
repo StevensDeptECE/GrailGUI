@@ -1,5 +1,9 @@
 add_executable(testBlockMapLoader testBlockMapLoader.cc)
 add_executable(testFastMapLoad testFastMapLoad.cc)
+add_executable(testWidgetGapMinder testWidgetGapMinder.cc)
+add_executable(testGapMinder testGapMinder.cc)
 
 target_link_libraries(testBlockMapLoader grail)
 target_link_libraries(testFastMapLoad grail)
+target_link_libraries(testWidgetGapMinder grail)
+target_link_libraries(testGapMinder grail)
