@@ -38,7 +38,8 @@ target_include_directories(grail PRIVATE ${FREETYPE_INCLUDE_DIRS})
 target_link_libraries(grail ${CMAKE_DL_LIBS})
 
 # MPV
-target_link_libraries(grail PkgConfig::MPV)
+target_link_libraries(grail ${MPV_LIBRARY})
+target_include_directories(grail INTERFACE ${MPV_INCLUDE_DIR})
 
 # Shapelib
 target_link_libraries(grail shpgrail)

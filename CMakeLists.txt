@@ -72,7 +72,7 @@ find_package(glfw3 REQUIRED)
 find_package(Freetype REQUIRED)
 
 # MPV
-pkg_check_modules(MPV REQUIRED IMPORTED_TARGET mpv)
+find_package(MPV REQUIRED)
 
 # GLM
 FetchContent_Declare(
