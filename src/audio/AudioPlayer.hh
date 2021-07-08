@@ -9,9 +9,14 @@
 
 class AudioPlayer {
  private:
-  std::unordered_map<std::string, mpv_handle *> contexts;
-  mpv_handle *currentCtx;
-  bool isPlaying;
+  struct context {
+    std::string name;
+    mpv_handle *handle;
+    bool playing;
+  };
+
+  std::unordered_map<std::string, context> contexts;
+  struct context *currentCtx;
 
   inline void checkError(int status) {
     if (status < 0) {
@@ -23,15 +28,20 @@ class AudioPlayer {
  public:
   AudioPlayer();
   ~AudioPlayer();
+
   AudioPlayer(const AudioPlayer &orig) = delete;
   AudioPlayer &operator=(const AudioPlayer &orig) = delete;
+
   void newContext(std::string name);
   void setCurrentContext(std::string name);
-  void addFile(std::string filePath);
-  void addPlaylist(std::string filePath, bool append = false);
+
+  void loadFile(std::string filePath);
+  void loadPlaylist(std::string filePath, bool append = false);
+
   void setVolume(int volume);
   void seekLocation(std::string time, std::string type = "relative");
   void revertSeek();
+
   void playlistNext();
   void playlistPrev();
   void playlistPlayIndex(int index);
@@ -39,9 +49,10 @@ class AudioPlayer {
   void playlistRemoveIndex(int index);
   void playlistMove(int index1, int index2);
   void playlistShuffle();
-  void togglePause();
-  void setPlaying();
-  void setPaused();
+
   void printCurrentTime();
-  // void playlistPrintEntries();
+
+  void setPaused();
+  void setPlaying();
+  void togglePause();
 };

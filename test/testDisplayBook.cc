@@ -39,7 +39,7 @@ void BookViewer::init() {
   Style *s = new Style(font, 1, 1, 1, 0, 0, 0);
   s->setLineWidth(1);
   Canvas *c = currentTab()->getMainCanvas();
-  c->addLayer(new Image(c, 0, 5, 320, 32, "res/toolbar1.png", s));
+  c->addLayer(new Image(c, 0, 5, 320, 32, "res/toolbar1.png"));
   StyledMultiShape2D *m = new StyledMultiShape2D(c, s);
   m->fillTriangle(350, 5, 380, 0, 360, 30, green);
   m->fillRoundRect(400, 5, 950, 40, 10, 10, lightblue);

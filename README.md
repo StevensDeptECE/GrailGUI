@@ -1,5 +1,7 @@
 # Peter's Windows Port
 
+[![CMake](https://github.com/StevensDeptECE/GrailGUI/actions/workflows/cmake.yml/badge.svg?branch=main)](https://github.com/StevensDeptECE/GrailGUI/actions/workflows/cmake.yml)
+
 ## Getting Set Up - Windows
 
 1. [Install MSYS2](https://www.msys2.org/)

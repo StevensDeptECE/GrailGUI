@@ -4,6 +4,7 @@ add_subdirectory(data)
 add_subdirectory(opengl)
 add_subdirectory(util)
 add_subdirectory(xdl)
+add_subdirectory(video)
 
 add_library(grail
             ${PROJECT_SOURCE_DIR}/include/glad/glad.c

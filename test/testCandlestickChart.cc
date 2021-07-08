@@ -6,13 +6,13 @@ using namespace grail;
 
 class TestBoxChart : public GLWin {
  private:
-  const Style *baseGraphStyle;
-  const Style *xAxisStyle;
-  const Style *xAxisTextStyle;
-  const Style *yAxisStyle;
-  const Style *yAxisTextStyle;
-  const Style *lineStyle;
-  const Style *boxStyle;
+  Style *baseGraphStyle;
+  Style *xAxisStyle;
+  Style *xAxisTextStyle;
+  Style *yAxisStyle;
+  Style *yAxisTextStyle;
+  Style *lineStyle;
+  Style *boxStyle;
 
  public:
   TestBoxChart() : GLWin(0x000000, 0xCCCCCC, "TestBarChart") {}
@@ -28,31 +28,34 @@ class TestBoxChart : public GLWin {
 
   void init() {
     // two lines and the overall title
-    baseGraphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0, 5);
+    baseGraphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
+    baseGraphStyle->setLineWidth(5);
 
     // will control how thick lines for x axis are drawn
-    xAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 1, 0, 4);
+    xAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 1, 0);
+    xAxisStyle->setLineWidth(4);
 
     // controls the font, size, and color of x axis text
-    xAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 0, 3);
+    xAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 0);
+    xAxisTextStyle->setLineWidth(3);
 
     // will control how thick lines for y axis are drawn
-    yAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 1, 2);
+    yAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 1);
+    yAxisStyle->setLineWidth(2);
 
     // controls the font, size, and color of y axis text
-    yAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 1);
+    yAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1);
+    yAxisTextStyle->setLineWidth(1);
 
-    // controls the thickness of lines
-    lineStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 3);
+    // controls the thickness of lines coming off the main box
+    lineStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1);
+    lineStyle->setLineWidth(2);
 
-    boxStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 3);
+    // controlls the thickness of the outline of boxes
+    boxStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1);
+    boxStyle->setLineWidth(2);
+
     MainCanvas *c = currentTab()->getMainCanvas();
-
-    // vector<double> data = {
-    //     150, 152, 153, 154,  //
-    //     153, 154, 155, 158,  //
-    //     155, 156, 157, 162   //
-    // };
 
     vector<double> data = {
         153.25, 154.16, 152.99, 153.68, 153.34, 153.73, 152.15, 152.73, 152.66,
