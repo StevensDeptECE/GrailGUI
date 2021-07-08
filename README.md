@@ -79,6 +79,7 @@
     ```
 
     - Preferred, but optional
+
         1. Set gcc-11 and g++-11 as default compiler
 
             ``` shell
@@ -110,7 +111,7 @@
 
     ```
 
-    - If you are using Wayland, there install `glfw-wayland` instead of `glfw-x11`. Wayland support is currently unconfirmed.
+    - If you are using Wayland, then install `glfw-wayland` instead of `glfw-x11`. Wayland support is currently unconfirmed.
   
 2. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to set up the environment variables.
 
@@ -120,14 +121,14 @@
 - For versions of Ubuntu with custom versions of gcc, but did not set the default compiler with update-alternatives:
 
     ``` shell
-    CC=gcc-11 CXX=g++-11 cmake -S . -Bbuild -GNinja
+    CC=gcc-11 CXX=g++-11 cmake -S . -B build -GNinja
     cmake --build build
     ```
 
 - For those who want to modify the default configuration and compile themselves, we use the following:
 
     ``` shell
-    cmake -S . -Bbuild -GNinja
+    cmake -S . -B build -GNinja
     cmake --build build
     ```
 
@@ -160,7 +161,7 @@ The `GRAIL` environment variable is most likely not set. Please refer to step 4 
 
 ### Runtime Error:  `Failed to open GLFW window`
 
-This error is most commonly scene when attempting to run Grail on a Windows virtual machine. If your use-case is different, please open an issue with the details of your environment. As far as the project team is aware, this error can be traced to a lack of OpenGL compatibility on Windows virtual machines. This means that the issues is a driver problem that cannot be resolved until there is better OpenGL support in virtual video drivers. If you need a virtual machine, but do not need Windows, a virtual machine running Ubuntu Linux should work. Otherwise, until there is sufficient OpenGL support for virtual Windows, you will have to resort to a dual boot or alternative computer to run Grail and Grail-based programs.
+This error is most commonly seen when attempting to run Grail on a Windows virtual machine. If your use-case is different, please open an issue with the details of your environment. As far as the project team is aware, this error can be traced to a lack of OpenGL compatibility on Windows virtual machines. This means that the issues is a driver problem that cannot be resolved until there is better OpenGL support in virtual video drivers. If you need a virtual machine, but do not need Windows, a virtual machine running Ubuntu Linux should work. Otherwise, until there is sufficient OpenGL support for virtual Windows, you will have to resort to a dual boot or alternative computer to run Grail and Grail-based programs.
 
 ### Everything Else
 
