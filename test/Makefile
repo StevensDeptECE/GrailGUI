@@ -8,7 +8,7 @@ include ${GRAIL}/proj/settings.mk
 
 #OBJ	:= ../src/grail/CompiledWebWindow.o ../src/grail/ErrNames.o
 
-all:    $(BIN)/testDrawBlockMap $(BIN)/testWidgets #  $(BIN)/testStyledMultishape	\
+all:    $(BIN)/testDrawBlockMap $(BIN)/testWidgets $(BIN)/testStyledMultishape25 #  $(BIN)/testStyledMultishape	\
 	$(BIN)/SolarSystem  $(BIN)/globe
 # $(BIN)/ESRIMapDemo \
   $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
@@ -86,6 +86,10 @@ $(BIN)/globe: Globe.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testStyledMultishape: testStyledMultishape.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)
+
+
+$(BIN)/testStyledMultishape25: testStyledMultishape25.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)
 
 

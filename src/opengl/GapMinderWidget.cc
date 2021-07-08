@@ -1,6 +1,7 @@
 #include "opengl/GapMinderWidget.hh"
 #include "opengl/StyledMultiShape2D.hh"
 #include "opengl/MultiText.hh"
+#include "data/GapMinderLoader.hh"
 #include <string>
 #include <iostream>
 #include <algorithm>
@@ -69,3 +70,55 @@ void GapMinderWidget::chart(const vector<float>& yLocations,
     }
 
   }
+
+  void GapMinderWidget::loadData(string sy, string sx, string ss, int startY, int endY){
+    gml = new GapMinderLoader("res/GapMinder/GapMinderDBFile");
+
+    d = gml->getDataset(sx.c_str());
+    d2 = gml->getDataset(sy.c_str());
+    d3 = gml->getDataset(ss.c_str());
+    startYear = startY;
+    endYear = endY;
+  }
+
+  void GapMinderWidget::animate(int rulerIntervalX, int rulerIntervalY){
+
+    if(startYear == endYear){
+      return;
+    }
+
+    m->clear();
+    t->clear();
+
+    vector<float> x1 = gml->getAllDataOneYear(startYear, d);
+
+    vector<float> x2;
+
+    vector<float> y1 = gml->getAllDataOneYear(startYear, d2);
+
+    vector<float> y2;
+
+    vector<float> s1 = gml->getAllDataOneYear(startYear, d3);
+
+    vector<float> s2;
+
+    vector <glm::vec4> colorContinent = {
+      grail::yellow, grail::blue, grail::cyan, grail::green, grail::pink, grail::red
+    };
+
+    vector<glm::vec4> c2;
+
+    for (int i = 0; i < x1.size(); i++){
+      if(x1[i] < 1000000 && y1[i] < 1000000 && s1[i] < 1000000){
+        x2.push_back(x1[i]);
+        y2.push_back(y1[i]);
+        s2.push_back(s1[i]);
+        c2.push_back(colorContinent[gml->continents[i]]);
+      }
+    }
+    
+    chart(y2, x2, s2, rulerIntervalX, rulerIntervalY, c2);
+
+    startYear++;
+  }
+
