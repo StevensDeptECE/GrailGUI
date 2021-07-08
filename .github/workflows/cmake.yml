@@ -2,9 +2,9 @@ name: CMake
 
 on:
   push:
-    branches: [ cmake ]
+    branches: [ main ]
   pull_request:
-    branches: [ cmake ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
