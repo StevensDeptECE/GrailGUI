@@ -268,13 +268,13 @@ void GLWin::baseInit() {
   glDebugMessageCallback(messageCallback, 0);
   glLineWidth(1);
   Shader::setDir(prefs.getShaderDir());
-  Shader::load("solid.bin", "common.vs", "common.fs");    // Solid Color
-  Shader::load("pervert.bin", "vColor.vs", "common.fs");  // Color per vertex
-  Shader::load("text.bin", "text.vs", "text.fs");         // Texture for text
-  Shader::load("img.bin", "Texture.vs", "Texture.fs");    // Texture for images
-  Shader::load("cursor.bin", "Cursor.vs", "common.fs");   // Texture for images
-  Shader::load("multiText.bin", "MultiTexture.vs",
-               "MultiTexture.fs");  // MultiTexture for shapes
+  Shader::load("solid.bin", "common.vert", "common.frag");    // Solid Color
+  Shader::load("pervert.bin", "vColor.vert", "common.frag");  // Color per vertex
+  Shader::load("text.bin", "text.vert", "text.frag");         // Texture for text
+  Shader::load("img.bin", "Texture.vert", "Texture.frag");    // Texture for images
+  Shader::load("cursor.bin", "Cursor.vert", "common.frag");   // Texture for images
+  Shader::load("multiText.bin", "MultiTexture.vert",
+               "MultiTexture.frag");  // MultiTexture for shapes
   for (int i = 0; i < tabs.size(); ++i) {
     tabs[i]->init();
   }

@@ -13,8 +13,7 @@ add_library(grail
             ${grail-data}
             ${grail-opengl}
             ${grail-util}
-            ${grail-xdl}
-            ${grail-video})
+            ${grail-xdl})
 
 
 if(${GRAIL_EXPERIMENTAL})

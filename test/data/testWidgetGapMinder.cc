@@ -13,7 +13,7 @@ using namespace grail;
 class TestWidgets : public GLWin {
  public:
 
-  GapMinderWidget chart;
+  GapMinderWidget *chart;
   double startTime;
   int step = 1;
 
@@ -27,22 +27,23 @@ class TestWidgets : public GLWin {
 
     vector <float> x2 = {65000};
     vector <float> y2 = {14};
-    chart = GapMinderWidget(gui, guiText, 75, 50, 900, 450, x2, y2);
-    chart.loadData(yData, xData, sData, 2000, 2010);
+    chart = new GapMinderWidget(gui, guiText, 75, 50, 900, 450, x2, y2);
+    chart->loadData(yData, xData, sData, 2000, 2010);
 
-    chart.setTitle("Title");
-    chart.init();
+    chart->setTitle("Title");
+    chart->init();
   }
 
   void update(){
     
     double time = getTime();
     if (time > startTime + 2 && step == 1) {
+      cout << "hello inside if" << endl;
       startTime = time;
       step++;
+      chart->animate(10000, 2);
     }
 
-    chart.animate(10000, 2);
   }
 
   void init() {
