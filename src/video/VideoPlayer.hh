@@ -83,6 +83,11 @@ class VideoPlayer : public Shape {
 
   void playlistNext();
   void playlistPrev();
+  void playlistPlayIndex(int index);
+  void playlistRemoveIndex(int index);
+  void playlistMove(int index1, int index2);
+  void playlistShuffle();
+  void playlistClear();
 
   void cropVideo(float xLeft, float xRight, float yTop, float yBottom);
 
