@@ -53,14 +53,15 @@ Currently, the world uses web browsers and JavaScript as the engine to achieve a
 ## Development History
 
 ## Grail Volunteers
-The following list is not comprehensive. It contains the major contributors to Grail, as well as the people who 
+The following list is not comprehensive. It contains the major contributors to Grail, and all the current students working this summer.
+
 1. Dov Kruger - Project Lead, Teaching Assistant Professor at Stevens Institute of Technology, ECE Department.
    Invented grail, designed bytecode web engine, OpenGL wrappers, defined the concept of BlockLoaders and wrote the first one,
    Implemented the font system, mentor new programmers and review code. Implemented input event mapping system.
-1. Peter Ho - Student 2019 summer who built the core web engine, implemented key inputs, and helped debug OpenGL code.
+1. Peter Ho - Student 2019 summer. Built the core web engine, implemented the first input event mapping system, and helped debug OpenGL code.
 1. Itai Bachar - High School intern 2019 Summer who pioneered some of the OpenGL code.
-1. Alex Walker - Senior Design 2019 implemented 3d models
-1. Pridhvi Myneni - Cleaned up GLWin, ported to Windows, implemented XDL transport 
+1. Alex Walker - Senior Design 2019 implemented 3d models and shaders.
+1. Pridhvi Myneni - Student 2020 summer. Cleaned up GLWin, ported to Windows, implemented XDL transport 
 1. Joey Rupert - Ported to Windows, Managed team
 1. Alice Huston - Student 2021. Debugged many areas, supported other programmers, rewrote the project build using cmake and ninja, ported to C++ 20,
    wrote BlockLoaders for high speed I/O, Implemented the map and shapefile loader. Implemented LZMA decryption.
