@@ -19,6 +19,7 @@ const UnImpl* XDLType::unimpl = new UnImpl();
 HashMap<uint32_t> XDLType::byName(1024);
 inline void XDLType::addType(const XDLType* type) {
   string typeName = type->getTypeName();
+  byName.checkGrow();
   byName.add(typeName.c_str(), types.size());
   types.add(type);
   typeNames.add(typeName);

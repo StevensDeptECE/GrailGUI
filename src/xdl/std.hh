@@ -77,7 +77,9 @@ class XDLType {
     uint32_t nameOffset = 0;
     return nameOffset;
   }
-  XDLType() {}
+
+  // Delete default constructor? we should be naming all of our XDLTypes
+  XDLType() = delete;
   XDLType(const std::string& typeName)
       : nameOffset(computeNameOffset(typeName)) {}
   XDLType(DataType t) : nameOffset(computeNameOffset(t)) {}
@@ -158,7 +160,9 @@ class XDLBuiltinType : public XDLType {
 class CompoundType : public XDLType {
  public:
   CompoundType(const std::string& name) : XDLType(name) {}
-  CompoundType() : XDLType() {}
+
+  // Why would we ever create a nameless compound type?
+  CompoundType() = delete;
   virtual void write(Buffer& buf) const = 0;
   virtual void writeMeta(Buffer& buf) const = 0;
 };
@@ -908,6 +912,7 @@ class Regex : public XDLType {
 class UnImpl : public XDLType {
  private:
  public:
+  UnImpl() : XDLType("UnImpl") {}
   uint32_t size() const override;
   void write(Buffer& buf) const override;
   void writeMeta(Buffer& buf) const override;
