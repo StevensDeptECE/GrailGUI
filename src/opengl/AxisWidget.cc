@@ -46,12 +46,17 @@ double AxisWidget::getMaxBound() { return maxBound; }
 
 void AxisWidget::addAxisTitle() {
   if (axisTitle.size()) {
-    t->addCentered(
-        x + w / 2,
-        y + h +
-            ((isVert) ? (bottomOffset -= 10 + m->getStyle()->f->getHeight())
-                      : (bottomOffset += 10 + m->getStyle()->f->getHeight())),
-        m->getStyle()->f, axisTitle.c_str(), axisTitle.size());
+    if (isVert) {
+      t->addCentered(x - 1.2 * m->getStyle()->f->getWidth(axisTitle.c_str(),
+                                                          axisTitle.size()),
+                     y + h / 2, m->getStyle()->f, axisTitle.c_str(),
+                     axisTitle.size());
+    } else {
+      t->addCentered(
+          x + w / 2,
+          y + h + (bottomOffset += 10 + m->getStyle()->f->getHeight()),
+          m->getStyle()->f, axisTitle.c_str(), axisTitle.size());
+    }
   }
 }
 
@@ -70,21 +75,38 @@ void LinearAxisWidget::setTickInterval(double tickInterval) {
 
 void LinearAxisWidget::init() {
   double scale = w / abs(maxBound - minBound);
-  bottomOffset = tickDrawSize + m->getStyle()->f->getHeight() *1.25;
-  if (isVert) bottomOffset = -bottomOffset/2;
+  bottomOffset = tickDrawSize + m->getStyle()->f->getHeight() * 1.25;
   m->drawLine(x, y + h, x + w, y + h, axisColor);
 
-  double counter = 0;
-  for (double tick = minBound; tick <= maxBound;
-       tick += tickInterval, counter += tickInterval) {
-    double draw = x + scale * counter;
+  if (isVert) {
+    double counter = 0;
+    for (double tick = maxBound; tick >= minBound;
+         tick -= tickInterval, counter += tickInterval) {
+      double draw = y + scale * counter;
 
-    if (showTicks)
-      m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
-                  tickColor);
+      if (showTicks)
+        m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
+                    tickColor);
 
-    t->addCentered(draw, y + h + bottomOffset, m->getStyle()->f, tick,
-                   tickFormat.width, tickFormat.precision);
+      t->add(x, draw + m->getStyle()->f->getHeight() / 2, m->getStyle()->f,
+             tick, tickFormat.width, tickFormat.precision);
+      // t->addCentered(x, draw + m->getStyle()->f->getHeight() / 2,
+      //                m->getStyle()->f, tick, tickFormat.width,
+      //                tickFormat.precision);
+    }
+  } else {
+    double counter = 0;
+    for (double tick = minBound; tick <= maxBound;
+         tick += tickInterval, counter += tickInterval) {
+      double draw = x + scale * counter;
+
+      if (showTicks)
+        m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
+                    tickColor);
+
+      t->addCentered(draw, y + h + bottomOffset, m->getStyle()->f, tick,
+                     tickFormat.width, tickFormat.precision);
+    }
   }
 
   addAxisTitle();
@@ -110,17 +132,36 @@ void LogAxisWidget::init() {
   if (isVert) bottomOffset = -bottomOffset;
   m->drawLine(x, y + h, x + w, y + h, axisColor);
 
-  double counter = 1;
-  for (double tick = minBound; tick <= maxBound;
-       tick *= tickInterval, counter *= tickInterval) {
-    double draw = x + scale * log(counter) * base;
+  if (isVert) {
+    double counter = 1;
+    for (double tick = maxBound; tick >= minBound;
+         tick /= tickInterval, counter *= tickInterval) {
+      double draw = y + scale * log(counter) * base;
 
-    if (showTicks)
-      m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
-                  tickColor);
+      if (showTicks)
+        m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
+                    tickColor);
 
-    t->addCentered(draw, y + h + bottomOffset, m->getStyle()->f, tick,
-                   tickFormat.width, tickFormat.precision);
+      t->add(x, draw + m->getStyle()->f->getHeight() / 2, m->getStyle()->f,
+             tick, tickFormat.width, tickFormat.precision);
+      // t->addCentered(x + bottomOffset, draw + m->getStyle()->f->getHeight() /
+      // 2,
+      //                m->getStyle()->f, tick, tickFormat.width,
+      //                tickFormat.precision);
+    }
+  } else {
+    double counter = 1;
+    for (double tick = minBound; tick <= maxBound;
+         tick *= tickInterval, counter *= tickInterval) {
+      double draw = x + scale * log(counter) * base;
+
+      if (showTicks)
+        m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
+                    tickColor);
+
+      t->addCentered(draw, y + h + bottomOffset, m->getStyle()->f, tick,
+                     tickFormat.width, tickFormat.precision);
+    }
   }
 
   addAxisTitle();
@@ -144,19 +185,36 @@ void TextAxisWidget::init() {
 
   m->drawLine(x, y + h, x + scale * maxBound, y + h, axisColor);
 
-  for (float tick = minBound + tickInterval; tick < maxBound;
-       tick += tickInterval) {
-    float draw = x + scale * tick;
+  if (isVert) {
+    for (float tick = maxBound - tickInterval; tick > minBound;
+         tick -= tickInterval) {
+      float draw = y + scale * tick;
 
-    if (showTicks)
-      m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
-                  tickColor);
+      if (showTicks)
+        m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
+                    tickColor);
 
-    string current = tickLabels[index];
-    t->addCentered(draw, y + h + bottomOffset, m->getStyle()->f,
-                   current.c_str(), strlen(current.c_str()));
+      string current = tickLabels[index];
+      t->add(x, draw, m->getStyle()->f, current.c_str(),
+             strlen(current.c_str()));
 
-    index++;
+      index++;
+    }
+  } else {
+    for (float tick = minBound + tickInterval; tick < maxBound;
+         tick += tickInterval) {
+      float draw = x + scale * tick;
+
+      if (showTicks)
+        m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
+                    tickColor);
+
+      string current = tickLabels[index];
+      t->addCentered(draw, y + h + bottomOffset, m->getStyle()->f,
+                     current.c_str(), strlen(current.c_str()));
+
+      index++;
+    }
   }
 
   addAxisTitle();
