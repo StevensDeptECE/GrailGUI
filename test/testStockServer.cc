@@ -1,7 +1,6 @@
-#include "csp/csp.hh"
-// our application errors must be defined before Ex.hh
 #include "csp/IPV4Socket.hh"
 #include "csp/XDLRequest.hh"
+#include "csp/csp.hh"
 #include "opengl/GLWin.hh"
 #include "xdl/List.hh"
 //#include "XDLServlet.hh"
