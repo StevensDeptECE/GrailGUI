@@ -49,7 +49,7 @@ void CandlestickChartWidget::createXAxis(AxisType a) {
     }; break;
 
     case TEXT: {
-      xAxis = new TextAxisWidget(mnew, tnew, x, y, w, h);
+      xAxis = new TextAxisWidget(mnew, tnew, x, y, w, h, xAxisTextStyle->f);
       xAxis->setTickLabels(names);
     }; break;
   }
@@ -64,7 +64,7 @@ void CandlestickChartWidget::createYAxis(AxisType a) {
 
   switch (a) {
     case LINEAR: {
-      yAxis = new LinearAxisWidget(rot90, t90, 0, 0, h, w);
+      yAxis = new LinearAxisWidget(rot90, t90, 0, 0, h, w, yAxisTextStyle->f);
     }; break;
 
     case LOGARITHMIC: {

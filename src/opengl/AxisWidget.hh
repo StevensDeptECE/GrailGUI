@@ -19,13 +19,13 @@ class AxisWidget : public Widget2D {
   std::string axisTitle;  // axis title
   glm::vec4 axisColor;    // color to draw the axis line
   glm::vec4 tickColor;    // color to draw the ticks
-
+  const Font *f;
   double bottomOffset;
   void addAxisTitle();
 
  public:
   AxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y, double w,
-             double h, double minBound = 0, double maxBound = 0,
+             double h, const Font *f, double minBound = 0, double maxBound = 0,
              double tickInterval = 1, double tickDrawSize = 5,
              bool showTicks = true, bool isVert = false,
              std::string axisTitle = "",
@@ -63,7 +63,7 @@ class LinearAxisWidget : public AxisWidget {
 
  public:
   LinearAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
-                   double w, double h);
+                   double w, double h, const Font *f);
   void setBounds(double minBound, double maxBound) override;
   void setTickInterval(double tickInterval) override;
   void init() override;
@@ -77,7 +77,7 @@ class LogAxisWidget : public AxisWidget {
 
  public:
   LogAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
-                double w, double h);
+                double w, double h, const Font *f);
   void setBounds(double minBound, double maxBound) override;
   void setTickInterval(double tickInterval) override;
   void init() override;
@@ -93,7 +93,7 @@ class TextAxisWidget : public AxisWidget {
 
  public:
   TextAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
-                 double w, double h);
+                 double w, double h, const Font *f);
   void setTickLabels(std::vector<std::string> tickLabels) override;
   void init() override;
 };

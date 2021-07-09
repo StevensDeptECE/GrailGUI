@@ -45,7 +45,7 @@ void BarChartWidget::createXAxis(AxisType a) {
     }; break;
 
     case TEXT: {
-      xAxis = new TextAxisWidget(mnew, tnew, x, y, w, h);
+      xAxis = new TextAxisWidget(mnew, tnew, x, y, w, h, xAxisTextStyle->f);
       xAxis->setTickLabels(names);
     }; break;
   }
@@ -60,11 +60,11 @@ void BarChartWidget::createYAxis(AxisType a) {
 
   switch (a) {
     case LINEAR: {
-      yAxis = new LinearAxisWidget(rot90, t90, 0, 0, h, w);
+      yAxis = new LinearAxisWidget(rot90, t90, 0, 0, h, w, yAxisStyle->f);
     }; break;
 
     case LOGARITHMIC: {
-      yAxis = new LogAxisWidget(rot90, t90, 0, 0, h, w);
+      yAxis = new LogAxisWidget(rot90, t90, 0, 0, h, w, yAxisStyle->f);
     }; break;
 
     case TEXT: {

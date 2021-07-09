@@ -15,6 +15,7 @@ class GraphWidget : public SuperWidget2D {
 
  protected:
   std::string graphTitle;
+  const Font *f;
   const Style *baseStyle;
   const Style *xAxisStyle;
   const Style *xAxisTextStyle;

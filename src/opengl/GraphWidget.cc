@@ -7,6 +7,7 @@ GraphWidget::GraphWidget(Canvas *c, double x, double y, double w, double h,
                          Style *xAxisTextStyle, Style *yAxisStyle,
                          Style *yAxisTextStyle)
     : SuperWidget2D(c, x, y, w, h),
+      f(c->getStyle()->f),
       baseStyle(baseStyle),
       xAxisTextStyle(xAxisStyle),
       xAxisStyle(xAxisTextStyle),
@@ -29,8 +30,8 @@ void GraphWidget::commonRender() {
 
   MultiText *t = c->addLayer(new MultiText(c, baseStyle));
   if (graphTitle.size())
-    t->addCentered(x + w / 2, y - m->getStyle()->f->getHeight(),
-                   m->getStyle()->f, graphTitle.c_str(), graphTitle.size());
+    t->addCentered(x + w / 2, y - f->getHeight(), f, graphTitle.c_str(),
+                   graphTitle.size());
 
   m->drawLine(x, y, x + w, y, grail::black);
   m->drawLine(x + w, y, x + w, y + h, grail::black);

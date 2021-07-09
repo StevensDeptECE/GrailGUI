@@ -5,24 +5,27 @@
 #include "opengl/Canvas.hh"
 #include "opengl/MultiShape2D.hh"
 
-class StyledMultiShape2D : public MultiShape2D {
+class StyledMultiShape2D : public MultiShape {
  private:
   glm::mat4 transform;
+  constexpr static uint32_t elemPerVert = 5;
 
  public:
   StyledMultiShape2D(Canvas* parent, const Style* s, float angle = 0,
-                     float x = 0, float y = 0, uint32_t vertCount = 1024,
-                     uint32_t solidIndCount = 1024,
+                     float x = 0, float y = 0, uint32_t lineWidth = 1,
+                     uint32_t vertCount = 1024, uint32_t solidIndCount = 1024,
                      uint32_t lineIndCount = 1024,
                      uint32_t pointIndCount = 1024)
-      : MultiShape2D(parent, s, vertCount, solidIndCount, lineIndCount,
-                     pointIndCount, 5),
+      : MultiShape(parent, lineWidth, vertCount, solidIndCount, lineIndCount,
+                   pointIndCount, 5),
         currentIndex(0),
         transform(1.0f) {
     startIndices.push_back(0);
     transform = glm::translate(transform, glm::vec3(x, y, 0));
     transform = glm::rotate(transform, angle, glm::vec3(0, 0, -1));
   }
+
+  uint32_t getPointIndex() { return MultiShape::getPointIndex(elemPerVert); }
 
   uint32_t addSector(float x, float y, float xRad, float yRad, float fromAngle,
                      float toAngle, float angleInc, const glm::vec4& c);
@@ -120,12 +123,12 @@ class StyledMultiShape2D : public MultiShape2D {
 
   // Markers for graphs
   // TODO: add hollow and filled variants of shapes
-  void drawCircleMarker(float x, float y, float size, glm::vec4 &color);
-  void drawTriangleMarker(float x, float y, float size, glm::vec4 &color);
-  void drawSquareMarker(float x, float y, float size, glm::vec4 &color);
-  void drawPentagonMarker(float x, float y, float size, glm::vec4 &color);
-  void drawHexagonMarker(float x, float y, float size, glm::vec4 &color);
-  void drawCrossMarker(float x, float y, float size, glm::vec4 &color);
+  void drawCircleMarker(float x, float y, float size, glm::vec4& color);
+  void drawTriangleMarker(float x, float y, float size, glm::vec4& color);
+  void drawSquareMarker(float x, float y, float size, glm::vec4& color);
+  void drawPentagonMarker(float x, float y, float size, glm::vec4& color);
+  void drawHexagonMarker(float x, float y, float size, glm::vec4& color);
+  void drawCrossMarker(float x, float y, float size, glm::vec4& color);
 
   // Point Primitives
   void rectanglePoints(float x, float y, float w, float h, const glm::vec4& c);

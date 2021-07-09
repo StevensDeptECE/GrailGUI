@@ -13,7 +13,7 @@ class testAxis : public GLWin {
 
   void testLinearAxis(StyledMultiShape2D *gui, MultiText *guiText,
                       const Style *style) {
-    LinearAxisWidget axis(gui, guiText, 600, 100, 400, 200);
+    LinearAxisWidget axis(gui, guiText, 600, 100, 400, 200, style->f);
     gui->drawRectangle(600, 100, 400, 200, grail::cyan);
     // linear specific
     axis.setBounds(0, 1);
@@ -28,7 +28,7 @@ class testAxis : public GLWin {
 
   void testLogAxis(StyledMultiShape2D *gui, MultiText *guiText,
                    const Style *style) {
-    LogAxisWidget axis(gui, guiText, 100, 400, 400, 200);
+    LogAxisWidget axis(gui, guiText, 100, 400, 400, 200, style->f);
     gui->drawRectangle(100, 400, 400, 200, grail::green);
     // log specific
     // axis.setNumTicks(3);
@@ -47,7 +47,7 @@ class testAxis : public GLWin {
   void testTextAxis(StyledMultiShape2D *gui, MultiText *guiText,
                     const Style *style) {
     vector<string> labels = {"A", "B", "C", "D", "E", "F"};
-    TextAxisWidget axis(gui, guiText, 100, 25, 300, 300);
+    TextAxisWidget axis(gui, guiText, 100, 25, 300, 300, style->f);
     gui->drawRectangle(100, 25, 300, 300, grail::blue);
 
     // text specific
@@ -71,7 +71,7 @@ class testAxis : public GLWin {
     StyledMultiShape2D *rot90 = c->addLayer(new StyledMultiShape2D(
         c, style, numbers::pi / 2, x - width, y + height));
     AngledMultiText *t90 = c->addLayer(new AngledMultiText(c, style, 0, x, y));
-    LinearAxisWidget axis(rot90, t90, 0, 0, width, height);
+    LinearAxisWidget axis(rot90, t90, 0, 0, width, height, style->f);
     // LogAxisWidget axis(rot90, t90, 0, 0, width, height);
     gui->drawRectangle(x, y, width, height, grail::darkred);
 

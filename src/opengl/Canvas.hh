@@ -43,6 +43,7 @@ class Canvas {
   Canvas& operator=(const Canvas& orig) = delete;
   uint32_t getWidth() const { return vpW; }
   uint32_t getHeight() const { return vpH; }
+
   GLWin* getWin() const { return w; };
   glm::mat4* getProjection() { return &projection; }
   void setProjection(const glm::mat4& proj) { projection = proj; }

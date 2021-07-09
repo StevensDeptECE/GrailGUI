@@ -36,7 +36,7 @@ void StyledMultiShape2D::render() {
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
 
-  glLineWidth(style->getLineWidth());
+  glLineWidth(MultiShape::lineWidth);
 
   // Draw Solids
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sbo);
@@ -128,7 +128,7 @@ void StyledMultiShape2D::fillRectangle(float x, float y, float w, float h,
   addStyledPoint(x, y + h, c);  // goes in counter-clockwise order
   addStyledPoint(x + w, y + h, c);
   addStyledPoint(x + w, y, c);
-  sAddQuadIndices();
+  sAddQuadIndices(elemPerVert);
   points = 4;
   numIndices.push_back(points);
   currentIndex += points;
@@ -143,7 +143,7 @@ void StyledMultiShape2D::fillRoundRect(float x, float y, float w, float h,
   addStyledPoint(x + w / 2, y + h / 2, c);
 
   uint32_t toAdd = addSector(x + rx, y + ry, rx, ry, 90, 180, 1, c);
-  sAddSectorIndices(centerIndex, toAdd);
+  sAddSectorIndices(centerIndex, toAdd, elemPerVert);
   currentIndex += toAdd;
   points += toAdd;
 
@@ -152,7 +152,7 @@ void StyledMultiShape2D::fillRoundRect(float x, float y, float w, float h,
   solidIndices.push_back(getPointIndex());
 
   toAdd = addSector(x + rx, y + h - ry, rx, ry, 180, 270, 1, c);
-  sAddSectorIndices(centerIndex, toAdd);
+  sAddSectorIndices(centerIndex, toAdd, elemPerVert);
   currentIndex += toAdd;
   points += toAdd;
 
@@ -161,7 +161,7 @@ void StyledMultiShape2D::fillRoundRect(float x, float y, float w, float h,
   solidIndices.push_back(getPointIndex());
 
   toAdd = addSector(x + w - rx, y + h - ry, rx, ry, 270, 360, 1, c);
-  sAddSectorIndices(centerIndex, toAdd);
+  sAddSectorIndices(centerIndex, toAdd, elemPerVert);
   currentIndex += toAdd;
   points += toAdd;
 
@@ -170,7 +170,7 @@ void StyledMultiShape2D::fillRoundRect(float x, float y, float w, float h,
   solidIndices.push_back(getPointIndex());
 
   toAdd = addSector(x + w - rx, y + ry, rx, ry, 0, 90, 1, c);
-  sAddSectorIndices(centerIndex, toAdd);
+  sAddSectorIndices(centerIndex, toAdd, elemPerVert);
   currentIndex += toAdd;
   points += toAdd;
 
@@ -190,7 +190,7 @@ void StyledMultiShape2D::fillTriangle(float x1, float y1, float x2, float y2,
   addStyledPoint(x1, y1, c);
   addStyledPoint(x2, y2, c);
   addStyledPoint(x3, y3, c);
-  sAddTriIndices();
+  sAddTriIndices(elemPerVert);
   points += 3;
   numIndices.push_back(points);
   currentIndex += points;
@@ -215,7 +215,7 @@ void StyledMultiShape2D::fillEllipse(float x, float y, float xRad, float yRad,
   addStyledPoint(x, y, c);
 
   uint32_t toAdd = addSector(x, y, xRad, yRad, 0, 360, angleInc, c);
-  sAddSectorIndices(centerIndex, toAdd);
+  sAddSectorIndices(centerIndex, toAdd, elemPerVert);
 
   points += 1 + toAdd;
   numIndices.push_back(points);
@@ -232,7 +232,7 @@ void StyledMultiShape2D::drawRectangle(float x, float y, float w, float h,
   addStyledPoint(x, y + h, c);  // goes in counter-clockwise order
   addStyledPoint(x + w, y + h, c);
   addStyledPoint(x + w, y, c);
-  lAddQuadIndices();
+  lAddQuadIndices(elemPerVert);
   points += 4;
   numIndices.push_back(points);
   currentIndex += points;
@@ -248,7 +248,7 @@ void StyledMultiShape2D::drawRoundRect(float x, float y, float w, float h,
   addStyledPoint(x + w / 2, y + h / 2, c);
 
   uint32_t toAdd = addSector(x + rx, y + ry, rx, ry, 90, 180, 1, c);
-  lAddSectorIndices(centerIndex, toAdd);
+  lAddSectorIndices(centerIndex, toAdd, elemPerVert);
   currentIndex += toAdd;
   points += toAdd;
 
@@ -256,7 +256,7 @@ void StyledMultiShape2D::drawRoundRect(float x, float y, float w, float h,
   lineIndices.push_back(getPointIndex());
 
   toAdd = addSector(x + rx, y + h - ry, rx, ry, 180, 270, 1, c);
-  lAddSectorIndices(centerIndex, toAdd);
+  lAddSectorIndices(centerIndex, toAdd, elemPerVert);
   currentIndex += toAdd;
   points += toAdd;
 
@@ -264,7 +264,7 @@ void StyledMultiShape2D::drawRoundRect(float x, float y, float w, float h,
   lineIndices.push_back(getPointIndex());
 
   toAdd = addSector(x + w - rx, y + h - ry, rx, ry, 270, 360, 1, c);
-  lAddSectorIndices(centerIndex, toAdd);
+  lAddSectorIndices(centerIndex, toAdd, elemPerVert);
   currentIndex += toAdd;
   points += toAdd;
 
@@ -272,7 +272,7 @@ void StyledMultiShape2D::drawRoundRect(float x, float y, float w, float h,
   lineIndices.push_back(getPointIndex());
 
   toAdd = addSector(x + w - rx, y + ry, rx, ry, 0, 90, 1, c);
-  lAddSectorIndices(centerIndex, toAdd);
+  lAddSectorIndices(centerIndex, toAdd, elemPerVert);
   currentIndex += toAdd;
   points += toAdd;
 
@@ -292,7 +292,7 @@ void StyledMultiShape2D::drawTriangle(float x1, float y1, float x2, float y2,
   addStyledPoint(x1, y1, c);
   addStyledPoint(x2, y2, c);
   addStyledPoint(x3, y3, c);
-  lAddTriIndices();
+  lAddTriIndices(elemPerVert);
 
   points += 3;
   numIndices.push_back(points);
@@ -323,7 +323,7 @@ void StyledMultiShape2D::drawEllipse(float x, float y, float xRad, float yRad,
   addStyledPoint(x, y, c);
 
   uint32_t toAdd = addSector(x, y, xRad, yRad, 0, 360, angleInc, c);
-  lAddSectorIndices(centerIndex, toAdd);
+  lAddSectorIndices(centerIndex, toAdd, elemPerVert);
   lineIndices.push_back(getPointIndex() - 1);
   lineIndices.push_back(centerIndex + 2);
 
@@ -335,8 +335,8 @@ void StyledMultiShape2D::drawEllipse(float x, float y, float xRad, float yRad,
 
 void StyledMultiShape2D::drawLine(float x1, float y1, float x2, float y2,
                                   const glm::vec4& c) {
-  uint32_t points = 0;
   uint32_t ind = getPointIndex();
+  uint32_t points = 0;
 
   addStyledPoint(x1, y1, c);
   addStyledPoint(x2, y2, c);
@@ -492,7 +492,7 @@ void StyledMultiShape2D::rectanglePoints(float x, float y, float w, float h,
   addStyledPoint(x, y + h, c);  // goes in counter-clockwise order
   addStyledPoint(x + w, y + h, c);
   addStyledPoint(x + w, y, c);
-  pAddQuadIndices();
+  pAddQuadIndices(elemPerVert);
 
   points = 4;
   numIndices.push_back(points);
@@ -509,22 +509,22 @@ void StyledMultiShape2D::roundRectPoints(float x, float y, float w, float h,
   addStyledPoint(x + w / 2, y + h / 2, c);
 
   uint32_t toAdd = addSector(x + rx, y + ry, rx, ry, 90, 180, 1, c);
-  pAddSectorIndices(centerIndex, toAdd);
+  pAddSectorIndices(centerIndex, toAdd, elemPerVert);
   currentIndex += toAdd;
   points += toAdd;
 
   toAdd = addSector(x + rx, y + h - ry, rx, ry, 180, 270, 1, c);
-  pAddSectorIndices(centerIndex, toAdd);
+  pAddSectorIndices(centerIndex, toAdd, elemPerVert);
   currentIndex += toAdd;
   points += toAdd;
 
   toAdd = addSector(x + w - rx, y + h - ry, rx, ry, 270, 360, 1, c);
-  pAddSectorIndices(centerIndex, toAdd);
+  pAddSectorIndices(centerIndex, toAdd, elemPerVert);
   currentIndex += toAdd;
   points += toAdd;
 
   toAdd = addSector(x + w - rx, y + ry, rx, ry, 0, 90, 1, c);
-  pAddSectorIndices(centerIndex, toAdd);
+  pAddSectorIndices(centerIndex, toAdd, elemPerVert);
   currentIndex += toAdd;
   points += toAdd;
 
@@ -542,7 +542,7 @@ void StyledMultiShape2D::trianglePoints(float x1, float y1, float x2, float y2,
   addStyledPoint(x1, y1, c);
   addStyledPoint(x2, y2, c);
   addStyledPoint(x3, y3, c);
-  pAddTriIndices();
+  pAddTriIndices(elemPerVert);
 
   points += 3;
   numIndices.push_back(points);
@@ -559,7 +559,7 @@ void StyledMultiShape2D::polygonPoints(float x, float y, float xRad, float yRad,
 
   uint32_t toAdd = addSector(x, y, xRad, yRad, 0, 360, 360 / n, c);
   points += toAdd;
-  pAddSectorIndices(centerIndex, toAdd);
+  pAddSectorIndices(centerIndex, toAdd, elemPerVert);
 
   points += 1;
   numIndices.push_back(points);
@@ -576,7 +576,7 @@ void StyledMultiShape2D::circlePoints(float x, float y, float rad,
 
   uint32_t toAdd = addSector(x, y, rad, rad, 0, 360, angleInc, c);
   points += toAdd;
-  pAddSectorIndices(centerIndex, toAdd);
+  pAddSectorIndices(centerIndex, toAdd, elemPerVert);
 
   points += 1;
   numIndices.push_back(points);
@@ -592,7 +592,7 @@ void StyledMultiShape2D::ellipsePoints(float x, float y, float xRad, float yRad,
   addStyledPoint(x, y, c);
 
   uint32_t toAdd = addSector(x, y, xRad, yRad, 0, 360, angleInc, c);
-  pAddSectorIndices(centerIndex, toAdd);
+  pAddSectorIndices(centerIndex, toAdd, elemPerVert);
 
   points += 1;
   numIndices.push_back(points);
