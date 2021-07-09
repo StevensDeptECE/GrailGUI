@@ -710,9 +710,9 @@ void GLWin::loadBindings() {
   // bind2DOrtho();
 }
 
-inline double GLWin::getTime() { return glfwGetTime(); }
+double GLWin::getTime() { return glfwGetTime(); }
 
-inline bool GLWin::checkUpdate(double dt) {
+bool GLWin::checkUpdate(double dt) {
   if (glfwGetTime() > lastRenderTime + dt) {
     lastRenderTime = glfwGetTime();
     return true;

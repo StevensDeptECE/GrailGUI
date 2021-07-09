@@ -327,6 +327,6 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   static void pressOnWidget(GLWin* w);
   static void releaseWidget(GLWin* w);
 
-  inline double getTime();
-  inline bool checkUpdate(double dt);
+  double getTime();
+  bool checkUpdate(double dt);
 };
