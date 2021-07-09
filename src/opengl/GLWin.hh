@@ -109,12 +109,12 @@ class GLWin {
      change in a mode, a second input map would override the first, allowing
      different mappings for different states.
   */
-  static std::array<uint32_t, 32768> inputMap;
+  inline static std::array<uint32_t, 32768> inputMap;
   /*
         map an integer code to a function to execute
         the actions are all the publicly available performance the code can DO
   */
-  static std::array<std::function<void()>, 4096> actionMap;
+  inline static std::array<std::function<void()>, 4096> actionMap;
   static HashMap<uint32_t> actionNameMap;
   uint32_t lookupAction(const char actionName[]);
   //	static GLWin* w;
@@ -147,8 +147,8 @@ class GLWin {
 #define quote(a) #a
 #define registerAction(security, func) \
   internalRegisterAction(quote(func), security, func)
-#define bindEvent(inp, func) \
-  setEvent(inp, internalRegisterAction(quote(func), Security::SAFE, func))
+#define bindEvent(inp, func, ptr) \
+  registerCallback(inp, quote(func), Security::SAFE, func, ptr)
   // Render control
   //  static uint32_t render_done, block_render;
   double time() const { return t; }
@@ -267,10 +267,13 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   static void classInit();
   static void classCleanup();
 
-  uint32_t register_callback(uint32_t input, const char name[], Security s,
-                             void (GLWin::*callback)());
-  uint32_t register_callback(uint32_t input, const char name[], Security s,
-                             std::function<void()> action);
+  template <class T>
+  uint32_t registerCallback(uint32_t input, const char name[], Security s,
+                            void (T::*callback)(), T* ptr);
+  uint32_t registerCallback(uint32_t input, const char name[], Security s,
+                            void (GLWin::*callback)());
+  uint32_t registerCallback(uint32_t input, const char name[], Security s,
+                            std::function<void()> action);
   void bind2DOrtho();
   void bind3D();
 
