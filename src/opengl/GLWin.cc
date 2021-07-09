@@ -123,7 +123,7 @@ void GLWin::mouseButtonCallback(GLFWwindow *win, int button, int action,
 }
 
 void GLWin::scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
-  cout << "xoffset=" << xoffset << " yoffset=" << yoffset << '\n';
+  //cout << "xoffset=" << xoffset << " yoffset=" << yoffset << '\n';
   // todo: we would have to copy offsets into the object given the way this is
   uint32_t input = 400;
   doit(winMap[win], input + int(yoffset));
@@ -213,6 +213,7 @@ void GLWin::startWindow() {
   glfwMakeContextCurrent(win);
   glfwSetWindowSizeCallback(win, resize);
   //	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+  
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     throw "Failed to initialize GLAD";
@@ -267,13 +268,13 @@ void GLWin::baseInit() {
   glDebugMessageCallback(messageCallback, 0);
   glLineWidth(1);
   Shader::setDir(prefs.getShaderDir());
-  Shader::load("solid.bin", "common.vs", "common.fs");    // Solid Color
-  Shader::load("pervert.bin", "vColor.vs", "common.fs");  // Color per vertex
-  Shader::load("text.bin", "text.vs", "text.fs");         // Texture for text
-  Shader::load("img.bin", "Texture.vs", "Texture.fs");    // Texture for images
-  Shader::load("cursor.bin", "Cursor.vs", "common.fs");   // Texture for images
-  Shader::load("multiText.bin", "MultiTexture.vs",
-               "MultiTexture.fs");  // MultiTexture for shapes
+  Shader::load("solid.bin", "common.vert", "common.frag");    // Solid Color
+  Shader::load("pervert.bin", "vColor.vert", "common.frag");  // Color per vertex
+  Shader::load("text.bin", "text.vert", "text.frag");         // Texture for text
+  Shader::load("img.bin", "Texture.vert", "Texture.frag");    // Texture for images
+  Shader::load("cursor.bin", "Cursor.vert", "common.frag");   // Texture for images
+  Shader::load("multiText.bin", "MultiTexture.vert",
+               "MultiTexture.frag");  // MultiTexture for shapes
   for (int i = 0; i < tabs.size(); ++i) {
     tabs[i]->init();
   }
@@ -605,7 +606,7 @@ uint32_t GLWin::internalRegisterAction(const char name[], Security s,
     cerr << "Error! action Table is full for security " << securityIndex
          << '\n';
   }
-  cout << "Setting action " << actNum << " for action " << name << '\n';
+  //cout << "Setting action " << actNum << " for action " << name << '\n';
   setAction(actNum, action);
   actionNameMap[name] = actNum;
   return actNum;

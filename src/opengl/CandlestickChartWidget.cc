@@ -123,8 +123,8 @@ void CandlestickChartWidget::init() {
     double yBottomLine = currentBoxData.at(0) + correction;
     double yBoxTop = currentBoxData.at(2) + correction;
     double yBoxBottom = currentBoxData.at(1) + correction;
-    cout << "Max: " << yTopLine << "\nOpen: " << yBoxTop
-         << "\nClose: " << yBoxBottom << "\nMin: " << yBottomLine << "\n";
+    // cout << "Max: " << yTopLine << "\nOpen: " << yBoxTop
+    //      << "\nClose: " << yBoxBottom << "\nMin: " << yBottomLine << "\n";
 
     // central lines
     lines->drawLine(xLocation + halfBoxWidth, yBottomLine,
