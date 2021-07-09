@@ -187,12 +187,10 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const char title[],
       GL_TRUE);  // uncomment this statement to fix compilation on OS X
 #endif
   // all static library initializations go here
-  if (!hasBeenInitialized) {
-    HashMap<uint32_t> actionNameMap(64, 4096);
-    GLWin::classInit();
-    hasBeenInitialized = true;
-  }
+  if (!ranStaticInits) GLWin::classInit();
 }
+HashMap<uint32_t> GLWin::actionNameMap(64, 4096);
+bool GLWin::ranStaticInits = false;
 bool GLWin::hasBeenInitialized = false;
 GLWin::GLWin(uint32_t w, uint32_t h, uint32_t bgColor, uint32_t fgColor,
              const char title[], uint32_t exitAfter)
@@ -623,13 +621,6 @@ void GLWin::bind(uint32_t input, const char actionName[]) {
   setEvent(input, lookupAction(actionName));
 }
 
-template <class T>
-uint32_t GLWin::registerCallback(uint32_t input, const char name[], Security s,
-                                 void (T::*callback)(), T *ptr) {
-  auto cb_funcptr = std::bind(callback, ptr);
-  return registerCallback(input, name, s, cb_funcptr);
-}
-
 uint32_t GLWin::registerCallback(uint32_t input, const char name[], Security s,
                                  void (GLWin::*callback)()) {
   auto cb_funcptr = std::bind(callback, this);
@@ -714,7 +705,7 @@ void GLWin::loadBindings() {
   // TODO: How to define actions that take parameters, in this case a string?
   //  registerAction(Security::SAFE, playSound);
 
-  bind3D();
+  // bind3D();
   // bind2DOrtho();
 }
 

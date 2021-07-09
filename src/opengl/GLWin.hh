@@ -40,6 +40,7 @@ class GLWin {
   constexpr static uint32_t MULTI_TEXTURE_SHADER = 5;
 
  private:
+  static bool ranStaticInits;
   static bool hasBeenInitialized;
   static std::unordered_map<GLFWwindow*, GLWin*> winMap;
   const char* title;
@@ -267,13 +268,16 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   static void classInit();
   static void classCleanup();
 
-  template <class T>
-  uint32_t registerCallback(uint32_t input, const char name[], Security s,
-                            void (T::*callback)(), T* ptr);
   uint32_t registerCallback(uint32_t input, const char name[], Security s,
                             void (GLWin::*callback)());
   uint32_t registerCallback(uint32_t input, const char name[], Security s,
                             std::function<void()> action);
+  template <typename T>
+  uint32_t registerCallback(uint32_t input, const char name[], Security s,
+                            void (T::*callback)(), T* ptr) {
+    auto cb_funcptr = std::bind(callback, ptr);
+    return registerCallback(input, name, s, cb_funcptr);
+  }
   void bind2DOrtho();
   void bind3D();
 
