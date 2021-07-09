@@ -86,7 +86,7 @@ class TestWidgets : public GLWin {
                            grail::cyan, grail::purple, grail::darkblue};
 
     GapMinderWidget chart(gui, guiText, 550, 320, 400, 200, x, y);
-    chart.chart(y, x, s, 50, c);
+    chart.chart(y, x, s, 50, 50, c);
 
     chart.setTitle("Title");
     chart.init();
