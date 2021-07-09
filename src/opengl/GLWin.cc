@@ -353,6 +353,7 @@ void GLWin::mainLoop() {
     //    bool modified = Queue::dump_render();
     //    dt = current - lastFrame;
     float startRender = glfwGetTime();
+    lastRenderTime = startRender;
     glfwPollEvents();  // Check and call events
 
     if (dirty) {
@@ -709,4 +710,12 @@ void GLWin::loadBindings() {
   // bind2DOrtho();
 }
 
-double GLWin::getTime() { return glfwGetTime(); }
+inline double GLWin::getTime() { return glfwGetTime(); }
+
+inline bool GLWin::checkUpdate(double dt) {
+  if (glfwGetTime() > lastRenderTime + dt) {
+    lastRenderTime = glfwGetTime();
+    return true;
+  }
+  return false;
+}

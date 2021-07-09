@@ -51,6 +51,7 @@ class GLWin {
   uint8_t* saveBuffer;  // buffer used to save screenshots
   uint32_t saveW, saveH;
   uint32_t frameNum;
+  double lastRenderTime;  // Stores last time of update
   char frameName[32];
   DynArray<Tab*> tabs;  // list of web pages, ie tabs
   Tab* current;         // current (active) tab
@@ -326,5 +327,6 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   static void pressOnWidget(GLWin* w);
   static void releaseWidget(GLWin* w);
 
-  double getTime();
+  inline double getTime();
+  inline bool checkUpdate(double dt);
 };

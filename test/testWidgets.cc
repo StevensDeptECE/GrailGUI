@@ -147,8 +147,8 @@ class TestWidgets : public GLWin {
 
     testScrollBar(gui, guiText);
 
-    bindEvent(401, &TestWidgets::scrollUp, this);
-    bindEvent(399, &TestWidgets::scrollDown, this);
+    bindEvent(Inputs::WHEELUP, &TestWidgets::scrollUp, this);
+    bindEvent(Inputs::WHEELDOWN, &TestWidgets::scrollDown, this);
   }
 
   void update() { scrollbar->update(); }

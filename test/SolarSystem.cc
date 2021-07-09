@@ -1,3 +1,4 @@
+#include <numbers>
 #include <string>
 #include <vector>
 
@@ -41,7 +42,7 @@ Body::Body(Canvas* c, Style* s, Camera* cam, const std::string& name,
       orbitalRadius(orbitalRadius),
       orbitalFreq(1.0 / orbitalPeriod),
       rotationFreq(1.0 / rotationalPeriod) {
-  phase = PI<double>;
+  phase = numbers::pi;
   MultiShape3D* body = c->addLayer(new MultiShape3D(c, cam, textureFile, &t));
   body->genOBJModel("models/sphere.obj");
   t.ident();
@@ -79,8 +80,11 @@ class SolarSystem : public GLWin {
   Camera* cam;
 
  public:
-  void panBack() { cam->translate(0, 0, -1); }
-  void panForward() { cam->translate(0, 0, +1); }
+  // TODO; Implement polar coordinates???
+  // TODO: Implement panUp/Down for 2D-like views
+  // TODO: Follow planets
+  void panBack() { cam->translate(0, 0, +1); }
+  void panForward() { cam->translate(0, 0, -1); }
   void panRight() { cam->translate(+1, 0, 0); }
   void panLeft() { cam->translate(-1, 0, 0); }
 
