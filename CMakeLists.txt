@@ -72,7 +72,7 @@ find_package(glfw3 REQUIRED)
 find_package(Freetype REQUIRED)
 
 # MPV
-find_package(MPV REQUIRED)
+find_package(MPV)
 
 # GLM
 FetchContent_Declare(
