@@ -10,24 +10,25 @@ application programmers write their own security. This was based on my experienc
 
 The original project stripped down lighthttpd to the bone, implementing in very tight C++, and could execute in-memory C++ servlets.
 It became clear that the most performance could be improved was a small multiple on the server, because the limiting factor is network performance.
-The CPU was quite impressive. We could run easily in 50k, the speed was high on small CPUs, but the technology would not be transformative.
+The drop in CPU utilization was quite impressive. We could run easily in 60k, and since we required so little CPU we could achieve high speed on small CPUs, but the technology would not be transformative.
 
 The next conceptual leap was to define a new way of writing web programs, with the specific goal of making transactional web sites
 (the kind you need to create a login for) to make the data transmission more efficient. There are two main keys to 
-web performance: send data in binary, so that the server has less to do and latency is reduced, and bandwidth is reduced, and more important,
+web performance: send data in binary, so that the server does less work, latency is reduced and bandwidth is reduced. Second, and more important,
 send less data! The key to sending less data is to store data locally on the client, and not ask again for data the client already has. This is not
 caching. Instead, a web app should be allocated storage, and it should store data locally. This local storage must of course be kept secure, so encryption is vital. Right now, the only way to implement this approach would be writing a custom app which is both expensive and not portable. There are some portable toolkits.
 
-To defend against phishing attacks, CSP was conceived to automatically create public/private keypairs for each website. The user never logs into a website. Instead the user types in their password to unlock the internal "real" password for the site, which they do not know. Hopefully second factor authentication will be added to harden the repository of keys.
+To defend against phishing attacks, CSP was conceived to automatically create public/private keypairs for each website. The user never logs into a website. Instead the user types in their password to unlock the internal "real" password for the site, which they do not know. This concept is still not implemented and there is a great deal more to it, beyond the scope of this introduction.
 
 This is where the concept stood in early 2019. At this point, thinking about how web programming had largely displaced most GUI development, 
 it occurred to me that if a web programming system could be made efficient enough, perhaps there could be only a single, portable GUI model.
 It could work across multiple languages. For any menu-based program, the GUI doesn't even need to be in the same memory space as the executable.
-A thought came, unbidden "That would be the holy grail for user-interface design."
+A gui merely has to bind functions in a target executable to input events.
+A thought came, unbidden "A single GUI which would work on the web or linked into an application like a CAD package would be the holy grail for user-interface design." That's the origin of the name Grail.
 
 Today, we are focusing on the client of Grail, implementing in C++ and OpenGL to create an engine that renders from 10 to 100 times faster than
 the Chrome browser, that uses a tiny fraction of the memory of a browser, that transmits data in binary using a data definition language called XDL, derived from IDL used in CORBA. A tiny codebase (630kb) delivers the ability to render text, 2d graphics, 3d graphics, animation and more.
-We have widgets defined which can 
+We have widgets defined which can graph data as an example, and we are working on GUI widgets like menus.
 
 ## Goals of Grail
 
@@ -37,6 +38,7 @@ at equivalent experience for a user of a transactional website, while providing 
 1. Provide access to full OpenGL control of video performance, but create optimal drawing wrapper objects for common cases like 2d drawings on a web page that do not require knowledge of the OpenGL layer.
 1. Create a document object that supports uniform, multiple kinds of media at scale, rendering instantly.
 1. Create an editor capable of editing large-scale (1 Gb+) documents with instant response.
+1. Add video and audio capability so that Grail programs can display movies and implement video chat systems.
 1. Create a security engine that automatically generates public/private keys and manages logins to websites so that passwords are not used to log in to web sites. 
 1. Maintain a repository of passwords encrypted on the client that can be securely synchronized with other clients and backed up to the cloud.
 1. Create a uniform method of multiple user inputs via the netowork so that any grail can invite other grail users to use keyboard and mouse and type collaboratively.
@@ -46,7 +48,7 @@ at equivalent experience for a user of a transactional website, while providing 
 1. Reduce the CPU load of a server by a factor of 1000, meaning that the number of servers can be reduced by a factor of 100 while still dramatically improving performance. This could actually have a measurable effect on world electricity consumption if it were adopted by major
 transactional web systems.
 
-Currently, the world uses web browsers and JavaScript as the engine to achieve all the above. Unfortunately web browsers as currently implemented are a security nightmare. Arbitrary JavaScript code, run on browsers is a prescription for theft of data, privacy invasion, and malware. JavaScript is a huge security problem, and a factor of 1000 slower than Grail in many cases. Since performance of CPUs is no longer scaling rapidly, re-implementing the core engine of the web can not only make the internet a more secure place, it can provide the boost in productivity and performance that hardware is no longer providing. 
+Currently, the world uses web browsers and JavaScript as the engine to achieve all the above. Unfortunately web browsers as currently implemented are a security nightmare. Arbitrary JavaScript code, run on browsers is a prescription for theft of data, privacy invasion, and malware. JavaScript is a huge security problem, and a factor of 1000 slower than Grail in many cases. The codebase for chrome is 30Gb. It is safe to say that no one understands what is in it, and since people can add plugins that can intercept requests, it is not safe to use Chrome for banking and other high-security applications. Since performance of CPUs is no longer scaling rapidly, re-implementing the core engine of the web can not only make the internet a more secure place, it can provide the boost in productivity and performance that hardware is no longer providing. 
 
 ## Development History
 
