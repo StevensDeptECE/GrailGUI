@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 
+#include <array>
+#include <functional>
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
 #include <unordered_map>
@@ -10,6 +12,7 @@
 #include "opengl/GLWinFonts.hh"
 #include "opengl/Shader.hh"
 #include "util/DynArray.hh"
+#include "util/HashMap.hh"
 class GLFWwindow;  // forward declaration, simplify: include file not needed
                    // here
 class GLWin;
@@ -106,13 +109,13 @@ class GLWin {
      change in a mode, a second input map would override the first, allowing
      different mappings for different states.
   */
-  static uint32_t inputMap[32768];
+  static std::array<uint32_t, 32768> inputMap;
   /*
         map an integer code to a function to execute
         the actions are all the publicly available performance the code can DO
   */
-  static Action actionMap[4096];  // TODO: hardcoded maximum size for now
-  static std::unordered_map<std::string, int> actionNameMap;
+  static std::array<std::function<void()>, 4096> actionMap;
+  static HashMap<uint32_t> actionNameMap;
   uint32_t lookupAction(const char actionName[]);
   //	static GLWin* w;
   void setEvent(uint32_t e, uint32_t a) { inputMap[e] = a; }
@@ -121,19 +124,23 @@ class GLWin {
     setEvent((mod << 9) | key, a);
   }
 
-  void setAction(uint32_t a, Action action) { actionMap[a] = action; }
+  void setAction(uint32_t a, std::function<void()> action) {
+    GLWin::actionMap[a] = action;
+  }
   enum class Security {
     SAFE,        // safe for a remote server to trigger this function
     RESTRICTED,  // only the local user can execute this function
     ASK  // a remote user or server may request this but it will trigger a popup
          // asking local user to approve
   };
-  uint32_t numActions[3];  // keep track of how many of each kind of operations
-                           // there are
+  std::array<uint32_t, 3> numActions;  // keep track of how many of each kind of
+                                       // operations there are
   void loadBindings();
-  uint32_t internalRegisterAction(
-      const char name[], Security s,
-      Action action);  // registerAction("myFunc", Security::RESTRICTED, myFunc)
+  uint32_t internalRegisterAction(const char name[], Security s,
+                                  void (GLWin::*action)());
+  uint32_t internalRegisterAction(const char name[], Security s,
+                                  std::function<void()> action);
+  // registerAction("myFunc", Security::RESTRICTED, myFunc)
   // bind an input event to an action Name. looks up offsets into arrays
   void bind(uint32_t input, const char actionName[]);
   void bind(const char inputCmd[], const char actionName[]);
@@ -260,53 +267,54 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   static void classInit();
   static void classCleanup();
 
+  uint32_t register_callback(uint32_t input, const char name[], Security s,
+                             void (GLWin::*callback)());
+  uint32_t register_callback(uint32_t input, const char name[], Security s,
+                             std::function<void()> action);
   void bind2DOrtho();
   void bind3D();
 
   // build in actions
-  static void quit(GLWin* w);
-  static void refresh(GLWin* w);
-  static void saveFrame(GLWin* w);
-  static void resetCamera(GLWin* w);
+  void quit();
+  void refresh();
+  void saveFrame();
+  void resetCamera();
 
-  static void gotoStartTime(GLWin* w);
-  static void gotoEndTime(GLWin* w);
-  static void speedTime(GLWin* w);
-  static void slowTime(GLWin* w);
-  static void resetTimeDilation(GLWin* w);
+  void gotoStartTime();
+  void gotoEndTime();
+  void speedTime();
+  void slowTime();
+  void resetTimeDilation();
 
   void clearSelected(GLWin* w);
 
-  static void resetProjection3D(GLWin* w);
-  static void zoomOut3D(GLWin* w);
-  static void zoomIn3D(GLWin* w);
-  static void panRight3D(GLWin* w);
-  static void panLeft3D(GLWin* w);
-  static void panUp3D(GLWin* w);
-  static void panDown3D(GLWin* w);
-  static void selectObject3D(GLWin* w);
-  static void addSelectObject3D(GLWin* w);
-  static void toggleSelectObject3D(GLWin* w);
+  void resetProjection3D();
+  void zoomOut3D();
+  void zoomIn3D();
+  void panRight3D();
+  void panLeft3D();
+  void panUp3D();
+  void panDown3D();
+  void selectObject3D();
+  void addSelectObject3D();
+  void toggleSelectObject3D();
 
-  static void resetProjection2D(GLWin* w);
-  static void zoomOut2D(GLWin* w);
-  static void zoomIn2D(GLWin* w);
-  static void panRight2D(GLWin* w);
-  static void panLeft2D(GLWin* w);
-  static void panUp2D(GLWin* w);
-  static void panDown2D(GLWin* w);
+  void resetProjection2D();
+  void zoomOut2D();
+  void zoomIn2D();
+  void panRight2D();
+  void panLeft2D();
+  void panUp2D();
+  void panDown2D();
 
-  static void gotoTop(GLWin* w);
-  static void gotoBottom(GLWin* w);
-  static void scrollUp(GLWin* w);
-  static void scrollDown(GLWin* w);
-  static void pageUp(GLWin* w);
-  static void pageDown(GLWin* w);
-  static void sectionUp(GLWin* w);
-  static void sectionDown(GLWin* w);
-
-  static void playSound(GLWin* w, const char name[]);
-  static void stopSound(GLWin* w);
+  void gotoTop();
+  void gotoBottom();
+  void scrollUp();
+  void scrollDown();
+  void pageUp();
+  void pageDown();
+  void sectionUp();
+  void sectionDown();
 
   static void pressOnWidget(GLWin* w);
   static void releaseWidget(GLWin* w);

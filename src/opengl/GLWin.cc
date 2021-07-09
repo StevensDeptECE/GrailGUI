@@ -41,9 +41,6 @@ default_random_engine gen;
 uniform_real_distribution<double> u01(0.0, 1.0);
 glm::mat4 GLWin::projection;
 
-uint32_t GLWin::inputMap[32768];
-Action GLWin::actionMap[4096];
-
 /* GLFW Callbacks */
 
 void GLWin::cursorPositionCallback(GLFWwindow *win, double xpos, double ypos) {
@@ -94,12 +91,12 @@ void GLWin::windowFocusCallback(GLFWwindow *win, int focused) {
 inline void GLWin::doit(GLWin *w, uint32_t input) {
   if (w == nullptr) {
     cerr << "no mapping for window to GLWin\n";
-    return;  // TODO: come up with better response? Should never
-  }          // happen
+    throw Ex1(Errcode::UNDEFINED);
+  }
   uint32_t act = GLWin::inputMap[input];
   if (act == 0) return;
-  Action a = GLWin::actionMap[act];
-  a(w);  // execute the action
+  auto a = GLWin::actionMap[act];
+  a();  // execute the action
 }
 
 void GLWin::keyCallback(GLFWwindow *win, int key, int scancode, int action,
@@ -123,7 +120,7 @@ void GLWin::mouseButtonCallback(GLFWwindow *win, int button, int action,
 }
 
 void GLWin::scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
-  //cout << "xoffset=" << xoffset << " yoffset=" << yoffset << '\n';
+  // cout << "xoffset=" << xoffset << " yoffset=" << yoffset << '\n';
   // todo: we would have to copy offsets into the object given the way this is
   uint32_t input = 400;
   doit(winMap[win], input + int(yoffset));
@@ -213,7 +210,6 @@ void GLWin::startWindow() {
   glfwMakeContextCurrent(win);
   glfwSetWindowSizeCallback(win, resize);
   //	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-  
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     throw "Failed to initialize GLAD";
@@ -268,11 +264,14 @@ void GLWin::baseInit() {
   glDebugMessageCallback(messageCallback, 0);
   glLineWidth(1);
   Shader::setDir(prefs.getShaderDir());
-  Shader::load("solid.bin", "common.vert", "common.frag");    // Solid Color
-  Shader::load("pervert.bin", "vColor.vert", "common.frag");  // Color per vertex
-  Shader::load("text.bin", "text.vert", "text.frag");         // Texture for text
-  Shader::load("img.bin", "Texture.vert", "Texture.frag");    // Texture for images
-  Shader::load("cursor.bin", "Cursor.vert", "common.frag");   // Texture for images
+  Shader::load("solid.bin", "common.vert", "common.frag");  // Solid Color
+  Shader::load("pervert.bin", "vColor.vert",
+               "common.frag");                         // Color per vertex
+  Shader::load("text.bin", "text.vert", "text.frag");  // Texture for text
+  Shader::load("img.bin", "Texture.vert",
+               "Texture.frag");  // Texture for images
+  Shader::load("cursor.bin", "Cursor.vert",
+               "common.frag");  // Texture for images
   Shader::load("multiText.bin", "MultiTexture.vert",
                "MultiTexture.frag");  // MultiTexture for shapes
   for (int i = 0; i < tabs.size(); ++i) {
@@ -399,29 +398,27 @@ void GLWin::random(glm::vec3 &v) {
   v.x = u01(gen), v.y = u01(gen), v.y = u01(gen);
 }
 
-void GLWin::quit(GLWin *w) {
+void GLWin::quit() {
   exit(0);  // TODO: check for cleanup first?
 }
 
-void GLWin::refresh(GLWin *w) { w->setDirty(); }
+void GLWin::refresh() { setDirty(); }
 
-void GLWin::saveFrame(GLWin *w) {
-  if (w->saveBuffer != nullptr && w->saveW != w->width ||
-      w->saveH != w->height) {
-    delete[] w->saveBuffer;
-    w->saveBuffer = nullptr;
+void GLWin::saveFrame() {
+  if (saveBuffer != nullptr && saveW != width || saveH != height) {
+    delete[] saveBuffer;
+    saveBuffer = nullptr;
   }
-  if (w->saveBuffer == nullptr) {
-    strncpy(w->frameName, "tmp/frame", sizeof(w->frameName));
-    w->saveW = w->width, w->saveH = w->height;
-    w->saveBuffer = new uint8_t[3 * w->saveW * w->saveH];
+  if (saveBuffer == nullptr) {
+    strncpy(frameName, "tmp/frame", sizeof(frameName));
+    saveW = width, saveH = height;
+    saveBuffer = new uint8_t[3 * saveW * saveH];
   }
-  sprintf(w->frameName + 8, "%d.png", w->frameNum++);
-  glReadPixels(0, 0, w->saveW, w->saveH, GL_RGB, GL_UNSIGNED_BYTE,
-               w->saveBuffer);
+  sprintf(frameName + 8, "%d.png", frameNum++);
+  glReadPixels(0, 0, saveW, saveH, GL_RGB, GL_UNSIGNED_BYTE, saveBuffer);
   constexpr int CHANNELS = 3;
-  stbi_write_png(w->frameName, w->saveW, w->saveH, CHANNELS, w->saveBuffer,
-                 w->saveW * CHANNELS);  // TODO: Remove - debugging purposes
+  stbi_write_png(frameName, saveW, saveH, CHANNELS, saveBuffer,
+                 saveW * CHANNELS);  // TODO: Remove - debugging purposes
 }
 
 /*
@@ -479,11 +476,11 @@ void GLWin::saveFrame(GLWin *w) {
   we don't currently have a way to pass parameters to actions
   This is going to change.
 */
-void GLWin::gotoStartTime(GLWin *w) { w->t = w->startTime; }
-void GLWin::gotoEndTime(GLWin *w) { w->t = w->endTime; }
-void GLWin::speedTime(GLWin *w) { w->dt *= 2; }
-void GLWin::slowTime(GLWin *w) { w->dt *= 0.5; }
-void GLWin::resetTimeDilation(GLWin *w) { w->dt = 1; }
+void GLWin::gotoStartTime() { t = startTime; }
+void GLWin::gotoEndTime() { t = endTime; }
+void GLWin::speedTime() { dt *= 2; }
+void GLWin::slowTime() { dt *= 0.5; }
+void GLWin::resetTimeDilation() { dt = 1; }
 
 /*
   actions for selecting objects in a scene
@@ -495,28 +492,28 @@ void GLWin::clearSelected(GLWin *w) {
 /*
   actions for a 3d environment
 */
-void GLWin::resetProjection3D(GLWin *w) {
+void GLWin::resetProjection3D() {
   // TODO: call resetCamera on every canvas to reset to initial state (we have
   // to write that)
 }
 
 // TODO: implement 3d uniform zoom/pan controls
-void GLWin::zoomIn3D(GLWin *w) {}
-void GLWin::zoomOut3D(GLWin *w) {}
-void GLWin::panRight3D(GLWin *w) {}
-void GLWin::panLeft3D(GLWin *w) {}
-void GLWin::panUp3D(GLWin *w) {}
-void GLWin::panDown3D(GLWin *w) {}
+void GLWin::zoomIn3D() {}
+void GLWin::zoomOut3D() {}
+void GLWin::panRight3D() {}
+void GLWin::panLeft3D() {}
+void GLWin::panUp3D() {}
+void GLWin::panDown3D() {}
 
-void GLWin::selectObject3D(GLWin *w) {
+void GLWin::selectObject3D() {
   // TODO: fire a ray at w->mouseX, w->mouseY and find the object selected
   // set the selected list to that object.
 }
-void GLWin::addSelectObject3D(GLWin *w) {
+void GLWin::addSelectObject3D() {
   // TODO: fire a ray at w->mouseX, w->mouseY and find the object selected
   // add object to the selected list
 }
-void GLWin::toggleSelectObject3D(GLWin *w) {
+void GLWin::toggleSelectObject3D() {
   // TODO: fire a ray at w->mouseX, w->mouseY and find the object selected
   // if object is not in  the selected list put it there. if it is there, remove
   // it
@@ -526,46 +523,46 @@ void GLWin::toggleSelectObject3D(GLWin *w) {
   actions for a 2d environment
 */
 
-void GLWin::resetProjection2D(GLWin *w) {
-  w->currentTab()->getMainCanvas()->resetProjection();
+void GLWin::resetProjection2D() {
+  currentTab()->getMainCanvas()->resetProjection();
 }
 
-void GLWin::zoomIn2D(GLWin *w) {
-  MainCanvas *c = w->currentTab()->getMainCanvas();
+void GLWin::zoomIn2D() {
+  MainCanvas *c = currentTab()->getMainCanvas();
   glm::mat4 *proj = c->getProjection();
   *proj = glm::scale(*proj,
                      glm::vec3(1.2));  // TODO: make zoom in factor a variable
 }
 
-void GLWin::zoomOut2D(GLWin *w) {
-  MainCanvas *c = w->currentTab()->getMainCanvas();
+void GLWin::zoomOut2D() {
+  MainCanvas *c = currentTab()->getMainCanvas();
   glm::mat4 *proj = c->getProjection();
   *proj = glm::scale(*proj, glm::vec3(1 / 1.2));
 }
 
-void GLWin::panRight2D(GLWin *w) {
-  MainCanvas *c = w->currentTab()->getMainCanvas();
+void GLWin::panRight2D() {
+  MainCanvas *c = currentTab()->getMainCanvas();
   glm::mat4 *proj = c->getProjection();
   const float x = -100;  // TODO: make this in model coordinates!
   *proj = glm::translate(*proj, glm::vec3(x, 0, 0));
 }
 
-void GLWin::panLeft2D(GLWin *w) {
-  MainCanvas *c = w->currentTab()->getMainCanvas();
+void GLWin::panLeft2D() {
+  MainCanvas *c = currentTab()->getMainCanvas();
   glm::mat4 *proj = c->getProjection();
   const float x = +100;  // TODO: make this in model coordinates!
   *proj = glm::translate(*proj, glm::vec3(x, 0, 0));
 }
 
-void GLWin::panUp2D(GLWin *w) {
-  MainCanvas *c = w->currentTab()->getMainCanvas();
+void GLWin::panUp2D() {
+  MainCanvas *c = currentTab()->getMainCanvas();
   glm::mat4 *proj = c->getProjection();
   const float y = 100;  // TODO: make this in model coordinates!
   *proj = glm::translate(*proj, glm::vec3(0, y, 0));
 }
 
-void GLWin::panDown2D(GLWin *w) {
-  MainCanvas *c = w->currentTab()->getMainCanvas();
+void GLWin::panDown2D() {
+  MainCanvas *c = currentTab()->getMainCanvas();
   glm::mat4 *proj = c->getProjection();
   const float y = -100;  // TODO: make this in model coordinates!
   *proj = glm::translate(*proj, glm::vec3(0, y, 0));
@@ -581,22 +578,23 @@ void GLWin::releaseWidget(GLWin *w) { w->dragMode = false; }
   Page environment (like a book reader)
 */
 
-void GLWin::gotoTop(GLWin *w) {}
-void GLWin::gotoBottom(GLWin *w) {}
-void GLWin::scrollUp(GLWin *w) {}
-void GLWin::scrollDown(GLWin *w) {}
-void GLWin::pageUp(GLWin *w) {}
-void GLWin::pageDown(GLWin *w) {}
-void GLWin::sectionUp(GLWin *w) {}
-void GLWin::sectionDown(GLWin *w) {}
-
-// TODO: this function requires passing a parameter telling us what sound to
-// play
-void GLWin::playSound(GLWin *w, const char soundName[]) {}
-void GLWin::stopSound(GLWin *w) {}
+void GLWin::gotoTop() {}
+void GLWin::gotoBottom() {}
+void GLWin::scrollUp() {}
+void GLWin::scrollDown() {}
+void GLWin::pageUp() {}
+void GLWin::pageDown() {}
+void GLWin::sectionUp() {}
+void GLWin::sectionDown() {}
 
 uint32_t GLWin::internalRegisterAction(const char name[], Security s,
-                                       Action action) {
+                                       void (GLWin::*action)()) {
+  function<void()> action_fnptr = std::bind(action, this);
+  internalRegisterAction(name, s, action_fnptr);
+}
+
+uint32_t GLWin::internalRegisterAction(const char name[], Security s,
+                                       function<void()> action) {
   uint32_t securityIndex = uint32_t(s);
   // SAFE = 0..999, RESTRICTED=1000.1999, ASK=2000..2999
   uint32_t actNum = 1000 * securityIndex + numActions[securityIndex]++;
@@ -606,26 +604,45 @@ uint32_t GLWin::internalRegisterAction(const char name[], Security s,
     cerr << "Error! action Table is full for security " << securityIndex
          << '\n';
   }
-  //cout << "Setting action " << actNum << " for action " << name << '\n';
+  // cout << "Setting action " << actNum << " for action " << name << '\n';
   setAction(actNum, action);
-  actionNameMap[name] = actNum;
+  actionNameMap.add(name, actNum);
   return actNum;
 }
 
-unordered_map<string, int> GLWin::actionNameMap;
-
 uint32_t GLWin::lookupAction(const char actionName[]) {
-  auto it = actionNameMap.find(actionName);
-
-  if (it == actionNameMap.end()) {  // throw Ex1(Errcode::NONEXISTENT_ACTION);
-    cerr << "Input binding failed: " << actionName << '\n';
-    return 0;
-  }
-  return it->second;
+  uint32_t *act_code = actionNameMap.get(actionName);
+  if (act_code) return *act_code;
+  cerr << "Input binding failed: " << actionName << '\n';
+  return 0;
 }
 
 void GLWin::bind(uint32_t input, const char actionName[]) {
   setEvent(input, lookupAction(actionName));
+}
+
+uint32_t GLWin::register_callback(uint32_t input, const char name[], Security s,
+                                  void (GLWin::*callback)()) {
+  auto cb_funcptr = std::bind(callback, this);
+  register_callback(input, name, s, cb_funcptr);
+}
+
+uint32_t GLWin::register_callback(uint32_t input, const char name[], Security s,
+                                  function<void()> action) {
+  uint32_t securityIndex = uint32_t(s);
+  // SAFE = 0..999, RESTRICTED=1000.1999, ASK=2000..2999
+  uint32_t actNum = 1000 * securityIndex + numActions[securityIndex]++;
+  // TODO: do something if 1000 action functions exceeded. For now, completely
+  // unnecessary
+  if (numActions[securityIndex] > 1000) {
+    cerr << "Error! action Table is full for security " << securityIndex
+         << '\n';
+  }
+  // cout << "Setting action " << actNum << " for action " << name << '\n';
+  setAction(actNum, action);
+  actionNameMap.add(name, actNum);
+  setEvent(input, lookupAction(name));
+  return actNum;
 }
 
 void GLWin::bind2DOrtho() {
@@ -647,47 +664,46 @@ void GLWin::bind3D() {
   //  bind(Inputs::MOUSE0|Inputs::PRESS|Inputs::ALT, "xyz");
 }
 void GLWin::loadBindings() {
-  registerAction(Security::RESTRICTED, quit);
-  registerAction(Security::SAFE, refresh);
-  registerAction(Security::ASK, saveFrame);
+  registerAction(Security::RESTRICTED, &GLWin::quit);
+  registerAction(Security::SAFE, &GLWin::refresh);
+  registerAction(Security::ASK, &GLWin::saveFrame);
 
-  registerAction(Security::SAFE, gotoStartTime);
-  registerAction(Security::SAFE, gotoEndTime);
-  registerAction(Security::SAFE, speedTime);
-  registerAction(Security::SAFE, slowTime);
-  registerAction(Security::SAFE, resetTimeDilation);
+  registerAction(Security::SAFE, &GLWin::gotoStartTime);
+  registerAction(Security::SAFE, &GLWin::gotoEndTime);
+  registerAction(Security::SAFE, &GLWin::speedTime);
+  registerAction(Security::SAFE, &GLWin::slowTime);
+  registerAction(Security::SAFE, &GLWin::resetTimeDilation);
 
-  registerAction(Security::SAFE, resetProjection3D);
-  registerAction(Security::SAFE, zoomOut3D);
-  registerAction(Security::SAFE, zoomIn3D);
-  registerAction(Security::SAFE, panRight3D);
-  registerAction(Security::SAFE, panLeft3D);
-  registerAction(Security::SAFE, panUp3D);
-  registerAction(Security::SAFE, panDown3D);
-  registerAction(Security::SAFE, selectObject3D);
-  registerAction(Security::SAFE, addSelectObject3D);
-  registerAction(Security::SAFE, toggleSelectObject3D);
+  registerAction(Security::SAFE, &GLWin::resetProjection3D);
+  registerAction(Security::SAFE, &GLWin::zoomOut3D);
+  registerAction(Security::SAFE, &GLWin::zoomIn3D);
+  registerAction(Security::SAFE, &GLWin::panRight3D);
+  registerAction(Security::SAFE, &GLWin::panLeft3D);
+  registerAction(Security::SAFE, &GLWin::panUp3D);
+  registerAction(Security::SAFE, &GLWin::panDown3D);
+  registerAction(Security::SAFE, &GLWin::selectObject3D);
+  registerAction(Security::SAFE, &GLWin::addSelectObject3D);
+  registerAction(Security::SAFE, &GLWin::toggleSelectObject3D);
 
-  registerAction(Security::SAFE, resetProjection2D);
-  registerAction(Security::SAFE, zoomOut2D);
-  registerAction(Security::SAFE, zoomIn2D);
-  registerAction(Security::SAFE, panRight2D);
-  registerAction(Security::SAFE, panLeft2D);
-  registerAction(Security::SAFE, panUp2D);
-  registerAction(Security::SAFE, panDown2D);
+  registerAction(Security::SAFE, &GLWin::resetProjection2D);
+  registerAction(Security::SAFE, &GLWin::zoomOut2D);
+  registerAction(Security::SAFE, &GLWin::zoomIn2D);
+  registerAction(Security::SAFE, &GLWin::panRight2D);
+  registerAction(Security::SAFE, &GLWin::panLeft2D);
+  registerAction(Security::SAFE, &GLWin::panUp2D);
+  registerAction(Security::SAFE, &GLWin::panDown2D);
 
-  registerAction(Security::SAFE, gotoTop);
-  registerAction(Security::SAFE, gotoBottom);
-  registerAction(Security::SAFE, scrollUp);
-  registerAction(Security::SAFE, scrollDown);
-  registerAction(Security::SAFE, pageUp);
-  registerAction(Security::SAFE, pageDown);
-  registerAction(Security::SAFE, sectionUp);
-  registerAction(Security::SAFE, sectionDown);
+  registerAction(Security::SAFE, &GLWin::gotoTop);
+  registerAction(Security::SAFE, &GLWin::gotoBottom);
+  registerAction(Security::SAFE, &GLWin::scrollUp);
+  registerAction(Security::SAFE, &GLWin::scrollDown);
+  registerAction(Security::SAFE, &GLWin::pageUp);
+  registerAction(Security::SAFE, &GLWin::pageDown);
+  registerAction(Security::SAFE, &GLWin::sectionUp);
+  registerAction(Security::SAFE, &GLWin::sectionDown);
 
   // TODO: How to define actions that take parameters, in this case a string?
   //  registerAction(Security::SAFE, playSound);
-  registerAction(Security::SAFE, stopSound);
 
   bind3D();
   // bind2DOrtho();
