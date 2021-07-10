@@ -27,4 +27,3 @@ add_grail_executable(SRC testText3.cc LIBS grail)
 add_grail_executable(SRC testWidgets.cc LIBS grail)
 add_grail_executable(SRC ../src/csp/GenericXDLClient.cc LIBS grail)
 
-# setting up a new executable, only needs the two lines
