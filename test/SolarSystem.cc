@@ -142,6 +142,8 @@ class SolarSystem : public GLWin {
     setEvent(267, 1003);  // page down = zoom in
   }
   void update() {
+    Canvas *c = currentTab()->getMainCanvas();
+    c->getWin()->setDirty();
     double t = time();
     //#if 0
     tEarth.ident();  // set to the identity transformation

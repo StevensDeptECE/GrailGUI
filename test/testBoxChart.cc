@@ -6,13 +6,13 @@ using namespace grail;
 
 class TestBoxChart : public GLWin {
  private:
-  const Style *baseGraphStyle;
-  const Style *xAxisStyle;
-  const Style *xAxisTextStyle;
-  const Style *yAxisStyle;
-  const Style *yAxisTextStyle;
-  const Style *whiskerStyle;
-  const Style *boxStyle;
+  Style *baseGraphStyle;
+  Style *xAxisStyle;
+  Style *xAxisTextStyle;
+  Style *yAxisStyle;
+  Style *yAxisTextStyle;
+  Style *whiskerStyle;
+  Style *boxStyle;
 
  public:
   TestBoxChart() : GLWin(0x000000, 0xCCCCCC, "TestBarChart") {}
@@ -28,25 +28,32 @@ class TestBoxChart : public GLWin {
 
   void init() {
     // two lines and the overall title
-    baseGraphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0, 5);
+    baseGraphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
+    baseGraphStyle->setLineWidth(5);
 
     // will control how thick lines for x axis are drawn
-    xAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 1, 0, 4);
+    xAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 1, 0);
+    xAxisStyle->setLineWidth(4);
 
     // controls the font, size, and color of x axis text
-    xAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 0, 3);
+    xAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 0);
+    xAxisTextStyle->setLineWidth(3);
 
     // will control how thick lines for y axis are drawn
-    yAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 1, 2);
+    yAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 1);
+    yAxisStyle->setLineWidth(2);
 
     // controls the font, size, and color of y axis text
-    yAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 1);
+    yAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1);
+    yAxisTextStyle->setLineWidth(1);
 
     // controls the thickness of whisker lines drawn
-    whiskerStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 3);
+    whiskerStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1);
+    whiskerStyle->setLineWidth(3);
 
     // controls the thickness of box outlines
-    boxStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1, 3);
+    boxStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1);
+    boxStyle->setLineWidth(3);
 
     MainCanvas *c = currentTab()->getMainCanvas();
 
