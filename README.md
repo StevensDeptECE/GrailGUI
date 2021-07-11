@@ -57,6 +57,7 @@
     wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
     echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ bionic main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
     sudo rm /etc/apt/trusted.gpg.d/kitware.gpg
+    sudo apt update
     sudo apt install kitware-archive-keyring
     sudo apt update
     sudo apt install cmake
@@ -98,7 +99,7 @@
 2. Install dependencies
 
     ``` shell
-    sudo apt install make cmake ninja-build libglfw3-dev libfreetype-dev mpv libmpv-dev liblzma-dev flex bison
+    sudo apt install make cmake ninja-build libglfw3-dev libfreetype-dev mpv libmpv-dev liblzma-dev flex bison pkg-config
     ```
 
 3. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to set up the environment variables.
@@ -119,6 +120,13 @@
 ## Compiling
 
 - To compile with default settings, run `./build.sh`
+- For those who want to modify the default configuration and compile themselves, we use the following:
+
+    ``` shell
+    cmake -S . -Bbuild -GNinja
+    cmake --build build
+    ```
+
 - For versions of Ubuntu with custom versions of gcc, but did not set the default compiler with update-alternatives:
 
     ``` shell
@@ -126,12 +134,6 @@
     cmake --build build
     ```
 
-- For those who want to modify the default configuration and compile themselves, we use the following:
-
-    ``` shell
-    cmake -S . -Bbuild -GNinja
-    cmake --build build
-    ```
 
 ## Running
 
@@ -155,10 +157,6 @@ Git command:
 ``` shell
 git remote set-url origin git@github.com:StevensDeptECE/GrailGUI.git
 ```
-
-### Compile Time Error:  `Makefile:1: /proj/settings.mk: No such file or directory`
-
-The `GRAIL` environment variable is most likely not set. Please refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows). If you have done this and still find yourself getting the same error, you may using a shell besides Bash. This is important because the instructions provided tell you to edit the `.bashrc`, but that file may not be loaded if you were zsh, ksh, fish, or another alternative. To check which shell you are running, use one of the solutions mentioned [here](https://stackoverflow.com/a/3327022) and then look up which file you would edit to export environment variables.
 
 ### Runtime Error:  `Failed to open GLFW window`
 
