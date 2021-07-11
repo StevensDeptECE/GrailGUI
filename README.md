@@ -134,7 +134,6 @@
     cmake --build build
     ```
 
-
 ## Running
 
 1. Update `test/CMakeLists.txt` to compile the file you want to compile and link it to grail.
