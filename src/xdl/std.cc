@@ -1,9 +1,9 @@
 
 #include "xdl/std.hh"
 
-#include "opengl/Style.hh"
 #include "opengl/Canvas.hh"
 #include "opengl/MultiText.hh"
+#include "opengl/Style.hh"
 #include "opengl/StyledMultiShape2D.hh"
 #include "util/Buffer.hh"
 #include "util/datatype.hh"
@@ -22,17 +22,11 @@ inline void XDLType::addType(const XDLType* type) {
   typeNames.add(typeName);
 }
 
-void XDLType::writeMeta(Buffer& buf) const {
-	buf.write(getDataType());
-}
+void XDLType::writeMeta(Buffer& buf) const { buf.write(getDataType()); }
 
-DataType XDLType::readType(Buffer& in) {
-	return DataType(in.readU8());
-}
+DataType XDLType::readType(Buffer& in) { return DataType(in.readU8()); }
 
-XDLIterator* XDLType::createIterator() {
-	return nullptr;
-}
+XDLIterator* XDLType::createIterator() { return nullptr; }
 
 void XDLType::display(Buffer& binaryIn, Buffer& asciiOut) const {}
 
@@ -62,34 +56,35 @@ void XDLType::classInit() {
   addType(new Timestamp());
   addType(new String8());
   addType(new U8());  //  addType(new String16());
-  addType(new U8());  //addType(new String32());
-  addType(new U8());//addType(new String64());
-  addType(new U8());//addType(new UTF8_8());
-  addType(new U8());//addType(new UTF8_16());
-  addType(new U8());//addType(new UTF8_32());
-  addType(new U8());//addType(new UTF8_64());
-  addType(new U8());//addType(new UTF16_8());
-  addType(new U8());//addType(new UTF16_16());
-  addType(new U8());//addType(new UTF16_32());
-  addType(new U8());//addType(new UTF16_64());
-  addType(new U8());//addType(new Regex());
-  addType(new U8());//addType(new UTF8_16());
-  addType(new U8());//addType(new UTF8_32());
-  addType(new U8());//addType(new UTF8_64());
-  addType(new U8());//addType(new GenericList());
-  addType(new U8());//addType(new GenericList());
-  addType(new U8());//addType(new GenericList());
-  addType(new U8());//addType(new GenericList());
-  addType(new U8());//addType(new Struct());
-  addType(new U8());//addType(new Struct());
-  addType(new U8());//addType(new Struct());
-  addType(new U8());//addType(new Struct()); //TODO: DynamicList
-  addType(new U8());//addType(new Struct());
-  addType(new U8());//addType(new Func1());
-  addType(new U8());//addType(new Func2());
-  addType(new U8());//addType(new FuncParam1());
-  addType(new U8());//addType(new FuncParam2());
-  addType(new U8());// Why bother with these, we won't get to them for a LONG time...
+  addType(new U8());  // addType(new String32());
+  addType(new U8());  // addType(new String64());
+  addType(new U8());  // addType(new UTF8_8());
+  addType(new U8());  // addType(new UTF8_16());
+  addType(new U8());  // addType(new UTF8_32());
+  addType(new U8());  // addType(new UTF8_64());
+  addType(new U8());  // addType(new UTF16_8());
+  addType(new U8());  // addType(new UTF16_16());
+  addType(new U8());  // addType(new UTF16_32());
+  addType(new U8());  // addType(new UTF16_64());
+  addType(new U8());  // addType(new Regex());
+  addType(new U8());  // addType(new UTF8_16());
+  addType(new U8());  // addType(new UTF8_32());
+  addType(new U8());  // addType(new UTF8_64());
+  addType(new U8());  // addType(new GenericList());
+  addType(new U8());  // addType(new GenericList());
+  addType(new U8());  // addType(new GenericList());
+  addType(new U8());  // addType(new GenericList());
+  addType(new U8());  // addType(new Struct());
+  addType(new U8());  // addType(new Struct());
+  addType(new U8());  // addType(new Struct());
+  addType(new U8());  // addType(new Struct()); //TODO: DynamicList
+  addType(new U8());  // addType(new Struct());
+  addType(new U8());  // addType(new Func1());
+  addType(new U8());  // addType(new Func2());
+  addType(new U8());  // addType(new FuncParam1());
+  addType(new U8());  // addType(new FuncParam2());
+  addType(new U8());  // Why bother with these, we won't get to them for a LONG
+                      // time...
   addType(new U8());
   addType(new U8());
   addType(new U8());
@@ -106,7 +101,7 @@ void XDLType::classInit() {
   addType(new U8());
   addType(new U8());
   addType(new U8());
-  addType(new U8()); //BIGINT
+  addType(new U8());  // BIGINT
 }
 
 void XDLType::classCleanup() {
@@ -114,26 +109,17 @@ void XDLType::classCleanup() {
 }
 
 DataType XDLRaw::getDataType() const {
-	return DataType::U8; // TODO: add this type!
+  return DataType::U8;  // TODO: add this type!
 }
 
-uint32_t XDLRaw::size() const {
-	return len;
-}
+uint32_t XDLRaw::size() const { return len; }
 
-void XDLRaw::write(Buffer& buf) const {
-	buf.write(*this);
-}
+void XDLRaw::write(Buffer& buf) const { buf.write(*this); }
 
-void XDLRaw::display(Buffer& binaryIn, Buffer& asciiOut) const {
-}
+void XDLRaw::display(Buffer& binaryIn, Buffer& asciiOut) const {}
 
-void XDLRaw::format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const {
-
-}
-
-
-
+void XDLRaw::format(Buffer& binaryIn, Buffer& asciiOut,
+                    const char fmt[]) const {}
 
 inline void Struct::addSym(const string& memberName, const XDLType* t) {
   byName.add(memberName.c_str(), types.size());
@@ -179,8 +165,7 @@ void Struct::addBuiltin(const std::string& memberName, DataType t) {
   addMember(memberName, types[uint32_t(t)]);
 }
 
-void Struct::addTypedef(const char name[],
-                        const char type[]) {
+void Struct::addTypedef(const char name[], const char type[]) {
   const XDLType* t = getMemberType(type);
   if (t == nullptr) {  // undefined symbol
     compiler->undefinedSymbol(name);
@@ -199,10 +184,8 @@ inline void Struct::addStructMember(const std::string& memberName,
   members.add(Member(memberNames.length(), memberName.length(), memberStruct));
 }
 
-//TODO: implement!
-const Struct* XDLType::read(Buffer& in) {
-	return nullptr;
-}
+// TODO: implement!
+const Struct* XDLType::read(Buffer& in) { return nullptr; }
 
 /* Reads Buffer into struct s*/
 void XDLType::readMeta(XDLCompiler* compiler, Buffer& in, uint32_t count,
@@ -677,13 +660,9 @@ void Struct::format(Buffer& binaryIn, Buffer& asciiOut,
 
 uint32_t Struct::getMemberCount() const { return members.size(); }
 
-DataType GenericList::getDataType() const {
-  return DataType::LIST16;
-}
+DataType GenericList::getDataType() const { return DataType::LIST16; }
 
-uint32_t GenericList::size() const {
-  return size_;
-}
+uint32_t GenericList::size() const { return size_; }
 
 void GenericList::write(Buffer& buf) const {}
 
@@ -692,13 +671,13 @@ void GenericList::writeMeta(Buffer& buf) const {
   buf.write(getTypeName());
   buf.write(uint16_t(size_));
   buf.write(listType);
-  //TODO: check for overflow of buffer!
+  // TODO: check for overflow of buffer!
 }
 
 void GenericList::display(Buffer& binaryIn, Buffer& asciiOut) const {}
 
 XDLIterator* GenericList::createIterator() {
-	return nullptr; // TODO: should return an iterator to each item in the list
+  return nullptr;  // TODO: should return an iterator to each item in the list
 }
 
 uint32_t TypeDef::size() const { return type->size(); }

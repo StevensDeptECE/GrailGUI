@@ -227,6 +227,35 @@ void VideoPlayer::playlistPrev() {
   checkError(mpv_command(mpv, cmd));
 }
 
+void VideoPlayer::playlistPlayIndex(int index) {
+  char indexString[33];
+  sprintf(indexString, "%d", index);
+  const char *cmd[] = {"set", "playlist-pos", indexString, nullptr};
+  checkError(mpv_command(mpv, cmd));
+}
+void VideoPlayer::playlistRemoveIndex(int index) {
+  char indexString[33];
+  sprintf(indexString, "%d", index);
+  const char *cmd[] = {"playlist-remove", indexString, nullptr};
+  checkError(mpv_command(mpv, cmd));
+}
+void VideoPlayer::playlistMove(int index1, int index2) {
+  char index1String[33];
+  char index2String[33];
+  sprintf(index1String, "%d", index1);
+  sprintf(index2String, "%d", index2);
+  const char *cmd[] = {"playlist-move", index1String, index2String, nullptr};
+  checkError(mpv_command(mpv, cmd));
+}
+void VideoPlayer::playlistShuffle() {
+  const char *cmd[] = {"playlist-shuffle", nullptr};
+  checkError(mpv_command(mpv, cmd));
+}
+void VideoPlayer::playlistClear() {
+  const char *cmd[] = {"playlist-clear", nullptr};
+  checkError(mpv_command(mpv, cmd));
+}
+
 void VideoPlayer::cropVideo(float xLeft, float xRight, float yTop,
                             float yBottom) {
   this->xLeft = xLeft;

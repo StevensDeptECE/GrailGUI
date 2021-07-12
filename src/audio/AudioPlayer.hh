@@ -45,10 +45,10 @@ class AudioPlayer {
   void playlistNext();
   void playlistPrev();
   void playlistPlayIndex(int index);
-  void playlistClear();
   void playlistRemoveIndex(int index);
   void playlistMove(int index1, int index2);
   void playlistShuffle();
+  void playlistClear();
 
   void printCurrentTime();
 
