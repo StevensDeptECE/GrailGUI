@@ -119,7 +119,7 @@ class ESRIMapLoader : public GLWin {
   }
 
   void init() {
-    Shapefile counties = Shapefile("res/us_counties/USA_Counties.shp");
+    Shapefile counties = Shapefile("res/maps/USA_Counties.shp");
     counties.init();
 
     // Convert shape objects to our ESRIShape class
