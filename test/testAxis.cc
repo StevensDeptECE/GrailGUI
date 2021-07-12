@@ -1,5 +1,6 @@
 #include <numbers>
 
+#include "opengl/AngledMultiText.hh"
 #include "opengl/AxisWidget.hh"
 #include "opengl/GrailGUI.hh"
 
@@ -12,7 +13,8 @@ class testAxis : public GLWin {
 
   void testLinearAxis(StyledMultiShape2D *gui, MultiText *guiText,
                       const Style *style) {
-    LinearAxisWidget axis(gui, guiText, 100, 100, 400, 400);
+    LinearAxisWidget axis(gui, guiText, 600, 100, 400, 200);
+    gui->drawRectangle(600, 100, 400, 200, grail::cyan);
     // linear specific
     axis.setBounds(0, 1);
     axis.setTickInterval(0.10);
@@ -26,7 +28,8 @@ class testAxis : public GLWin {
 
   void testLogAxis(StyledMultiShape2D *gui, MultiText *guiText,
                    const Style *style) {
-    LogAxisWidget axis(gui, guiText, 100, 200, 400, 200);
+    LogAxisWidget axis(gui, guiText, 100, 400, 400, 200);
+    gui->drawRectangle(100, 400, 400, 200, grail::green);
     // log specific
     // axis.setNumTicks(3);
     // axis.setScale(2, 3);
@@ -45,6 +48,8 @@ class testAxis : public GLWin {
                     const Style *style) {
     vector<string> labels = {"A", "B", "C", "D", "E", "F"};
     TextAxisWidget axis(gui, guiText, 100, 25, 300, 300);
+    gui->drawRectangle(100, 25, 300, 300, grail::blue);
+
     // text specific
     axis.setTickLabels(labels);
 
@@ -56,18 +61,30 @@ class testAxis : public GLWin {
     axis.init();
   }
 
-  void testRotatedAxis(Canvas *c, MultiText *guiText, const Style *style) {
-    StyledMultiShape2D *rot90 =
-        c->addLayer(new StyledMultiShape2D(c, style, numbers::pi / 2, 0, 200));
-    LinearAxisWidget axis(rot90, guiText, 0, 0, 100, 100);
+  void testRotatedAxis(Canvas *c, StyledMultiShape2D *gui, MultiText *guiText,
+                       const Style *style) {
+    double width = 300;
+    double height = 300;
+    double x = 700;
+    double y = 400;
+
+    StyledMultiShape2D *rot90 = c->addLayer(new StyledMultiShape2D(
+        c, style, numbers::pi / 2, x - width, y + height));
+    AngledMultiText *t90 = c->addLayer(new AngledMultiText(c, style, 0, x, y));
+    LinearAxisWidget axis(rot90, t90, 0, 0, width, height);
+    // LogAxisWidget axis(rot90, t90, 0, 0, width, height);
+    gui->drawRectangle(x, y, width, height, grail::darkred);
 
     // linear specific
-    axis.setBounds(0, 1);
-    axis.setTickInterval(0.10);
+    axis.setBounds(0, 100);
+    // log
+    // axis.setBounds(1, 10000);
+    axis.setTickInterval(10);
 
     // general
     axis.setTickDrawSize(8);
     axis.setShowTicks(true);
+    axis.setIsVert(true);
     axis.setTitle("Test Title");
     axis.init();
   }
@@ -84,12 +101,10 @@ class testAxis : public GLWin {
     testLinearAxis(gui, guiText, s);
     testLogAxis(gui, guiText, s);
     testTextAxis(gui, guiText, s);
-    // testRotatedAxis(c, guiText, s);
-    // gui->drawRectangle(100, 100, 100, 100, grail::green);
-    // gui->drawCircle(100, 100, 3.5, 3, glm::vec4(0, 0, 1, 1));
+    testRotatedAxis(c, gui, guiText, s);
   }
 };
 
 int main(int argc, char *argv[]) {
-  return GLWin::init(new testAxis(), 1024, 600);
+  return GLWin::init(new testAxis(), 1000, 1000);
 }
