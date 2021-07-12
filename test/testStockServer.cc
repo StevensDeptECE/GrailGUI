@@ -21,16 +21,11 @@ class StockQuote {
     buf.write(close);
   }
   void writeMeta(Buffer& buf) const {
-    buf.write("StockQuote");
-    buf.write(4);
-    buf.write(DataType::F32);
-    buf.write("open");
-    buf.write(DataType::F32);
-    buf.write("high");
-    buf.write(DataType::F32);
-    buf.write("low");
-    buf.write(DataType::F32);
-    buf.write("close");
+    buf.writeStructMeta("StockQuote", 4);
+    buf.write(DataType::F32, "open");
+    buf.write(DataType::F32, "high");
+    buf.write(DataType::F32, "low");
+    buf.write(DataType::F32, "close");
   }
 };
 
@@ -39,9 +34,10 @@ int main(int argc, char* argv[]) {
   GLWin::classInit();
   try {
     IPV4Socket s(port);
-    List<const StockQuote> quotes;
-    for (int i = 0; i < 100; i++) {
-      quotes.add(StockQuote(i, i, i, i));
+    List<const StockQuote> quotes("AAPL");
+    for (int i = 0; i < 3; i++) {
+      quotes.add(new StockQuote(static_cast<float>(i), static_cast<float>(i),
+                                static_cast<float>(i), static_cast<float>(i)));
     }
     XDLRequest req(&quotes);
     s.attach(&req);

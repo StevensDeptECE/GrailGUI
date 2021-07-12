@@ -61,18 +61,13 @@ class XDLType {
   static DynArray<std::string>
       typeNames;  // the list of all unique names in the system
   static HashMap<uint32_t> byName;
-  static void addType(const XDLType* type);
+  static const XDLType* addType(const XDLType* type);
 
  public:
   const static UnImpl* unimpl;
   static void classInit();
   static void classCleanup();
-  static uint32_t computeNameOffset(const std::string& typeName) {
-    uint32_t nameOffset;
-    if (!byName.get(typeName.c_str(), &nameOffset))
-      byName.add(typeName.c_str(), nameOffset = typeNames.size());
-    return nameOffset;
-  }
+
   static uint32_t computeNameOffset(DataType t) {
     uint32_t nameOffset = 0;
     return nameOffset;
@@ -80,8 +75,14 @@ class XDLType {
 
   // Delete default constructor? we should be naming all of our XDLTypes
   XDLType() = delete;
-  XDLType(const std::string& typeName)
-      : nameOffset(computeNameOffset(typeName)) {}
+  XDLType(const std::string& typeName) {
+    if (!byName.get(typeName.c_str(), &nameOffset)) {
+      byName.checkGrow();
+      byName.add(typeName.c_str(), nameOffset = typeNames.size());
+      typeNames.add(typeName);
+      types.add(this);
+    }
+  }
   XDLType(DataType t) : nameOffset(computeNameOffset(t)) {}
   virtual void write(Buffer& b) const = 0;
   virtual void writeMeta(Buffer& buf) const;

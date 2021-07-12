@@ -82,14 +82,12 @@ enum class DataType {
   JPEG,        // introducer to JPEG image embedded in stream
   JPEGLIST,  // 4 byte number of jpegs, followed by a single header, followed by
              // multiple files of same size
-  FLIF,      // advanced image format with more compression than JPEG
-  FLIFLIST,  // 4 byte number of FLIF images, followed by a single header
   BLOB32,    // 4 byte length block of binary data (opaque to us)
   BLOB64,    // 8 byte length block of binary data
   BIGINT,
-  ENUM_SIZE,
   TYPEDEF,
-  UNIMPL
+  UNIMPL,
+  ENUM_SIZE
 };
 
 extern const char* DataTypeNames[];

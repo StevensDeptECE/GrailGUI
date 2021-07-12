@@ -95,6 +95,22 @@ void Buffer::write(const char s[], uint32_t len) {
 }
 #endif
 
+void Buffer::writeStructMeta(const char name[], uint32_t numMembers) {
+  if (numMembers <= UINT8_MAX) {
+    write(DataType::STRUCT8);
+    write(name, strlen(name));
+    write((uint8_t)numMembers);
+  } else if (numMembers <= UINT16_MAX) {
+    write(DataType::STRUCT16);
+    write(name, strlen(name));
+    write((uint16_t)numMembers);
+  } else if (numMembers <= UINT32_MAX) {
+    write(DataType::STRUCT32);
+    write(name, strlen(name));
+    write(numMembers);
+  }
+}
+
 string Buffer::readString8() {
   checkAvailableRead(sizeof(uint8_t));
   uint8_t len = *(uint8_t*)p;
@@ -161,9 +177,9 @@ void Buffer::appendU8(uint8_t v) {  // maximum size 255
   checkAvailableWrite();
 }
 
-// TODO: These appends are slow because they count bytes, should instead insert
-// small values into the buffer
-// and if they overflow, copy back to the beginning after flushing.
+// TODO: These appends are slow because they count bytes, should instead
+// insert small values into the buffer and if they overflow, copy back to the
+// beginning after flushing.
 
 void Buffer::appendU16(uint16_t v) {
   uint32_t len = sprintf(p, "%hu", v);
@@ -210,9 +226,9 @@ void Buffer::appendI8(int8_t v) {  // -128..127
   checkAvailableWrite();
 }
 
-// TODO: These appends are slow because they count bytes, should instead insert
-// small values into the buffer
-// and if they overflow, copy back to the beginning after flushing.
+// TODO: These appends are slow because they count bytes, should instead
+// insert small values into the buffer and if they overflow, copy back to the
+// beginning after flushing.
 
 void Buffer::appendI16(int16_t v) {
   uint32_t len = sprintf(p, "%hd", v);

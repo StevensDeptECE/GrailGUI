@@ -8,15 +8,33 @@ class List : public CompoundType {
   DynArray<T> impl;
 
  public:
-  List(uint32_t size = 16) : CompoundType("LIST16"), impl(size) {}
+  List(const std::string listName, uint32_t size = 16)
+      : CompoundType(listName), impl(size) {}
   DataType getDataType() const { return DataType::LIST16; }
-  void add(const T& e) { impl.add(e); }
-#if 0
+
+  template <typename U>
+  U deref(U& obj) {
+    return obj;
+  }
+
+  template <typename U>
+  U deref(U* obj) {
+    if (obj == nullptr) {
+      throw Ex1(Errcode::BAD_ARGUMENT);
+    }
+    return *obj;
+  }
+
+  template <typename U>
+  void add(U e) {
+    impl.add(deref(e));
+  }
+
   template <class... Args>
   void add(Args&&... args) {
-    impl.emplace_back(args);
+    (impl.add(deref(args)), ...);
   }
-#endif
+
   uint32_t size() const override { return impl.size(); }
   void write(Buffer& buf) const override;
   void writeMeta(Buffer& buf) const override;
@@ -41,6 +59,7 @@ class List : public CompoundType {
 template <typename T>
 void List<T>::writeMeta(Buffer& buf) const {
   buf.write(DataType::LIST16);
+  buf.write(XDLType::getTypeName());
   if (typeToDataType(impl[0]) != DataType::UNIMPL) {
     buf.write(typeToDataType(impl[0]));
   } else {  // if (is_base_of<XDLType, T>::value) {

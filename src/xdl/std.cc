@@ -14,16 +14,10 @@ using namespace std;
 DynArray<string> XDLType::typeNames(1024);
 DynArray<const XDLType*> XDLType::types(1024);
 const string XDLType::empty = "";
-const UnImpl* XDLType::unimpl = new UnImpl();
-
 HashMap<uint32_t> XDLType::byName(1024);
-inline void XDLType::addType(const XDLType* type) {
-  string typeName = type->getTypeName();
-  byName.checkGrow();
-  byName.add(typeName.c_str(), types.size());
-  types.add(type);
-  typeNames.add(typeName);
-}
+const UnImpl* XDLType::unimpl = nullptr;
+
+inline const XDLType* XDLType::addType(const XDLType* type) { return type; }
 
 void XDLType::writeMeta(Buffer& buf) const { buf.write(getDataType()); }
 
@@ -57,54 +51,38 @@ void XDLType::classInit() {
   addType(new JulianDate());
   addType(new Timestamp());
   addType(new String8());
-  const UnImpl* ui = unimpl;
-  addType(ui);  //  addType(new String16());
-  addType(ui);  // addType(new String32());
-  addType(ui);  // addType(new String64());
-  addType(ui);  // addType(new UTF8_8());
-  addType(ui);  // addType(new UTF8_16());
-  addType(ui);  // addType(new UTF8_32());
-  addType(ui);  // addType(new UTF8_64());
-  addType(ui);  // addType(new UTF16_8());
-  addType(ui);  // addType(new UTF16_16());
-  addType(ui);  // addType(new UTF16_32());
-  addType(ui);  // addType(new UTF16_64());
-  addType(ui);  // addType(new Regex());
-  addType(ui);  // addType(new UTF8_16());
-  addType(ui);  // addType(new UTF8_32());
-  addType(ui);  // addType(new UTF8_64());
-  addType(ui);  // addType(new GenericList());
-  addType(ui);  // addType(new GenericList());
-  addType(ui);  // addType(new GenericList());
-  addType(ui);  // addType(new GenericList());
-  addType(ui);  // addType(new Struct());
-  addType(ui);  // addType(new Struct());
-  addType(ui);  // addType(new Struct());
-  addType(ui);  // addType(new Struct()); //TODO: DynamicList
-  addType(ui);  // addType(new Struct());
-  addType(ui);  // addType(new Func1());
-  addType(ui);  // addType(new Func2());
-  addType(ui);  // addType(new FuncParam1());
-  addType(ui);  // addType(new FuncParam2());
-  addType(ui);  // Why bother with these, we won't get to them for a LONG
-                // time...
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);  // BIGINT
+  unimpl = static_cast<const UnImpl*>(addType(new UnImpl()));
+  //  addType(new String16());
+  // addType(new String32());
+  // addType(new String64());
+  // addType(new UTF8_8());
+  // addType(new UTF8_16());
+  // addType(new UTF8_32());
+  // addType(new UTF8_64());
+  // addType(new UTF16_8());
+  // addType(new UTF16_16());
+  // addType(new UTF16_32());
+  // addType(new UTF16_64());
+  // addType(new Regex());
+  // addType(new UTF8_16());
+  // addType(new UTF8_32());
+  // addType(new UTF8_64());
+  // addType(new GenericList());
+  // addType(new GenericList());
+  // addType(new GenericList());
+  // addType(new GenericList());
+  // addType(new Struct());
+  // addType(new Struct());
+  // addType(new Struct());
+  // addType(new Struct()); //TODO: DynamicList
+  // addType(new Struct());
+  // addType(new Func1());
+  // addType(new Func2());
+  // addType(new FuncParam1());
+  // addType(new FuncParam2());
+  // Why bother with these, we won't get to them for a LONG
+  // time...
+  // BIGINT
 }
 
 void XDLType::classCleanup() {

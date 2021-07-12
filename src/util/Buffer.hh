@@ -64,6 +64,7 @@ class Buffer {
   // write is binary
   void write(const string& s);
   void write(const char* s, uint32_t len);
+  void writeStructMeta(const char name[], uint32_t numMembers);
 
   // append is ASCII text
   void appendU8(uint8_t);
