@@ -1,3 +1,4 @@
+#include <numbers>
 #include <string>
 #include <vector>
 
@@ -41,7 +42,7 @@ Body::Body(Canvas* c, Style* s, Camera* cam, const std::string& name,
       orbitalRadius(orbitalRadius),
       orbitalFreq(1.0 / orbitalPeriod),
       rotationFreq(1.0 / rotationalPeriod) {
-  phase = PI<double>;
+  phase = numbers::pi;
   MultiShape3D* body = c->addLayer(new MultiShape3D(c, cam, textureFile, &t));
   body->genOBJModel("models/sphere.obj");
   t.ident();
@@ -79,14 +80,13 @@ class SolarSystem : public GLWin {
   Camera* cam;
 
  public:
-  static void panBack(GLWin* w) { ((SolarSystem*)w)->cam->translate(0, 0, -1); }
-  static void panForward(GLWin* w) {
-    ((SolarSystem*)w)->cam->translate(0, 0, +1);
-  }
-  static void panRight(GLWin* w) {
-    ((SolarSystem*)w)->cam->translate(+1, 0, 0);
-  }
-  static void panLeft(GLWin* w) { ((SolarSystem*)w)->cam->translate(-1, 0, 0); }
+  // TODO; Implement polar coordinates???
+  // TODO: Implement panUp/Down for 2D-like views
+  // TODO: Follow planets
+  void panBack() { cam->translate(0, 0, +1); }
+  void panForward() { cam->translate(0, 0, -1); }
+  void panRight() { cam->translate(+1, 0, 0); }
+  void panLeft() { cam->translate(-1, 0, 0); }
 
   void init() {
     setDt(0.1);
@@ -131,18 +131,17 @@ class SolarSystem : public GLWin {
         new MultiShape3D(c, cam, "textures/jupiter.jpg", &tJupiter));
     jupiter->genOBJModel("models/sphere.obj");
 
-    setAction(1002, panBack);
-    setAction(1003, panForward);
-    setAction(1004, panRight);
-    setAction(1005, panLeft);
-
-    setEvent(262, 1004);  // right arrow = pan right
-    setEvent(263, 1005);  // left arrow = pan left
-    setEvent(266, 1002);  // page up = zoom out
-    setEvent(267, 1003);  // page down = zoom in
+    // right arrow = pan right
+    // left arrow = pan left
+    // page up = zoom out
+    // page down = zoom in
+    bindEvent(Inputs::RARROW, &SolarSystem::panRight, this);
+    bindEvent(Inputs::LARROW, &SolarSystem::panLeft, this);
+    bindEvent(Inputs::UPARROW, &SolarSystem::panForward, this);
+    bindEvent(Inputs::DOWNARROW, &SolarSystem::panBack, this);
   }
   void update() {
-    Canvas *c = currentTab()->getMainCanvas();
+    Canvas* c = currentTab()->getMainCanvas();
     c->getWin()->setDirty();
     double t = time();
     //#if 0

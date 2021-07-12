@@ -1,6 +1,6 @@
-#include "opengl/GrailGUI.hh"
 #include "opengl/DocView.hh"
 #include "opengl/Document.hh"
+#include "opengl/GrailGUI.hh"
 
 using namespace std;
 using namespace grail;
@@ -13,29 +13,25 @@ class BookViewer : public GLWin {
 
  public:
   BookViewer(const char filename[]) : filename(filename) {}
-  
-  static void advance(GLWin *w) { ((BookViewer *)w)->docView->advance(); }
-  static void back(GLWin *w) { ((BookViewer *)w)->docView->back(); }
 
-  static void advance10(GLWin *w) { ((BookViewer *)w)->docView->advance10(); }
+  void advance() { docView->advance(); }
+  void back() { docView->back(); }
 
-  static void top(GLWin *w) { ((BookViewer *)w)->docView->top(); }
+  void advance10() { docView->advance10(); }
 
-  static void bottom(GLWin *w) { ((BookViewer *)w)->docView->bottom(); }
+  void top() { docView->top(); }
+
+  void bottom() { docView->bottom(); }
 };
 
 void BookViewer::init() {
-  setAction(1000, bottom);
-  setAction(1001, top);
-  setAction(1002, advance);
-  setAction(1003, back);
-  setEvent(264, 1000);
-  setEvent(265, 1001);
-  setEvent(262, 1002);
-  setEvent(263, 1003);
+  bindEvent(264, &BookViewer::bottom, this);
+  bindEvent(265, &BookViewer::top, this);
+  bindEvent(262, &BookViewer::advance, this);
+  bindEvent(263, &BookViewer::back, this);
 
-//  Font *font = getDefaultFont();
-  const Font* font = FontFace::get("TIMES", 30, 0);
+  //  Font *font = getDefaultFont();
+  const Font *font = FontFace::get("TIMES", 30, 0);
   Style *s = new Style(font, 1, 1, 1, 0, 0, 0);
   s->setLineWidth(1);
   Canvas *c = currentTab()->getMainCanvas();
@@ -52,7 +48,7 @@ void BookViewer::init() {
   docView = new DocView(c, s, doc);
   docView->update();
   c->addLayer(docView);
-  //c->addLayer(new Image(400, 400, 400, 400, "res/trumpmelania.png", s));
+  // c->addLayer(new Image(400, 400, 400, 400, "res/trumpmelania.png", s));
 }
 
 int main(int argc, char *argv[]) {
