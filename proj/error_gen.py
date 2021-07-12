@@ -42,7 +42,7 @@ enum class Errcode {\n"""
 const char* Ex::errNames[] = {\n"""
         )
 
-        for code, name in error_dict.items():
+        for name, code in error_dict.items():
             names.write(f'    "{code}",\n')
             codes.write(f"  {name},\n")
 
