@@ -264,8 +264,6 @@ void GLWin::startWindow() {
   hasBeenInitialized = true;
 }
 void GLWin::baseInit() {
-  glEnable(GL_DEBUG_OUTPUT);
-  glDebugMessageCallback(messageCallback, 0);
   glLineWidth(1);
   Shader::setDir(prefs.getShaderDir());
   Shader::load("solid.bin", "common.vert", "common.frag");    // Solid Color
@@ -275,6 +273,8 @@ void GLWin::baseInit() {
   Shader::load("cursor.bin", "Cursor.vert", "common.frag");   // Texture for images
   Shader::load("multiText.bin", "MultiTexture.vert",
                "MultiTexture.frag");  // MultiTexture for shapes
+//  glEnable(GL_DEBUG_OUTPUT);
+//  glDebugMessageCallback(messageCallback, 0);
   for (int i = 0; i < tabs.size(); ++i) {
     tabs[i]->init();
   }
