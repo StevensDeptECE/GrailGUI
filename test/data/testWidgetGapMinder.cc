@@ -15,20 +15,27 @@ class TestWidgets : public GLWin {
 
   GapMinderWidget *chart;
   double startTime;
-  int step = 1;
 
   TestWidgets() : GLWin(0x000000, 0xCCCCCC, "TestWidgets") {}
 
   void testGapMinder(StyledMultiShape2D *gui, MultiText *guiText) {
 
+    const uint32_t bigSize = 1024*1024;
+
+    gui->reserve(bigSize, bigSize, bigSize, 1024);
+
     string xData = "gdp_per_capita.csv";
     string yData = "ddf--datapoints--poisonings_deaths_per_100000_people.csv";
     string sData = "ddf--datapoints--vacc_rate--by--country--time.csv";
 
-    vector <float> x2 = {65000};
-    vector <float> y2 = {14};
+    vector <float> x2 = {65000, 50000, 40000};
+    vector <float> y2 = {14, 3, 5};
+    vector <float> s2 = {80, 90, 95};
+    vector <glm::vec4> c2 = {grail::blue, grail::green, grail::red};
+
     chart = new GapMinderWidget(gui, guiText, 75, 50, 900, 450, x2, y2);
-    chart->loadData(yData, xData, sData, 2000, 2010);
+    //chart->chart(y2, x2, s2, 10000, 2, c2);
+    chart->loadData(yData, xData, sData, 2000, 2010, 10000, 2);
 
     chart->setTitle("Title");
     chart->init();
@@ -37,14 +44,14 @@ class TestWidgets : public GLWin {
   void update(){
     
     double time = getTime();
-    if (time > startTime + 2 && step == 1) {
-      cout << "hello inside if" << endl;
+    if (time > startTime + 2 ) {
       startTime = time;
-      step++;
-      chart->animate(10000, 2);
+      chart->update();
+      setDirty();
     }
 
   }
+
 
   void init() {
 

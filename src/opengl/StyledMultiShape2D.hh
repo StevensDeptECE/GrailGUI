@@ -51,6 +51,7 @@ class StyledMultiShape2D : public MultiShape2D {
   void clear() {
     vertices.clear();
     colors.clear();
+    solidIndices.clear();
     lineIndices.clear();
     pointIndices.clear();
   }
@@ -62,8 +63,11 @@ class StyledMultiShape2D : public MultiShape2D {
                     const float b);
 
   // Update buffers
+  void update();
   void updatePoints();
   void updateIndices();
+  void updateSolidIndices();
+  void reserve(uint32_t vertSize, uint32_t solSize, uint32_t lineSize, uint32_t pointSize);
   // Solid Primitives
   void fillRectangle(float x, float y, float w, float h, const glm::vec4& c);
   void fillRoundRect(float x, float y, float w, float h, float rx, float ry,
@@ -97,6 +101,21 @@ class StyledMultiShape2D : public MultiShape2D {
   void fillPolyline(const float xy[], uint32_t n, const glm::vec4& c);
   void drawPolygon(const float xy[], uint32_t n, const glm::vec4& c);
   void fillPolygon(const float xy[], uint32_t n, const glm::vec4& c);
+
+  //combined solid & lines
+  void fillDrawRectangle(float x, float y, float w, float h, const glm::vec4& fc, const glm::vec4& dc);
+  void fillDrawRoundRect(float x, float y, float w, float h, float rx, float ry,
+                     const glm::vec4& fc, const glm::vec4& dc);
+  void fillDrawTriangle(float x1, float y1, float x2, float y2, float x3, float y3,
+                    const glm::vec4& fc, const glm::vec4& dc);
+  void fillDrawPolygon(float x, float y, float xRad, float yRad, float n,
+                   const glm::vec4& fc, const glm::vec4& dc);
+  void fillDrawCircle(float x, float y, float rad, float angleInc,
+                  const glm::vec4& fc, const glm::vec4& dc);
+  void fillDrawEllipse(float x, float y, float xRad, float yRad, float angleInc,
+                   const glm::vec4& fc, const glm::vec4& dc);
+
+
   // drawBezier, end bezier,grid
   void bezierSegment(const Bezier* b);
   void bezierSegmentByPoints(float p1x, float p1y, float p2x, float p2y,

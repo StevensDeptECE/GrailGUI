@@ -14,7 +14,8 @@ add_library(grail
             ${grail-opengl}
             ${grail-util}
             ${grail-xdl}
-            ${grail-video})
+            #${grail-video}
+            )
 
 
 if(${GRAIL_EXPERIMENTAL})

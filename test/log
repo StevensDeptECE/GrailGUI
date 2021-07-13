@@ -1,0 +1,36 @@
+GL CALLBACK: ** GL ERROR ** type = 0x824c, severity = 0x9146, message = GL_INVALIDhello inside if
+hello inside animate
+hello inside if
+hello inside animate
+hello inside if
+hello inside animate
+hello inside if
+hello inside animate
+hello inside if
+hello inside animate
+hello inside if
+hello inside animate
+hello inside if
+hello inside animate
+hello inside if
+hello inside animate
+hello inside if
+hello inside animate
+hello inside if
+hello inside if
+hello inside if
+hello inside if
+hello inside if
+ity = 0x9146, message = GL_INVALID_VALUE in glBufferSubData(offset 0 + size 5184 > buffer size 1536)
+GL CALLBACK: ** GL ERROR ** type = 0x824c, severity = 0x9146, message = GL_INVALID_VALUE in glBufferSubData(offset 0 + size 5184 > buffer size 1536)
+GL CALLBACK: ** GL ERROR ** type = 0x824c, severity = 0x9146, message = GL_INVALID_VALUE in glBufferSubData(offset 0 + size 5184 > buffer size 1536)
+GL CALLBACK: ** GL ERROR ** type = 0x824c, severity = 0x9146, message = GL_INVALID_VALUE in glBufferSubData(offset 0 + size 5184 > buffer size 1536)
+GL CALLBACK: ** GL ERROR ** type = 0x824c, severity = 0x9146, message = GL_INVALID_VALUE in glBufferSubData(offset 0 + size 5184 > buffer size 1536)
+GL CALLBACK: ** GL ERROR ** type = 0x824c, severity = 0x9146, message = GL_INVALID_VALUE in glBufferSubData(offset 0 + size 5184 > buffer size 1536)
+GL CALLBACK: ** GL ERROR ** type = 0x824c, severity = 0x9146, message = GL_INVALID_VALUE in glBufferSubData(offset 0 + size 5184 > buffer size 1536)
+GL CALLBACK: ** GL ERROR ** type = 0x824c, severity = 0x9146, message = GL_INVALID_VALUE in glBufferSubData(offset 0 + size 5184 > buffer size 1536)
+GL CALLBACK: ** GL ERROR ** type = 0x824c, severity = 0x9146, message = GL_INVALID_VALUE in glBufferSubData(offset 0 + size 5184 > buffer size 1536)
+GL CALLBACK: ** GL ERROR ** type = 0x824c, severity = 0x9146, message = GL_INVALID_VALUE in glBufferSubData(offset 0 + size 5184 > buffer size 1536)
+GL CALLBACK: ** GL ERROR ** type = 0x824c, severity = 0x9146, message = GL_INVALID_VALUE in glBufferSubData(offset 0 + size 5184 > buffer size 1536)
+GL CALLBACK: ** GL ERROR ** type = 0x824c, severity = 0x9146, message = GL_INVALID_VALUE in glBufferSubData(offset 0 + size 5184 > buffer size 1536)
+free(): invalid pointer

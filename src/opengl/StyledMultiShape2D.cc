@@ -21,6 +21,7 @@ uint32_t StyledMultiShape2D::addSector(float x, float y, float xRad, float yRad,
 
     addStyledPoint(px, py, c);
   }
+  //TODO round error
   return (toAngle - fromAngle) / angleInc + 1;
 }
 
@@ -65,7 +66,7 @@ void StyledMultiShape2D::init() {
   // Create an object in the VAO to store all the vertex values
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0],
+  glBufferData(GL_ARRAY_BUFFER, vertices.capacity() * sizeof(float), &vertices[0],
                GL_DYNAMIC_DRAW);
   // Describe how information is received in shaders
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -77,7 +78,7 @@ void StyledMultiShape2D::init() {
   // indices) in order to draw it as a solid(filled)
   glGenBuffers(1, &sbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sbo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * solidIndices.size(),
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * solidIndices.capacity(),
                &solidIndices[0], GL_DYNAMIC_DRAW);
 
   // Create LBO
@@ -85,7 +86,7 @@ void StyledMultiShape2D::init() {
   // indices) in order to draw it as lines(wireframe)
   glGenBuffers(1, &lbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * lineIndices.size(),
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * lineIndices.capacity(),
                &lineIndices[0], GL_DYNAMIC_DRAW);
 
   // temporary bind point size
@@ -118,6 +119,25 @@ void StyledMultiShape2D::updateIndices() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * lineIndices.size(),
                &lineIndices[0], GL_DYNAMIC_DRAW);
+}
+
+void StyledMultiShape2D::updateSolidIndices() {
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sbo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * solidIndices.size(),
+               &solidIndices[0], GL_DYNAMIC_DRAW);
+}
+
+void StyledMultiShape2D::update(){
+  updatePoints();
+  updateSolidIndices();
+  updateIndices();
+}
+
+void StyledMultiShape2D::reserve(uint32_t vertSize, uint32_t solSize, uint32_t lineSize, uint32_t pointSize){
+  vertices.reserve(vertSize);
+  solidIndices.reserve(solSize);
+  lineIndices.reserve(lineSize);
+  pointIndices.reserve(pointSize);
 }
 
 // Solid Primitives
@@ -482,6 +502,41 @@ void StyledMultiShape2D::drawPolygon(const float xy[], uint32_t n,
   lineIndices.push_back(ind);
   lineIndices.push_back(start);
 }
+
+
+  //combined solid & lines
+  void StyledMultiShape2D::fillDrawRectangle(float x, float y, float w, float h, 
+                      const glm::vec4& fc, const glm::vec4& dc){}
+  void StyledMultiShape2D::fillDrawRoundRect(float x, float y, float w, float h, float rx, float ry,
+                     const glm::vec4& fc, const glm::vec4& dc){}
+  void StyledMultiShape2D::fillDrawTriangle(float x1, float y1, float x2, float y2, float x3, float y3,
+                    const glm::vec4& fc, const glm::vec4& dc){}
+  void StyledMultiShape2D::fillDrawPolygon(float x, float y, float xRad, float yRad, float n,
+                   const glm::vec4& fc, const glm::vec4& dc){}
+  void StyledMultiShape2D::fillDrawCircle(float x, float y, float rad, float angleInc,
+                  const glm::vec4& fc, const glm::vec4& dc){
+    
+    }
+  #if 0
+  void StyledMultiShape2D::fillDrawEllipse(float x, float y, float xRad, float yRad, float angleInc,
+                   const glm::vec4& fc, const glm::vec4& dc){
+
+    uint32_t points = 0;
+
+    uint32_t centerIndex = getPointIndex();
+
+    fillEllipse(x, y, xRad, yRad, angleInc, fc);
+    
+    lAddSectorIndices(centerIndex, toAdd);
+    lineIndices.push_back(getPointIndex() - 1);
+    lineIndices.push_back(centerIndex + 2);
+
+    points = 1 + toAdd;
+    numIndices.push_back(points);
+    currentIndex += points;
+    startIndices.push_back(currentIndex);
+  }
+  #endif
 
 // Point Primitives
 void StyledMultiShape2D::rectanglePoints(float x, float y, float w, float h,

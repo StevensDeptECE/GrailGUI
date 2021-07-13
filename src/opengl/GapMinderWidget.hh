@@ -26,6 +26,8 @@ private:
   Scale *yAxis;
   Scale *xAxis;
   float minMultiplier;
+  int rulerIntervalX;
+  int rulerIntervalY;
 
   GapMinderLoader *gml;
   const GapMinderLoader::Dataset* d;
@@ -44,7 +46,7 @@ public:
     Widget2D(m, t, x, y, w, h), title(title), titleStyle(titleStyle), 
     barStyle(barStyle), minX(minX), maxX(maxX), minY(minY), maxY(maxY), 
     maxMultiplier(maxMultiplier), minMultiplier(minMultiplier),
-    tickSize(tickSize), tickStart(tickStart), yAxis(yAxis), xAxis(xAxis){}
+    tickSize(tickSize), tickStart(tickStart), yAxis(yAxis), xAxis(xAxis), gml(nullptr){}
 
   GapMinderWidget(StyledMultiShape2D* m, MultiText* t, float x, float y, float w, float h) :
     GapMinderWidget(m,t, x, y, w, h, std::string (""), nullptr, nullptr,
@@ -73,8 +75,9 @@ public:
   void setTitleStyle(const Style* s) { titleStyle = s;}
   void chart(const std::vector<float>& yLocations, const std::vector<float>& xLocations, 
   const std::vector<float>& sizes, int rulerIntervalX, int rulerIntervalY, const std::vector <glm::vec4>& c);
-  void loadData(std::string sy, std::string sx, std::string ss, int startYear, int endYear);
-  void animate(int rulerIntervalX, int rulerIntervalY);
+  void loadData(const std::string &sy, const std::string &sx, const std::string &ss, 
+  int startYear, int endYear, int rulerIntervalX, int rulerIntervalY);
+  void update();
   //void chartLog(const float b[], int size, float relativeSpace, const std::string barNames[], int logBase);
   void setTitle(const std::string& s);
   void init() override;

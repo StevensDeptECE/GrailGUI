@@ -21,7 +21,7 @@ using namespace std;
 MultiText::MultiText(Canvas* c, const Style* style, uint32_t size)
     : Shape(c), style(style) {
   // if !once, once = !once was a thing
-  vert.reserve(size * 24);
+  vert.reserve(size * 240);
   const Font* f = style->f;  // FontFace::getFace(1)->getFont(0);
 }
 
