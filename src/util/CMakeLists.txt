@@ -1,6 +1,6 @@
 set(grail-util 
     Buffer.cc
-    datatype.cc 
+    datatype.cc
     HashMap.cc
     Prefs.cc
     Timers.cc

@@ -99,6 +99,8 @@ endif()
 ##)
 ##FetchContent_MakeAvailable(shapelib)
 
+
+add_subdirectory(proj)
 add_subdirectory(include/libshape)
 add_subdirectory(src)
 

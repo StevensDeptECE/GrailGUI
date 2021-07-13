@@ -6,7 +6,7 @@ add_subdirectory(xdl)
 
 set(grail-path
             ${PROJECT_SOURCE_DIR}/include/glad/glad.c
-            ${grail-csp} 
+            ${grail-csp}
             ${grail-data}
             ${grail-opengl}
             ${grail-util}

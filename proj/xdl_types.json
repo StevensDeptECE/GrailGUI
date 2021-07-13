@@ -49,18 +49,18 @@
     "LOOP2":"loop2",
     "LOOP4":"loop4",
     "BITVEC8":"bitvec8",
-    "BITVEC16":"bitvec16"
+    "BITVEC16":"bitvec16",
     "BITVEC32":"bitvec32",
     "BITVEC64":"bitvec64",
     "BV32":"bitvec32_int",
     "BV64":"bitvec64_int",
 	"BITFIELDS":"bitfields",
-	"ARITHMETIC":arithmetic",
+	"ARITHMETIC":"arithmetic",
 	"JPEG":"jpeg",
     "JPEGLIST":"jpeglist",
 	"BLOB16":"blob16",
     "BLOB32":"blob32",
-    "BLOB64":"blob64"
+    "BLOB64":"blob64",
 	"BIGINT":"bigint",
-    "ENUM_SIZE":enum_size does not really exist"
+    "ENUM_SIZE":"enum_size does not really exist"
 }
