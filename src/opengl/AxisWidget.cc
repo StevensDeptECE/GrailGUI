@@ -47,9 +47,9 @@ double AxisWidget::getMaxBound() { return maxBound; }
 void AxisWidget::addAxisTitle() {
   if (axisTitle.size()) {
     if (isVert) {
-      t->addCentered(x - 1.2 * m->getStyle()->f->getWidth(axisTitle.c_str(),
+      t->addCentered(x - 1.5 * m->getStyle()->f->getWidth(axisTitle.c_str(),
                                                           axisTitle.size()),
-                     y + h / 2, m->getStyle()->f, axisTitle.c_str(),
+                     y + w / 2, m->getStyle()->f, axisTitle.c_str(),
                      axisTitle.size());
     } else {
       t->addCentered(
@@ -88,8 +88,15 @@ void LinearAxisWidget::init() {
         m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
                     tickColor);
 
-      t->add(x, draw + m->getStyle()->f->getHeight() / 2, m->getStyle()->f,
-             tick, tickFormat.width, tickFormat.precision);
+      char fmt[50];
+      sprintf(fmt, "%%%d.%dlf", tickFormat.width, tickFormat.precision);
+
+      char thing[50];
+      sprintf(thing, fmt, tick);
+
+      t->add(x - 20 - m->getStyle()->f->getWidth(thing, strlen(thing)),
+             draw + m->getStyle()->f->getHeight() / 2, m->getStyle()->f, tick,
+             tickFormat.width, tickFormat.precision);
       // t->addCentered(x, draw + m->getStyle()->f->getHeight() / 2,
       //                m->getStyle()->f, tick, tickFormat.width,
       //                tickFormat.precision);
