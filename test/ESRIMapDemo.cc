@@ -25,56 +25,49 @@ class ESRIMapLoader : public GLWin {
   uint64_t actionDelay = 100;
   bool animate;
 
-  static void nextCounty(GLWin* w) {
-    ESRIMapLoader* eml = ((ESRIMapLoader*)w);
-    if (eml->actionTimer.elapsedMillis() > eml->actionDelay) {
-      if (eml->countyStart < eml->numCounties) eml->countyStart++;
-      eml->actionTimer.reset();
+  void nextCounty() {
+    if (actionTimer.elapsedMillis() > actionDelay) {
+      if (countyStart < numCounties) countyStart++;
+      actionTimer.reset();
     }
   }
 
-  static void prevCounty(GLWin* w) {
-    ESRIMapLoader* eml = ((ESRIMapLoader*)w);
-    if (eml->actionTimer.elapsedMillis() > eml->actionDelay) {
-      if (eml->countyStart > 0) eml->countyStart--;
-      eml->actionTimer.reset();
+  void prevCounty() {
+    if (actionTimer.elapsedMillis() > actionDelay) {
+      if (countyStart > 0) countyStart--;
+      actionTimer.reset();
     }
   }
-  static void displayAllCounties(GLWin* w) {
-    ESRIMapLoader* eml = ((ESRIMapLoader*)w);
-    if (eml->actionTimer.elapsedMillis() > eml->actionDelay) {
-      eml->countyStart = 0;
-      eml->displayNumCounties = eml->numCounties;
-      eml->actionTimer.reset();
+  void displayAllCounties() {
+    if (actionTimer.elapsedMillis() > actionDelay) {
+      countyStart = 0;
+      displayNumCounties = numCounties;
+      actionTimer.reset();
     }
   }
-  static void display3Counties(GLWin* w) {
-    ESRIMapLoader* eml = ((ESRIMapLoader*)w);
-    if (eml->actionTimer.elapsedMillis() > eml->actionDelay) {
-      eml->displayNumCounties = 3;
-      eml->actionTimer.reset();
+  void display3Counties() {
+    if (actionTimer.elapsedMillis() > actionDelay) {
+      displayNumCounties = 3;
+      actionTimer.reset();
     }
   }
-  static void decreaseCounties(GLWin* w) {
-    ESRIMapLoader* eml = ((ESRIMapLoader*)w);
-    if (eml->actionTimer.elapsedMillis() > eml->actionDelay) {
-      if (eml->displayNumCounties > 0) eml->displayNumCounties--;
-      eml->actionTimer.reset();
+  void decreaseCounties() {
+    if (actionTimer.elapsedMillis() > actionDelay) {
+      if (displayNumCounties > 0) displayNumCounties--;
+      actionTimer.reset();
     }
   }
-  static void increaseCounties(GLWin* w) {
-    ESRIMapLoader* eml = ((ESRIMapLoader*)w);
-    if (eml->actionTimer.elapsedMillis() > eml->actionDelay) {
-      if (eml->displayNumCounties < eml->numCounties) eml->displayNumCounties++;
-      eml->actionTimer.reset();
+  void increaseCounties() {
+    if (actionTimer.elapsedMillis() > actionDelay) {
+      if (displayNumCounties < numCounties) displayNumCounties++;
+      actionTimer.reset();
     }
   }
 
-  static void toggleAnimate(GLWin* w) {
-    ESRIMapLoader* eml = (ESRIMapLoader*)w;
-    if (eml->actionTimer.elapsedMillis() > eml->actionDelay) {
-      eml->animate = !eml->animate;
-      eml->actionTimer.reset();
+  void toggleAnimate() {
+    if (actionTimer.elapsedMillis() > actionDelay) {
+      animate = !animate;
+      actionTimer.reset();
     }
   }
 
@@ -126,7 +119,7 @@ class ESRIMapLoader : public GLWin {
   }
 
   void init() {
-    Shapefile counties = Shapefile("res/us_counties/USA_Counties.shp");
+    Shapefile counties = Shapefile("res/maps/USA_Counties.shp");
     counties.init();
 
     // Convert shape objects to our ESRIShape class

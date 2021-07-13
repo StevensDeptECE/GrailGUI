@@ -25,9 +25,7 @@ class TestDrawBlockMap : public GLWin {
   TestDrawBlockMap& operator=(const TestDrawBlockMap& orig) = delete;
 
   constexpr static float zoomVal = 1.2;
-  static void mapZoomIn(GLWin* w) {
-    TestDrawBlockMap* map = ((TestDrawBlockMap*)w);
-    MapView2D* mv = map->mv;
+  void mapZoomIn() {
     //    glm::mat4& t = mv->getTransform();
     mv->uniformZoom(1 / 1.2f);
     mv->setProjection();
@@ -36,9 +34,7 @@ class TestDrawBlockMap : public GLWin {
     // t = glm::translate(t, glm::vec3(+74, -40, 0) / 1.2f);
   }
 
-  static void mapZoomOut(GLWin* w) {
-    TestDrawBlockMap* map = ((TestDrawBlockMap*)w);
-    MapView2D* mv = map->mv;
+  void mapZoomOut() {
     mv->uniformZoom(1.2f);
     mv->setProjection();
     //    glm::mat4& t = map->mv->getTransform();
@@ -47,55 +43,47 @@ class TestDrawBlockMap : public GLWin {
     // t = glm::translate(t, glm::vec3(+74, -40, 0) * 1.2f);
   }
 
-  static void mapPanRight(GLWin* w) {
-    TestDrawBlockMap* map = ((TestDrawBlockMap*)w);
-    MapView2D* mv = map->mv;
+  void mapPanRight() {
     mv->translate(0.2, 0);
     mv->setProjection();
   }
-  static void mapPanLeft(GLWin* w) {
-    TestDrawBlockMap* map = ((TestDrawBlockMap*)w);
-    MapView2D* mv = map->mv;
+
+  void mapPanLeft() {
     mv->translate(-0.2, 0);
     mv->setProjection();
   }
-  static void mapPanUp(GLWin* w) {
-    TestDrawBlockMap* map = ((TestDrawBlockMap*)w);
-    MapView2D* mv = map->mv;
+
+  void mapPanUp() {
     mv->translate(0, 0.2);
     mv->setProjection();
   }
-  static void mapPanDown(GLWin* w) {
-    TestDrawBlockMap* map = ((TestDrawBlockMap*)w);
-    MapView2D* mv = map->mv;
+
+  void mapPanDown() {
     mv->translate(0, -0.2);
     mv->setProjection();
   }
 
-  static void nextCounty(GLWin* w) {
-    TestDrawBlockMap* eml = ((TestDrawBlockMap*)w);
-    if (eml->countyStart < eml->numCounties) eml->countyStart++;
+  void nextCounty() {
+    if (countyStart < numCounties) countyStart++;
   }
-  static void prevCounty(GLWin* w) {
-    TestDrawBlockMap* eml = ((TestDrawBlockMap*)w);
-    if (eml->countyStart > 0) eml->countyStart--;
+
+  void prevCounty() {
+    if (countyStart > 0) countyStart--;
   }
-  static void displayAllCounties(GLWin* w) {
-    TestDrawBlockMap* eml = ((TestDrawBlockMap*)w);
-    eml->countyStart = 0;
-    eml->displayNumCounties = eml->numCounties;
+
+  void displayAllCounties() {
+    countyStart = 0;
+    displayNumCounties = numCounties;
   }
-  static void display3Counties(GLWin* w) {
-    TestDrawBlockMap* eml = ((TestDrawBlockMap*)w);
-    eml->displayNumCounties = 3;
+
+  void display3Counties() { displayNumCounties = 3; }
+
+  void decreaseCounties() {
+    if (displayNumCounties > 0) displayNumCounties--;
   }
-  static void decreaseCounties(GLWin* w) {
-    TestDrawBlockMap* eml = ((TestDrawBlockMap*)w);
-    if (eml->displayNumCounties > 0) eml->displayNumCounties--;
-  }
-  static void increaseCounties(GLWin* w) {
-    TestDrawBlockMap* eml = ((TestDrawBlockMap*)w);
-    if (eml->displayNumCounties < eml->numCounties) eml->displayNumCounties++;
+
+  void increaseCounties() {
+    if (displayNumCounties < numCounties) displayNumCounties++;
   }
 
   // void transform(ESRIPoint& pt, double shiftX, double shiftY, double scaleX,
@@ -109,12 +97,13 @@ class TestDrawBlockMap : public GLWin {
     const Style* s = getDefaultStyle();
     Style* s2 = new Style(getDefaultFont(), grail::white, grail::black);
     mv = c->addLayer(new MapView2D(c, s2, new BlockMapLoader(filename)));
-    bindEvent(Inputs::WHEELUP, mapZoomIn);
-    bindEvent(Inputs::WHEELDOWN, mapZoomOut);
-    bindEvent(Inputs::RARROW, mapPanRight);
-    bindEvent(Inputs::LARROW, mapPanLeft);
-    bindEvent(Inputs::UPARROW, mapPanUp);
-    bindEvent(Inputs::DOWNARROW, mapPanDown);
+
+    bindEvent(Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);
+    bindEvent(Inputs::WHEELDOWN, &TestDrawBlockMap::mapZoomOut, this);
+    bindEvent(Inputs::RARROW, &TestDrawBlockMap::mapPanRight, this);
+    bindEvent(Inputs::LARROW, &TestDrawBlockMap::mapPanLeft, this);
+    bindEvent(Inputs::UPARROW, &TestDrawBlockMap::mapPanUp, this);
+    bindEvent(Inputs::DOWNARROW, &TestDrawBlockMap::mapPanDown, this);
     update();
   }
 
