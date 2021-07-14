@@ -10,21 +10,22 @@ using namespace grail;
 ** we did not create them.
 */
 class TestImage : public GLWin {
+  Image* img;
+  MainCanvas* c;
+
  public:
   TestImage() : GLWin(0x000000, 0xCCCCCC, "TestImage") {}
-
-  MainCanvas *c;
 
   void update() {}
 
   void init() {
     c = currentTab()->getMainCanvas();
 
-    Image *img = c->addLayer(
-        new Image(c, 100, 100, 300, 300, "textures/image_demo/frame13.png"));
+    img = c->addLayer(
+        new Image(c, 50, 50, 500, 500, "textures/image_demo/frame13.png", 1));
   }
 };
 
-int main(int argc, char *argv[]) {
-  return GLWin::init(new TestImage(), 500, 500);
+int main(int argc, char* argv[]) {
+  return GLWin::init(new TestImage(), 1000, 1000);
 }

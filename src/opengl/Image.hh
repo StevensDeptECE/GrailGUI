@@ -7,7 +7,7 @@
 class Image : public Shape {
  private:
   // x, y, width, and height of what we will actually draw
-  float x, y, drawWidth, drawHeight;
+  float x, y, width, height;
   // variables that stb_load will put values into
   int textureWidth, textureHeight, nrChannels;
   // place to store the data we get from stb_load
@@ -20,9 +20,9 @@ class Image : public Shape {
 
  public:
   Image(Canvas *c, float x, float y, float width, float height,
-        uint32_t textureID = 0);
+        uint32_t textureID = 1);
   Image(Canvas *c, float x, float y, float width, float height,
-        const char *filePath, uint32_t textureID = 0);
+        const char *filePath, uint32_t textureID = 1);
 
   void addImage(const char *filePath);
 
