@@ -105,6 +105,7 @@ void XDLRaw::format(Buffer& binaryIn, Buffer& asciiOut,
 inline void Struct::addSym(const string& memberName, const XDLType* t) {
   byName.add(memberName.c_str(), types.size());
   members.add(Member(memberNames.length(), memberName.length(), t));
+  memberNames += memberName;
 }
 
 inline void Struct::addSymCheckNull(const string& name, const XDLType* t2) {
@@ -181,69 +182,6 @@ void Struct::addMeta(ArrayOfBytes* meta) const {
   }
 }
 
-// TODO Remove, verify the successor method works
-#if 0
-/* Reads Buffer into struct s*/
-void XDLType::readMeta(XDLCompiler* compiler, Buffer& in, uint32_t count,
-                       Struct* s) {
-  cout << "XDLType::readMeta " << count << "\n";
-  for (uint32_t i = 0; i < count; i++) {
-    DataType t = in.readType();
-    string name = in.readString8();
-    switch (t) {
-      case DataType::U8:
-      case DataType::U16:
-      case DataType::U32:
-      case DataType::U64:
-      case DataType::U128:
-      case DataType::U256:
-      case DataType::I8:
-      case DataType::I16:
-      case DataType::I32:
-      case DataType::I64:
-      case DataType::I128:
-      case DataType::I256:
-      case DataType::BOOL:
-      case DataType::F32:
-      case DataType::F64:
-      case DataType::DATE:
-      case DataType::JULDATE:
-      case DataType::STRING8: {
-        s->addSymCheckDup(name, XDLType::getBuiltinType(t));
-        break;
-      }
-      case DataType::STRUCT8: {
-        Struct* sRecurse = new Struct(compiler, name);
-        uint8_t numMembers = in.readU8();
-        readMeta(compiler, in, numMembers, sRecurse);
-        s->addStructMember(name, sRecurse);
-        break;
-      }
-      // case DataType::STRUCT16:
-      // case DataType::STRUCT32
-      case DataType::LIST8: {
-        // get the name of the type of each element
-        string listType = in.readString8();
-
-        GenericList* genList = new GenericList(compiler, name);
-        uint8_t numMembers = in.readU8();
-        for (int i = 0; i < numMembers; i++) {
-          readMeta(compiler, in, 1, );
-        }
-
-        s->addSymCheckDup(name, new GenericList(name, len, listType));
-        //  s->addMember(DataType::List8, memberName)
-        // uint8_t numElements = in.readU8();
-        // s->addMember(memberType, listName);
-        break;
-      }
-        //        case DataType::List16:
-        //        case DataType::List32
-    }
-  }
-}
-#endif
-
 /* Reads Buffer into struct s*/
 const XDLType* XDLType::readMeta(XDLCompiler* compiler, Buffer& in) {
   DataType t = in.readType();
@@ -275,14 +213,18 @@ const XDLType* XDLType::readMeta(XDLCompiler* compiler, Buffer& in) {
       Struct* s = new Struct(compiler, name);
       string memberName;
       for (int i = 0; i < numMembers; i++) {
+        const XDLType* member = readMeta(compiler, in);
         memberName = in.readString8();
-        s->addSymCheckDup(memberName, readMeta(compiler, in));
+        s->addSymCheckDup(memberName, member);
       }
       return s;
     }
     // case DataType::STRUCT16:
     // case DataType::STRUCT32
-    case DataType::LIST8: {
+    case DataType::LIST8:
+    case DataType::LIST16:
+    case DataType::LIST32:
+    case DataType::LIST64: {
       string name = in.readString8();
       GenericList* genList =
           new GenericList(compiler, name, readMeta(compiler, in));
@@ -722,8 +664,10 @@ void Struct::writeMeta(Buffer& buf) const {
 void Struct::display(Buffer& binaryIn, Buffer& asciiOut) const {
   for (int i = 0; i < members.size(); i++) {
     const Member& m = members[i];
-    asciiOut.append(" ");
+    asciiOut.append(&memberNames[m.nameOffset], m.nameLen);
+    asciiOut.write(' ');
     m.type->display(binaryIn, asciiOut);
+    asciiOut.write('\n');
   }
 }
 
@@ -749,7 +693,12 @@ void GenericList::writeMeta(Buffer& buf) const {
   // TODO: check for overflow of buffer!
 }
 
-void GenericList::display(Buffer& binaryIn, Buffer& asciiOut) const {}
+void GenericList::display(Buffer& binaryIn, Buffer& asciiOut) const {
+  uint64_t size = binaryIn.readU16();
+  for (int i = 0; i < size; i++) {
+    listType->display(binaryIn, asciiOut);
+  }
+}
 
 XDLIterator* GenericList::createIterator() {
   return nullptr;  // TODO: should return an iterator to each item in the list

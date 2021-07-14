@@ -10,6 +10,8 @@ class DynArray {
   uint32_t size_;
   T* data;
   void* operator new(size_t sz, T* place) { return place; }
+  // TODO: Objects containing pointers may be unable to move
+  // DynArray of Strings seems to break after 2 Strings are added
   void checkGrow() {
     if (size_ >= capacity) {
       T* old = data;
@@ -40,7 +42,7 @@ class DynArray {
   DynArray& operator=(const DynArray& orig) = delete;
   void add(const T& v) {
     checkGrow();
-    new ((char*)data + size_++) T(v);
+    new ((void*)(data + size_++)) T(v);
   }
 
   T removeEnd() {

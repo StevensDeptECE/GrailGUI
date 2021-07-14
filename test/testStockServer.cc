@@ -36,8 +36,7 @@ int main(int argc, char* argv[]) {
     IPV4Socket s(port);
     List<const StockQuote> quotes("AAPL");
     for (int i = 0; i < 3; i++) {
-      quotes.add(new StockQuote(static_cast<float>(i), static_cast<float>(i),
-                                static_cast<float>(i), static_cast<float>(i)));
+      quotes.add(new StockQuote(i, i, i, i));
     }
     XDLRequest req(&quotes);
     s.attach(&req);

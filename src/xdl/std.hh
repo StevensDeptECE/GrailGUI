@@ -360,10 +360,10 @@ class I128 : public XDLBuiltinType {
   I128(int64_t a, uint64_t b)
       : XDLBuiltinType("I128", DataType::I128), a(a), b(b) {}
   I128(int64_t b)
-      : XDLBuiltinType("U128", DataType::I128),
+      : XDLBuiltinType("I128", DataType::I128),
         a(b < 0 ? 0xFFFFFFFFFFFFFFFFLL : 0),
         b(b) {}
-  I128() : XDLBuiltinType("U128", DataType::I128), a(0), b(0) {}
+  I128() : XDLBuiltinType("I128", DataType::I128), a(0), b(0) {}
   DataType getDataType() const;
   uint32_t size() const override;
   void write(Buffer& buf) const override;
