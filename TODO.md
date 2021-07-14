@@ -13,7 +13,7 @@
 
 
   GrailGUI also attempts to make many aspects of GUI development more compact
-  and elegant. The current codebase is approximately 15k lines, 458kb.
+  and elegant. The current codebase is approximately 24k lines, 630kb.
   Object-Oriented demos are tiny, with minimal code needed to
   create a working application. While not as simple as processing, GrailGUI
   is designed to allow novice C++ programmers to achieve high-efficiency
@@ -91,7 +91,7 @@
 
  4. Heat Map component. Given arrays of x, y, and a separate array of values v,
  write a C++ component and corresponding shader to fill in colors mapped to
- the values. This is analogous to pcolor(x,y) in MATLAB.
+ the values. This is analogous to pcolor(x,y) and surf(x,y,z) in MATLAB.
 
  5. Support for Webrtc https://webrtc.org/ to provide realtime video.
 

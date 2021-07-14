@@ -1,24 +1,30 @@
-add_subdirectory(audio)
 add_subdirectory(csp)
 add_subdirectory(data)
 add_subdirectory(opengl)
 add_subdirectory(util)
 add_subdirectory(xdl)
-add_subdirectory(video)
 
-add_library(grail
+set(grail-path
             ${PROJECT_SOURCE_DIR}/include/glad/glad.c
-            ${grail-audio}
-            ${grail-csp} 
+            ${grail-csp}
             ${grail-data}
             ${grail-opengl}
             ${grail-util}
             ${grail-xdl}
-            ${grail-video})
+            )
 
 if(${GRAIL_EXPERIMENTAL})
-add_subdirectory(xp)
+  add_subdirectory(xp)
+  list(APPEND grail-path ${grail-xp})
 endif()
+
+if(${MPV_FOUND})
+  add_subdirectory(audio)
+  add_subdirectory(video)
+  list(APPEND grail-path ${grail-audio} ${grail-video})
+endif()
+
+add_library(grail ${grail-path})
 
 # GLFW
 target_include_directories(grail INTERFACE ${GLFW_INCLUDE_DIRS})
@@ -38,8 +44,10 @@ target_include_directories(grail PRIVATE ${FREETYPE_INCLUDE_DIRS})
 target_link_libraries(grail ${CMAKE_DL_LIBS})
 
 # MPV
-target_link_libraries(grail ${MPV_LIBRARY})
-target_include_directories(grail INTERFACE ${MPV_INCLUDE_DIR})
+if(${MPV_FOUND})
+  target_link_libraries(grail ${MPV_LIBRARY})
+  target_include_directories(grail INTERFACE ${MPV_INCLUDE_DIR})
+endif()
 
 # Shapelib
 target_link_libraries(grail shpgrail)

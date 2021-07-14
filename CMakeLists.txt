@@ -72,7 +72,7 @@ find_package(glfw3 REQUIRED)
 find_package(Freetype REQUIRED)
 
 # MPV
-find_package(MPV REQUIRED)
+find_package(MPV)
 
 # GLM
 FetchContent_Declare(
@@ -99,6 +99,8 @@ endif()
 ##)
 ##FetchContent_MakeAvailable(shapelib)
 
+
+add_subdirectory(proj)
 add_subdirectory(include/libshape)
 add_subdirectory(src)
 
@@ -107,6 +109,9 @@ target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/external/glm)
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/external)
 
+if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+    target_include_directories(grail PUBLIC /mingw64/include)
+endif()
 
 add_subdirectory(test)
 

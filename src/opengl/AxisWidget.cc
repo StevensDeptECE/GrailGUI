@@ -47,9 +47,9 @@ double AxisWidget::getMaxBound() { return maxBound; }
 void AxisWidget::addAxisTitle() {
   if (axisTitle.size()) {
     if (isVert) {
-      t->addCentered(x - 1.2 * m->getStyle()->f->getWidth(axisTitle.c_str(),
+      t->addCentered(x - 1.5 * m->getStyle()->f->getWidth(axisTitle.c_str(),
                                                           axisTitle.size()),
-                     y + h / 2, m->getStyle()->f, axisTitle.c_str(),
+                     y + w / 2, m->getStyle()->f, axisTitle.c_str(),
                      axisTitle.size());
     } else {
       t->addCentered(
@@ -88,8 +88,15 @@ void LinearAxisWidget::init() {
         m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
                     tickColor);
 
-      t->add(x, draw + m->getStyle()->f->getHeight() / 2, m->getStyle()->f,
-             tick, tickFormat.width, tickFormat.precision);
+      char fmt[50];
+      sprintf(fmt, "%%%d.%dlf", tickFormat.width, tickFormat.precision);
+
+      char thing[50];
+      sprintf(thing, fmt, tick);
+
+      t->add(x - 20 - m->getStyle()->f->getWidth(thing, strlen(thing)),
+             draw + m->getStyle()->f->getHeight() / 2, m->getStyle()->f, tick,
+             tickFormat.width, tickFormat.precision);
       // t->addCentered(x, draw + m->getStyle()->f->getHeight() / 2,
       //                m->getStyle()->f, tick, tickFormat.width,
       //                tickFormat.precision);
@@ -114,7 +121,7 @@ void LinearAxisWidget::init() {
 
 LogAxisWidget::LogAxisWidget(StyledMultiShape2D *m, MultiText *t, double x,
                              double y, double w, double h)
-    : AxisWidget(m, t, x, y, w, h), base(10), power(0) {}
+    : AxisWidget(m, t, x, y, w, h) {}
 
 void LogAxisWidget::setBounds(double minBound, double maxBound) {
   this->minBound = minBound;
@@ -129,7 +136,6 @@ void LogAxisWidget::init() {
   double base = 1 / log(tickInterval);
   double scale = w / abs(log(maxBound) * base - log(minBound) * base);
   bottomOffset = tickDrawSize + m->getStyle()->f->getHeight() * 1.25;
-  if (isVert) bottomOffset = -bottomOffset;
   m->drawLine(x, y + h, x + w, y + h, axisColor);
 
   if (isVert) {
@@ -142,12 +148,15 @@ void LogAxisWidget::init() {
         m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
                     tickColor);
 
-      t->add(x, draw + m->getStyle()->f->getHeight() / 2, m->getStyle()->f,
-             tick, tickFormat.width, tickFormat.precision);
-      // t->addCentered(x + bottomOffset, draw + m->getStyle()->f->getHeight() /
-      // 2,
-      //                m->getStyle()->f, tick, tickFormat.width,
-      //                tickFormat.precision);
+      char fmt[50];
+      sprintf(fmt, "%%%d.%dlf", tickFormat.width, tickFormat.precision);
+
+      char thing[50];
+      sprintf(thing, fmt, tick);
+
+      t->add(x - 20 - m->getStyle()->f->getWidth(thing, strlen(thing)),
+             draw + m->getStyle()->f->getHeight() / 2, m->getStyle()->f, tick,
+             tickFormat.width, tickFormat.precision);
     }
   } else {
     double counter = 1;

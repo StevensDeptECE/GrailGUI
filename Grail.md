@@ -57,15 +57,18 @@ The following list is not comprehensive. It contains the major contributors to G
 
 1. Dov Kruger - Project Lead, Teaching Assistant Professor at Stevens Institute of Technology, ECE Department.
    Invented grail, designed bytecode web engine, OpenGL wrappers, defined the concept of BlockLoaders and wrote the first one,
-   Implemented the font system, mentor new programmers and review code. Implemented input event mapping system.
+   Implemented the font system, mentor new programmers and review code. Implemented unified input event mapping system.
 1. Peter Ho - Student 2019 summer. Built the core web engine, implemented the first input event mapping system, and helped debug OpenGL code.
 1. Itai Bachar - High School intern 2019 Summer who pioneered some of the OpenGL code.
 1. Alex Walker - Senior Design 2019 implemented 3d models and shaders.
-1. Pridhvi Myneni - Student 2020 summer. Cleaned up GLWin, ported to Windows, implemented XDL transport 
+1. Pridhvi Myneni - Student 2020 summer. Cleaned up GLWin, ported to Windows, improved the makefile. Implemented XDL transport.
 1. Joey Rupert - Ported to Windows, Managed team
 1. Alice Huston - Student 2021. Debugged many areas, supported other programmers, rewrote the project build using cmake and ninja, ported to C++ 20,
-   wrote BlockLoaders for high speed I/O, Implemented the map and shapefile loader. Implemented LZMA decryption.
-1. Luisa Bonfim - Student 2021. Implemented multiple graph widgets including SparkLine, BarChart, Candlestick, GapMinderGraph, 
+   wrote BlockLoaders for high speed I/O, Implemented the map and ESRI shapefile loader. Implemented LZMA decryption. Use std::bind to make the
+   bindings call direct to arbitrary objects not just the main window. Cleaned up Multishape hierarchy.
+   Implemented continuous integration in github automatically testing Grail on Linux and windows in the cloud.
+1. Luisa Bonfim - Student 2021. Implemented multiple graph widgets including SparkLine, BarChart, Candlestick, GapMinderGraph.
+   Built GapMinder database blockloader supporting hundreds of variables to graph. Implementing StyledMultiShape2.5 dimensions.
 1. David Krauthamer - Student 2021. Implemented LineGraph, axes, Video and audio player. Implementing registration for input events directly to objects.
 1. Kamen Kresnitzki - Student 2021. Co-authored some of the above with David.
 writing StyledMultiShape2.5D to support layered 2D shapes, and creating and testing a BlockLoader (GapMinderLoader) to rapidly load
