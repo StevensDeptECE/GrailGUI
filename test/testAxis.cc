@@ -1,5 +1,6 @@
 #include <numbers>
 
+#include "opengl/AngledMultiText.hh"
 #include "opengl/AxisWidget.hh"
 #include "opengl/GrailGUI.hh"
 
@@ -10,86 +11,90 @@ class testAxis : public GLWin {
  public:
   testAxis() : GLWin(0x000000, 0xCCCCCC, "TestAxisWidget") {}
 
-  void testLinearAxis(StyledMultiShape2D *gui, MultiText *guiText,
-                      const Style *style) {
-    LinearAxisWidget axis(gui, guiText, 100, 100, 400, 400);
-    // linear specific
-    axis.setBounds(0, 1);
-    axis.setTickInterval(0.10);
+  void testTextAxis(StyledMultiShape2D* gui, MultiText* guiText,
+                    const Style* style) {}
 
-    // general
-    axis.setTickDrawSize(8);
-    axis.setShowTicks(true);
-    axis.setTitle("Test Title");
-    axis.init();
-  }
-
-  void testLogAxis(StyledMultiShape2D *gui, MultiText *guiText,
-                   const Style *style) {
-    LogAxisWidget axis(gui, guiText, 100, 200, 400, 200);
-    // log specific
-    // axis.setNumTicks(3);
-    // axis.setScale(2, 3);
-    axis.setBounds(1, 10000);
-    axis.setTickInterval(10);
-
-    // general
-    axis.setTickFormat(2, 0);
-    axis.setTickDrawSize(10);
-    axis.setTickColor(grail::purple);
-    axis.setTitle("Longer Title");
-    axis.init();
-  }
-
-  void testTextAxis(StyledMultiShape2D *gui, MultiText *guiText,
-                    const Style *style) {
-    vector<string> labels = {"A", "B", "C", "D", "E", "F"};
-    TextAxisWidget axis(gui, guiText, 100, 25, 300, 300);
-    // text specific
-    axis.setTickLabels(labels);
-
-    // general
-    axis.setTitle("Categories");
-    axis.setTickDrawSize(7);
-    axis.setAxisColor(grail::red);
-    axis.setShowTicks(true);
-    axis.init();
-  }
-
-  void testRotatedAxis(Canvas *c, MultiText *guiText, const Style *style) {
-    StyledMultiShape2D *rot90 =
-        c->addLayer(new StyledMultiShape2D(c, style, numbers::pi / 2, 0, 200));
-    LinearAxisWidget axis(rot90, guiText, 0, 0, 100, 100);
-
-    // linear specific
-    axis.setBounds(0, 1);
-    axis.setTickInterval(0.10);
-
-    // general
-    axis.setTickDrawSize(8);
-    axis.setShowTicks(true);
-    axis.setTitle("Test Title");
-    axis.init();
-  }
+  void testRotatedAxis(Canvas* c, StyledMultiShape2D* gui, MultiText* guiText,
+                       const Style* style) {}
 
   void init() {
-    const Style *s =
+    const Style* s =
         new Style("TIMES", 12, 1, 0, 0, 0,  // Sets a black background (unused)
                   0, 0, 0);                 // Sets black foreground text
 
-    MainCanvas *c = currentTab()->getMainCanvas();
-    StyledMultiShape2D *gui = c->getGui();
-    MultiText *guiText = c->addLayer(new MultiText(c, s));
+    MainCanvas* c = currentTab()->getMainCanvas();
+    StyledMultiShape2D* m = c->getGui();
+    MultiText* t = c->addLayer(new MultiText(c, s));
 
-    testLinearAxis(gui, guiText, s);
-    testLogAxis(gui, guiText, s);
-    testTextAxis(gui, guiText, s);
-    // testRotatedAxis(c, guiText, s);
-    // gui->drawRectangle(100, 100, 100, 100, grail::green);
-    // gui->drawCircle(100, 100, 3.5, 3, glm::vec4(0, 0, 1, 1));
+    // testing a horizontal linear axis widget
+    LinearAxisWidget linear(m, t, 600, 100, 400, 200);
+    m->drawRectangle(600, 100, 400, 200, grail::cyan);
+    // linear specific
+    linear.setBounds(0, 1);
+    linear.setTickInterval(0.10);
+    // general
+    linear.setTickDrawSize(8);
+    linear.setShowTicks(true);
+    linear.setTitle("Test Title");
+    linear.init();
+
+    // testing a horizontal log axis widget
+    LogAxisWidget log(m, t, 100, 400, 400, 200);
+    m->drawRectangle(100, 400, 400, 200, grail::green);
+    // log specific
+    log.setBounds(1, 10000);
+    log.setTickInterval(10);
+
+    // general
+    log.setTickFormat(2, 0);
+    log.setTickDrawSize(10);
+    log.setTickColor(grail::purple);
+    log.setTitle("Longer Title");
+    log.init();
+
+    // testing a horizontal text axis
+    vector<string> labels = {"A", "B", "C", "D", "E", "F"};
+    TextAxisWidget text(m, t, 100, 25, 300, 300);
+    m->drawRectangle(100, 25, 300, 300, grail::blue);
+
+    // text specific
+    text.setTickLabels(labels);
+
+    // general
+    text.setTitle("Categories");
+    text.setTickDrawSize(7);
+    text.setAxisColor(grail::red);
+    text.setShowTicks(true);
+    text.init();
+
+    // vertical linear axis
+    double width = 300;
+    double height = 300;
+    double x = 700;
+    double y = 400;
+
+    StyledMultiShape2D* rot90 = c->addLayer(
+        new StyledMultiShape2D(c, s, numbers::pi / 2, x - width, y + height));
+    AngledMultiText* t90 = c->addLayer(new AngledMultiText(c, s, 0, x, y));
+    LinearAxisWidget vertical(rot90, t90, 0, 0, width, height);
+    // LogAxisWidget vertical(rot90, t90, 0, 0, width, height);
+    m->drawRectangle(x, y, width, height, grail::darkred);
+
+    // linear specific
+    vertical.setBounds(0, 100);
+    // log
+    // vertical.setBounds(1, 10000);
+    vertical.setTickInterval(10);
+
+    // general
+    vertical.setTickDrawSize(8);
+    vertical.setShowTicks(true);
+    vertical.setIsVert(true);
+    vertical.setTitle("Test Title");
+    vertical.init();
   }
 };
 
-int main(int argc, char *argv[]) {
-  return GLWin::init(new testAxis(), 1024, 600);
+int main(int argc, char* argv[]) {
+  return GLWin::init(new testAxis(), 1000, 1000);
 }

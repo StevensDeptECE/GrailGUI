@@ -14,15 +14,10 @@ using namespace std;
 DynArray<string> XDLType::typeNames(1024);
 DynArray<const XDLType*> XDLType::types(1024);
 const string XDLType::empty = "";
-const UnImpl* XDLType::unimpl = new UnImpl();
-
 HashMap<uint32_t> XDLType::byName(1024);
-inline void XDLType::addType(const XDLType* type) {
-  string typeName = type->getTypeName();
-  byName.add(typeName.c_str(), types.size());
-  types.add(type);
-  typeNames.add(typeName);
-}
+const UnImpl* XDLType::unimpl = nullptr;
+
+inline const XDLType* XDLType::addType(const XDLType* type) { return type; }
 
 void XDLType::writeMeta(Buffer& buf) const { buf.write(getDataType()); }
 
@@ -56,54 +51,38 @@ void XDLType::classInit() {
   addType(new JulianDate());
   addType(new Timestamp());
   addType(new String8());
-  const UnImpl* ui = unimpl;
-  addType(ui);  //  addType(new String16());
-  addType(ui);  // addType(new String32());
-  addType(ui);  // addType(new String64());
-  addType(ui);  // addType(new UTF8_8());
-  addType(ui);  // addType(new UTF8_16());
-  addType(ui);  // addType(new UTF8_32());
-  addType(ui);  // addType(new UTF8_64());
-  addType(ui);  // addType(new UTF16_8());
-  addType(ui);  // addType(new UTF16_16());
-  addType(ui);  // addType(new UTF16_32());
-  addType(ui);  // addType(new UTF16_64());
-  addType(ui);  // addType(new Regex());
-  addType(ui);  // addType(new UTF8_16());
-  addType(ui);  // addType(new UTF8_32());
-  addType(ui);  // addType(new UTF8_64());
-  addType(ui);  // addType(new GenericList());
-  addType(ui);  // addType(new GenericList());
-  addType(ui);  // addType(new GenericList());
-  addType(ui);  // addType(new GenericList());
-  addType(ui);  // addType(new Struct());
-  addType(ui);  // addType(new Struct());
-  addType(ui);  // addType(new Struct());
-  addType(ui);  // addType(new Struct()); //TODO: DynamicList
-  addType(ui);  // addType(new Struct());
-  addType(ui);  // addType(new Func1());
-  addType(ui);  // addType(new Func2());
-  addType(ui);  // addType(new FuncParam1());
-  addType(ui);  // addType(new FuncParam2());
-  addType(ui);  // Why bother with these, we won't get to them for a LONG
-                // time...
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);
-  addType(ui);  // BIGINT
+  unimpl = static_cast<const UnImpl*>(addType(new UnImpl()));
+  //  addType(new String16());
+  // addType(new String32());
+  // addType(new String64());
+  // addType(new UTF8_8());
+  // addType(new UTF8_16());
+  // addType(new UTF8_32());
+  // addType(new UTF8_64());
+  // addType(new UTF16_8());
+  // addType(new UTF16_16());
+  // addType(new UTF16_32());
+  // addType(new UTF16_64());
+  // addType(new Regex());
+  // addType(new UTF8_16());
+  // addType(new UTF8_32());
+  // addType(new UTF8_64());
+  // addType(new GenericList());
+  // addType(new GenericList());
+  // addType(new GenericList());
+  // addType(new GenericList());
+  // addType(new Struct());
+  // addType(new Struct());
+  // addType(new Struct());
+  // addType(new Struct()); //TODO: DynamicList
+  // addType(new Struct());
+  // addType(new Func1());
+  // addType(new Func2());
+  // addType(new FuncParam1());
+  // addType(new FuncParam2());
+  // Why bother with these, we won't get to them for a LONG
+  // time...
+  // BIGINT
 }
 
 void XDLType::classCleanup() {
@@ -126,6 +105,7 @@ void XDLRaw::format(Buffer& binaryIn, Buffer& asciiOut,
 inline void Struct::addSym(const string& memberName, const XDLType* t) {
   byName.add(memberName.c_str(), types.size());
   members.add(Member(memberNames.length(), memberName.length(), t));
+  memberNames += memberName;
 }
 
 inline void Struct::addSymCheckNull(const string& name, const XDLType* t2) {
@@ -202,69 +182,6 @@ void Struct::addMeta(ArrayOfBytes* meta) const {
   }
 }
 
-// TODO Remove, verify the successor method works
-#if 0
-/* Reads Buffer into struct s*/
-void XDLType::readMeta(XDLCompiler* compiler, Buffer& in, uint32_t count,
-                       Struct* s) {
-  cout << "XDLType::readMeta " << count << "\n";
-  for (uint32_t i = 0; i < count; i++) {
-    DataType t = in.readType();
-    string name = in.readString8();
-    switch (t) {
-      case DataType::U8:
-      case DataType::U16:
-      case DataType::U32:
-      case DataType::U64:
-      case DataType::U128:
-      case DataType::U256:
-      case DataType::I8:
-      case DataType::I16:
-      case DataType::I32:
-      case DataType::I64:
-      case DataType::I128:
-      case DataType::I256:
-      case DataType::BOOL:
-      case DataType::F32:
-      case DataType::F64:
-      case DataType::DATE:
-      case DataType::JULDATE:
-      case DataType::STRING8: {
-        s->addSymCheckDup(name, XDLType::getBuiltinType(t));
-        break;
-      }
-      case DataType::STRUCT8: {
-        Struct* sRecurse = new Struct(compiler, name);
-        uint8_t numMembers = in.readU8();
-        readMeta(compiler, in, numMembers, sRecurse);
-        s->addStructMember(name, sRecurse);
-        break;
-      }
-      // case DataType::STRUCT16:
-      // case DataType::STRUCT32
-      case DataType::LIST8: {
-        // get the name of the type of each element
-        string listType = in.readString8();
-
-        GenericList* genList = new GenericList(compiler, name);
-        uint8_t numMembers = in.readU8();
-        for (int i = 0; i < numMembers; i++) {
-          readMeta(compiler, in, 1, );
-        }
-
-        s->addSymCheckDup(name, new GenericList(name, len, listType));
-        //  s->addMember(DataType::List8, memberName)
-        // uint8_t numElements = in.readU8();
-        // s->addMember(memberType, listName);
-        break;
-      }
-        //        case DataType::List16:
-        //        case DataType::List32
-    }
-  }
-}
-#endif
-
 /* Reads Buffer into struct s*/
 const XDLType* XDLType::readMeta(XDLCompiler* compiler, Buffer& in) {
   DataType t = in.readType();
@@ -296,14 +213,18 @@ const XDLType* XDLType::readMeta(XDLCompiler* compiler, Buffer& in) {
       Struct* s = new Struct(compiler, name);
       string memberName;
       for (int i = 0; i < numMembers; i++) {
+        const XDLType* member = readMeta(compiler, in);
         memberName = in.readString8();
-        s->addSymCheckDup(memberName, readMeta(compiler, in));
+        s->addSymCheckDup(memberName, member);
       }
       return s;
     }
     // case DataType::STRUCT16:
     // case DataType::STRUCT32
-    case DataType::LIST8: {
+    case DataType::LIST8:
+    case DataType::LIST16:
+    case DataType::LIST32:
+    case DataType::LIST64: {
       string name = in.readString8();
       GenericList* genList =
           new GenericList(compiler, name, readMeta(compiler, in));
@@ -498,7 +419,7 @@ void F64::display(Buffer& in, Canvas* c, const Style* s, float x0, float y0,
 
 DataType Date::getDataType() const { return DataType::DATE; }
 uint32_t Date::size() const { return 4; }
-void Date::write(Buffer& buf) const { buf.write(val); }
+void Date::write(Buffer& buf) const { buf.write(date); }
 void Date::display(Buffer& binaryIn, Buffer& asciiOut) const {
   Date d(binaryIn.readU32());
   // TODO: support many formats
@@ -510,30 +431,51 @@ void Date::display(Buffer& binaryIn, Buffer& asciiOut) const {
 }
 
 int32_t Date::getYear() const {
-  return val / 365;  // TODO: needs lots of work
+  int32_t dy = int32_t(date / 365.2425);
+  return 2000 + dy;
 }
 
 uint32_t Date::getMonth() const { return 0; }
 
 uint32_t Date::getDay() const { return 0; }
 
+// TODO: better naming convention than ddate
 int32_t JulianDate::getYear() const {
-  return val / 365;  // TODO: needs lots of work
+  int64_t ddate = int64_t(date);
+  int32_t dy = ddate / 365 + ddate / 4 - ddate / 100 + ddate / 400;
+  std::cout << dy;
+  std::cout << (dy = ddate / 365.2425);
+  return epoch + dy;
+  //    uint32_t month = (E < 13.5) ? E - 1 : E - 13;
+  //    return (month > 2.5) ? C - 4716 : C - 4715;
 }
-
-uint32_t JulianDate::getMonth() const { return 0; }
-
-uint32_t JulianDate::getDay() const { return 0; }
-
-uint32_t JulianDate::getHour() const { return 0; }
-
-uint32_t JulianDate::getMin() const { return 0; }
-
-double JulianDate::getSecond() const { return 0; }
+uint32_t JulianDate::getMonth() const {
+  double ddate = floor(date);
+  int32_t mm = ddate - floor(floor(ddate / 365.2425) * 365.2425);
+  return mm;
+  //     return (E < 13.5) ? E - 1 : E - 13;
+}
+uint32_t JulianDate::getDay() const {
+  double ddate = floor(date);
+  int32_t dd = ddate - floor(floor(ddate / 365.2425) * 365.2425);
+  return dd;  // TODO: this is completely wrong
+}
+uint32_t JulianDate::getHour() const {
+  double frac = date - floor(date);
+  return uint32_t(frac * 24);
+}
+uint32_t JulianDate::getMinute() const {
+  double frac = date - floor(date);
+  return uint32_t(frac * (24 * 60)) % 60;
+}
+double JulianDate::getSecond() const {
+  double frac = date - floor(date);
+  return uint32_t(frac * (24 * 60 * 60)) % 60;
+}
 
 DataType JulianDate::getDataType() const { return DataType::JULDATE; }
 uint32_t JulianDate::size() const { return 8; }
-void JulianDate::write(Buffer& buf) const { buf.write(val); }
+void JulianDate::write(Buffer& buf) const { buf.write(date); }
 void JulianDate::display(Buffer& binaryIn, Buffer& asciiOut) const {
   JulianDate d(binaryIn.readF64());
   // TODO: FIx format!!!
@@ -722,8 +664,10 @@ void Struct::writeMeta(Buffer& buf) const {
 void Struct::display(Buffer& binaryIn, Buffer& asciiOut) const {
   for (int i = 0; i < members.size(); i++) {
     const Member& m = members[i];
-    asciiOut.append(" ");
+    asciiOut.append(&memberNames[m.nameOffset], m.nameLen);
+    asciiOut.write(' ');
     m.type->display(binaryIn, asciiOut);
+    asciiOut.write('\n');
   }
 }
 
@@ -749,7 +693,12 @@ void GenericList::writeMeta(Buffer& buf) const {
   // TODO: check for overflow of buffer!
 }
 
-void GenericList::display(Buffer& binaryIn, Buffer& asciiOut) const {}
+void GenericList::display(Buffer& binaryIn, Buffer& asciiOut) const {
+  uint64_t size = binaryIn.readU16();
+  for (int i = 0; i < size; i++) {
+    listType->display(binaryIn, asciiOut);
+  }
+}
 
 XDLIterator* GenericList::createIterator() {
   return nullptr;  // TODO: should return an iterator to each item in the list
@@ -849,8 +798,8 @@ void I256::addData(ArrayOfBytes* data) const {
 void Bool::addData(ArrayOfBytes* data) const { data->addData(val); }
 void F32::addData(ArrayOfBytes* data) const { data->addData(val); }
 void F64::addData(ArrayOfBytes* data) const { data->addData(val); }
-void Date::addData(ArrayOfBytes* data) const { data->addData(val); }
-void JulianDate::addData(ArrayOfBytes* data) const { data->addData(val); }
+void Date::addData(ArrayOfBytes* data) const { data->addData(date); }
+void JulianDate::addData(ArrayOfBytes* data) const { data->addData(date); }
 void Timestamp::addData(ArrayOfBytes* data) const { data->addData(val); }
 void String8::addData(ArrayOfBytes* data) const { data->addData(val); }
 void String16::addData(ArrayOfBytes* data) const { data->addData(val); }
@@ -873,6 +822,9 @@ void Regex::addMeta(ArrayOfBytes* meta) const {
   meta->addMeta(DataType::REGEX);
   meta->addMeta(getTypeName());
 }
+
+// TODO: Does any CompoundType except for Struct use this?
+// If not, abstract it out
 void XDLRaw::addMeta(ArrayOfBytes* meta) const {
   throw Ex1(Errcode::UNIMPLEMENTED);
 }
@@ -885,6 +837,12 @@ void GenericList::addMeta(ArrayOfBytes* meta) const {
 void GenericList::addData(ArrayOfBytes* data) const {
   throw Ex1(Errcode::UNIMPLEMENTED);
 }
+void Calendar::addMeta(ArrayOfBytes* meta) const {
+  throw Ex1(Errcode::UNIMPLEMENTED);
+}
+void Calendar::addData(ArrayOfBytes* data) const {
+  throw Ex1(Errcode::UNIMPLEMENTED);
+}
 void ArrayOfBytes::addStruct(const char name[], uint8_t numElements) {
   addMeta(DataType::STRUCT8);
   addMeta(name);
@@ -894,4 +852,89 @@ void ArrayOfBytes::addStruct(const char name[], uint8_t numElements) {
 void ArrayOfBytes::addBuiltinMember(DataType t, const char str[]) {
   addMeta(t);
   addMeta(str);
+}
+
+int32_t Date::epochYear = 2000;
+Date::Date(const JulianDate& jd)
+    : XDLBuiltinType("Date", DataType::DATE), date(uint32_t(double(jd))) {}
+Date::operator JulianDate() const { return JulianDate(date); }
+Date::Date(int32_t year, uint32_t month, uint32_t day)
+    : XDLBuiltinType("Date", DataType::DATE) {
+  if (month < 1 || month > 12 || day < 1 ||
+      day > JulianDate::daysInMonth[day]) {
+    throw Ex1(Errcode::BAD_DATE);
+  }
+
+  int32_t dY = year - epochYear;
+  int32_t leapYears = dY / 4 - dY / 100 + dY / 400;  // is this true
+  date = dY * 365 + leapYears + JulianDate::daysUpTo[month - 1] + day;
+}
+const double JulianDate::epoch = 2000;
+
+const char* JulianDate::monthNames[12] = {
+    "January", "February", "March",     "April",   "May",      "June",
+    "July",    "August",   "September", "October", "November", "December"};
+const char* JulianDate::monthAbbr[12] = {"Jan", "Feb", "Mar", "Apr",
+                                         "May", "Jun", "Jul", "Aug",
+                                         "Sep", "Oct", "Nov", "Dec"};
+
+const uint16_t JulianDate::daysUpTo[12] = {
+    0,    // Jan
+    31,   // Feb
+    59,   // Mar
+    90,   // Apr
+    120,  // May
+    151,  // Jun
+    181,  // Jul
+    212,  // Aug
+    243,  // Sep
+    273,  // Oct
+    304,  // Nov
+    334   // Dec
+};
+const uint16_t JulianDate::daysInMonth[12] = {
+    31,  // Jan
+    28,  // Feb
+    31,  // Mar
+    30,  // Apr
+    31,  // May
+    30,  // Jun
+    31,  // Jul
+    31,  // Aug
+    30,  // Sep
+    31,  // Oct
+    30,  // Nov
+    31   // Dec
+};
+JulianDate::JulianDate(int32_t year, uint32_t month, uint32_t day,
+                       uint32_t hour, uint32_t min, uint32_t second)
+    : XDLBuiltinType("JulDate", DataType::JULDATE) {
+  if (month < 1 || month > 12 || day < 1 ||
+      day > daysInMonth[month - 1] &&
+          !(month == 2 && day == 29 && isLeap(year))) {
+    throw Ex1(Errcode::BAD_DATE);
+  }
+
+  int32_t dY = year - epoch;
+  int32_t leapYears = dY / 4 - dY / 100 + dY / 400;  // is this true
+  int32_t extraDay = isLeap(year) && month > 2;
+  date = dY * 365 + leapYears + daysUpTo[month - 1] + int32_t(day) +
+         (hour * 3600 + min * 60 + second) * invSecondsPerDay + extraDay - 1;
+}
+void Calendar::setHoliday(const Date& d) { holidays.push_back(d); }
+void Calendar::setHoliday(const Date& from, const Date& to) {
+  for (Date d = from; d <= to; d++) {
+    holidays.push_back(d);
+  }
+}
+
+void Calendar::setRepeatingHoliday(int32_t yearStart, int32_t yearEnd,
+                                   uint32_t month, uint32_t day) {}
+
+bool Calendar::isHoliday(const Date& d) const { return false; }
+Date Calendar::addBusinessDays(const Date& d, int32_t delta) const {
+  return d + delta;
+}
+int32_t Calendar::businessDaysBetween(const Date& d1, const Date& d2) const {
+  return d2 - d1;
 }

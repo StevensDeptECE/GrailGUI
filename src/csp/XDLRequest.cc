@@ -10,6 +10,7 @@
 #include <iostream>
 
 //#include "util/TypeAlias.hh"
+#include "xdl/List.hh"
 #include "xdl/SymbolTable.hh"
 #include "xdl/XDLArray.hh"
 #include "xdl/XDLCompiler.hh"
@@ -42,7 +43,7 @@ void buildData2(ArrayOfBytes* a, const T& arg) {
 }
 
 template <typename... Args>
-void buildData(DynArray<XDLType*> a, const Args&... args) {
+void buildData(DynArray<const XDLType*> a, const Args&... args) {
   ArrayOfBytes* bytes = new ArrayOfBytes();
   (buildData2(bytes, args), ...);
   a.add(bytes);
@@ -82,16 +83,16 @@ class Point : public CompoundType {
 void write(Buffer& out, const Point& p);
 
 XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
-  buildData(xdlData, Point(1, 2, 3));
+  // buildData(xdlData, Point(1, 2, 3));
 
   // Create list later
   // auto listonums = new List<uint32_t>(100);
   // for (int i = 0; i < 100; i++) listonums->add(i);
   // xdlData.add(listonums);
 
-  auto pointList = new List<Point>(100);
-  for (int i = 0; i < 100; i++) pointList->add(Point(i, 2, 3));
-  xdlData.add(pointList);
+  // auto pointList = new List<Point>(100);
+  // for (int i = 0; i < 100; i++) pointList->add(Point(i, 2, 3));
+  // xdlData.add(pointList);
 
   // TODO: create all the XDL objects to satisfy requests
   // TODO: for now, ignore the filename and hardcode some objects
@@ -201,6 +202,8 @@ XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
 #endif
 }
 
+XDLRequest::XDLRequest(const XDLType* xdl) : xdlData(1) { xdlData.add(xdl); }
+
 void XDLRequest::handle(int fd) {
   cout << "handling XDL request" << endl;
   out.attachWrite(fd);
@@ -219,7 +222,7 @@ void XDLRequest::handle(int fd) {
     return;
   }
 
-  XDLType* x = xdlData[requestId];
+  const XDLType* x = xdlData[requestId];
   // Struct* s = (Struct*)st->getSymbol(root);
   x->writeMeta(out);
   x->write(out);

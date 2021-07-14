@@ -19,6 +19,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 option(CMAKE_LINK_WHAT_YOU_USE ON)
 option(GRAIL_EXPERIMENTAL ON)
 set(CMAKE_DEBUG_POSTFIX d)
+set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_lower)
 
@@ -71,7 +72,7 @@ find_package(glfw3 REQUIRED)
 find_package(Freetype REQUIRED)
 
 # MPV
-pkg_check_modules(MPV REQUIRED IMPORTED_TARGET mpv)
+find_package(MPV)
 
 # GLM
 FetchContent_Declare(
@@ -98,6 +99,8 @@ endif()
 ##)
 ##FetchContent_MakeAvailable(shapelib)
 
+
+add_subdirectory(proj)
 add_subdirectory(include/libshape)
 add_subdirectory(src)
 
@@ -106,6 +109,9 @@ target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/external/glm)
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/external)
 
+if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+    target_include_directories(grail PUBLIC /mingw64/include)
+endif()
 
 add_subdirectory(test)
 

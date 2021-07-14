@@ -64,6 +64,7 @@ class Buffer {
   // write is binary
   void write(const string& s);
   void write(const char* s, uint32_t len);
+  void writeStructMeta(const char name[], uint32_t numMembers);
 
   // append is ASCII text
   void appendU8(uint8_t);
@@ -437,6 +438,8 @@ class Buffer {
       p = buffer - overflowSize;
     }
   }
+
+ public:
   void checkAvailableWrite() {
     if (p > buffer + size) {
       uint32_t overflow = p - (buffer + size);
@@ -446,6 +449,8 @@ class Buffer {
       availSize -= overflow;
     }
   }
+
+ private:
   void checkAvailableWrite(const char* ptr, uint32_t len) {
     if (p + len > buffer + size) {
       memcpy(p, ptr, availSize);

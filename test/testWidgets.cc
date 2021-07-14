@@ -22,17 +22,13 @@ class TestWidgets : public GLWin {
  public:
   TestWidgets() : GLWin(0x000000, 0xCCCCCC, "TestWidgets") {}
 
-  static void scrollUp(GLWin *w) {
-    TestWidgets *tw = (TestWidgets *)w;
-
-    tw->scrollbar->scroll(-5);
-    tw->setDirty();
+  void scrollUp() {
+    scrollbar->scroll(-5);
+    setDirty();
   }
-  static void scrollDown(GLWin *w) {
-    TestWidgets *tw = (TestWidgets *)w;
-
-    tw->scrollbar->scroll(5);
-    tw->setDirty();
+  void scrollDown() {
+    scrollbar->scroll(5);
+    setDirty();
   }
 
   void testButton(MainCanvas *c, StyledMultiShape2D *gui, MultiText *guiText) {
@@ -86,7 +82,7 @@ class TestWidgets : public GLWin {
                            grail::cyan, grail::purple, grail::darkblue};
 
     GapMinderWidget chart(gui, guiText, 550, 320, 400, 200, x, y);
-    chart.chart(y, x, s, 50, c);
+    chart.chart(y, x, s, 50, 50, c);
 
     chart.setTitle("Title");
     chart.init();
@@ -142,7 +138,7 @@ class TestWidgets : public GLWin {
         c->addLayer(new StyledMultiShape2D(c, s, -numbers::pi / 4, 0, 0));
 
     const Style *graphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
-    //testCandlestick(gui, guiText);
+    // testCandlestick(gui, guiText);
     testGapMinder(gui, guiText);
     testSparkline(gui, guiText);
     // testButton(gui, guiText);
@@ -150,11 +146,8 @@ class TestWidgets : public GLWin {
 
     testScrollBar(gui, guiText);
 
-    setAction(1002, scrollUp);
-    setAction(1003, scrollDown);
-
-    setEvent(401, 1002);
-    setEvent(399, 1003);
+    bindEvent(Inputs::WHEELUP, &TestWidgets::scrollUp, this);
+    bindEvent(Inputs::WHEELDOWN, &TestWidgets::scrollDown, this);
   }
 
   void update() { scrollbar->update(); }
