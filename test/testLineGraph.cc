@@ -85,15 +85,15 @@ class TestLineGraph : public GLWin {
     lgw.xAxis->setTickFormat(3, 1);
 
     // y axis stuff
-    lgw.createYAxis(GraphWidget::AxisType::LINEAR);
-    lgw.setYPoints(values);
-    // lgw.createYAxis(GraphWidget::AxisType::LOGARITHMIC);
-    // lgw.setYPoints(logValues);
+    // lgw.createYAxis(GraphWidget::AxisType::LINEAR);
+    // lgw.setYPoints(values);
+    lgw.createYAxis(GraphWidget::AxisType::LOGARITHMIC);
+    lgw.setYPoints(logValues);
 
     // set y axis parameters
 
-    lgw.yAxis->setBounds(values.front(), values.back());
-    // lgw.yAxis->setBounds(logValues.front(), logValues.back());
+    // lgw.yAxis->setBounds(values.front(), values.back());
+    lgw.yAxis->setBounds(logValues.front(), logValues.back());
     lgw.yAxis->setIsVert(true);
     // linear
     // lgw.yAxis->setTickInterval(3);
