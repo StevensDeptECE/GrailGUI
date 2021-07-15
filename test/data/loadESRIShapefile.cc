@@ -51,8 +51,7 @@ void loadESRIShapefile(const char filename[]) {
   SHPClose(shapeHandle);
 }
 
-void loadESRIDBF(const char filename[]) {
-  DBFHandle dbf = DBFOpen(filename, "rb");
+void displayMetaData(DBFHandle dbf) {
   int numFields = DBFGetFieldCount(dbf);
   char fieldName[12];  // must be at least 12 bytes
   int fieldWidth;
@@ -62,8 +61,10 @@ void loadESRIDBF(const char filename[]) {
         DBFGetFieldInfo(dbf, i, fieldName, &fieldWidth, &precision);
     cout << fieldName << '\t' << fieldWidth << '\t' << precision << '\n';
   }
+}
 
-  int recordCount = DBFGetRecordCount(dbf);
+void readCountyData(DBFHandle dbf) {
+ int recordCount = DBFGetRecordCount(dbf);
   int SQMI = DBFGetFieldIndex(dbf, "SQMI");  // get index of this field
   for (int i = 0; i < recordCount; i++) {
     cout << DBFReadStringAttribute(dbf, i, 2) << '\t'
@@ -76,13 +77,27 @@ void loadESRIDBF(const char filename[]) {
          //<< DBFReadStringAttribute(dbf, i, 7) << '\t' // lon?
          << DBFReadStringAttribute(dbf, i, SQMI) << '\n';
   }
+}
+
+void loadESRIDBF(const char filename[]) {
+  DBFHandle dbf = DBFOpen(filename, "rb");
+  displayMetaData(dbf);
+  readCountyData(dbf);
   DBFClose(dbf);
 }
 
+void displayESRIDBFContents(const char filename[]) {
+  DBFHandle dbf = DBFOpen(filename, "rb");
+  displayMetaData(dbf);
+  DBFClose(dbf);
+}
+
+#if 0
 template <typename... Args>
 string buildDir(const char envName[], Args... t) {
   return (string(getenv(varName)) + t...);
 }
+#endif
 
 int main() {
   string dir = getenv("GRAIL");
@@ -90,6 +105,7 @@ int main() {
   cout << "dir: " << dir << '\n';
   loadESRIShapefile((dir + "USA_Counties.shp").c_str());
   loadESRIDBF((dir + "USA_Counties.dbf").c_str());
-  string data = buildString(getenv("GRAILDATA"), "/maps/c_10nv20.dbf");
-  //    loadESRIDBF((dir + "USA_Counties.dbf").c_str());
+  //string data = buildString(getenv("GRAILDATA"), "/maps/c_10nv20.dbf");
+  string data = getenv("GRAILDATA");
+  displayESRIDBFContents((data + "/maps/c_nv20.dbf").c_str());
 }
