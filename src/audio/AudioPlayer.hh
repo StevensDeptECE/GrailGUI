@@ -8,7 +8,7 @@
 #include "util/Ex.hh"
 
 /**
- * @brief
+ * @brief Construct for creating MPV instances and playing audio with them.
  *
  */
 class AudioPlayer {
@@ -32,7 +32,7 @@ class AudioPlayer {
    * @brief Check whether an MPV function succeeded and kill the program if it
    * didn't.
    *
-   * @param status Expected to the the return value of a MPV function
+   * @param status Expected to be the the return value of a MPV function
    */
   inline void checkError(int status) {
     if (status < 0) {
@@ -87,14 +87,14 @@ class AudioPlayer {
    *
    * @param filePath Path to the playlist text file.
    * @param append Whether to replace the current playlist of currentCtx, or to
-   * append to the end of it
+   * append to the end of it.
    */
   void loadPlaylist(std::string filePath, bool append = false);
 
   /**
    * @brief Set the volume of currentCtx
    *
-   * @param volume
+   * @param volume Between 0 and 100
    */
   void setVolume(int volume);
 
@@ -167,7 +167,7 @@ class AudioPlayer {
   void playlistClear();
 
   /**
-   * @brief Try to pring the current time progressed through a track.
+   * @brief Try to print the current time progressed through a track.
    *
    */
   void printCurrentTime();
