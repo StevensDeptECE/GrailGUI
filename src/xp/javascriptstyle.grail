@@ -1,0 +1,132 @@
+/*
+  Proposal for Grail web page syntax.
+  This is more like a JavaScript-style function calling language
+  rather than an Markup Language. No <> tags. Instead everything is a function call
+  Functions can specify parameters by name for clarity, or could do so positionally, ie:
+
+  rect(10, 20, 30, 40);
+
+  rect(x=10, y=20, w=30, h=40);
+
+  Any tag that contains others can do so via curly braces {}
+  Proposing MATLAB style loops for sequences, but not ruling out more complete for loops
+  All loop constructs to be Turing-Analyzable, meaning no indefinite conditions.
+  Function definitions and recursion to be allowed with limitation prohibiting infinite recursion.
+
+*/
+
+
+// bring in include files, therefore don't need grail stylesheet attr?
+style(include="abc.css") {
+  // style sheet can go up here if desired inline?
+}
+
+grail(stylesheet="abc.css", title="Hello Grail!") {
+  p(style="xyz") { hello }    // tag tag styleid styleid
+  textarea(x=0 y=0 w=500 h=300 rows=10 cols=30) {  //  tag tag styleid styleid
+    this is default text. Insert your text here.
+  }
+  textarea(style="xyz") {  //  tag tag styleid styleid
+    this is default text. Insert your text here.
+  }
+  canvas(x=0, y=0, w=600, h=400, sx=0, sy = 0.0, sw=1.0 sh=1.0) {
+    rect(x=0, y=0, w=0.2, h=0.2);
+
+    for x = 0:10:100 {
+      for y = 0:10:100 {
+        if x + y % 20 == 0 {
+          fillrect(x=x, y=y, w=10, h=10);
+        }
+        u32 a ← 1 + 2 * 3; // type := to get ← ?
+        u64 b ← 1_64 +  2_64 * 3; // type inference rules? promote 3?
+        u64 c ← 1 + 2 * 3; // type inference rules? promote 1,2, 3?
+        //support 4x4 matrices for transformations?
+        mat4 m ← {1, 2, 3, 4; 2, 3, 4, 5; 4, 5, 6, 7};
+        auto d ← c + b; // type inference type promotion?
+        f64 π ← 3.14159265358979; // default variable is const like rust?
+        mut f64 x ← π; // x can change
+        x ← (x + 1) * 3;
+      }
+    }
+p {{{
+x^{x+2} cos(iΘ + α)
+  write anything you want in here as long as it isn't the end delimiter δέλτα
+  עִבְרִית‎
+  土 人 手 天 美 爱 仇 白 黑 火 水 河 山 湖 金 学 生 明 智 的 也 她 池 馳 弛 施
+ <> "testing" f(int x){ return x;} <=> √2≡≈≠×÷<≤≥ ∈ ∉ ∴
+ ∞ ∃ ∃! ∀ ¬ ∨ ∧ ⟹ ⟺ ∩ ∪ ∅ ⊂ ⊃ × Δ≅∠∼⊥ ∝  Σ
+ ▲ ▼ ► ◄
+ $m embedded variable introducer, can be overridden from $ to other char?
+}}}
+
+//introduce embed section with variable introducer `
+t {{{var`
+   `d
+}}}
+
+
+  // instead of div box we have canvas. if no transformation specified it is div
+  // should be just call it box?
+  box {
+    text(style="abc", x=30, y=50, val="testing");
+    table() {
+      row() {
+        c{yo} c{ho} c{ho}
+      }
+    }
+  }
+  autotable(style="test" src="aapl.xdl") {
+    // row/column specifiers go here
+
+  }
+  // linegraph has variable x and y, assign to data source
+  linegraph(style="test2", src="aapl.xdl", x="date", y="open");
+
+// candlestick graph has variables t, open, high, low, close.
+// if data source has same names, they automatically match
+  candlestick(style="test2", src="aapl.xdl", t="date");
+  form {
+  // allow calls without commas between parameters?
+    field(name="firstName" type=string8 limit=20);
+    field(name="lastName" type=string8 limit=30);
+    field(name="age" type=u32);
+    field(name="networth" type=u64);
+    field(name="weight" type=f32);
+  }
+
+  // define a form based on XDL type!
+  // TODO: how to map from grail files to numeric request ids in the app?
+  form(type=Person action="addPerson.grail");
+
+  //TODO: How to specify formatting of a form? Work out use-cases
+
+  //TODO: How to specify multiple forms from a list of types? Do we have to do each one?
+  form(type=[JobApplication, MedicalHistory]);
+  equation(int(e^{x^2+3}cos(3x)dx);
+  equation(style="big" id="eqbox1") { // unique id for this equation
+// define names for things that need to be referenced elsewhere
+    Euler1:     e^ix = cos(x) + i sin(x) ; // semicolon is endline in equation?
+    Euler2:     e^iπ = -1 ;
+    Pythag:     c^2 = a^2 + b^2;
+    Einstein1:  e=m c^2;
+    Gravity:    F = G*m_1*m_2/r_12^2;      // 12 a unit or does it require braces like LaTeX{12}?
+
+  link(eqbox1.Einstein1) {Einstein's famous equation}
+}
+
+func f64 f(f64 x) {
+  return x*x;
+}
+
+
+/*
+  Binary output
+  This is what grail sees after the compiler compiles the above file
+*/
+
+
+code: 0 0 0 0 1 0 1 0 2 0 0 0
+
+text:    abc.css\0Hello Grail!\0hello\0
+
+numbers: 0.0 0.0 500.0 300.0
