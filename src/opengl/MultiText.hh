@@ -24,23 +24,24 @@ class MultiText : public Shape {
   void addChar(float x, float y, const Font* f, const unsigned char c);
   // a 16-bit unicode character like Java
   void addChar(float x, float y, const Font* f, const uint16_t c);
-  void add(float x, float y, const char s[], uint32_t len);
-  void add(float x, float y, const Font* f, const char s[], uint32_t len);
-  void add(float x, float y, uint32_t v);
-  void add(float x, float y, const Font* f, uint32_t v);
-  void addHex(float x, float y, const Font* f, uint32_t v);
-  void addHex8(float x, float y, const Font* f, uint32_t v);
-  void add(float x, float y, const Font* f, int32_t v);
-  void add(float x, float y, float v);
-  void add(float x, float y, const Font* f, float v);
-  void add(float x, float y, double v);
-  void add(float x, float y, const Font* f, double v);
-  void add(float x, float y, const Font* f, double v, int fieldWidth,
+  float add(float x, float y, const char s[], uint32_t len);
+  float add(float x, float y, const Font* f, const char s[], uint32_t len);
+  float add(float x, float y, uint32_t v);
+  float add(float x, float y, const Font* f, uint32_t v);
+  float addHex(float x, float y, const Font* f, uint32_t v);
+  float addHex8(float x, float y, const Font* f, uint32_t v);
+  float add(float x, float y, const Font* f, int32_t v);
+  float add(float x, float y, float v);
+  float add(float x, float y, const Font* f, float v);
+  float add(float x, float y, double v);
+  float add(float x, float y, const Font* f, double v);
+  float add(float x, float y, const Font* f, double v, int fieldWidth,
            int precision);
   void addCentered(float x, float, const Font* f, double v,
                               int fieldWidth, int precision);
   void addCentered(float x, float y, const Font* f, const char s[],
                    uint32_t len);
+
   void checkAdd(float& x, float& y, const Font* f, const unsigned char c,
                 float endMargin, float rowSize, float startOverMargin);
   uint32_t findFirstOverMargin(float x, const Font* f, const char s[],

@@ -27,6 +27,7 @@ class StockQuote {
     buf.write(DataType::F32, "low");
     buf.write(DataType::F32, "close");
   }
+  uint32_t fieldSize() const { return 22; }
 };
 
 int main(int argc, char* argv[]) {
@@ -36,7 +37,7 @@ int main(int argc, char* argv[]) {
     IPV4Socket s(port);
     List<const StockQuote> quotes("AAPL");
     for (int i = 0; i < 3; i++) {
-      quotes.add(new StockQuote(i, i, i, i));
+      quotes.add(StockQuote(i, i, i, i));
     }
     XDLRequest req(&quotes);
     s.attach(&req);

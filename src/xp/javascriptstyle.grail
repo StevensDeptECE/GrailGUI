@@ -104,15 +104,18 @@ t {{{var`
   form(type=[JobApplication, MedicalHistory]);
   equation(int(e^{x^2+3}cos(3x)dx);
   equation(style="big" id="eqbox1") { // unique id for this equation
-// define names for things that need to be referenced elsewhere
+    // define names for things that need to be referenced elsewhere
     Euler1:     e^ix = cos(x) + i sin(x) ; // semicolon is endline in equation?
     Euler2:     e^iπ = -1 ;
     Pythag:     c^2 = a^2 + b^2;
     Einstein1:  e=m c^2;
     Gravity:    F = G*m_1*m_2/r_12^2;      // 12 a unit or does it require braces like LaTeX{12}?
+  }
 
   link(eqbox1.Einstein1) {Einstein's famous equation}
 }
+
+
 
 func f64 f(f64 x) {
   return x*x;

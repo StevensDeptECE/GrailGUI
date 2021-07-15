@@ -23,8 +23,6 @@ void XDLType::writeMeta(Buffer& buf) const { buf.write(getDataType()); }
 
 DataType XDLType::readType(Buffer& in) { return DataType(in.readU8()); }
 
-XDLIterator* XDLType::createIterator() { return nullptr; }
-
 void XDLType::display(Buffer& binaryIn, Buffer& asciiOut) const {}
 
 // this must be called before XDLType is used (class initialization of static
@@ -681,14 +679,11 @@ uint32_t Struct::getMemberCount() const { return members.size(); }
 
 DataType GenericList::getDataType() const { return DataType::LIST16; }
 
-uint32_t GenericList::size() const { return size_; }
-
 void GenericList::write(Buffer& buf) const {}
 
 void GenericList::writeMeta(Buffer& buf) const {
   buf.write(getDataType());
   buf.write(getTypeName());
-  buf.write(uint16_t(size_));
   buf.write(listType);
   // TODO: check for overflow of buffer!
 }
@@ -700,9 +695,7 @@ void GenericList::display(Buffer& binaryIn, Buffer& asciiOut) const {
   }
 }
 
-XDLIterator* GenericList::createIterator() {
-  return nullptr;  // TODO: should return an iterator to each item in the list
-}
+XDLType* GenericList::begin(Buffer& buf) { return new Iterator(this, buf); }
 
 uint32_t TypeDef::size() const { return type->size(); }
 
@@ -725,6 +718,9 @@ uint32_t BuiltinType::size() const {
              // builtin types, but if we just did it here the code would
              // simplify
 }
+
+XDLType* BuiltinType::begin(Buffer& buf) { return this; }
+XDLType* XDLRaw::begin(Buffer& buf) { return this; }
 
 void BuiltinType::write(Buffer& buf) const {
   // buf.write(val);
@@ -938,3 +934,34 @@ Date Calendar::addBusinessDays(const Date& d, int32_t delta) const {
 int32_t Calendar::businessDaysBetween(const Date& d1, const Date& d2) const {
   return d2 - d1;
 }
+
+uint32_t U8::fieldSize() const { return 3; }
+uint32_t U16::fieldSize() const { return 5; }
+uint32_t U24::fieldSize() const { return 8; }
+uint32_t U32::fieldSize() const { return 10; }
+uint32_t U64::fieldSize() const { return 20; }
+uint32_t U128::fieldSize() const { return 20; }
+uint32_t U256::fieldSize() const { return 20; }
+uint32_t I8::fieldSize() const { return 4; }
+uint32_t I16::fieldSize() const { return 6; }
+uint32_t I24::fieldSize() const { return 8; }
+uint32_t I32::fieldSize() const { return 11; }
+uint32_t I64::fieldSize() const { return 20; }
+uint32_t I128::fieldSize() const { return 20; }
+uint32_t I256::fieldSize() const { return 20; }
+uint32_t F32::fieldSize() const { return 14; }
+uint32_t F64::fieldSize() const { return 22; }
+uint32_t Bool::fieldSize() const { return 5; }
+uint32_t Date::fieldSize() const { return 11; }
+uint32_t JulianDate::fieldSize() const { return 22; }
+uint32_t Timestamp::fieldSize() const { return 22; }
+uint32_t String8::fieldSize() const { return 22; }
+uint32_t String16::fieldSize() const { return 22; }
+uint32_t String32::fieldSize() const { return 22; }
+uint32_t String64::fieldSize() const { return 22; }
+
+//TODO: write function to calculate max size when Struct is made
+uint32_t Struct::fieldSize() const { return 22; }  // return maxFieldSize; }
+uint32_t GenericList::fieldSize() const { return listType->fieldSize(); }
+
+uint32_t XDLRaw::fieldSize() const { return 0; }

@@ -20,6 +20,8 @@ typedef void (*Action)(GLWin*);  // actions are methods of the window
 class Tab;
 class Style;
 class Font;
+class XDLIterator;
+
 class GLWin {
  protected:
   Style* defaultStyle;

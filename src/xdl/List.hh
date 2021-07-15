@@ -34,8 +34,11 @@ class List : public CompoundType {
   void add(Args&&... args) {
     (impl.add(deref(args)), ...);
   }
-
   uint32_t size() const override { return impl.size(); }
+  uint32_t fieldSize() const override {
+    if (impl.size() > 0) return impl[0].fieldSize();
+    return 1;
+  }
   void write(Buffer& buf) const override;
   void writeMeta(Buffer& buf) const override;
   void read(Buffer& buf) {
@@ -46,7 +49,6 @@ class List : public CompoundType {
       add(val);
     }
   }
-  XDLIterator* createIterator() override;
   void display(Buffer& binaryIn, Buffer& asciiOut) const override;
   void addMeta(ArrayOfBytes* meta) const override {
     throw Ex1(Errcode::UNIMPLEMENTED);
@@ -54,6 +56,8 @@ class List : public CompoundType {
   void addData(ArrayOfBytes* data) const override {
     throw Ex1(Errcode::UNIMPLEMENTED);
   }
+
+  XDLType* begin(Buffer&) override;
 };
 
 template <typename T>
@@ -83,12 +87,10 @@ void List<T>::write(Buffer& buf) const {
   }
 }
 
-// TODO: implement
-template <typename T>
-XDLIterator* List<T>::createIterator() {
-  return nullptr;
-}
 
 // TODO: Implement
 template <typename T>
 void List<T>::display(Buffer& binaryIn, Buffer& asciiOut) const {}
+
+template <typename T>
+XDLType* List<T>::begin(Buffer& buf)  {return nullptr; } //TODO: templated lists cannot return generic pointers: &impl[0];}

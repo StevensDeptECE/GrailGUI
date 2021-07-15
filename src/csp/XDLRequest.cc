@@ -106,14 +106,14 @@ XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
   // 4bach
   //
   Struct* s = new Struct(compiler);  // name encoded as 0""
-  s->addBuiltin("x", DataType::U32);
-  s->addBuiltin("y", DataType::U64);
+  s->addMember("x", new U32(1));
+  s->addMember("y", new U64(2));
   Struct* s2 = new Struct(compiler, "Point");
-  s2->addBuiltin("x", DataType::F32);
-  s2->addBuiltin("y", DataType::F32);
-  s2->addBuiltin("z", DataType::F32);
+  s2->addMember("x", new F32(1.5));
+  s2->addMember("y", new F32(3.0));
+  s2->addMember("z", new F32(2.5));
   s->addMember("point", s2);
-  s->addBuiltin("bach", DataType::F64);
+  s->addMember("bach", new F64(27.657));
 
   // st->addRoot(s);
   // Buffer ans(32768);

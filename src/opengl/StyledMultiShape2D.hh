@@ -103,6 +103,19 @@ class StyledMultiShape2D : public MultiShape2D {
                              float p3x, float p3y, float p4x, float p4y, int n,
                              bool end, const glm::vec4& c);
   void spline(const std::vector<double>& points, int n, const glm::vec4& c);
+  
+  // Solid Primitives
+  void fillDrawRectangle(float x, float y, float w, float h, const glm::vec4& fc, const glm::vec4& dc);
+  void fillDrawRoundRect(float x, float y, float w, float h, float rx, float ry,
+                      const glm::vec4& fc, const glm::vec4& dc);
+  void fillDrawTriangle(float x1, float y1, float x2, float y2, float x3, float y3,
+                     const glm::vec4& fc, const glm::vec4& dc);
+  void fillDrawPolygon(float x, float y, float xRad, float yRad, float n,
+                    const glm::vec4& fc, const glm::vec4& dc);
+  void fillDrawCircle(float x, float y, float rad, float angleInc,
+                   const glm::vec4& fc, const glm::vec4& dc);
+  void fillDrawEllipse(float x, float y, float xRad, float yRad, float angleInc,
+                    const glm::vec4& fc, const glm::vec4& dc);
 
   // Grids
   // rectangular grid

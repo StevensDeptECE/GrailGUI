@@ -26,6 +26,7 @@ add_grail_executable(SRC testWidgets.cc LIBS grail)
 add_grail_executable(SRC ../src/csp/GenericXDLClient.cc LIBS grail)
 add_grail_executable(SRC ../src/csp/SimpleXDLServer.cc LIBS grail)
 add_grail_executable(SRC testStockServer.cc LIBS grail)
+add_grail_executable(SRC ../src/csp/GraphicalXDLClient.cc LIBS grail)
 
 if(${MPV_FOUND})
   add_grail_executable(SRC testAudio.cc LIBS grail)
