@@ -1,5 +1,4 @@
 set(grail-opengl
-    AngledMultiText.cc
     AxisWidget.cc
     BarChartWidget.cc 
     BoxChartWidget.cc
