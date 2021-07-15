@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 
-#include "opengl/AngledMultiText.hh"
 #include "opengl/ButtonWidget.hh"
 #include "opengl/CandlestickChartWidget.hh"
 #include "opengl/GapMinderWidget.hh"
@@ -91,7 +90,7 @@ class TestWidgets : public GLWin {
     const char thing[] = "hello world";
     // guiText->add(0, 50, s->f, thing, strlen(thing));
     MultiText *mt = c->addLayer(new MultiText(c, s, numbers::pi / 2, 100, 100));
-    mt->add(200, 200, s->f, thing, strlen(thing));
+    mt->add(0, 0, s->f, thing, strlen(thing));
   }
 
   void init() {

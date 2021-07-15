@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <numbers>
 
-#include "opengl/AngledMultiText.hh"
 #include "util/Ex.hh"
 #include "xp/Stats.hh"
 
@@ -64,8 +63,7 @@ void BoxChartWidget::createYAxis(AxisType a) {
 
   StyledMultiShape2D *rot90 = c->addLayer(
       new StyledMultiShape2D(c, yAxisStyle, numbers::pi / 2, x - w, y + h));
-  AngledMultiText *t90 =
-      c->addLayer(new AngledMultiText(c, yAxisTextStyle, 0, x, y));
+  MultiText *t90 = c->addLayer(new MultiText(c, yAxisTextStyle, 0, x, y));
 
   switch (a) {
     case LINEAR: {

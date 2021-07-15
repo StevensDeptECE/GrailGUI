@@ -32,7 +32,7 @@ MultiText::MultiText(Canvas* c, const Style* style, uint32_t size, float angle,
     : MultiText(c, style, size) {
   transform = glm::translate(transform, glm::vec3(x, y, 0));
   transform = glm::rotate(transform, angle, glm::vec3(0, 0, -1));
-  transform = glm::translate(transform, glm::vec3(-x, -y, 0));
+  // transform = glm::translate(transform, glm::vec3(-x, -y, 0));
 }
 
 MultiText::MultiText(Canvas* c, const Style* style, float angle, float x,

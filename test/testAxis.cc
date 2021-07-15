@@ -1,6 +1,5 @@
 #include <numbers>
 
-#include "opengl/AngledMultiText.hh"
 #include "opengl/AxisWidget.hh"
 #include "opengl/GrailGUI.hh"
 
@@ -75,7 +74,7 @@ class testAxis : public GLWin {
 
     StyledMultiShape2D* rot90 = c->addLayer(
         new StyledMultiShape2D(c, s, numbers::pi / 2, x - width, y + height));
-    AngledMultiText* t90 = c->addLayer(new AngledMultiText(c, s, 0, x, y));
+    MultiText* t90 = c->addLayer(new MultiText(c, s, 0, x, y));
     LinearAxisWidget vertical(rot90, t90, 0, 0, width, height);
     // LogAxisWidget vertical(rot90, t90, 0, 0, width, height);
     m->drawRectangle(x, y, width, height, grail::darkred);
