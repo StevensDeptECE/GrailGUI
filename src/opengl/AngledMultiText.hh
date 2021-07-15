@@ -10,7 +10,6 @@ class AngledMultiText : public MultiText {
   glm::mat4 transform;
 
  public:
-  // TODO: allows 2d text on a 2d plane
   AngledMultiText(Canvas *c, const Style *s, float angle, float x, float y)
       : MultiText(c, s), transform(1.0f) {
     transform = glm::translate(transform, glm::vec3(x, y, 0));

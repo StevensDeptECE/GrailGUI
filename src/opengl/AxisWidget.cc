@@ -19,7 +19,7 @@ AxisWidget::AxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
       axisTitle(axisTitle),
       axisColor(axisColor),
       tickColor(tickColor),
-      tickFormat({tickFormatWidth, tickFormatPrecision}),
+      tickFormat({.width = tickFormatWidth, .precision = tickFormatPrecision}),
       bottomOffset(bottomOffset) {}
 
 void AxisWidget::setTickDrawSize(double i) { tickDrawSize = i; }

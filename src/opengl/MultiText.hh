@@ -5,6 +5,9 @@
 class Style;
 
 class MultiText : public Shape {
+ private:
+  glm::mat4 transform;
+
  protected:
   uint32_t textureId;
   const Style* style;
@@ -20,6 +23,9 @@ class MultiText : public Shape {
  public:
   MultiText(Canvas* c, const Style* style);
   MultiText(Canvas* c, const Style* style, uint32_t size);
+  MultiText(Canvas* c, const Style* style, float angle, float x, float y);
+  MultiText(Canvas* c, const Style* style, uint32_t size, float angle, float x,
+            float y);
   ~MultiText();
   void addChar(float x, float y, const Font* f, const unsigned char c);
   // a 16-bit unicode character like Java
@@ -37,8 +43,8 @@ class MultiText : public Shape {
   void add(float x, float y, const Font* f, double v);
   void add(float x, float y, const Font* f, double v, int fieldWidth,
            int precision);
-  void addCentered(float x, float, const Font* f, double v,
-                              int fieldWidth, int precision);
+  void addCentered(float x, float, const Font* f, double v, int fieldWidth,
+                   int precision);
   void addCentered(float x, float y, const Font* f, const char s[],
                    uint32_t len);
   void checkAdd(float& x, float& y, const Font* f, const unsigned char c,

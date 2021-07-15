@@ -19,13 +19,25 @@ using namespace std;
   text to hold the coordinates for texturing
 */
 MultiText::MultiText(Canvas* c, const Style* style, uint32_t size)
-    : Shape(c), style(style) {
+    : Shape(c), style(style), transform(1.0f) {
   // if !once, once = !once was a thing
   vert.reserve(size * 24);
   const Font* f = style->f;  // FontFace::getFace(1)->getFont(0);
 }
 
 MultiText::MultiText(Canvas* c, const Style* style) : MultiText(c, style, 16) {}
+
+MultiText::MultiText(Canvas* c, const Style* style, uint32_t size, float angle,
+                     float x, float y)
+    : MultiText(c, style, size) {
+  transform = glm::translate(transform, glm::vec3(x, y, 0));
+  transform = glm::rotate(transform, angle, glm::vec3(0, 0, -1));
+  transform = glm::translate(transform, glm::vec3(-x, -y, 0));
+}
+
+MultiText::MultiText(Canvas* c, const Style* style, float angle, float x,
+                     float y)
+    : MultiText(c, style, 16, angle, x, y) {}
 
 MultiText::~MultiText() {}
 
@@ -251,7 +263,7 @@ void MultiText::render() {
 
   Shader* s = Shader::useShader(GLWin::TEXT_SHADER);
   s->setVec4("textColor", style->getFgColor());
-  s->setMat4("projection", *(parentCanvas->getProjection()));
+  s->setMat4("projection", *parentCanvas->getProjection() * transform);
   s->setInt("ourTexture", 0);
 
   // glPushAttrib(GL_CURRENT_BIT);
