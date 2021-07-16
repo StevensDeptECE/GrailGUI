@@ -6,15 +6,15 @@
 #include <mpv/client.h>
 #include <mpv/render_gl.h>
 
+#include "opengl/KeyReceiver.hh"
 #include "opengl/Shape.hh"
-#include "opengl/WantsInputs.hh"
 #include "util/Ex.hh"
 
 /**
  * @brief
  *
  */
-class VideoPlayer : public Shape, public WantsInputs {
+class VideoPlayer : public Shape, public KeyReceiver {
  private:
   bool isPlaying; /**< Whether the video is playing or not*/
 
@@ -80,7 +80,7 @@ class VideoPlayer : public Shape, public WantsInputs {
     }
   }
 
-  bool handleInput(int input) override;
+  void handleInput(int input, int action) override;
 
  public:
   /**

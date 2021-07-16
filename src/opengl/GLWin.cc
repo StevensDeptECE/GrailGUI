@@ -6,6 +6,8 @@
 
 #include <unistd.h>
 
+#include <algorithm>
+#include <execution>
 #include <iostream>
 #include <map>
 #include <random>
@@ -37,7 +39,7 @@ using namespace std;
 string GLWin::baseDir;
 
 unordered_map<GLFWwindow *, GLWin *> GLWin::winMap;
-vector<WantsInputs *> GLWin::theseWantInputs;
+vector<KeyReceiver *> GLWin::keyReceivers;
 default_random_engine gen;
 uniform_real_distribution<double> u01(0.0, 1.0);
 glm::mat4 GLWin::projection;
@@ -104,11 +106,13 @@ void GLWin::keyCallback(GLFWwindow *win, int key, int scancode, int action,
                         int mods) {
   uint32_t input = (mods << 9) | key;
   cerr << "key: " << key << " mods: " << mods << " input=" << input << '\n';
-  for (auto a : theseWantInputs) {
-    if (a->handleInput(input)) {
-      break;
-    }
-  }
+  cerr << "scancode: " << scancode << endl;
+  cerr << "action: " << action << endl;
+
+  std::for_each(std::execution::par_unseq, keyReceivers.begin(),
+                keyReceivers.end(),
+                [=](auto &&k) { k->handleInput(input, action); });
+
   doit(winMap[win], input);
 }
 

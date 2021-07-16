@@ -10,8 +10,8 @@
 
 #include "opengl/Colors.hh"
 #include "opengl/GLWinFonts.hh"
+#include "opengl/KeyReceiver.hh"
 #include "opengl/Shader.hh"
-#include "opengl/WantsInputs.hh"
 #include "util/DynArray.hh"
 #include "util/HashMap.hh"
 class GLFWwindow;  // forward declaration, simplify: include file not needed
@@ -44,7 +44,7 @@ class GLWin {
   static bool ranStaticInits;
   static bool hasBeenInitialized;
   static std::unordered_map<GLFWwindow*, GLWin*> winMap;
-  static std::vector<WantsInputs*> theseWantInputs;
+  static std::vector<KeyReceiver*> keyReceivers;
   const char* title;
   double startTime;     // start of simulation time, default 0
   double endTime;       // end of simulation time, default 0
@@ -104,7 +104,7 @@ class GLWin {
     ALT = 2048
   };
 
-  void addWantsInputs(WantsInputs* w) { theseWantInputs.push_back(w); }
+  void addKeyReceiver(KeyReceiver* k) { keyReceivers.push_back(k); }
 
   /*
         map input events, like pressing a key, or clicking alt-mouse button 1

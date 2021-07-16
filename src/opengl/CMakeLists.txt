@@ -16,6 +16,7 @@ set(grail-opengl
     GLWin.cc
     GLWinFonts.cc 
     Image.cc
+    KeyReceiver.cc
     LineGraphWidget.cc
     MapView2D.cc
     MultiShape.cc 
@@ -33,7 +34,6 @@ set(grail-opengl
     StyledMultiShape2D.cc
     Tab.cc
     util/TextureArray.cc
-    WantsInputs.cc
 )
 
 list(TRANSFORM grail-opengl PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
