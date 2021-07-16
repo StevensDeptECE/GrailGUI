@@ -139,6 +139,8 @@ class SolarSystem : public GLWin {
     bindEvent(Inputs::LARROW, &SolarSystem::panLeft, this);
     bindEvent(Inputs::UPARROW, &SolarSystem::panForward, this);
     bindEvent(Inputs::DOWNARROW, &SolarSystem::panBack, this);
+    bindEvent(Inputs::INSERT, &SolarSystem::speedTime, this);
+    bindEvent(Inputs::DEL, &SolarSystem::slowTime, this);
   }
   void update() {
     Canvas* c = currentTab()->getMainCanvas();

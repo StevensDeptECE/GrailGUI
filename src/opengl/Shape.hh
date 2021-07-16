@@ -11,6 +11,7 @@ namespace std {
 
 class Inputs;
 class Canvas;
+class GLWin;
 class Shape {
  protected:
   uint32_t vao, vbo, sbo, lbo, pbo, cbo;
@@ -21,6 +22,13 @@ class Shape {
  public:
   Shape(Canvas* parent) : parentCanvas(parent) {}
   virtual ~Shape();
+
+  /**
+   * @brief Get a pointer to the GLWin object
+   * 
+   * @return GLWin* Window containing the Shape
+   */
+  GLWin* getWin() const;
 #if 0
   void setParentCanvas(Canvas *c) {
     parentCanvas = c;

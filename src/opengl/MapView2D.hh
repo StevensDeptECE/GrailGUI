@@ -10,7 +10,7 @@ class Style;
 class MapView2D : public Shape {
  private:
   const Style* style;
-  float centerX, centerY, scaleX, scaleY;
+  float centerX, centerY, shiftX, shiftY, scaleX, scaleY;
   glm::mat4 originalTransform;
   glm::mat4 transform;
   // pointer to map loader object has advantage of opaqueness in header file
@@ -22,6 +22,7 @@ class MapView2D : public Shape {
   void setProjection() {
     transform = glm::ortho(centerX - scaleX, centerX + scaleX, centerY - scaleY,
                            centerY + scaleY);
+    getWin()->setDirty();
   }
   void translate(float percentX, float percentY) {
     centerX += percentX * scaleX;
@@ -31,15 +32,15 @@ class MapView2D : public Shape {
   MapView2D(Canvas* parent, const Style* s, BlockMapLoader* bml = nullptr)
       : Shape(parent), style(s), bml(bml), transform(1.0f) {
     const BlockMapLoader::BoundRect& bounds = bml->getBlockMapHeader()->bounds;
-    float centerX = (bounds.xMin + bounds.xMax) * 0.5;
-    float centerY = (bounds.yMin + bounds.yMax) * 0.5;
+    centerX = (bounds.xMin + bounds.xMax) * 0.5;
+    centerY = (bounds.yMin + bounds.yMax) * 0.5;
 
     double ySize = parent->getHeight();
     double xSize = parent->getWidth();
-    double shiftX = -bounds.xMin * xSize / (bounds.xMax - bounds.xMin);
-    double shiftY = ySize + (bounds.yMin * ySize / (bounds.yMax - bounds.yMin));
-    double scaleX = xSize / (bounds.xMax - bounds.xMin);
-    double scaleY = -ySize / (bounds.yMax - bounds.yMin);
+    shiftX = -bounds.xMin * xSize / (bounds.xMax - bounds.xMin);
+    shiftY = ySize + (bounds.yMin * ySize / (bounds.yMax - bounds.yMin));
+    scaleX = xSize / (bounds.xMax - bounds.xMin);
+    scaleY = -ySize / (bounds.yMax - bounds.yMin);
 
     std::cout << "shift: " << shiftX << " " << shiftY << "\n";
     std::cout << "scale: " << scaleX << " " << scaleY << "\n";

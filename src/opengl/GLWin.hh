@@ -273,9 +273,9 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
                             void (GLWin::*callback)());
   uint32_t registerCallback(uint32_t input, const char name[], Security s,
                             std::function<void()> action);
-  template <typename T>
+  template <typename T, typename U>
   uint32_t registerCallback(uint32_t input, const char name[], Security s,
-                            void (T::*callback)(), T* ptr) {
+                            void (T::*callback)(), U* ptr) {
     auto cb_funcptr = std::bind(callback, ptr);
     return registerCallback(input, name, s, cb_funcptr);
   }
