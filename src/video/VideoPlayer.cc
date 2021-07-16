@@ -13,6 +13,14 @@ static void on_mpv_render_update(void *ctx) { glfwPostEmptyEvent(); }
 
 void VideoPlayer::handleInput(int input, int action) {
   printf("i got input: %d \naction: %d\n", input, action);
+  if (action == 1) {
+    auto search = fpt.find(input);
+    if (search != fpt.end()) (this->*search->second)();
+  }
+}
+
+void VideoPlayer::setup_pointer_table() {
+  fpt[GLFW_KEY_SPACE] = &VideoPlayer::togglePause;
 }
 
 VideoPlayer::VideoPlayer(Canvas *c, float x, float y, int width, int height)
@@ -28,6 +36,8 @@ VideoPlayer::VideoPlayer(Canvas *c, float x, float y, int width, int height)
       yTop(0),
       yBottom(0),
       isPlaying(true) {
+  setup_pointer_table();
+
   // create a standard mpv handle
   mpv = mpv_create();
   // if we failed to make one, die

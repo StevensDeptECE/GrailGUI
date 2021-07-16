@@ -6,6 +6,8 @@
 #include <mpv/client.h>
 #include <mpv/render_gl.h>
 
+#include <unordered_map>
+
 #include "opengl/KeyReceiver.hh"
 #include "opengl/Shape.hh"
 #include "util/Ex.hh"
@@ -16,6 +18,8 @@
  */
 class VideoPlayer : public Shape, public KeyReceiver {
  private:
+  std::unordered_map<int, void (VideoPlayer::*)()> fpt;
+
   bool isPlaying; /**< Whether the video is playing or not*/
 
   int advancedControl; /**< Whether to use advanced control with MPV (defaults
@@ -80,6 +84,7 @@ class VideoPlayer : public Shape, public KeyReceiver {
     }
   }
 
+  inline void setup_pointer_table();
   void handleInput(int input, int action) override;
 
  public:
@@ -108,20 +113,20 @@ class VideoPlayer : public Shape, public KeyReceiver {
    * @brief Artifact of being subclassed from Shape, currently does nothing.
    *
    */
-  void init();
+  void init() override;
 
   /**
    * @brief Ask MPV if it has updates to display and set the current GLWin to be
    * dirty if so.
    *
    */
-  void update();
+  void update() override;
 
   /**
    * @brief Render the current frame with the specified x, y, width, and height.
    *
    */
-  void render();
+  void render() override;
 
   /**
    * @brief Load a video file from a file path.
