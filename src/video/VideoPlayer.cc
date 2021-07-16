@@ -254,12 +254,12 @@ void VideoPlayer::seekLocation(string time, string type) {
 }
 
 void VideoPlayer::seekForward() {
-  const char *cmd[] = {"seek", "0:05", "relative", nullptr};
+  const char *cmd[] = {"seek", "5", "relative", nullptr};
   checkError(mpv_command_async(mpv, 0, cmd));
   printf("seek forward\n");
 }
 void VideoPlayer::seekBackward() {
-  const char *cmd[] = {"seek", "-0:05", "relative", nullptr};
+  const char *cmd[] = {"seek", "-5", "relative", nullptr};
   checkError(mpv_command_async(mpv, 0, cmd));
   printf("seek back\n");
 }

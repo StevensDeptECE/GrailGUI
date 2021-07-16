@@ -109,9 +109,8 @@ void GLWin::keyCallback(GLFWwindow *win, int key, int scancode, int action,
   cerr << "scancode: " << scancode << endl;
   cerr << "action: " << action << endl;
 
-  std::for_each(std::execution::par_unseq, keyReceivers.begin(),
-                keyReceivers.end(),
-                [=](auto &&k) { k->handleInput(input, action); });
+  for_each(execution::par_unseq, keyReceivers.begin(), keyReceivers.end(),
+           [=](auto k) { k->handleInput(input, action); });
 
   doit(winMap[win], input);
 }
