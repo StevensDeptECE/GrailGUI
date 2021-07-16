@@ -19,7 +19,7 @@ class MultiText : public Shape {
     vert.push_back(v);
   }
   float velX = 1, velY = 1;
-
+  void internalAdd(float x, float y, const Font* f, const char s[], uint32_t len);
  public:
   MultiText(Canvas* c, const Style* style);
   MultiText(Canvas* c, const Style* style, uint32_t size);
@@ -31,6 +31,7 @@ class MultiText : public Shape {
   // a 16-bit unicode character like Java
   void addChar(float x, float y, const Font* f, const uint16_t c);
   void add(float x, float y, const char s[], uint32_t len);
+  void add(float x, float y, const Font* f, const std::string& s);
   void add(float x, float y, const Font* f, const char s[], uint32_t len);
   void add(float x, float y, uint32_t v);
   void add(float x, float y, const Font* f, uint32_t v);
