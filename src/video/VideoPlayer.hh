@@ -7,13 +7,14 @@
 #include <mpv/render_gl.h>
 
 #include "opengl/Shape.hh"
+#include "opengl/WantsInputs.hh"
 #include "util/Ex.hh"
 
 /**
  * @brief
  *
  */
-class VideoPlayer : public Shape {
+class VideoPlayer : public Shape, public WantsInputs {
  private:
   bool isPlaying; /**< Whether the video is playing or not*/
 
@@ -78,6 +79,8 @@ class VideoPlayer : public Shape {
       throw Ex1(Errcode::MPV_FAILURE);
     }
   }
+
+  bool handleInput(int input) override;
 
  public:
   /**

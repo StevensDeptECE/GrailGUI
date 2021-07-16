@@ -11,8 +11,14 @@ static void on_mpv_events(void *ctx) { glfwPostEmptyEvent(); }
 
 static void on_mpv_render_update(void *ctx) { glfwPostEmptyEvent(); }
 
+bool VideoPlayer::handleInput(int input) {
+  printf("i got input \n");
+  return false;
+}
+
 VideoPlayer::VideoPlayer(Canvas *c, float x, float y, int width, int height)
     : Shape(c),
+      WantsInputs(c),
       x(x),
       y(y),
       width(width),

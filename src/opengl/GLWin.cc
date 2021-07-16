@@ -37,6 +37,7 @@ using namespace std;
 string GLWin::baseDir;
 
 unordered_map<GLFWwindow *, GLWin *> GLWin::winMap;
+vector<WantsInputs *> GLWin::theseWantInputs;
 default_random_engine gen;
 uniform_real_distribution<double> u01(0.0, 1.0);
 glm::mat4 GLWin::projection;
@@ -103,6 +104,11 @@ void GLWin::keyCallback(GLFWwindow *win, int key, int scancode, int action,
                         int mods) {
   uint32_t input = (mods << 9) | key;
   cerr << "key: " << key << " mods: " << mods << " input=" << input << '\n';
+  for (auto a : theseWantInputs) {
+    if (a->handleInput(input)) {
+      break;
+    }
+  }
   doit(winMap[win], input);
 }
 
@@ -223,7 +229,7 @@ void GLWin::startWindow() {
 
   // it seems like glfw will not support good mouse behavior unless we hide the
   // cursor? ugly.
-  glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+  glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
   // glEnable(GL_CULL_FACE); I disable this because when we
   // change the projection to be normal screen pixels than it doesnt draw since
   // its drawing it in the opposite orientation i assume

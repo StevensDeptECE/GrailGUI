@@ -32,6 +32,7 @@ set(grail-opengl
     StyledMultiShape2D.cc
     Tab.cc
     util/TextureArray.cc
+    WantsInputs.cc
 )
 
 list(TRANSFORM grail-opengl PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
