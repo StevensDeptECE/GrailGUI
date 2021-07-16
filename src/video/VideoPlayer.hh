@@ -21,6 +21,7 @@ class VideoPlayer : public Shape, public KeyReceiver {
   std::unordered_map<int, void (VideoPlayer::*)()> fpt;
 
   bool isPlaying; /**< Whether the video is playing or not*/
+  int currentVolume;
 
   int advancedControl; /**< Whether to use advanced control with MPV (defaults
                         * to 1). C++ wont let you pass something like &4 as a
@@ -153,6 +154,9 @@ class VideoPlayer : public Shape, public KeyReceiver {
    */
   void setVolume(int volume);
 
+  void volumeUp();
+  void volumeDown();
+
   /**
    * @brief Seek to a location
    *
@@ -171,6 +175,9 @@ class VideoPlayer : public Shape, public KeyReceiver {
    *
    */
   void revertSeek();
+
+  void seekForward();
+  void seekBackward();
 
   /**
    * @brief Go to the next track in a playlist.

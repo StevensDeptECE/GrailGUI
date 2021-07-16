@@ -21,6 +21,10 @@ void VideoPlayer::handleInput(int input, int action) {
 
 void VideoPlayer::setup_pointer_table() {
   fpt[GLFW_KEY_SPACE] = &VideoPlayer::togglePause;
+  fpt[GLFW_KEY_RIGHT] = &VideoPlayer::seekForward;
+  fpt[GLFW_KEY_LEFT] = &VideoPlayer::seekBackward;
+  fpt[GLFW_KEY_UP] = &VideoPlayer::volumeUp;
+  fpt[GLFW_KEY_DOWN] = &VideoPlayer::volumeDown;
 }
 
 VideoPlayer::VideoPlayer(Canvas *c, float x, float y, int width, int height)
@@ -35,7 +39,8 @@ VideoPlayer::VideoPlayer(Canvas *c, float x, float y, int width, int height)
       xRight(0),
       yTop(0),
       yBottom(0),
-      isPlaying(true) {
+      isPlaying(true),
+      currentVolume(100) {
   setup_pointer_table();
 
   // create a standard mpv handle
@@ -209,10 +214,31 @@ void VideoPlayer::loadPlaylist(string filePath, bool append) {
 }
 
 void VideoPlayer::setVolume(int volume) {
+  currentVolume = volume;
   char intString[33];
   sprintf(intString, "%d", volume);
   const char *cmd[] = {"set", "volume", intString, nullptr};
   checkError(mpv_command_async(mpv, 0, cmd));
+}
+
+void VideoPlayer::volumeUp() {
+  currentVolume = min(100, currentVolume + 5);
+
+  char intString[33];
+  sprintf(intString, "%d", currentVolume);
+  const char *cmd[] = {"set", "volume", intString, nullptr};
+  checkError(mpv_command_async(mpv, 0, cmd));
+  printf("volume up\n");
+}
+
+void VideoPlayer::volumeDown() {
+  currentVolume = max(0, currentVolume - 5);
+
+  char intString[33];
+  sprintf(intString, "%d", currentVolume);
+  const char *cmd[] = {"set", "volume", intString, nullptr};
+  checkError(mpv_command_async(mpv, 0, cmd));
+  printf("volume down\n");
 }
 
 void VideoPlayer::seekLocation(string time, string type) {
@@ -225,6 +251,17 @@ void VideoPlayer::seekLocation(string time, string type) {
         "Please provide one of the following for seek type: \nrelative, "
         "absolute, relative-percent, absolute-percent\n");
   }
+}
+
+void VideoPlayer::seekForward() {
+  const char *cmd[] = {"seek", "0:05", "relative", nullptr};
+  checkError(mpv_command_async(mpv, 0, cmd));
+  printf("seek forward\n");
+}
+void VideoPlayer::seekBackward() {
+  const char *cmd[] = {"seek", "-0:05", "relative", nullptr};
+  checkError(mpv_command_async(mpv, 0, cmd));
+  printf("seek back\n");
 }
 
 void VideoPlayer::revertSeek() {
