@@ -227,8 +227,6 @@ void GLWin::startWindow() {
   glfwSetScrollCallback(win, GLWin::scrollCallback);
   glfwSetWindowRefreshCallback(win, GLWin::windowRefreshCallback);
 
-  // it seems like glfw will not support good mouse behavior unless we hide the
-  // cursor? ugly.
   glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
   // glEnable(GL_CULL_FACE); I disable this because when we
   // change the projection to be normal screen pixels than it doesnt draw since
