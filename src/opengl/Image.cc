@@ -135,27 +135,3 @@ void Image::render() {
   glDisableVertexAttribArray(0);
   glBindVertexArray(0);
 }
-
-#if 0
-void Image::combineImage(const vector<string> &images) {
-  int w, h, c;
-  int w_total = 0, h_total = 0;
-  std::vector<unsigned char> combinedImageData;
-  combinedImageData.reserve(images.size()*  256*  256);
-  for (int i = 0; i < images.size(); i++) {
-    string file = images.at(i);
-    unsigned char* img = stbi_load(file.c_str(), &w, &h, &c, STBI_rgb_alpha);
-    if (w > w_total) w_total = w;
-    h_total += h;
-    const uint32_t image_size = w*  h*  c;
-    if (combinedImageData.capacity() < image_size + combinedImageData.size())
-      combinedImageData.reserve(2*
-                                (combinedImageData.capacity() + image_size));
-    combinedImageData.insert(combinedImageData.end(), img, img + image_size);
-    stbi_image_free(img);
-    ////combinedImageData = combinedImageData + imageData.at(i);
-  }
-  stbi_write_jpg("test.jpg", w_total, h_total, STBI_rgb_alpha,
-                 combinedImageData.data(), 100);
-}
-#endif

@@ -221,8 +221,7 @@ void GLWin::startWindow() {
   glfwSetScrollCallback(win, GLWin::scrollCallback);
   glfwSetWindowRefreshCallback(win, GLWin::windowRefreshCallback);
 
-  //TODO: This shuts off cursor but allows mouse to be tracked outside window
-  // Don't do it: glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+  glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
   // glEnable(GL_CULL_FACE); I disable this because when we
   // change the projection to be normal screen pixels than it doesnt draw since
   // its drawing it in the opposite orientation i assume

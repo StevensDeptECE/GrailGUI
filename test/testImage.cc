@@ -23,6 +23,11 @@ class TestImage : public GLWin {
 
     img = c->addLayer(
         new Image(c, 50, 50, 500, 500, "textures/image_demo/frame13.png", 1));
+
+    Image* img2 = c->addLayer(new Image(c, 50, 550, 300, 400, 1));
+    img2->addImage("textures/mars.jpg");
+    // overwrites the previously added image
+    img2->addImage("textures/sun.jpg");
   }
 };
 
