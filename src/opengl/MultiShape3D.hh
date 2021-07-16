@@ -20,12 +20,10 @@ class MultiShape3D : public MultiShape {
   // Stores x,y pairs for texture coordinates
   typedef const std::vector<std::pair<float, float>> TexCoordVector;
 
- protected:
-  uint32_t elemPerVert;
-
  private:
   const uint32_t fastRectDistinctVertices = 14;
   const uint32_t rectDistinctVertices = 24;
+  constexpr static uint32_t elemPerVert = 3;
   Shader* shader = NULL;
   TextureArray* texture = NULL;
   objl::Loader Loader;
@@ -58,24 +56,23 @@ class MultiShape3D : public MultiShape {
  public:
   MultiShape3D(Canvas* canv, Camera* c, const std::vector<const char*>& textureFiles,
                Transformation* t, 
-               uint32_t elemPerVert = 3, uint32_t vertCount = 1024,
+               uint32_t vertCount = 1024,
                uint32_t solidIndCount = 1024, uint32_t lineIndCount = 1024,
                uint32_t pointIndCount = 1024, uint32_t colorIndCount = 1024)
-      : MultiShape(canv, vertCount, solidIndCount, lineIndCount, pointIndCount,
-                   colorIndCount),
+      : MultiShape(canv, 0, vertCount, solidIndCount, lineIndCount, pointIndCount,
+                   colorIndCount, elemPerVert),
         camera(c),
         transform(t),
-        textureFiles(textureFiles),
-        elemPerVert(elemPerVert) {
+        textureFiles(textureFiles) {
     textureIndices.reserve(textureFiles.size());
   }
   MultiShape3D(Canvas* canv, Camera* c, const char textureFile[],
                Transformation* t,
-               uint32_t elemPerVert = 3, uint32_t vertCount = 1024,
+               uint32_t vertCount = 1024,
                uint32_t solidIndCount = 1024, uint32_t lineIndCount = 1024,
                uint32_t pointIndCount = 1024, uint32_t colorIndCount = 1024)
       : MultiShape3D(canv, c, std::vector<const char*>({textureFile}), t,
-       elemPerVert, vertCount,
+        vertCount,
        solidIndCount, lineIndCount, pointIndCount, colorIndCount) {}
 
   void init() override;

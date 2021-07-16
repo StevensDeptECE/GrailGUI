@@ -36,7 +36,7 @@ void StyledMultiShape2D::render() {
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
 
-  glLineWidth(style->getLineWidth());
+  glLineWidth(lineWidth);
 
   // Draw Solids
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sbo);

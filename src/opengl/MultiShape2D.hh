@@ -6,14 +6,11 @@
 class Style;
 class MultiShape2D : public MultiShape {
  protected:
-  const Style* style;
   constexpr static uint32_t elemPerVert = 2;
 
   uint32_t addSector(float x, float y, float xRad, float yRad, float fromAngle,
                      float toAngle, float angleInc);
-  uint32_t getPointIndex() const {
-    return MultiShape::getPointIndex(elemPerVert);
-  }
+  
   void addLine(float x1, float y1, float x2, float y2) {
     uint32_t ind = getPointIndex();
 
@@ -25,13 +22,12 @@ class MultiShape2D : public MultiShape {
 
  public:
   void drawPoint(float x, float y);
-  MultiShape2D(Canvas* parent, const Style* s, uint32_t lineWidth = 1,
+  MultiShape2D(Canvas* parent, uint32_t lineWidth = 1,
                uint32_t vertCount = 1024, uint32_t solidIndCount = 1024,
-               uint32_t lineIndCount = 1024, uint32_t pointIndCount = 1024,
-               uint32_t elemPerVert = 2)
+               uint32_t lineIndCount = 1024, uint32_t pointIndCount = 1024, uint32_t colorIndCount = 0)
       : MultiShape(parent, lineWidth, vertCount, solidIndCount, lineIndCount,
-                   pointIndCount),
-        style(s) {}
+                   pointIndCount, colorIndCount, elemPerVert)
+       {}
   ~MultiShape2D();
 
   // override Shape methods to draw us

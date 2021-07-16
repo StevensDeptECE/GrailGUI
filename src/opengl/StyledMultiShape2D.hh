@@ -15,17 +15,15 @@ class StyledMultiShape2D : public MultiShape {
                      float x = 0, float y = 0, uint32_t lineWidth = 1,
                      uint32_t vertCount = 1024, uint32_t solidIndCount = 1024,
                      uint32_t lineIndCount = 1024,
-                     uint32_t pointIndCount = 1024)
+                     uint32_t pointIndCount = 1024, uint32_t colorIndCount=1024)
       : MultiShape(parent, lineWidth, vertCount, solidIndCount, lineIndCount,
-                   pointIndCount, 5),
+                   pointIndCount, colorIndCount, elemPerVert),
         currentIndex(0),
         transform(1.0f) {
     startIndices.push_back(0);
     transform = glm::translate(transform, glm::vec3(x, y, 0));
     transform = glm::rotate(transform, angle, glm::vec3(0, 0, -1));
   }
-
-  uint32_t getPointIndex() { return MultiShape::getPointIndex(elemPerVert); }
 
   uint32_t addSector(float x, float y, float xRad, float yRad, float fromAngle,
                      float toAngle, float angleInc, const glm::vec4& c);

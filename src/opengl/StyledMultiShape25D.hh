@@ -5,18 +5,19 @@
 #include "opengl/Canvas.hh"
 #include "opengl/MultiShape2D.hh"
 
-class StyledMultiShape25D : public MultiShape2D {
+class StyledMultiShape25D : public MultiShape {
  private:
   glm::mat4 transform;
+  constexpr static uint32_t elemPerVert = 6;
 
  public:
-  StyledMultiShape25D(Canvas* parent, const Style* s, float angle = 0,
+  StyledMultiShape25D(Canvas* parent, uint32_t lineWidth = 1, float angle = 0,
                      float x = 0, float y = 0, float z = 0, uint32_t vertCount = 1024,
                      uint32_t solidIndCount = 1024,
                      uint32_t lineIndCount = 1024,
-                     uint32_t pointIndCount = 1024)
-      : MultiShape2D(parent, s, vertCount, solidIndCount, lineIndCount,
-                     pointIndCount, 5),
+                     uint32_t pointIndCount = 1024, uint32_t colorIndCount = 1024)
+      : MultiShape(parent, lineWidth, vertCount, solidIndCount, lineIndCount,
+                     pointIndCount, colorIndCount, elemPerVert),
         currentIndex(0),
         transform(1.0f) {
     startIndices.push_back(0);
