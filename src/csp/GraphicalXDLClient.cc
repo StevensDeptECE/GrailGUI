@@ -98,8 +98,9 @@ class Renderer {
         rowSize(20),
         x(bounds.x0),
         y(bounds.y0 + rowSize) {
-    registerIterator(it);
+//    registerIterator(it);
     registerRenderers();
+
   }
 
   /**
@@ -177,6 +178,15 @@ class Renderer {
   void update();
 };
 
+void Renderer::update() {
+    const XDLType* m = **i;
+  Method* elementRenderer = rendererFind(it);
+    if (!elementRenderer) {
+      cerr << "bad renderer";
+      return;
+    }
+}
+
 void Renderer::renderListDown() {
   GenericList::Iterator* i = dynamic_cast<GenericList::Iterator*>(it);
   XDLType* elementType = i->getListType();
@@ -216,15 +226,15 @@ void Renderer::renderObjectMetadataAcross() {
 
 void Renderer::renderStructAcross() {
   Struct::Iterator* i = dynamic_cast<Struct::Iterator*>(it);
-  Struct* s = i->getStruct();
   if (i == nullptr) {
     cerr << "Expected generic list!";
     return;
   }
+  Struct* s = i->getStruct();
   Method elementRenderer;
 
-  for (uint32_t i = 0; i < s->getMemberCount(); i++) {
-    const XDLType* m = s->getMember(i).type;
+  for (Struct::Iterator* j = i; !j; ++j) {
+    const XDLType* m = **j;
     Method* elementRenderer = rendererFind(m->getDataType());
     if (!elementRenderer) {
       cerr << "bad renderer";
@@ -278,7 +288,6 @@ class GraphicalXDLClient : public GLWin {
         reqID(req),
         requests(64),
         byName(64) {
-    readData(req);
   }
   void readData(uint32_t req) {
     s.send(req);
@@ -295,7 +304,10 @@ class GraphicalXDLClient : public GLWin {
     // TODO: if we call readData multiple times, delete the old renderer before
     // replacing it
   }
-  void init() { update(); }
+  void init() {
+    readData(reqID);
+    update();
+  }
 
   void update() { r->update(); }
 };
