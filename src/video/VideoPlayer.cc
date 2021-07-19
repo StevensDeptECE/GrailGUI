@@ -11,11 +11,11 @@ static void on_mpv_events(void *ctx) { glfwPostEmptyEvent(); }
 
 static void on_mpv_render_update(void *ctx) { glfwPostEmptyEvent(); }
 
-void VideoPlayer::handleInput(int input, int action) {
-  printf("i got input: %d \naction: %d\n", input, action);
-  if (action == 1) {
+void VideoPlayer::handleInput(int input, int action, int mods) {
+  printf("i got input: %d \naction: %d\nmods: %d\n", input, action, mods);
+  if (action) {
     auto search = fpt.find(input);
-    if (search != fpt.end()) (this->*search->second)();
+    if (search != fpt.end()) (this->*search->second)(mods);
   }
 }
 
@@ -221,8 +221,8 @@ void VideoPlayer::setVolume(int volume) {
   checkError(mpv_command_async(mpv, 0, cmd));
 }
 
-void VideoPlayer::volumeUp() {
-  currentVolume = min(100, currentVolume + 5);
+void VideoPlayer::volumeUp(int mods) {
+  currentVolume = min(100, currentVolume + 5 * (mods + 1));
 
   char intString[33];
   sprintf(intString, "%d", currentVolume);
@@ -231,8 +231,8 @@ void VideoPlayer::volumeUp() {
   printf("volume up\n");
 }
 
-void VideoPlayer::volumeDown() {
-  currentVolume = max(0, currentVolume - 5);
+void VideoPlayer::volumeDown(int mods) {
+  currentVolume = max(0, currentVolume - 5 * (mods + 1));
 
   char intString[33];
   sprintf(intString, "%d", currentVolume);
@@ -253,13 +253,17 @@ void VideoPlayer::seekLocation(string time, string type) {
   }
 }
 
-void VideoPlayer::seekForward() {
-  const char *cmd[] = {"seek", "5", "relative", nullptr};
+void VideoPlayer::seekForward(int mods) {
+  char intString[33];
+  sprintf(intString, "%d", 5 * (mods + 1));
+  const char *cmd[] = {"seek", intString, "relative", nullptr};
   checkError(mpv_command_async(mpv, 0, cmd));
   printf("seek forward\n");
 }
-void VideoPlayer::seekBackward() {
-  const char *cmd[] = {"seek", "-5", "relative", nullptr};
+void VideoPlayer::seekBackward(int mods) {
+  char intString[33];
+  sprintf(intString, "%d", -5 * (mods + 1));
+  const char *cmd[] = {"seek", intString, "relative", nullptr};
   checkError(mpv_command_async(mpv, 0, cmd));
   printf("seek back\n");
 }
@@ -328,7 +332,7 @@ void VideoPlayer::setPlaying() {
   }
 }
 
-void VideoPlayer::togglePause() {
+void VideoPlayer::togglePause(int mods) {
   const char *cmd[] = {"cycle", "pause", nullptr};
   checkError(mpv_command_async(mpv, 0, cmd));
   isPlaying = !isPlaying;

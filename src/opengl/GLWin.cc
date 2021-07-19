@@ -105,12 +105,12 @@ inline void GLWin::doit(GLWin *w, uint32_t input) {
 void GLWin::keyCallback(GLFWwindow *win, int key, int scancode, int action,
                         int mods) {
   uint32_t input = (mods << 9) | key;
-  cerr << "key: " << key << " mods: " << mods << " input=" << input << '\n';
-  cerr << "scancode: " << scancode << endl;
-  cerr << "action: " << action << endl;
+  // cerr << "key: " << key << " mods: " << mods << " input=" << input << '\n';
+  // cerr << "scancode: " << scancode << endl;
+  // cerr << "action: " << action << endl;
 
   for_each(execution::par_unseq, keyReceivers.begin(), keyReceivers.end(),
-           [=](auto k) { k->handleInput(input, action); });
+           [=](auto k) { k->handleInput(key, action, mods); });
 
   doit(winMap[win], input);
 }

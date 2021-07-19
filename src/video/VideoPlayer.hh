@@ -18,7 +18,7 @@
  */
 class VideoPlayer : public Shape, public KeyReceiver {
  private:
-  std::unordered_map<int, void (VideoPlayer::*)()> fpt;
+  std::unordered_map<int, void (VideoPlayer::*)(int)> fpt;
 
   bool isPlaying; /**< Whether the video is playing or not*/
   int currentVolume;
@@ -86,7 +86,7 @@ class VideoPlayer : public Shape, public KeyReceiver {
   }
 
   inline void setup_pointer_table();
-  void handleInput(int input, int action) override;
+  void handleInput(int input, int action, int mods) override;
 
  public:
   /**
@@ -154,8 +154,8 @@ class VideoPlayer : public Shape, public KeyReceiver {
    */
   void setVolume(int volume);
 
-  void volumeUp();
-  void volumeDown();
+  void volumeUp(int mods);
+  void volumeDown(int mods);
 
   /**
    * @brief Seek to a location
@@ -176,8 +176,8 @@ class VideoPlayer : public Shape, public KeyReceiver {
    */
   void revertSeek();
 
-  void seekForward();
-  void seekBackward();
+  void seekForward(int mods);
+  void seekBackward(int mods);
 
   /**
    * @brief Go to the next track in a playlist.
@@ -263,5 +263,5 @@ class VideoPlayer : public Shape, public KeyReceiver {
    * @brief Toggle the playing state of the player.
    *
    */
-  void togglePause();
+  void togglePause(int mods = 0);
 };
