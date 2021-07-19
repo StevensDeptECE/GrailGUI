@@ -74,6 +74,12 @@ find_package(Freetype REQUIRED)
 # MPV
 find_package(MPV)
 
+# Windows-specific imports 
+if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+    # TBB, for threading on Windows
+    find_package(TBB REQUIRED tbb)
+endif()
+
 # GLM
 FetchContent_Declare(
     glm  

@@ -53,6 +53,8 @@ endif()
 # Shapelib
 target_link_libraries(grail shpgrail)
 
+# Link Windows libraries
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
 	target_link_libraries(grail wsock32 ws2_32)
+  target_link_libraries(grail ${TBB_IMPORTED_TARGETS})
 endif()
