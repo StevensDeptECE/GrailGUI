@@ -183,13 +183,13 @@ class VideoPlayer : public Shape, public KeyReceiver {
    * @brief Go to the next track in a playlist.
    *
    */
-  void playlistNext();
+  void playlistNext(int mods = 0);
 
   /**
    * @brief Go to the previous track in a playlist.
    *
    */
-  void playlistPrev();
+  void playlistPrev(int mods = 0);
 
   /**
    * @brief Go to a track at a specific index of a playlist.

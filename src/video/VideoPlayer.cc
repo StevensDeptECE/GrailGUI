@@ -25,6 +25,8 @@ void VideoPlayer::setup_pointer_table() {
   fpt[GLFW_KEY_LEFT] = &VideoPlayer::seekBackward;
   fpt[GLFW_KEY_UP] = &VideoPlayer::volumeUp;
   fpt[GLFW_KEY_DOWN] = &VideoPlayer::volumeDown;
+  fpt[GLFW_KEY_COMMA] = &VideoPlayer::playlistPrev;
+  fpt[GLFW_KEY_PERIOD] = &VideoPlayer::playlistNext;
 }
 
 VideoPlayer::VideoPlayer(Canvas *c, float x, float y, int width, int height)
@@ -273,12 +275,12 @@ void VideoPlayer::revertSeek() {
   checkError(mpv_command(mpv, cmd));
 }
 
-void VideoPlayer::playlistNext() {
+void VideoPlayer::playlistNext(int mods) {
   const char *cmd[] = {"playlist-next", nullptr};
   checkError(mpv_command(mpv, cmd));
 }
 
-void VideoPlayer::playlistPrev() {
+void VideoPlayer::playlistPrev(int mods) {
   const char *cmd[] = {"playlist-prev", nullptr};
   checkError(mpv_command(mpv, cmd));
 }

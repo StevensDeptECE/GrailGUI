@@ -27,7 +27,10 @@ class TestVideoPlayer : public GLWin {
 
     // playing a link from youtube (and maybe other places idk) requires you to
     // have youtube-dl installed
-    v->loadFile("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    // v->loadFile("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    v->loadFile(
+        "https://www.youtube.com/"
+        "watch?v=q6EoRBvdVPQ&list=PLFsQleAWXsj_4yDeebiIADdH5FMayBiJo");
     // v->loadFile("res/badapple.mkv");
     v->cropVideo(0, 0, 0, 0);
     v->setVolume(50);
