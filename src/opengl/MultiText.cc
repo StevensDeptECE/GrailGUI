@@ -8,6 +8,7 @@
 #include "opengl/GLWinFonts.hh"
 #include "opengl/Shader.hh"
 #include "opengl/Style.hh"
+#include <numbers>
 
 using namespace std;
 // todo: fix render to pass everything in the text vert to draw it
@@ -218,6 +219,61 @@ void MultiText::addCentered(float x, float y, const Font* f, const char s[],
   internalAdd(x - textWidth / 2, y - textHeight / 2, f, s, len);
 }
 
+inline void rotateAround(float xc, float yc, float cosa, float sina, float& x, float& y) {
+  const double dx = x - xc, dy = y - yc;
+  x = xc + dx * cosa - dy * sina;
+  y = yc + dx * sina + dy * cosa;
+}
+void MultiText::add(float x, float y, float space, float ang, const Font* f,
+    const char s[], uint32_t len) {
+  float startx = x, starty = y;
+  x += space;
+  double cosa = cos(ang), sina = sin(ang);
+  //glm::mat4 t(1);
+  //t = glm::translate(t, glm::vec3(-x,-y,0));
+  //t = glm::rotate(t, ang, glm::vec3(0,0,1));
+  //t = glm::translate(t, glm::vec3(x,y,0.0f));
+  for (uint32_t i = 0; i < len; i++) {
+    const Font::Glyph* glyph = f->getGlyph(s[i]);
+    float x0 = x + glyph->bearingX,
+          x1 = x0 + glyph->sizeX;  // TODO: Not maxwidth, should be less for
+                                   // proportional fonts?
+    float y0 = y - glyph->bearingY, y1 = y0 + glyph->sizeY;
+    ;
+    //glm::vec4 vec0(x0, y0, 0, 1);
+    //vec0 = t*vec0;
+    //x0 = vec0.x, y0 = vec0.y;
+    //glm::vec4 vec1(x1, y1, 0, 1);
+    //vec1 = t*vec1;
+    //x1 = vec1.x, y1 = vec1.y;
+
+    float xt = x0, yt = y0;
+    rotateAround(startx, starty, cosa, sina, xt, yt);
+    addPoint(xt, yt, /* fontLeft */ glyph->u0, glyph->v1);
+
+    xt = x0, yt = y1;
+    rotateAround(startx, starty, cosa, sina, xt, yt);
+    addPoint(xt, yt, /* fontLeft */ glyph->u0, glyph->v0);
+
+    xt = x1, yt = y1;
+    rotateAround(startx, starty, cosa, sina, xt, yt);
+    addPoint(xt, yt, /* fontRight */ glyph->u1, glyph->v0);
+
+    xt = x0, yt = y0;
+    rotateAround(startx, starty, cosa, sina, xt, yt);
+    addPoint(xt, yt, /* fontLeft */ glyph->u0, glyph->v1);
+
+    xt = x1, yt = y1;
+    rotateAround(startx, starty, cosa, sina, xt, yt);
+    addPoint(xt, yt, /* fontLeft */ glyph->u0, glyph->v1);
+
+    xt = x1, yt = y0;
+    rotateAround(startx, starty, cosa, sina, xt, yt);
+    addPoint(xt, yt, /* fontRight */ glyph->u1, glyph->v1);
+
+    x += glyph->advance;
+  }
+}
 
 void MultiText::add(float x, float y, const Font* f, const char s[],
                     uint32_t len) {

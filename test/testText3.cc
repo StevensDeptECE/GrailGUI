@@ -1,15 +1,23 @@
 #include "opengl/GrailGUI.hh"
+#include <numbers>
 using namespace std;
 
 class TestText3 : public GLWin {
 public:
 
-  void sampleText(MultiText* m, const Font* f, float y) {
-    m->add(20, y, f, 123);
-    m->add(150, y, f, "Dov", 3);
-    m->add(250, y, f, "Kruger", 6);
-    m->add(450, y, f, 123456.789);
-    m->addHex8(750,y, f, 0x0034ABCD);
+  void numericFormatting(MultiText* m, const Font* f, float y) {
+    m->add(10, y, f, 123);
+    m->addx(150, y, f, numbers::pi);
+    m->addx(300, y, f, 2.5f);
+    m->addx(400, y, f, 123456789U);
+    m->addx(600, y, f, 123456789012345678ULL);
+    y += 20;
+    m->addHex0(10, y, f, 0x0034ABCD);
+    m->addHex0(150, y, f, 0xABCDEF12);
+    m->addHex0(300, y, f, 0xABCDEF1234567890ULL);
+    m->addHex0(550, y, f, uint64_t(0xABCDEF1234567890ULL));
+    m->addHex0(800, y, f, uint8_t(0xFF));
+    m->addHex0(900, y, f, uint16_t(0xBEEF));
   }
 
   void sampleText2(MultiText* m, const Font* f, float y) {
@@ -17,8 +25,16 @@ public:
     m->add(20, y, f, s, sizeof(s)-1);
   }
 
+  void testRotatingText(MultiText* m, const char fontFamily[], float x, float y) {
+    const Font* font = FontFace::get(fontFamily, 40, 0);
+    const char s[] = "test";
+    for (int a = 0; a < 360; a += 45)
+      m->add(x, y, 50, a * (numbers::pi/180), font, s, sizeof(s)-1);
+  }
+
   float testOneFontFace(MultiText* m, const char fontFamily[], float yStart) {
     const int sizes[] = {40, 30, 20, 10};
+
     for (auto size : sizes) {
       const Font* font = FontFace::get(fontFamily, size, 0);
       sampleText2(m, font, yStart);
@@ -39,7 +55,10 @@ public:
     ms->fillRectangle(10,10, width-20,height-20, grail::black);
     cout << width << "," << height << '\n';
 		MultiText *m = c->addLayer(new MultiText(c, s, 100000 * (6 + 3 + 6 + 4)));
-    float y = 100;
+    float topRow = 30;
+    numericFormatting(m, f, 30);
+    testRotatingText(m, "TIMES", 1400, 100);
+    float y = 200;
     y = testOneFontFace(m, "TIMES", y);
     y = testOneFontFace(m, "MATH", y);
     y = testOneFontFace(m, "CENTENNIAL", y);

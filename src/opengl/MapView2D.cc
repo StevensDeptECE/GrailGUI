@@ -63,6 +63,7 @@ void MapView2D::render() {
   // debug(t, 0, 70, 0);
   shader->setMat4("projection", transform);
 
+#if 0
   // quick debugging rectangle in old immediate mode
   glBegin(GL_QUADS);
   glVertexAttrib2f(0, 0, 0);
@@ -70,6 +71,7 @@ void MapView2D::render() {
   glVertexAttrib2f(0, 200, 200);
   glVertexAttrib2f(0, 0, 200);
   glEnd();
+#endif
 
   glEnable(GL_PRIMITIVE_RESTART);
   glPrimitiveRestartIndex(0xFFFFFFFFU);

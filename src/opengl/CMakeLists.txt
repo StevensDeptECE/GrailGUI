@@ -22,6 +22,7 @@ set(grail-opengl
     MultiShape2D.cc
     MultiShape3D.cc
     MultiText.cc
+    MultiText2.cc
     PopupMenu.cc
     Scale.cc
     ScrollbarWidget.cc 
