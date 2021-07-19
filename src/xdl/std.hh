@@ -127,6 +127,7 @@ class XDLIterator : public XDLType {
   XDLType* begin(Buffer& buf) override { return nullptr;}
   void addData(ArrayOfBytes* data) const override {}
   void addMeta(ArrayOfBytes* meta) const override {}
+  XDLType* getUnderlying() const { return underlying; }
   uint32_t size() const override { return underlying->size(); }
   uint32_t fieldSize() const override { return 0; }
 };
