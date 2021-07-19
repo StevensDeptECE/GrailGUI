@@ -64,6 +64,7 @@ jobs:
           mingw-w64-x86_64-glfw
           mingw-w64-x86_64-mpv
           mingw-w64-x86_64-youtube-dl
+          mingw-w64-x86_64-intel-tbb
 
     - uses: seanmiddleditch/gha-setup-ninja@master
     
