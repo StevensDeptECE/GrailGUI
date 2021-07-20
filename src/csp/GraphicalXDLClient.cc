@@ -249,7 +249,7 @@ void Renderer::renderStructAcross() {
              << " typename=" << m->getTypeName() << '\n';
       }
       (this->**elementRenderer)();
-      x += 100;
+      x += 150;
     }
   }
 }
@@ -269,7 +269,7 @@ void Renderer::renderSubStructAcross(Struct* s) {
       }
       (this->**elementRenderer)();
     }
-    x += 100;
+    x += 150;
   }
 }
 

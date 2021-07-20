@@ -247,7 +247,7 @@ void MultiText::addCentered(float x, float y, float w, float h, const Font* f,
   float textWidth = f->getWidth(s, len);
   float textHeight = f->getHeight();
 
-  internalAdd(x - textWidth / 2, y - textHeight / 2, f, s, len);
+  internalAdd(x + (w- textWidth) / 2, y + (w- textHeight) / 2, f, s, len);
 }
 
 inline void rotateAround(float xc, float yc, float cosa, float sina, float& x,

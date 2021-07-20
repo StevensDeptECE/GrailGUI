@@ -240,7 +240,7 @@ void GLWin::startWindow() {
     *(string *)&baseDir = getenv("GRAIL");
     FontFace::initAll();
   }
-  defaultFont = (Font *)FontFace::get("TIMES", 16, FontFace::BOLD);
+  defaultFont = (Font *)FontFace::get("TIMES", 40, FontFace::BOLD);
   Font *bigFont = (Font *)FontFace::get("TIMES", 20, FontFace::BOLD);
   Font *normalFont = (Font *)FontFace::get("TIMES", 12, FontFace::NORMAL);
   guiFont = bigFont;
