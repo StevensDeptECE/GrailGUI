@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "opengl/Errcode.hh"
 #include "util/Ex.hh"
 
 // glad seems "unhappy" if you include it after glfw. Why?
@@ -565,6 +564,12 @@ void GLWin::panDown2D() {
   glm::mat4 *proj = c->getProjection();
   const float y = -100;  // TODO: make this in model coordinates!
   *proj = glm::translate(*proj, glm::vec3(0, y, 0));
+}
+
+void GLWin::clickOnWidget(GLWin *w) {
+  w->mousePressX = w->mouseX, w->mousePressY = w->mouseY;
+  MainCanvas *c = w->currentTab()->getMainCanvas();
+  c->click(w->mouseX, w->mouseY, w->mouseX, w->mouseY);
 }
 
 void GLWin::pressOnWidget(GLWin *w) {

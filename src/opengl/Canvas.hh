@@ -5,6 +5,7 @@
 
 #include "opengl/GLWin.hh"
 #include "opengl/Shape.hh"
+#include "util/DynArray.hh"
 
 class Camera;
 class Style;
@@ -95,13 +96,14 @@ class Canvas {
 
 class StyledMultiShape2D;
 class MultiText;
-
+class InteractiveWidget2D;
 class MainCanvas : public Canvas {
  private:
   StyledMultiShape2D* gui;
   MultiText* guiText;
   StyledMultiShape2D* menu;
   MultiText* menuText;
+  DynArray<InteractiveWidget2D*> widgets;
 
  public:
   MainCanvas(GLWin* parent);
@@ -117,6 +119,9 @@ class MainCanvas : public Canvas {
   void render();
   void cleanup();
 
+  void click(float xPress, float yPress, float xRelease, float yRelease);
+
+  void addClickableWidget(InteractiveWidget2D* w) { widgets.add(w); }
   void addButton(const char text[], float x, float y, float w, float h);
   void addLabel(const char text[], float x, float y, float w, float h);
   void addMenu(const std::string menu[], uint32_t numStrings, float x, float y);

@@ -1,0 +1,59 @@
+/**/
+/* c style comments allowed like CSS
+ */
+default {
+  bg: 000000; // default is hex?
+  fg: C0C0C0; // foreground
+  font: Times/serif bold 12pt;
+  margin: 0%+10 0%+10 100%-10, 100%-10; // percent of container+pixel gives great control
+  pad: 0%+10; // same padding on all sides
+}
+
+// this rule applies to any autotable tag
+autotable {
+  width: 95% + 10;
+  height: 600px; // if bigger than screen, scroll bar?
+  bg: ff0000; // who doesn't love blood red tables?
+  col-width: equal; // equal sizes by default if we don't say explicitly?
+  col-width: 20% 30% 30%; // first 3 columns get these percentages?
+                          col-width: 20%+2, 30%+2, 25%-2; // is it an error to re-specify? warning?
+                                                          // column width of remaining columns?
+  row-height:
+}
+
+// like css, specific style of autotable specified using autotable(style="mine")
+// unlike css, style=class, and there is no way to embed style in grail
+// or should we support all-in-one-file coding?
+autotable.mine {
+
+}
+
+//TODO: how to specify coordinates in css?
+// pixels, percentage of container, float coord, ...
+xyz {
+  x: 0;
+  y= 0; // accept = also?
+  w: 500;
+  h: 300;
+  rows: 10;
+  cols: 30;
+
+}
+
+abc {
+
+}
+
+test {
+  bg: FF0000;
+  bg[0]: 0000FF;
+  fg: ffffff
+}
+
+// even rows?
+test:row%2=0 {
+
+}
+
+Grail css:
+tag { rule }

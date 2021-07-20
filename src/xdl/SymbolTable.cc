@@ -52,15 +52,18 @@ void SymbolTable::write(Buffer& out) {
 
 void SymbolTable::readMeta(Buffer& metadataBuf) {
   DataType dt = metadataBuf.readType();
-  if (dt != DataType::STRUCT8) {
-    throw Ex1(Errcode::BAD_PROTOCOL);  // first byte must be STRUCT8
-  }
+  // Removed to allow Lists (and other containers) to act as top level
+  // structures
+  // if (dt != DataType::STRUCT8) {
+  //   throw Ex1(Errcode::BAD_PROTOCOL);  // first byte must be STRUCT8
+  // }
+
   string name = metadataBuf.readString8();  // the name of the symbol table,
                                             // probably 0 with no letters
-  uint8_t numElements = metadataBuf.readU8();
-  XDLType::readMeta(compiler, metadataBuf, numElements, this);
+  // uint8_t numElements = metadataBuf.readU8();
+  XDLType::readMeta(compiler, metadataBuf);
   // TODO: this is PATHETIC! reading one extra byte. Let's figure out how to fix
-  // the bug eventually...
+  // the buge eventually...
   metadataBuf.readU8();  // munch one extra byte which is the empty string on
                          // the member name of the symbol table?
 }

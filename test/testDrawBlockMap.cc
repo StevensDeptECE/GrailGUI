@@ -1,5 +1,6 @@
 
 #include "data/BlockMapLoader.hh"
+#include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/MapView2D.hh"
 
@@ -96,6 +97,8 @@ class TestDrawBlockMap : public GLWin {
     MainCanvas* c = currentTab()->getMainCanvas();
     const Style* s = getDefaultStyle();
     Style* s2 = new Style(getDefaultFont(), grail::white, grail::black);
+    c->addClickableWidget(
+        new ButtonWidget(c, 0, 0, 200, 100, "Click Me!", "mapZoomIn"));
     mv = c->addLayer(new MapView2D(c, s2, new BlockMapLoader(filename)));
 
     bindEvent(Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);

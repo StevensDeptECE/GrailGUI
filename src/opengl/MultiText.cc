@@ -137,66 +137,66 @@ inline float MultiText::internalAdd(float x, float y, const Font* f,
 // // 	}
 // // }
 // #endif
-void MultiText::add(float x, float y, uint32_t v) {
+float MultiText::add(float x, float y, uint32_t v) {
   char s[10];
   int len = sprintf(s, "%u", v);
-  internalAdd(x, y, style->f, s, len);
+  return internalAdd(x, y, style->f, s, len);
 }
 
-void MultiText::add(float x, float y, const Font* f, uint32_t v) {
+float MultiText::add(float x, float y, const Font* f, uint32_t v) {
   char s[10];
   int len = sprintf(s, "%u", v);
-  internalAdd(x, y, f, s, len);
+  return internalAdd(x, y, f, s, len);
 }
 
-void MultiText::add(float x, float y, const Font* f, int32_t v) {
+float MultiText::add(float x, float y, const Font* f, int32_t v) {
   char s[10];
   int len = sprintf(s, "%d", v);
-  internalAdd(x, y, f, s, len);
+  return internalAdd(x, y, f, s, len);
 }
 
-void MultiText::addHex(float x, float y, const Font* f, uint32_t v) {
+float MultiText::addHex(float x, float y, const Font* f, uint32_t v) {
   char s[10];
   int len = sprintf(s, "%x", v);
-  internalAdd(x, y, f, s, len);
+  return internalAdd(x, y, f, s, len);
 }
-void MultiText::addHex8(float x, float y, const Font* f, uint32_t v) {
+float MultiText::addHex8(float x, float y, const Font* f, uint32_t v) {
   char s[10];
   int len = sprintf(s, "%08x", v);
-  internalAdd(x, y, f, s, len);
+  return internalAdd(x, y, f, s, len);
 }
 
-void MultiText::add(float x, float y, float v) {
+float MultiText::add(float x, float y, float v) {
   char s[20];
   int len = sprintf(s, "%f", v);
-  internalAdd(x, y, style->f, s, len);
+  return internalAdd(x, y, style->f, s, len);
 }
 
-void MultiText::add(float x, float y, const Font* f, float v) {
+float MultiText::add(float x, float y, const Font* f, float v) {
   char s[20];
   int len = sprintf(s, "%f", v);
-  internalAdd(x, y, f, s, len);
+  return internalAdd(x, y, f, s, len);
 }
 
-void MultiText::add(float x, float y, double v) {
+float MultiText::add(float x, float y, double v) {
   char s[25];
   int len = sprintf(s, "%4.4lf", v);
-  internalAdd(x, y, style->f, s, len);
+  return internalAdd(x, y, style->f, s, len);
 }
 
-void MultiText::add(float x, float y, const Font* f, double v) {
+float MultiText::add(float x, float y, const Font* f, double v) {
   char s[25];
   int len = sprintf(s, "%4.4lf", v);
-  internalAdd(x, y, f, s, len);
+  return internalAdd(x, y, f, s, len);
 }
 
-void MultiText::add(float x, float y, const Font* f, double v, int fieldWidth,
+float MultiText::add(float x, float y, const Font* f, double v, int fieldWidth,
                     int precision) {
   char fmt[35];
   sprintf(fmt, "%%%d.%dlf", fieldWidth, precision);
   char s[35];
   int len = sprintf(s, fmt, v);
-  internalAdd(x, y, f, s, len);
+  return internalAdd(x, y, f, s, len);
 }
 
 void MultiText::addCentered(float x, float y, const Font* f, double v,
@@ -299,6 +299,7 @@ void MultiText::add(float x, float y, float space, float ang, const Font* f,
 
     x += glyph->advance;
   }
+  return x;
 }
 
 void MultiText::add(float x, float y, const Font* f, const char s[],

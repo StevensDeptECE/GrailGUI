@@ -13,7 +13,6 @@ set(grail-path
             ${grail-xdl}
             )
 
-
 if(${GRAIL_EXPERIMENTAL})
   add_subdirectory(xp)
   list(APPEND grail-path ${grail-xp})
