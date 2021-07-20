@@ -8,81 +8,34 @@
 
 using namespace std;
 
-void BoxChartWidget::setWhiskerStyle(const Style *s) { whiskerStyle = s; }
+void BoxChartWidget::setWhiskerStyle(const Style* s) { whiskerStyle = s; }
 
-void BoxChartWidget::setBoxStyle(const Style *s) { boxStyle = s; }
+void BoxChartWidget::setBoxStyle(const Style* s) { boxStyle = s; }
 
 void BoxChartWidget::setBoxWidth(double width) { boxWidth = width; }
 
-void BoxChartWidget::setBoxColors(vector<glm::vec4> &colors) {
+void BoxChartWidget::setBoxColors(vector<glm::vec4>& colors) {
   boxColors = colors;
 }
 
-void BoxChartWidget::setWhiskerColors(vector<glm::vec4> &colors) {
+void BoxChartWidget::setWhiskerColors(vector<glm::vec4>& colors) {
   whiskerColors = colors;
 }
 
-void BoxChartWidget::setOutlineColors(vector<glm::vec4> &colors) {
+void BoxChartWidget::setOutlineColors(vector<glm::vec4>& colors) {
   outlineColors = colors;
 }
 
 void BoxChartWidget::setPointsPerBox(int n) { pointsPerBox = n; }
 
-void BoxChartWidget::setData(const vector<double> &data) { this->data = data; }
+void BoxChartWidget::setData(const vector<double>& data) { this->data = data; }
 
-void BoxChartWidget::setNames(const ::vector<std::string> &names) {
+void BoxChartWidget::setNames(const ::vector<std::string>& names) {
   this->names = names;
 }
 
-void BoxChartWidget::createXAxis(AxisType a) {
-  xAxisType = a;
-
-  StyledMultiShape2D *mnew = c->addLayer(new StyledMultiShape2D(c, xAxisStyle));
-  MultiText *tnew = c->addLayer(new MultiText(c, xAxisTextStyle));
-
-  switch (a) {
-    case LINEAR: {
-      cout << "a box chart can't have a linear x axis\n";
-      throw Ex1(Errcode::BAD_ARGUMENT);
-    }; break;
-
-    case LOGARITHMIC: {
-      cout << "a box chart can't have a logarithmic x axis\n";
-      throw Ex1(Errcode::BAD_ARGUMENT);
-    }; break;
-
-    case TEXT: {
-      xAxis = new TextAxisWidget(mnew, tnew, x, y, w, h);
-      xAxis->setTickLabels(names);
-    }; break;
-  }
-}
-
-void BoxChartWidget::createYAxis(AxisType a) {
-  yAxisType = a;
-
-  StyledMultiShape2D *rot90 = c->addLayer(
-      new StyledMultiShape2D(c, yAxisStyle, numbers::pi / 2, x - w, y + h));
-  MultiText *t90 = c->addLayer(new MultiText(c, yAxisTextStyle, 0, x, y));
-
-  switch (a) {
-    case LINEAR: {
-      yAxis = new LinearAxisWidget(rot90, t90, 0, 0, h, w);
-    }; break;
-
-    case LOGARITHMIC: {
-      cout << "a box chart can't have a logarithmic y axis\n";
-      throw Ex1(Errcode::BAD_ARGUMENT);
-    }; break;
-
-    case TEXT: {
-      cout << "a box chart can't have a text y axis\n";
-      throw Ex1(Errcode::BAD_ARGUMENT);
-    }; break;
-  }
-}
-
 void BoxChartWidget::init() {
+  xAxis->setTickLabels(names);
   if (data.size() < pointsPerBox) {
     cerr << "the data vector must contain at least one data set (minimum "
          << pointsPerBox << " points)\n";
@@ -100,9 +53,9 @@ void BoxChartWidget::init() {
     throw(Ex1(Errcode::VECTOR_MISMATCHED_LENGTHS));
   }
 
-  StyledMultiShape2D *whiskers =
+  StyledMultiShape2D* whiskers =
       c->addLayer(new StyledMultiShape2D(c, whiskerStyle));
-  StyledMultiShape2D *boxes = c->addLayer(new StyledMultiShape2D(c, boxStyle));
+  StyledMultiShape2D* boxes = c->addLayer(new StyledMultiShape2D(c, boxStyle));
 
   double min = yAxis->getMinBound();
   double max = yAxis->getMaxBound();

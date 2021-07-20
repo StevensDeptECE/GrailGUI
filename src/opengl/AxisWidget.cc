@@ -2,11 +2,11 @@
 
 using namespace std;
 
-AxisWidget::AxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
+AxisWidget::AxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y,
                        double w, double h, double minBound, double maxBound,
                        double tickInterval, double tickDrawSize, bool showTicks,
                        bool isVert, std::string axisTitle,
-                       const glm::vec4 &axisColor, const glm::vec4 &tickColor,
+                       const glm::vec4& axisColor, const glm::vec4& tickColor,
                        int tickFormatWidth, int tickFormatPrecision,
                        double bottomOffset)
     : Widget2D(m, t, x, y, w, h),
@@ -22,6 +22,8 @@ AxisWidget::AxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
       tickFormat({.width = tickFormatWidth, .precision = tickFormatPrecision}),
       bottomOffset(bottomOffset) {}
 
+AxisWidget::~AxisWidget() {}
+
 void AxisWidget::setTickDrawSize(double i) { tickDrawSize = i; }
 
 void AxisWidget::setShowTicks(bool b) { showTicks = b; }
@@ -30,9 +32,9 @@ void AxisWidget::setIsVert(bool b) { isVert = b; }
 
 void AxisWidget::setTitle(std::string text) { axisTitle = text; }
 
-void AxisWidget::setAxisColor(const glm::vec4 &color) { axisColor = color; }
+void AxisWidget::setAxisColor(const glm::vec4& color) { axisColor = color; }
 
-void AxisWidget::setTickColor(const glm::vec4 &color) { tickColor = color; }
+void AxisWidget::setTickColor(const glm::vec4& color) { tickColor = color; }
 
 void AxisWidget::setTickFormat(int width, int precision) {
   tickFormat = {width, precision};
@@ -60,7 +62,7 @@ void AxisWidget::addAxisTitle() {
   }
 }
 
-LinearAxisWidget::LinearAxisWidget(StyledMultiShape2D *m, MultiText *t,
+LinearAxisWidget::LinearAxisWidget(StyledMultiShape2D* m, MultiText* t,
                                    double x, double y, double w, double h)
     : AxisWidget(m, t, x, y, w, h) {}
 
@@ -119,7 +121,7 @@ void LinearAxisWidget::init() {
   addAxisTitle();
 }
 
-LogAxisWidget::LogAxisWidget(StyledMultiShape2D *m, MultiText *t, double x,
+LogAxisWidget::LogAxisWidget(StyledMultiShape2D* m, MultiText* t, double x,
                              double y, double w, double h)
     : AxisWidget(m, t, x, y, w, h) {}
 
@@ -176,7 +178,7 @@ void LogAxisWidget::init() {
   addAxisTitle();
 }
 
-TextAxisWidget::TextAxisWidget(StyledMultiShape2D *m, MultiText *t, double x,
+TextAxisWidget::TextAxisWidget(StyledMultiShape2D* m, MultiText* t, double x,
                                double y, double w, double h)
     : AxisWidget(m, t, x, y, w, h), tickLabels(vector<string>()) {}
 

@@ -7,72 +7,28 @@
 
 using namespace std;
 
-void BarChartWidget::setBarStyle(const Style *s) { barStyle = s; }
+void BarChartWidget::setBarStyle(const Style* s) { barStyle = s; }
 
 void BarChartWidget::setBarWidth(double width) { barWidth = width; }
 
-void BarChartWidget::setBarColors(const std::vector<glm::vec4> &colors) {
+void BarChartWidget::setBarColors(const std::vector<glm::vec4>& colors) {
   barColors = colors;
 }
 
-void BarChartWidget::setBarOutlineColors(const std::vector<glm::vec4> &colors) {
+void BarChartWidget::setBarOutlineColors(const std::vector<glm::vec4>& colors) {
   barOutlineColors = colors;
 }
 
-void BarChartWidget::setValues(const vector<double> &values) {
+void BarChartWidget::setValues(const vector<double>& values) {
   this->values = values;
 }
 
-void BarChartWidget::setNames(const vector<string> &names) {
+void BarChartWidget::setNames(const vector<string>& names) {
   this->names = names;
 }
 
-void BarChartWidget::createXAxis(AxisType a) {
-  xAxisType = a;
-  StyledMultiShape2D *mnew = c->addLayer(new StyledMultiShape2D(c, xAxisStyle));
-  MultiText *tnew = c->addLayer(new MultiText(c, xAxisTextStyle));
-
-  switch (a) {
-    case LINEAR: {
-      cout << "a bar chart can't have a linear x axis\n";
-      throw Ex1(Errcode::BAD_ARGUMENT);
-    }; break;
-
-    case LOGARITHMIC: {
-      cout << "a bar chart can't have a logarithmic x axis\n";
-      throw Ex1(Errcode::BAD_ARGUMENT);
-    }; break;
-
-    case TEXT: {
-      xAxis = new TextAxisWidget(mnew, tnew, x, y, w, h);
-      xAxis->setTickLabels(names);
-    }; break;
-  }
-}
-
-void BarChartWidget::createYAxis(AxisType a) {
-  yAxisType = a;
-  StyledMultiShape2D *rot90 = c->addLayer(
-      new StyledMultiShape2D(c, yAxisStyle, numbers::pi / 2, x - w, y + h));
-  MultiText *t90 = c->addLayer(new MultiText(c, yAxisTextStyle, 0, x, y));
-
-  switch (a) {
-    case LINEAR: {
-      yAxis = new LinearAxisWidget(rot90, t90, 0, 0, h, w);
-    }; break;
-
-    case LOGARITHMIC: {
-      yAxis = new LogAxisWidget(rot90, t90, 0, 0, h, w);
-    }; break;
-
-    case TEXT: {
-      cout << "a bar chart can't have a text y axis\n";
-      throw Ex1(Errcode::BAD_ARGUMENT);
-    }; break;
-  }
-}
-
 void BarChartWidget::init() {
+  xAxis->setTickLabels(names);
   if (values.size() < 1 || names.size() < 1) {
     cerr << "names and values vectors cannot be zero length\n";
     throw(Ex1(Errcode::VECTOR_ZERO_LENGTH));
@@ -83,7 +39,7 @@ void BarChartWidget::init() {
     throw(Ex1(Errcode::VECTOR_MISMATCHED_LENGTHS));
   }
 
-  StyledMultiShape2D *m = c->addLayer(new StyledMultiShape2D(c, barStyle));
+  StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(c, barStyle));
 
   double min = yAxis->getMinBound();
   double max = yAxis->getMaxBound();

@@ -7,63 +7,20 @@
 
 using namespace std;
 
-void LineGraphWidget::setDataStyle(const Style *s) { dataStyle = s; }
+void LineGraphWidget::setDataStyle(const Style* s) { dataStyle = s; }
 
-void LineGraphWidget::setPointFormat(char pt, double size, glm::vec4 &color) {
+void LineGraphWidget::setPointFormat(char pt, double size, glm::vec4& color) {
   pointSize = size;
-  markerFunction = map[pt];
+  markerFunction = marker_pointer_table[pt];
   pointColor = color;
 }
 
-void LineGraphWidget::setXPoints(const std::vector<double> &xPoints) {
+void LineGraphWidget::setXPoints(const std::vector<double>& xPoints) {
   this->xPoints = xPoints;
 }
 
-void LineGraphWidget::setYPoints(const std::vector<double> &yPoints) {
+void LineGraphWidget::setYPoints(const std::vector<double>& yPoints) {
   this->yPoints = yPoints;
-}
-
-void LineGraphWidget::createXAxis(AxisType a) {
-  xAxisType = a;
-  StyledMultiShape2D *mnew = c->addLayer(new StyledMultiShape2D(c, xAxisStyle));
-  MultiText *tnew = c->addLayer(new MultiText(c, xAxisTextStyle));
-
-  switch (a) {
-    case LINEAR: {
-      xAxis = new LinearAxisWidget(mnew, tnew, x, y, w, h);
-    }; break;
-
-    case LOGARITHMIC: {
-      xAxis = new LogAxisWidget(mnew, tnew, x, y, w, h);
-    }; break;
-
-    case TEXT: {
-      cout << "a line graph can't have a text axis\n";
-      throw Ex1(Errcode::BAD_ARGUMENT);
-    }; break;
-  }
-}
-
-void LineGraphWidget::createYAxis(AxisType a) {
-  yAxisType = a;
-  StyledMultiShape2D *rot90 = c->addLayer(
-      new StyledMultiShape2D(c, yAxisStyle, numbers::pi / 2, x - w, y + h));
-  MultiText *t90 = c->addLayer(new MultiText(c, yAxisTextStyle, 0, x, y));
-
-  switch (a) {
-    case LINEAR: {
-      yAxis = new LinearAxisWidget(rot90, t90, 0, 0, h, w);
-    }; break;
-
-    case LOGARITHMIC: {
-      yAxis = new LogAxisWidget(rot90, t90, 0, 0, h, w);
-    }; break;
-
-    case TEXT: {
-      cout << "a line graph can't have a text axis\n";
-      throw Ex1(Errcode::BAD_ARGUMENT);
-    }; break;
-  }
 }
 
 void LineGraphWidget::init() {
@@ -77,7 +34,7 @@ void LineGraphWidget::init() {
     throw(Ex1(Errcode::VECTOR_MISMATCHED_LENGTHS));
   }
 
-  StyledMultiShape2D *m = c->addLayer(new StyledMultiShape2D(c, dataStyle));
+  StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(c, dataStyle));
 
   double xMin = xAxis->getMinBound();
   double xMax = xAxis->getMaxBound();
@@ -87,7 +44,7 @@ void LineGraphWidget::init() {
   double xInterval = xAxis->getTickInterval();
   double yInterval = yAxis->getTickInterval();
 
-  if (xAxisType == AxisType::LOGARITHMIC) {
+  if (xAxisType == LOGARITHMIC) {
     double base = 1 / log(xInterval);
     double scale = w / abs(log(xMax) * base - log(xMin) * base);
     transform(
@@ -99,7 +56,7 @@ void LineGraphWidget::init() {
               [=, this](double d) -> double { return x + scale * d; });
   }
 
-  if (yAxisType == AxisType::LOGARITHMIC) {
+  if (yAxisType == LOGARITHMIC) {
     double base = 1 / log(yInterval);
     double scale = -h / abs(log(yMax) * base - log(yMin) * base);
     transform(yPoints.begin(), yPoints.end(), yPoints.begin(),
