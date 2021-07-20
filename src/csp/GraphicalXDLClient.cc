@@ -168,6 +168,11 @@ class Renderer {
     return &i->second;
   }
 
+  Method* rendererFind(XDLType* t){
+    XDLIterator* comp = dynamic_cast<XDLIterator*>(t);
+    auto i = renderMap.find((comp->getUnderlying()->getDataType()));
+  }
+
   void registerRenderer(DataType t, Method m) { renderMap[t] = m; }
   void renderListDown();
   void renderStructAcross();
@@ -179,7 +184,6 @@ class Renderer {
 };
 
 void Renderer::update() {
-    const XDLType* m = **i;
   Method* elementRenderer = rendererFind(it);
     if (!elementRenderer) {
       cerr << "bad renderer";
