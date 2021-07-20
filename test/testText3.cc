@@ -9,8 +9,8 @@ class TestText3 : public GLWin {
     m->add(10, y, f, 123);
     m->addx(150, y, f, numbers::pi);
     m->addx(400, y, f, 2.5f);
-    m->addx(500, y, f, 123456789U);
-    m->addx(600, y, f, 123456789012345678ULL);
+    m->addx(550, y, f, 123456789U);
+    m->addx(700, y, f, 123456789012345678ULL);
     y += 20;
     m->addHex0(10, y, f, 0x0034ABCD);
     m->addHex0(150, y, f, 0xABCDEF12);

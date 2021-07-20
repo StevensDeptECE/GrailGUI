@@ -174,6 +174,8 @@ class MultiText : public Shape {
   void addChar(float x, float y, const Font* f, const unsigned char c);
   // a 16-bit unicode character like Java
   void addChar(float x, float y, const Font* f, const uint16_t c);
+  float add(float x, float y, float space, float ang, const Font* f,
+           const char s[], uint32_t len);
   float add(float x, float y, const char s[], uint32_t len);
   float add(float x, float y, const Font* f, const char s[], uint32_t len);
   float add(float x, float y, uint32_t v);
@@ -188,6 +190,7 @@ class MultiText : public Shape {
   float add(float x, float y, const Font* f, double v);
   float add(float x, float y, const Font* f, double v, int fieldWidth,
            int precision);
+  float add(float x, float y, const Font* f, const std::string& s);
   void addCentered(float x, float, const Font* f, double v, int fieldWidth,
                    int precision);
   void addCentered(float x, float y, float w, const Font* f, const char s[],

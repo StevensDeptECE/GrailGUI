@@ -256,7 +256,8 @@ inline void rotateAround(float xc, float yc, float cosa, float sina, float& x,
   x = xc + dx * cosa - dy * sina;
   y = yc + dx * sina + dy * cosa;
 }
-void MultiText::add(float x, float y, float space, float ang, const Font* f,
+
+float MultiText::add(float x, float y, float space, float ang, const Font* f,
                     const char s[], uint32_t len) {
   float startx = x, starty = y;
   x += space;
@@ -308,21 +309,21 @@ void MultiText::add(float x, float y, float space, float ang, const Font* f,
   return x;
 }
 
-void MultiText::add(float x, float y, const Font* f, const char s[],
+float MultiText::add(float x, float y, const Font* f, const char s[],
                     uint32_t len) {
-  internalAdd(x, y, f, s, len);
+  return internalAdd(x, y, f, s, len);
 }
 
-void MultiText::add(float x, float y, const Font* f, const std::string& s) {
-  internalAdd(x, y, f, s.c_str(), s.length());
+float  MultiText::add(float x, float y, const Font* f, const std::string& s) {
+  return internalAdd(x, y, f, s.c_str(), s.length());
 }
 
 /*
   Draw a string of fixed length with the default font in the style of the
   MultiText
 */
-void MultiText::add(float x, float y, const char s[], uint32_t len) {
-  internalAdd(x, y, style->f, s, len);
+float MultiText::add(float x, float y, const char s[], uint32_t len) {
+  return internalAdd(x, y, style->f, s, len);
 }
 
 // find the index of the first character over the margin with this font
