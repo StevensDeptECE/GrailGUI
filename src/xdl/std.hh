@@ -120,13 +120,14 @@ class XDLIterator : public XDLType {
   XDLType* underlying;
 
  public:
-  XDLIterator(XDLType* underlying) : XDLType("Iterator") {}
+  XDLIterator(XDLType* underlying) : XDLType("Iterator"), underlying(underlying) {}
   DataType getDataType() const override { return (DataType)-1; }
   void write(Buffer& out) const override {}
   void writeMeta(Buffer& out) const override {}
   XDLType* begin(Buffer& buf) override { return nullptr;}
   void addData(ArrayOfBytes* data) const override {}
   void addMeta(ArrayOfBytes* meta) const override {}
+  XDLType* getUnderlying() const { return underlying; }
   uint32_t size() const override { return underlying->size(); }
   uint32_t fieldSize() const override { return 0; }
 };
@@ -952,13 +953,17 @@ class Struct : public CompoundType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
   void addData(ArrayOfBytes* data) const override;
   void addMeta(ArrayOfBytes* meta) const override;
-  XDLType* begin(Buffer& buf) override { return (XDLType*)(members[0].type); }
+  XDLType* begin(Buffer& buf) override { return new Iterator(this); }
   class Iterator : public XDLIterator { 
     private:
      uint32_t currentField;
    public:
     Iterator(Struct* s) : XDLIterator(s), currentField(0) {}
     Struct* getStruct() { return (Struct*)underlying; }
+    const XDLType* operator *() const { return ((Struct*)underlying)->getMemberType(currentField); }
+    bool operator !() const {
+      return currentField < ((Struct*)underlying)->getMemberCount();
+    }
     Iterator& operator ++() {
       currentField++;
       return *this;
@@ -966,26 +971,25 @@ class Struct : public CompoundType {
   };
 };
 
-class Regex : public XDLType {
+class Regex : public CompoundType {
  private:
   std::regex rexp;
 
  public:
-  Regex(const std::string& name, const std::string& exp)
-      : XDLType(name), rexp(exp) {}
+  Regex(const std::string& name, const std::string& exp);
   // return true if this regex object matches the text
   bool match(const std::string& text) const { return regex_match(text, rexp); }
-  uint32_t size() const override { return 0; }  // TODO: implement in .cc
+  uint32_t size() const override;
   uint32_t fieldSize() const override;
   void write(Buffer& buf) const override;
   void writeMeta(Buffer& buf) const override;
-  DataType getDataType() const { return DataType::REGEX; }
+  DataType getDataType() const;
   // string getTypeName() const {return typeName;}
   void addData(ArrayOfBytes* data) const override;
   void addMeta(ArrayOfBytes* meta) const override;
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
-  XDLType* begin(Buffer& buf) { return this; }
+  XDLType* begin(Buffer& buf);
 };
 
 class UnImpl : public XDLType {

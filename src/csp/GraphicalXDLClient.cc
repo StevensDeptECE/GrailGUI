@@ -30,6 +30,9 @@ class Renderer {
   struct BoundBox {
     float x0, y0;
     uint32_t width, height;
+
+    BoundBox(float x, float y, uint32_t w, uint32_t h)
+        : x0(x), y0(y), width(w), height(h) {}
   };
   typedef void (Renderer::*Method)();
 
@@ -67,9 +70,13 @@ class Renderer {
     }
   }
 
-  void registerRenderers(){
+  void registerRenderers() {
     registerRenderer(DataType::STRUCT8, &Renderer::renderStructAcross);
     registerRenderer(DataType::LIST16, &Renderer::renderListDown);
+    registerRenderer(DataType::U32, &Renderer::renderU32);
+    registerRenderer(DataType::U64, &Renderer::renderU64);
+    registerRenderer(DataType::F32, &Renderer::renderF32);
+    registerRenderer(DataType::F64, &Renderer::renderF64);
   }
 
  public:
@@ -84,21 +91,19 @@ class Renderer {
    */
   Renderer(XDLType* it, MainCanvas* c, DynArray<const XDLType*>& requests,
            HashMap<const XDLType*>& byName, Buffer& in)
-      : m(c->getGui()),
+      : it(it),
+        m(c->getGui()),
         t(c->getGuiText()),
         dataBuffer(65536),
         requests(requests),
         byName(byName),
         renderMap(65536),
         in(in),
-        bounds({.x0 = 0,
-                .y0 = 0,
-                .width = c->getWidth(),
-                .height = c->getHeight()}),
+        bounds(0, 0, c->getWidth(), c->getHeight()),
         rowSize(20),
         x(bounds.x0),
         y(bounds.y0 + rowSize) {
-    registerIterator(it);
+    //    registerIterator(it);
     registerRenderers();
   }
 
@@ -114,7 +119,8 @@ class Renderer {
    */
   Renderer(XDLType* it, MainCanvas* c, DynArray<const XDLType*>& requests,
            HashMap<const XDLType*>& byName, Buffer& in, const BoundBox& b)
-      : m(c->getGui()),
+      : it(it),
+        m(c->getGui()),
         t(c->getGuiText()),
         requests(requests),
         byName(byName),
@@ -124,8 +130,7 @@ class Renderer {
         bounds(b) {
     registerIterator(it);
     registerRenderers();
-
-        }
+  }
 
   /**
    * @brief Construct a new Renderer object
@@ -143,18 +148,7 @@ class Renderer {
   Renderer(XDLType* it, MainCanvas* c, DynArray<const XDLType*>& requests,
            HashMap<const XDLType*>& byName, Buffer& in, const float& x0,
            const float& y0, const uint32_t& width, const uint32_t& height)
-      : it(it),
-        m(c->getGui()),
-        t(c->getGuiText()),
-        requests(requests),
-        byName(byName),
-        renderMap(65536),
-        in(in),
-        dataBuffer(65536),
-        bounds({.x0 = x0, .y0 = y0, .width = width, .height = height}) {
-    registerIterator(it);
-    registerRenderers();
-    //...
+      : Renderer(it, c, requests, byName, in, BoundBox(x0, y0, width, height)) {
   }
 
   void advance(XDLIterator* endPage) {
@@ -167,15 +161,36 @@ class Renderer {
     return &i->second;
   }
 
+  Method* rendererFind(XDLType* t) {
+    XDLIterator* comp = dynamic_cast<XDLIterator*>(t);
+    if (comp) {
+      auto i = renderMap.find((comp->getUnderlying()->getDataType()));
+      if (i != renderMap.end()) return &i->second;
+    }
+    return nullptr;
+  }
+
   void registerRenderer(DataType t, Method m) { renderMap[t] = m; }
   void renderListDown();
   void renderStructAcross();
+  void renderSubStructAcross(Struct* s);
   void renderStructNameValue();
   void renderObjectMetadataAcross();
   void renderU32();
+  void renderU64();
+  void renderF32();
   void renderF64();
   void update();
 };
+
+void Renderer::update() {
+  Method* elementRenderer = rendererFind(it);
+  if (!elementRenderer) {
+    cerr << "bad renderer";
+    return;
+  }
+  (this->**elementRenderer)();
+}
 
 void Renderer::renderListDown() {
   GenericList::Iterator* i = dynamic_cast<GenericList::Iterator*>(it);
@@ -215,28 +230,56 @@ void Renderer::renderObjectMetadataAcross() {
 }
 
 void Renderer::renderStructAcross() {
-  Struct::Iterator* i = dynamic_cast<Struct::Iterator*>(it);
-  Struct* s = i->getStruct();
-  if (i == nullptr) {
+  Struct::Iterator* startPage = dynamic_cast<Struct::Iterator*>(it);
+  if (startPage == nullptr) {
     cerr << "Expected generic list!";
     return;
   }
+  Struct* s = startPage->getStruct();
   Method elementRenderer;
 
-  for (uint32_t i = 0; i < s->getMemberCount(); i++) {
-    const XDLType* m = s->getMember(i).type;
-    Method* elementRenderer = rendererFind(m->getDataType());
-    if (!elementRenderer) {
-      cerr << "bad renderer";
-      return;
+  for (Struct::Iterator j = *startPage; !j; ++j) {
+    const XDLType* m = *j;
+    if (m->getDataType() == DataType::STRUCT8) {
+      renderSubStructAcross((Struct*)m);
+    } else {
+      Method* elementRenderer = rendererFind(m->getDataType());
+      if (!elementRenderer) {
+        cerr << "bad renderer datatype=" << uint32_t(m->getDataType())
+             << " typename=" << m->getTypeName() << '\n';
+      }
+      (this->**elementRenderer)();
+      x += 100;
     }
-    (this->**elementRenderer)();
-    x += m->fieldSize();
+  }
+}
+
+void Renderer::renderSubStructAcross(Struct* s) {
+  Method elementRenderer;
+
+  for (Struct::Iterator j(s); !j; ++j) {
+    const XDLType* m = *j;
+    if (m->getDataType() == DataType::STRUCT8) {
+      renderSubStructAcross((Struct*)m);
+    } else {
+      Method* elementRenderer = rendererFind(m->getDataType());
+      if (!elementRenderer) {
+        cerr << "bad renderer datatype=" << uint32_t(m->getDataType())
+             << " typename=" << m->getTypeName() << '\n';
+      }
+      (this->**elementRenderer)();
+    }
+    x += 100;
   }
 }
 
 void Renderer::renderStructNameValue() { return; }
-void Renderer::renderU32() { t->add(x, y, in.readU32()); }
+void Renderer::renderU32() {
+  Buffer& incpy = in;
+  t->add(x, y, in.readU32());
+}
+void Renderer::renderU64() { t->add(x, y, in.readU64()); }
+void Renderer::renderF32() { t->add(x, y, in.readF32()); }
 void Renderer::renderF64() { t->add(x, y, in.readF64()); }
 
 /*
@@ -277,9 +320,7 @@ class GraphicalXDLClient : public GLWin {
         s(ip, port),
         reqID(req),
         requests(64),
-        byName(64) {
-    readData(req);
-  }
+        byName(64) {}
   void readData(uint32_t req) {
     s.send(req);
     Buffer& in = s.getIn();
@@ -295,9 +336,16 @@ class GraphicalXDLClient : public GLWin {
     // TODO: if we call readData multiple times, delete the old renderer before
     // replacing it
   }
-  void init() { update(); }
+  void init() {
+    readData(reqID);
+    update();
+  }
 
-  void update() { r->update(); }
+  void update() {
+    if (dirty) {
+      r->update();
+    }
+  }
 };
 int main(int argc, char* argv[]) {
   const char* const ip = argc > 1 ? argv[1] : "127.0.0.1";

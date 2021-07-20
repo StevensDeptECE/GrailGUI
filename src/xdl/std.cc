@@ -680,6 +680,7 @@ uint32_t Struct::getMemberCount() const { return members.size(); }
 DataType GenericList::getDataType() const { return DataType::LIST16; }
 
 void GenericList::write(Buffer& buf) const {}
+uint32_t GenericList::size() const { return 0; }
 
 void GenericList::writeMeta(Buffer& buf) const {
   buf.write(getDataType());
@@ -735,6 +736,10 @@ void BuiltinType::display(Buffer& binaryIn, Buffer& asciiOut) const {}
 void BuiltinType::format(Buffer& binaryIn, Buffer& asciiOut,
                          const char fmt[]) const {}
 
+
+Regex::Regex(const string& name, const string& exp)
+      : CompoundType(name), rexp(exp) {}
+
 void Regex::write(Buffer& buf) const { buf.write(rexp); }
 
 void Regex::writeMeta(Buffer& buf) const {
@@ -742,10 +747,18 @@ void Regex::writeMeta(Buffer& buf) const {
   buf.write(getTypeName());
 }
 
+XDLType* Regex::begin(Buffer& buf) { return this; }
+
 void Regex::display(Buffer& binaryIn, Buffer& asciiOut) const {}
 
 void Regex::format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const {
 }
+
+uint32_t Regex::size() const { return 0; }
+uint32_t Regex::fieldSize() const { return 0; }
+
+DataType Regex::getDataType() const { return DataType::REGEX; }
+
 
 uint32_t UnImpl::size() const { return 0; }
 
@@ -756,6 +769,9 @@ void UnImpl::writeMeta(Buffer& buf) const { throw Ex1(Errcode::UNIMPLEMENTED); }
 DataType UnImpl::getDataType() const { return DataType::UNIMPL; }
 
 void XDLBuiltinType::addMeta(ArrayOfBytes* meta) const { meta->addMeta(t); }
+XDLType* XDLBuiltinType::begin(Buffer& buf) { 
+  return nullptr; // TODO: this will crash if you don't return an actual object
+ }
 
 void ArrayOfBytes::write(Buffer& b) const { return; }
 uint32_t ArrayOfBytes::size() const { return data.size() + metadata.size(); }
@@ -959,6 +975,8 @@ uint32_t String8::fieldSize() const { return 22; }
 uint32_t String16::fieldSize() const { return 22; }
 uint32_t String32::fieldSize() const { return 22; }
 uint32_t String64::fieldSize() const { return 22; }
+uint32_t UnImpl::fieldSize() const { return 0; }
+uint32_t TypeDef::fieldSize() const { return 0; }
 
 //TODO: write function to calculate max size when Struct is made
 uint32_t Struct::fieldSize() const { return 22; }  // return maxFieldSize; }

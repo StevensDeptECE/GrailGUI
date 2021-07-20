@@ -40,7 +40,6 @@ const char* DataTypeNames[] = {"u8",
                                "struct8",
                                "struct16",
                                "struct32",
-
                                "dynamiclist1",
                                "dynamiclist2",
                                "func1",

@@ -143,6 +143,12 @@ float MultiText::add(float x, float y, uint32_t v) {
   return internalAdd(x, y, style->f, s, len);
 }
 
+float MultiText::add(float x, float y, uint64_t v) {
+  char s[24];
+  int len = sprintf(s, "%lu", v);
+  return add(x, y, s, len);
+}
+
 float MultiText::add(float x, float y, const Font* f, uint32_t v) {
   char s[10];
   int len = sprintf(s, "%u", v);

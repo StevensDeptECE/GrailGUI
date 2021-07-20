@@ -335,6 +335,7 @@ GLWin::~GLWin() {
 // }
 
 void GLWin::mainLoop() {
+  dirty = true;
   init();      // call the child class method to set up
   baseInit();  // call grails initialization for shaders
 
@@ -345,7 +346,6 @@ void GLWin::mainLoop() {
   uint32_t frameCount = 0;
   double startTime = glfwGetTime();  // get time now for calculating FPS
   double renderTime;
-  dirty = true;
   while (!glfwWindowShouldClose(win)) {
     //    bool modified = Queue::dump_render();
     //    dt = current - lastFrame;
