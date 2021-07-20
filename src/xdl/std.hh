@@ -120,7 +120,7 @@ class XDLIterator : public XDLType {
   XDLType* underlying;
 
  public:
-  XDLIterator(XDLType* underlying) : XDLType("Iterator") {}
+  XDLIterator(XDLType* underlying) : XDLType("Iterator"), underlying(underlying) {}
   DataType getDataType() const override { return (DataType)-1; }
   void write(Buffer& out) const override {}
   void writeMeta(Buffer& out) const override {}

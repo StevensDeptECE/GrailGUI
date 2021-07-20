@@ -27,6 +27,7 @@ class MultiText : public Shape {
   float add(float x, float y, const char s[], uint32_t len);
   float add(float x, float y, const Font* f, const char s[], uint32_t len);
   float add(float x, float y, uint32_t v);
+  float add(float x, float y, uint64_t v);
   float add(float x, float y, const Font* f, uint32_t v);
   float addHex(float x, float y, const Font* f, uint32_t v);
   float addHex8(float x, float y, const Font* f, uint32_t v);
