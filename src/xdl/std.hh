@@ -716,8 +716,8 @@ class Struct : public CompoundType {
   Struct(XDLCompiler* c) : Struct(c, empty) {}
 
   void addSym(const string& name, const XDLType* t);
-  void addSymCheckNull(const string& name, const XDLType* t);
-  void addSymCheckDup(const string& name, const XDLType* t);
+  void addSymCheckNull(const string& name, const XDLType* t2);
+  void addSymCheckDup(const string& name, const XDLType* t2);
 
   uint32_t addMemberName(const char memberName[]) {
     uint32_t offset = memberNames.size();
