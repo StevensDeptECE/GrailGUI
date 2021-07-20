@@ -6,6 +6,8 @@
 
 #include <unistd.h>
 
+#include <algorithm>
+#include <execution>
 #include <iostream>
 #include <map>
 #include <random>
@@ -37,6 +39,7 @@ using namespace std;
 string GLWin::baseDir;
 
 unordered_map<GLFWwindow *, GLWin *> GLWin::winMap;
+vector<KeyReceiver *> GLWin::keyReceivers;
 default_random_engine gen;
 uniform_real_distribution<double> u01(0.0, 1.0);
 glm::mat4 GLWin::projection;
@@ -102,7 +105,17 @@ inline void GLWin::doit(GLWin *w, uint32_t input) {
 void GLWin::keyCallback(GLFWwindow *win, int key, int scancode, int action,
                         int mods) {
   uint32_t input = (mods << 9) | key;
-  cerr << "key: " << key << " mods: " << mods << " input=" << input << '\n';
+  // cerr << "key: " << key << " mods: " << mods << " input=" << input << '\n';
+  // cerr << "scancode: " << scancode << endl;
+  // cerr << "action: " << action << endl;
+
+  // for (auto k : keyReceivers) {
+  //   k->handleInput(key, action, mods);
+  // }
+
+  for_each(execution::par_unseq, keyReceivers.begin(), keyReceivers.end(),
+           [=](auto k) { k->handleInput(key, action, mods); });
+
   doit(winMap[win], input);
 }
 
@@ -323,7 +336,6 @@ void GLWin::update() {}
 void FontFaceCleanup();
 
 GLWin::~GLWin() {
-  cleanup();
   cerr << "GLWin Destructor" << endl;
   GLWin::classCleanup();
 }

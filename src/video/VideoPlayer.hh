@@ -6,6 +6,9 @@
 #include <mpv/client.h>
 #include <mpv/render_gl.h>
 
+#include <unordered_map>
+
+#include "opengl/KeyReceiver.hh"
 #include "opengl/Shape.hh"
 #include "util/Ex.hh"
 
@@ -13,9 +16,12 @@
  * @brief
  *
  */
-class VideoPlayer : public Shape {
+class VideoPlayer : public Shape, public KeyReceiver {
  private:
+  std::unordered_map<int, void (VideoPlayer::*)(int)> fpt;
+
   bool isPlaying; /**< Whether the video is playing or not*/
+  int currentVolume;
 
   int advancedControl; /**< Whether to use advanced control with MPV (defaults
                         * to 1). C++ wont let you pass something like &4 as a
@@ -79,6 +85,9 @@ class VideoPlayer : public Shape {
     }
   }
 
+  inline void setup_pointer_table();
+  void handleInput(int input, int action, int mods) override;
+
  public:
   /**
    * @brief Construct a new Video Player object
@@ -105,20 +114,20 @@ class VideoPlayer : public Shape {
    * @brief Artifact of being subclassed from Shape, currently does nothing.
    *
    */
-  void init();
+  void init() override;
 
   /**
    * @brief Ask MPV if it has updates to display and set the current GLWin to be
    * dirty if so.
    *
    */
-  void update();
+  void update() override;
 
   /**
    * @brief Render the current frame with the specified x, y, width, and height.
    *
    */
-  void render();
+  void render() override;
 
   /**
    * @brief Load a video file from a file path.
@@ -145,6 +154,9 @@ class VideoPlayer : public Shape {
    */
   void setVolume(int volume);
 
+  void volumeUp(int mods);
+  void volumeDown(int mods);
+
   /**
    * @brief Seek to a location
    *
@@ -164,17 +176,20 @@ class VideoPlayer : public Shape {
    */
   void revertSeek();
 
+  void seekForward(int mods);
+  void seekBackward(int mods);
+
   /**
    * @brief Go to the next track in a playlist.
    *
    */
-  void playlistNext();
+  void playlistNext(int mods = 0);
 
   /**
    * @brief Go to the previous track in a playlist.
    *
    */
-  void playlistPrev();
+  void playlistPrev(int mods = 0);
 
   /**
    * @brief Go to a track at a specific index of a playlist.
@@ -248,5 +263,5 @@ class VideoPlayer : public Shape {
    * @brief Toggle the playing state of the player.
    *
    */
-  void togglePause();
+  void togglePause(int mods = 0);
 };

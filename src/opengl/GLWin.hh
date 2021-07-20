@@ -10,6 +10,7 @@
 
 #include "opengl/Colors.hh"
 #include "opengl/GLWinFonts.hh"
+#include "opengl/KeyReceiver.hh"
 #include "opengl/Shader.hh"
 #include "util/DynArray.hh"
 #include "util/HashMap.hh"
@@ -43,6 +44,7 @@ class GLWin {
   static bool ranStaticInits;
   static bool hasBeenInitialized;
   static std::unordered_map<GLFWwindow*, GLWin*> winMap;
+  static std::vector<KeyReceiver*> keyReceivers;
   const char* title;
   double startTime;     // start of simulation time, default 0
   double endTime;       // end of simulation time, default 0
@@ -55,6 +57,7 @@ class GLWin {
   char frameName[32];
   DynArray<Tab*> tabs;  // list of web pages, ie tabs
   Tab* current;         // current (active) tab
+
  public:
   static std::string baseDir;
   double mouseX, mouseY;
@@ -62,11 +65,9 @@ class GLWin {
   bool dragMode;
   int winXPos, winYPos;    // location of the top-left of the window in pixels
   uint32_t width, height;  // width and height of the window in pixels
-  bool dirty, dirty2;
+  bool dirty;
   bool focused;
   uint32_t exitAfter;  // if not zero, will terminate
-
-  float getTime() const;
 
   enum Inputs {
     INSERT = 260,
@@ -102,6 +103,8 @@ class GLWin {
     SHIFT = 1024,
     ALT = 2048
   };
+
+  void addKeyReceiver(KeyReceiver* k) { keyReceivers.push_back(k); }
 
   /*
         map input events, like pressing a key, or clicking alt-mouse button 1
