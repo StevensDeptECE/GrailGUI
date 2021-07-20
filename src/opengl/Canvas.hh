@@ -31,7 +31,8 @@ class Canvas {
         vpW(vpW),
         vpH(vpH),
         pX(pX),
-        pY(pY) {
+        pY(pY),
+        cam(nullptr) {
     projection =
         glm::ortho(0.0f, static_cast<float>(pX), static_cast<float>(pY), 0.0f);
     originalProjection = projection;

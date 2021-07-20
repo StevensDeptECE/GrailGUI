@@ -323,7 +323,6 @@ void GLWin::update() {}
 void FontFaceCleanup();
 
 GLWin::~GLWin() {
-  cleanup();
   cerr << "GLWin Destructor" << endl;
   GLWin::classCleanup();
 }
