@@ -171,6 +171,7 @@ class Renderer {
   Method* rendererFind(XDLType* t){
     XDLIterator* comp = dynamic_cast<XDLIterator*>(t);
     auto i = renderMap.find((comp->getUnderlying()->getDataType()));
+    return &i->second;
   }
 
   void registerRenderer(DataType t, Method m) { renderMap[t] = m; }
