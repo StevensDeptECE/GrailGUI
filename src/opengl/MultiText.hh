@@ -1,8 +1,9 @@
 #pragma once
+#include <type_traits>
+
 #include "opengl/GLWin.hh"
 #include "opengl/GLWinFonts.hh"
 #include "opengl/Shape.hh"
-#include <type_traits>
 class Style;
 
 class MultiText : public Shape {
@@ -20,14 +21,15 @@ class MultiText : public Shape {
     vert.push_back(v);
   }
   float velX = 1, velY = 1;
-  void internalAdd(float x, float y, const Font* f, const char s[], uint32_t len);
+  float internalAdd(float x, float y, const Font* f, const char s[],
+                    uint32_t len);
   uint32_t formatLead0(char destBuf[], uint8_t printVal) {
     uint32_t d0 = printVal / 100;
     destBuf[0] = '0' + d0;
     uint32_t rest = printVal - d0 * 100;
     uint32_t d1 = rest / 10;
     destBuf[1] = '0' + d1;
-    uint32_t d2 = rest - d1*10;
+    uint32_t d2 = rest - d1 * 10;
     destBuf[2] = '0' + d2;
     return 3;
   }
@@ -49,7 +51,7 @@ class MultiText : public Shape {
     printVal %= 100;
     uint32_t d0 = printVal / 10;
     destBuf[3] = '0' + d0;
-    destBuf[4] = '0' + (printVal - d0*10);
+    destBuf[4] = '0' + (printVal - d0 * 10);
     return 5;
   }
   uint32_t numDigits(uint64_t) { return 18; }
@@ -64,7 +66,9 @@ class MultiText : public Shape {
   uint32_t biggestpow10(uint32_t) { return 1000000000U; }
   uint32_t biggestpow10(uint16_t) { return 10000U; }
   uint32_t biggestpow10(uint8_t) { return 10000U; }
-  uint64_t biggestpow10(unsigned long long x) { return biggestpow10(uint64_t(x)); }
+  uint64_t biggestpow10(unsigned long long x) {
+    return biggestpow10(uint64_t(x));
+  }
   uint64_t unsignit(unsigned long long int v) { return uint64_t(v); }
   uint64_t unsignit(int64_t v) { return uint64_t(v); }
   uint32_t unsignit(int32_t v) { return uint32_t(v); }
@@ -75,34 +79,51 @@ class MultiText : public Shape {
   uint16_t unsignit(uint16_t v) { return v; }
   uint8_t unsignit(uint8_t v) { return v; }
 
-  template<typename T>
-  uint32_t format(char destBuf[], T printVal) {
-    uint32_t len = numDigits(printVal);
-    T leadingDigit = biggestpow10(printVal);
-    while (printVal < leadingDigit) {
-      len--;
-      leadingDigit /= 10;
-    }
-    for (int i = 0; i < len; i++) {
-      T digit = printVal / leadingDigit;
+  template <typename T>
+  uint32_t format(char destBuf[32], T printVal) {
+    uint32_t len;
+    int i;
+    for (i = 31; i >= 0; i--) {
+      T temp = printVal / 10;
+      uint32_t digit = printVal - temp * 10;
       destBuf[i] = '0' + digit;
-      printVal = printVal - digit * leadingDigit;
-      leadingDigit /= 10;
+      if (printVal == 0) break;
+      printVal = temp;
     }
-    destBuf[len] = '0' + printVal;
-    return len;
-  } 
-  uint32_t format(char destBuf[], int printVal) {
-    if (printVal < 0)
-      destBuf[0] = '-';
-    return format(destBuf+1, uint32_t(printVal));
-  }
-  uint32_t format(char destBuf[], float printVal) {
-    return sprintf(destBuf, "%f", printVal);
+    return 31 - i;
   }
 
-  uint32_t format(char destBuf[], double printVal) {
-    return sprintf(destBuf, "%lf", printVal);
+  uint32_t format(char destBuf[32], float printVal, uint32_t precision = 8,
+                  uint32_t afterdec = 2) {
+#if 0
+  //TODO: efficient right-to-left display of decimal using integer conversion
+    int32_t decimalPos;
+    frexp(printVal, &decimalPos);
+    float pow10 = decimalPos * 0.30102999566; //convert to base 10
+    uint32_t intVal = uint32_t(printVal * pow(10, pow10));
+    return format(destBuf, intVal);
+#endif
+
+    uint32_t len = sprintf(destBuf, "%f", printVal);
+    memcpy(destBuf + 32 - len, destBuf, len - 1);
+    return len;
+  }
+
+  uint32_t format(char destBuf[32], double printVal) {
+    uint32_t len = sprintf(destBuf, "%.15lf", printVal);
+    memcpy(destBuf + 32 - len, destBuf, len - 1);
+    return len;
+  }
+
+  uint32_t format(char destBuf[32], int printVal) {
+    if (printVal < 0) {
+      // TODO: this will not work for -intmax?!?
+      uint32_t len = format(destBuf, uint32_t(-printVal));
+      destBuf[32 - len] = '-';
+      return len + 1;
+    } else {
+      return format(destBuf, uint32_t(printVal));
+    }
   }
 
  public:
@@ -112,19 +133,39 @@ class MultiText : public Shape {
   MultiText(Canvas* c, const Style* style, uint32_t size, float angle, float x,
             float y);
   ~MultiText();
-  template<typename T>
-  void addx(float x, float y, const Font* f, T printVal) {
+  template <typename T>
+  float addx(float x, float y, const Font* f, T printVal) {
     char buf[32];
     uint32_t len = format(buf, printVal);
-    internalAdd(x, y, f, buf, len);
+    return internalAdd(x, y, f, buf + (sizeof(buf) - len), len);
   }
-  template<typename T>
+
+  template <typename T>
+  float addCentered(float x, float y, float w, const Font* f, T printVal) {
+    char buf[32];
+    uint32_t len = format(buf, printVal);
+    float textWidth = f->getWidth(buf + (sizeof(buf) - len), len);
+    return internalAdd(x + (w - textWidth) / 2, y, f, buf + sizeof(buf) - len,
+                       len);
+  }
+
+  template <typename T>
+  float addRight(float x, float y, float w, const Font* f, T printVal) {
+    char buf[32];
+    uint32_t len = format(buf, printVal);
+    float textWidth = f->getWidth(buf + (sizeof(buf) - len), len);
+    internalAdd(x + w - textWidth, y, f, buf + sizeof(buf) - len, len);
+    return x + w;
+  }
+
+  template <typename T>
   void addHex0(float x, float y, const Font* f, T printVal) {
-    constexpr uint32_t len = sizeof(T)*2;
+    constexpr uint32_t len = sizeof(T) * 2;
     char buf[len];
-    auto v = unsignit(printVal); // use unsigned value so sign doesn't mess up as we rotate bits
+    auto v = unsignit(printVal);  // use unsigned value so sign doesn't mess up
+                                  // as we rotate bits
     for (uint32_t i = 0; i < len; i++) {
-      v = (v << 4) | (v >> (len*4 - 4)); // rotate 4 bits left
+      v = (v << 4) | (v >> (len * 4 - 4));  // rotate 4 bits left
       uint32_t hexDig = v & 0xF;
       buf[i] = (hexDig > 9 ? 'A' - 10 : '0') + hexDig;
     }
@@ -134,7 +175,8 @@ class MultiText : public Shape {
   // a 16-bit unicode character like Java
   void addChar(float x, float y, const Font* f, const uint16_t c);
   void add(float x, float y, const char s[], uint32_t len);
-  void add(float x, float y, float space, float ang, const Font* f, const char s[], uint32_t len);
+  void add(float x, float y, float space, float ang, const Font* f,
+           const char s[], uint32_t len);
   void add(float x, float y, const Font* f, const std::string& s);
   void add(float x, float y, const Font* f, const char s[], uint32_t len);
   void add(float x, float y, uint32_t v);
@@ -150,6 +192,12 @@ class MultiText : public Shape {
            int precision);
   void addCentered(float x, float, const Font* f, double v, int fieldWidth,
                    int precision);
+  void addCentered(float x, float y, float w, const Font* f, const char s[],
+                   uint32_t len);
+  void addCentered(float x, float y, float w, const Font* f,
+                   const std::string& s);
+  void addCentered(float x, float y, float w, float h, const Font* f,
+                   const char s[], uint32_t len);
   void addCentered(float x, float y, const Font* f, const char s[],
                    uint32_t len);
   void checkAdd(float& x, float& y, const Font* f, const unsigned char c,

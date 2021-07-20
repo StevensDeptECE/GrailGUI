@@ -1,15 +1,15 @@
-#include "opengl/GrailGUI.hh"
 #include <numbers>
+
+#include "opengl/GrailGUI.hh"
 using namespace std;
 
 class TestText3 : public GLWin {
-public:
-
+ public:
   void numericFormatting(MultiText* m, const Font* f, float y) {
     m->add(10, y, f, 123);
     m->addx(150, y, f, numbers::pi);
-    m->addx(300, y, f, 2.5f);
-    m->addx(400, y, f, 123456789U);
+    m->addx(400, y, f, 2.5f);
+    m->addx(500, y, f, 123456789U);
     m->addx(600, y, f, 123456789012345678ULL);
     y += 20;
     m->addHex0(10, y, f, 0x0034ABCD);
@@ -21,15 +21,18 @@ public:
   }
 
   void sampleText2(MultiText* m, const Font* f, float y) {
-    static const char s[] = "!\"#$%&'()*+0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    m->add(20, y, f, s, sizeof(s)-1);
+    static const char s[] =
+        "!\"#$%&'()*+"
+        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    m->add(20, y, f, s, sizeof(s) - 1);
   }
 
-  void testRotatingText(MultiText* m, const char fontFamily[], float x, float y) {
+  void testRotatingText(MultiText* m, const char fontFamily[], float x,
+                        float y) {
     const Font* font = FontFace::get(fontFamily, 40, 0);
     const char s[] = "test";
     for (int a = 0; a < 360; a += 45)
-      m->add(x, y, 50, a * (numbers::pi/180), font, s, sizeof(s)-1);
+      m->add(x, y, 50, a * (numbers::pi / 180), font, s, sizeof(s) - 1);
   }
 
   float testOneFontFace(MultiText* m, const char fontFamily[], float yStart) {
@@ -40,21 +43,21 @@ public:
       sampleText2(m, font, yStart);
       yStart += size + 4;
     }
-    return yStart+50;
+    return yStart + 50;
   }
 
-	void init() {
-		Canvas *c = currentTab()->getMainCanvas();
-		const Font* f = FontFace::get("TIMES", 16, FontFace::BOLD);
+  void init() {
+    Canvas* c = currentTab()->getMainCanvas();
+    const Font* f = FontFace::get("TIMES", 16, FontFace::BOLD);
 
-		Style* s = new Style(f, 0,0,0, 0,.2,0.9, GLWin::TEXT_SHADER);
+    Style* s = new Style(f, 0, 0, 0, 0, .2, 0.9, GLWin::TEXT_SHADER);
 
-		//    const Font* f = getDefaultFont();
-		//		s->setShaderIndex(GLWin::TEXT_SHADER);
+    //    const Font* f = getDefaultFont();
+    //		s->setShaderIndex(GLWin::TEXT_SHADER);
     StyledMultiShape2D* ms = c->addLayer(new StyledMultiShape2D(c, s));
-    ms->fillRectangle(10,10, width-20,height-20, grail::black);
+    ms->fillRectangle(10, 10, width - 20, height - 20, grail::black);
     cout << width << "," << height << '\n';
-		MultiText *m = c->addLayer(new MultiText(c, s, 100000 * (6 + 3 + 6 + 4)));
+    MultiText* m = c->addLayer(new MultiText(c, s, 100000 * (6 + 3 + 6 + 4)));
     float topRow = 30;
     numericFormatting(m, f, 30);
     testRotatingText(m, "TIMES", 1400, 100);
@@ -64,9 +67,9 @@ public:
     y = testOneFontFace(m, "CENTENNIAL", y);
     y = testOneFontFace(m, "MONO", y);
     y = testOneFontFace(m, "SANS", y);
-	}
+  }
 };
 
-int main(int argc, char *argv[]) {
-	return GLWin::init(new TestText3(), 1600, 1024);
+int main(int argc, char* argv[]) {
+  return GLWin::init(new TestText3(), 1600, 1024);
 }
