@@ -39,6 +39,7 @@ $(out)/ButtonWidget.o $(out)/Scale.o \
 $(out)/AngledMultiText.o \
 $(out)/ScrollbarWidget.o \
 $(out)/AxisWidget.o \
+$(out)/PositionTool.o \
 
 # heatmap does not yet work, so commented out until Dov or someone else gets it going. But it's VERY COOL!
 #$(out)/HeatMap.o
@@ -180,6 +181,9 @@ $(out)/ScrollbarWidget.o: ScrollbarWidget.cc ScrollbarWidget.hh
 	$(COMP) $< -o $@
 
 $(out)/AxisWidget.o: AxisWidget.cc AxisWidget.hh
+	$(COMP) $< -o $@
+
+$(out)/PositionTool.o: PositionTool.cc PositionTool.hh
 	$(COMP) $< -o $@
 
 

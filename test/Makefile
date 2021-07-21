@@ -12,7 +12,7 @@ all: $(BIN)/testWidgets $(BIN)/testAxis $(BIN)/testLineGraph \
  $(BIN)/simpleDemo  $(BIN)/testDisplayBook $(BIN)/testGrid $(BIN)/JoeyDemo  \
  $(BIN)/testStyledMultishape $(BIN)/testText3 $(BIN)/globe  $(BIN)/SolarSystem \
  $(BIN)/convertASCIITable $(BIN)/testDisplayEntireBook \
- $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/StockDemo
+ $(BIN)/LuisaDemo $(BIN)/QuentinDemo $(BIN)/MapDemo $(BIN)/StockDemo $(BIN)/testSolar
 
 #$(BIN)/testText 
 #$(BIN)/testDrawing
@@ -28,6 +28,8 @@ all: $(BIN)/testWidgets $(BIN)/testAxis $(BIN)/testLineGraph \
 
 #$(BIN)/testGraph ActionListener.o $(BIN)/testCursors3
 #plot.o  BarChart.o JulianDate.o TimeSeries.o $(BIN)/test7 $(BIN)/test5 $(BIN)/testText $(BIN)/testJulian $(BIN)/test8 $(BIN)/testTimeSeries $(BIN)/testBin 
+$(BIN)/testSolar: GravSim.cc $(LIBGRAIL)
+	$(CXX) $< -o $@ $(LIBS)
 
 $(BIN)/testGrid: testGrid.cc $(LIBGRAIL)
 	$(CXX) $< -o $@ $(LIBS)

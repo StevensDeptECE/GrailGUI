@@ -14,6 +14,7 @@
 #include "opengl/LineGraphWidget.hh"
 #include "opengl/ScrollbarWidget.hh"
 #include "opengl/util/Transformation.hh"
+#include "opengl/PositionTool.hh"
 
 using namespace std;
 using namespace grail;
@@ -21,7 +22,7 @@ using namespace grail;
 class TestWidgets : public GLWin {
  public:
   TestWidgets() : GLWin(0x000000, 0xCCCCCC, "TestWidgets") {}
-
+#if 0
   void testButton(StyledMultiShape2D *gui, MultiText *guiText) {
     const float boxSize = 100;
     const float drawSize = (boxSize / 4) * 5;
@@ -117,7 +118,7 @@ class TestWidgets : public GLWin {
     chart.chart(x, y, 50, 50, new LinearScale(), new LinearScale());
     chart.title("Title");
     chart.init();
-  }
+  } 
 #endif
 
 #if 0
@@ -145,6 +146,17 @@ class TestWidgets : public GLWin {
     AngledMultiText *am = c->addLayer(new AngledMultiText(c, s, M_PI / 2, 20, 500));
     am->add(200, 600, s->f, thing, strlen(thing));
   }
+#endif
+  void testPositionTool(StyledMultiShape2D *gui, MultiText *guiText) {
+    vector<float> X = {334, 56};
+    vector<float> Y = {234, 52};
+    vector<float> R = {45, 34};
+
+    PositionTool test(gui, guiText, 50, 320, 400, 200, X,Y, R);
+    test.addNewCord( 123, 53,25);
+    test.update( 123, 345, 1);
+    test.init();
+  }
 
   void init() {
     const Style *s =
@@ -163,16 +175,17 @@ class TestWidgets : public GLWin {
 
     const Style *graphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
     //testBarChart(gui, guiText);
-    testCandlestick(gui, guiText);
-    testBoxChart(gui, guiText);
-    testGapMinder(gui, guiText);
+    //testCandlestick(gui, guiText);
+   // testBoxChart(gui, guiText);
+    //testGapMinder(gui, guiText);
     //testButton(gui, guiText);
     //testLineGraphLinear(gui, guiText);
     //testLineGraphLog(gui, guiText);
     //testLinearAxesWidget(gui, guiText, graphStyle);
     //testAngleText(gui, guiText, c, s);
 
-    testScrollBar(gui, guiText);
+   // testScrollBar(gui, guiText);
+    testPositionTool(gui, guiText);
   }
 };
 
