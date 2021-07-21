@@ -16,10 +16,10 @@ class BabyStats {
 
   template <class FWIt>
   BabyStats(FWIt a, const FWIt b) {
-    while (a != b) {
-      std::cout << "Value: " << *a << '\n';
-      ++a;
-    }
+    // while (a != b) {
+    //   std::cout << "Value: " << *a << '\n';
+    //   ++a;
+    // }
 
     internal_vector = vector<iterable_type>(a, b);
     std::cout << internal_vector[0] << std::endl;
