@@ -15,7 +15,6 @@ class Stats1D {
 
  private:
   std::vector<T> sorted_data;
-  uint32_t size;
   // TODO: this could be done with one single number and bit operations
   bool sorted, mean_calculated, stddev_calculated, variance_calculated,
       iqr_calculated, fivenum_calculated;
@@ -31,7 +30,6 @@ class Stats1D {
   template <typename FowardIter>
   Stats1D(FowardIter a, const FowardIter b, bool sorted = false) {
     sorted_data = std::vector<T>(a, b);
-    size = sorted_data.size();
 
     if (!sorted) {
       sort(sorted_data.begin(), sorted_data.end());
@@ -71,11 +69,12 @@ template <typename T>
 template <typename FowardIter>
 void Stats1D<T>::updateData(FowardIter a, const FowardIter b, bool sorted) {
   sorted_data = std::vector<T>(a, b);
-  size = sorted_data.size();
+
   if (!sorted) {
     sort(sorted_data.begin(), sorted_data.end());
     sorted = true;
   }
+
   mean_calculated = false;
   stddev_calculated = false;
   variance_calculated = false;
@@ -107,11 +106,11 @@ double Stats1D<T>::getMean() {
 
   double mean_tmp = 0;
 
-  for (auto num : sorted_data) {
+  for (auto const& num : sorted_data) {
     mean_tmp += num;
   }
 
-  mean_tmp /= size;
+  mean_tmp /= sorted_data.size();
 
   mean = std::make_unique<double>(mean_tmp);
   return *mean;
@@ -130,13 +129,13 @@ double Stats1D<T>::getMean() {
  */
 template <typename T>
 std::vector<T> Stats1D<T>::getModes() {
-  if (modes.size() != 0 || size == 0) return modes;
+  if (modes.size() != 0 || sorted_data.size() == 0) return modes;
 
   std::unordered_map<T, int> map;
 
   double biggest_mode = 1;
 
-  for (auto& num : sorted_data) {
+  for (auto const& num : sorted_data) {
     int tmp = 1;
     auto search = map.find(num);
 
@@ -151,7 +150,7 @@ std::vector<T> Stats1D<T>::getModes() {
     }
   }
 
-  for (auto& [key, value] : map) {
+  for (auto const& [key, value] : map) {
     if (value == biggest_mode) {
       modes.push_back(key);
     }
@@ -239,28 +238,27 @@ double Stats1D<T>::getVariance() {
   if (variance_calculated) return *variance.get();
   double mean_tmp = getMean();
   double sum = 0;
-  for (auto num : sorted_data) {
+  for (auto const& num : sorted_data) {
     sum += pow(num - mean_tmp, 2);
   }
-  variance = std::make_unique<double>(sum / (size - 1));
+  variance = std::make_unique<double>(sum / (sorted_data.size() - 1));
   return *variance.get();
 }
 
 /**
  * @brief getQuantile - Gets a quantile of the sorted array
  *
- * This looks like it implements the R-6 algorithm for finding quantiles, but
- *it is actually R-7. Upon reviewing the relevant paper, the index functions
- *refer to an array with a starting index of 1, but C++ is 0-indexed. As such,
- *the added one that is expected in R-7 has been negated. (Hyndman and Fan,
- *1997).
+ * This implements the R-6 algorithm for finding quantiles. Upon reviewing the
+ * relevant paper, the index functions refer to an array with a starting index
+ * of 1, but C++ is 0-indexed. As such, the added one that is expected in R-7
+ * has been negated. (Hyndman and Fan, 1997).
  *
  * @param percentile The percentile to look for
  * @return double The resultant quantile
  **/
 template <typename T>
 double Stats1D<T>::getQuantile(double percentile) {
-  double h = (sorted_data.size() - 1) * percentile;
+  double h = (sorted_data.size() + 1) * percentile - 1;
   return sorted_data[floor(h)] +
          (h - floor(h)) * (sorted_data[ceil(h)] - sorted_data[floor(h)]);
 }
@@ -277,7 +275,7 @@ std::ostream& operator<<(std::ostream& os, Stats1D<T>& stats) {
      << "\nIQR: " << stats.getIQR() << "\nModes: [";
 
   std::vector<T> modes = stats.getModes();
-  for (const auto& i : modes) {
+  for (auto const& i : modes) {
     os << i << ", ";
   }
   os << "]";
