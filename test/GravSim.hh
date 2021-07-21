@@ -29,8 +29,11 @@ class Vector3D {
     return Vector3D(left.x + right.x, left.y + right.y, left.z + right.z);
   }
 
-  Vector3D operator+(Vector3D& a) {
-    return Vector3D(x + a.x, y + a.y, z + a.z);
+  Vector3D& operator+(const Vector3D& a) {
+    x += a.x;
+    y += a.y;
+    z += a.z;
+    return *this;
   }
 
   friend Vector3D operator-(Vector3D& left, Vector3D& right) {
@@ -48,8 +51,11 @@ class Vector3D {
     return Vector3D(val * vec.x, val * vec.y, val * vec.z);
   }
 
-  friend Vector3D operator*(Vector3D& vec, double val) {
-    return Vector3D(val * vec.x, val * vec.y, val * vec.z);
+  Vector3D& operator*(const double val) {
+    x *= val;
+    y *= val;
+    z *= val;
+    return *this;
   }
 
   friend Vector3D operator/(double val, Vector3D& vec) {
