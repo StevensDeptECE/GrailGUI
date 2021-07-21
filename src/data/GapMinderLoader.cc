@@ -1,53 +1,67 @@
 #include "data/GapMinderLoader.hh"
-#include <fstream>
-#include <sstream>
-#include "data/BlockLoader.hh"
-#include <string>
-#include <cstring>
+
 #include <dirent.h>
 #include <unistd.h>
-#include <cmath>
+
+#include <cstring>
+#include <fstream>
+#include <limits>
+#include <sstream>
+#include <string>
+
+#include "data/BlockLoader.hh"
 
 using namespace std;
 
-inline const char* align( const char* p) {
+inline const char* align(const char* p) {
   return (const char*)(((uint64_t)p + 7) & ~uint64_t(7));
 }
 
-GapMinderLoader::GapMinderLoader(const char binaryFile[]) : BlockLoader(binaryFile) {    
+GapMinderLoader::GapMinderLoader(const char binaryFile[])
+    : BlockLoader(binaryFile) {
   header = (Header*)((char*)mem + getHeaderSize());
   // TODO: add RegionContainer and NamedEntities
   countryCodes = (const char*)align((char*)header + sizeof(Header));
-  continents = (const uint8_t*)align(countryCodes + header->numCountries*3);
-  indices = (const Dataset*)align((const char*)continents + header->numCountries);
-  //for (int i = 0; i < header->numDatasets; i++){
-    //cout << "name: " << indices[i].name << endl;
+  continents = (const uint8_t*)align(countryCodes + header->numCountries * 3);
+  indices =
+      (const Dataset*)align((const char*)continents + header->numCountries);
+  // for (int i = 0; i < header->numDatasets; i++){
+  // cout << "name: " << indices[i].name << endl;
   //}
-  data = (const float*)align((char*)indices + sizeof(Dataset)* header->numDatasets);
+  data = (const float*)align((char*)indices +
+                             sizeof(Dataset) * header->numDatasets);
 }
 
-const GapMinderLoader::Dataset* GapMinderLoader::getDataset(const char dataset[]) const {
-  for(int i = 0; i < header->numDatasets; i++){
-    if(strcmp(indices[i].name, dataset) == 0){
-      return (const Dataset*) & indices[i];
+const GapMinderLoader::Dataset* GapMinderLoader::getDataset(
+    const char dataset[]) const {
+  for (int i = 0; i < header->numDatasets; i++) {
+    if (strcmp(indices[i].name, dataset) == 0) {
+      return (const Dataset*)&indices[i];
     }
   }
   return nullptr;
 }
 
-constexpr float NaN = nan("");
-float GapMinderLoader::getData(uint32_t countryIndex, uint32_t year, const Dataset* d) const {
-  if (header->numCountries < countryIndex){
+// originally NaN used cmath's nan(char[]) function, but this proved not to be
+// constexpr under Clang. As such, I replaced it with a quiet NaN from numeric
+// limits. This should be functionally equivalent if we want to just skip NaN.
+// If you're looking to crash on NaN, replace quiet NaN with signaling NaN from
+// numeric limits. 
+//     - ahuston-0
+constexpr float NaN = numeric_limits<float>::quiet_NaN();
+float GapMinderLoader::getData(uint32_t countryIndex, uint32_t year,
+                               const Dataset* d) const {
+  if (header->numCountries < countryIndex) {
     return NaN;
   }
 
   const Dataset::Country& c = d->countries[countryIndex];
-  if (year < c.startYear ){
+  if (year < c.startYear) {
     return NaN;
   }
 
   uint32_t i = c.startIndex + year - c.startYear;
-  if (i >= d->countries[countryIndex+1].startIndex){
+  if (i >= d->countries[countryIndex + 1].startIndex) {
     return NaN;
   }
   return data[i];
@@ -69,44 +83,44 @@ class Result {
 
 };
 #endif
-vector<float> GapMinderLoader::getAllDataOneYear(uint32_t year, const Dataset* d) const {
+vector<float> GapMinderLoader::getAllDataOneYear(uint32_t year,
+                                                 const Dataset* d) const {
   vector<float> vec(header->numCountries);
-  if (year < d->startYear || year > d->endYear){
+  if (year < d->startYear || year > d->endYear) {
     vec = {NaN};
     return vec;
   }
 
-  for (int i = 0; i < header->numCountries; i++){
-    uint32_t index = d->countries[i].startIndex + year - d->countries[i].startYear;
-    if (i >= d->countries[i+1].startIndex){
-      vec[i]=(0xffffffff);
-    }else if (year < d->countries[i].startYear){
-      vec[i]=(0xffffffff);
-    }else{
-      vec[i]=(data[index]);
-    }  
+  for (int i = 0; i < header->numCountries; i++) {
+    uint32_t index =
+        d->countries[i].startIndex + year - d->countries[i].startYear;
+    if (i >= d->countries[i + 1].startIndex) {
+      vec[i] = (0xffffffff);
+    } else if (year < d->countries[i].startYear) {
+      vec[i] = (0xffffffff);
+    } else {
+      vec[i] = (data[index]);
+    }
   }
 
   return vec;
 }
 
-vector<float> GapMinderLoader::getAllDataOneCountry(uint32_t countryIndex, const Dataset* d) {
-  if(header->numCountries < countryIndex){
+vector<float> GapMinderLoader::getAllDataOneCountry(uint32_t countryIndex,
+                                                    const Dataset* d) {
+  if (header->numCountries < countryIndex) {
     vector<float> vecBad = {NaN};
     return vecBad;
   }
 
-  const int numYears =d->countries[countryIndex+1].startYear - d->countries[countryIndex].startYear;
+  const int numYears = d->countries[countryIndex + 1].startYear -
+                       d->countries[countryIndex].startYear;
   vector<float> vec(numYears);
 
-  for(int i = d->countries[countryIndex].startYear, j = 0; 
-        i < d->countries[countryIndex+1].startYear; i++, j++){
-    vec[j]=(data[i]);
+  for (int i = d->countries[countryIndex].startYear, j = 0;
+       i < d->countries[countryIndex + 1].startYear; i++, j++) {
+    vec[j] = (data[i]);
   }
 
   return vec;
 }
-
-
-
-
