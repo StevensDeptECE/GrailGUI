@@ -75,13 +75,11 @@ void BoxChartWidget::init() {
     auto last = data.begin() + i + pointsPerBox;
     vector<double> currentBoxData(first, last);
 
-    Stats1D<double> untransformedData(&currentBoxData[0], pointsPerBox);
-
     transform(currentBoxData.begin(), currentBoxData.end(),
               currentBoxData.begin(),
               [=, this](double d) -> double { return y + h + yscale * d; });
 
-    Stats1D<double> dataSummary(&currentBoxData[0], pointsPerBox);
+    Stats1D<double> dataSummary = Stats1D<double>(currentBoxData);
 
     double xLocation = x + xscale * counter - halfBoxWidth;
     double yTopLine = dataSummary.getSummary().min;
