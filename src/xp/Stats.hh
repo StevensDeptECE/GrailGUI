@@ -14,33 +14,33 @@ class Stats1D {
   };
 
  private:
+  constexpr static uint8_t SORTED = 0b00100000;
+  constexpr static uint8_t MEAN = 0b00010000;
+  constexpr static uint8_t STDDEV = 0b00001000;
+  constexpr static uint8_t VARIANCE = 0b00000100;
+  constexpr static uint8_t IQR = 0b00000010;
+  constexpr static uint8_t FIVENUM = 0b00000001;
+
   std::vector<T> sorted_data;
-  // TODO: this could be done with one single number and bit operations
-  bool sorted, mean_calculated, stddev_calculated, variance_calculated,
-      iqr_calculated, fivenum_calculated;
+  // 0b00111111
+  // sorted, mean, stddev, variance, iqr, fivenum
+  uint8_t cache_flags;
   std::unique_ptr<double> mean, stddev, variance, iqr;
   std::vector<T> modes;
 
   std::unique_ptr<struct Summary> fivenum;
-  uint32_t getMedian(uint32_t left, uint32_t right);
 
  public:
   Stats1D() = delete;
 
   template <typename FowardIter>
-  Stats1D(FowardIter a, const FowardIter b, bool sorted = false) {
+  Stats1D(FowardIter a, const FowardIter b, bool sorted = false)
+      : cache_flags(0b00100000) {
     sorted_data = std::vector<T>(a, b);
 
     if (!sorted) {
       sort(sorted_data.begin(), sorted_data.end());
-      sorted = true;
     }
-
-    mean_calculated = false;
-    stddev_calculated = false;
-    variance_calculated = false;
-    iqr_calculated = false;
-    fivenum_calculated = false;
   }
 
   template <typename Iterable>
@@ -72,14 +72,10 @@ void Stats1D<T>::updateData(FowardIter a, const FowardIter b, bool sorted) {
 
   if (!sorted) {
     sort(sorted_data.begin(), sorted_data.end());
-    sorted = true;
   }
 
-  mean_calculated = false;
-  stddev_calculated = false;
-  variance_calculated = false;
-  iqr_calculated = false;
-  fivenum_calculated = false;
+  cache_flags = 0b00100000;
+
   modes.clear();
 }
 
@@ -102,7 +98,7 @@ void Stats1D<T>::updateData(const Iterable& container, bool sorted) {
  */
 template <typename T>
 double Stats1D<T>::getMean() {
-  if (mean_calculated) return *mean;
+  if ((cache_flags & MEAN) == MEAN) return *mean;
 
   double mean_tmp = 0;
 
@@ -113,6 +109,9 @@ double Stats1D<T>::getMean() {
   mean_tmp /= sorted_data.size();
 
   mean = std::make_unique<double>(mean_tmp);
+
+  cache_flags |= MEAN;
+
   return *mean;
 }
 
@@ -129,7 +128,7 @@ double Stats1D<T>::getMean() {
  */
 template <typename T>
 std::vector<T> Stats1D<T>::getModes() {
-  if (modes.size() != 0 || sorted_data.size() == 0) return modes;
+  if (modes.size() != 0) return modes;
 
   std::unordered_map<T, int> map;
 
@@ -171,7 +170,7 @@ std::vector<T> Stats1D<T>::getModes() {
  */
 template <typename T>
 double Stats1D<T>::getIQR() {
-  if (iqr_calculated) return *iqr.get();
+  if ((cache_flags & IQR) == IQR) return *iqr.get();
 
   Stats1D<T>::getSummary();
   struct Summary fn = *fivenum.get();
@@ -192,7 +191,7 @@ double Stats1D<T>::getIQR() {
  */
 template <typename T>
 struct Stats1D<T>::Summary Stats1D<T>::getSummary() {
-  if (fivenum_calculated) return *fivenum.get();
+  if ((cache_flags & FIVENUM) == FIVENUM) return *fivenum.get();
 
   struct Summary fn;
   fn.min = *sorted_data.begin();
@@ -203,6 +202,9 @@ struct Stats1D<T>::Summary Stats1D<T>::getSummary() {
   fn.q3 = getQuantile(.75);
 
   fivenum = std::make_unique<struct Summary>(fn);
+
+  cache_flags |= FIVENUM;
+
   return *fivenum.get();
 }
 
@@ -218,8 +220,11 @@ struct Stats1D<T>::Summary Stats1D<T>::getSummary() {
  */
 template <typename T>
 double Stats1D<T>::getStdDev() {
-  if (stddev_calculated) return *stddev.get();
+  if ((cache_flags & STDDEV) == STDDEV) return *stddev.get();
   stddev = std::make_unique<double>(sqrt(getVariance()));
+
+  cache_flags |= STDDEV;
+
   return *stddev.get();
 }
 
@@ -235,13 +240,17 @@ double Stats1D<T>::getStdDev() {
  */
 template <typename T>
 double Stats1D<T>::getVariance() {
-  if (variance_calculated) return *variance.get();
+  if ((cache_flags & VARIANCE) == VARIANCE) return *variance.get();
+
   double mean_tmp = getMean();
   double sum = 0;
   for (auto const& num : sorted_data) {
     sum += pow(num - mean_tmp, 2);
   }
   variance = std::make_unique<double>(sum / (sorted_data.size() - 1));
+
+  cache_flags |= VARIANCE;
+
   return *variance.get();
 }
 
