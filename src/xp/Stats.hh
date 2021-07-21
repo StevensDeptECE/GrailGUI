@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <memory>
+#include <unordered_map>
 
 template <typename T>
 class Stats1D {
@@ -15,9 +16,10 @@ class Stats1D {
  private:
   std::vector<T> sorted_data;
   uint32_t size;
-  bool sorted;
-  std::unique_ptr<double> mean, stddev, variance;
-  std::unique_ptr<T> iqr;
+  // TODO: this could be done with one single number and bit operations
+  bool sorted, mean_calculated, stddev_calculated, variance_calculated,
+      iqr_calculated, fivenum_calculated;
+  std::unique_ptr<double> mean, stddev, variance, iqr;
   std::vector<T> modes;
 
   std::unique_ptr<struct Summary> fivenum;
@@ -35,6 +37,12 @@ class Stats1D {
       sort(sorted_data.begin(), sorted_data.end());
       sorted = true;
     }
+
+    mean_calculated = false;
+    stddev_calculated = false;
+    variance_calculated = false;
+    iqr_calculated = false;
+    fivenum_calculated = false;
   }
 
   template <typename Iterable>
@@ -42,17 +50,19 @@ class Stats1D {
       : Stats1D(std::begin(container), std::end(container), sorted) {}
 
   template <typename FowardIter>
-  void updateData(FowardIter a, const FowardIter b, bool sorted);
+  void updateData(FowardIter a, const FowardIter b, bool sorted = false);
 
-  // TODO: second updateData method
+  template <typename Iterable>
+  void updateData(const Iterable& container, bool sorted = false);
 
   double getMean();
   std::vector<T> getModes();
-  T getIQR();
+  double getIQR();
   struct Summary getSummary();
   double getStdDev();
   double getVariance();
   double getQuantile(double percentile);
+
   template <typename U>
   friend std::ostream& operator<<(std::ostream& os, Stats1D<U>& stats);
 };
@@ -66,6 +76,18 @@ void Stats1D<T>::updateData(FowardIter a, const FowardIter b, bool sorted) {
     sort(sorted_data.begin(), sorted_data.end());
     sorted = true;
   }
+  mean_calculated = false;
+  stddev_calculated = false;
+  variance_calculated = false;
+  iqr_calculated = false;
+  fivenum_calculated = false;
+  modes.clear();
+}
+
+template <typename T>
+template <typename Iterable>
+void Stats1D<T>::updateData(const Iterable& container, bool sorted) {
+  updateData(std::begin(container), std::end(container), sorted);
 }
 
 /**
@@ -81,7 +103,8 @@ void Stats1D<T>::updateData(FowardIter a, const FowardIter b, bool sorted) {
  */
 template <typename T>
 double Stats1D<T>::getMean() {
-  if (mean) return *mean;
+  if (mean_calculated) return *mean;
+
   double mean_tmp = 0;
 
   for (auto num : sorted_data) {
@@ -108,25 +131,29 @@ double Stats1D<T>::getMean() {
 template <typename T>
 std::vector<T> Stats1D<T>::getModes() {
   if (modes.size() != 0 || size == 0) return modes;
-  // TODO: shouldn't need to check this here
-  if (!sorted) {
-    sort(sorted_data.begin(), sorted_data.end());
-    sorted = !sorted;
+
+  std::unordered_map<T, int> map;
+
+  double biggest_mode = 1;
+
+  for (auto& num : sorted_data) {
+    int tmp = 1;
+    auto search = map.find(num);
+
+    if (search != map.end()) {
+      tmp = search->second + 1;
+    }
+
+    map.insert_or_assign(num, tmp);
+
+    if (tmp > biggest_mode) {
+      biggest_mode = tmp;
+    }
   }
 
-  T curMode;
-  uint32_t curOcc, maxOcc;
-
-  // TODO: do with range based loop
-  for (int i = 0; i < size; i++) {
-    curOcc = (curMode == sorted_data[i]) ? (++curOcc) : curOcc;
-    if (maxOcc < curOcc && curOcc != 1) {
-      maxOcc = curOcc;
-      curMode = sorted_data[i];
-      modes.clear();
-      modes.push_back(sorted_data[i]);
-    } else if (maxOcc == curOcc) {
-      modes.push_back(sorted_data[i]);
+  for (auto& [key, value] : map) {
+    if (value == biggest_mode) {
+      modes.push_back(key);
     }
   }
 
@@ -144,16 +171,12 @@ std::vector<T> Stats1D<T>::getModes() {
  * @return T The IQR of a dataset
  */
 template <typename T>
-T Stats1D<T>::getIQR() {
-  if (iqr) return *iqr.get();
-  // TODO: shouldn't need to do this
-  if (!sorted) {
-    sort(sorted_data.begin(), sorted_data.end());
-    sorted = !sorted;
-  }
+double Stats1D<T>::getIQR() {
+  if (iqr_calculated) return *iqr.get();
+
   Stats1D<T>::getSummary();
   struct Summary fn = *fivenum.get();
-  iqr = std::make_unique<T>(fn.q3 - fn.q1);
+  iqr = std::make_unique<double>(fn.q3 - fn.q1);
   return *iqr.get();
 }
 
@@ -170,11 +193,8 @@ T Stats1D<T>::getIQR() {
  */
 template <typename T>
 struct Stats1D<T>::Summary Stats1D<T>::getSummary() {
-  if (fivenum) return *fivenum.get();
-  if (!sorted) {
-    sort(sorted_data.begin(), sorted_data.end());
-    sorted = !sorted;
-  }
+  if (fivenum_calculated) return *fivenum.get();
+
   struct Summary fn;
   fn.min = *sorted_data.begin();
   fn.max = *(sorted_data.end() - 1);
@@ -199,7 +219,7 @@ struct Stats1D<T>::Summary Stats1D<T>::getSummary() {
  */
 template <typename T>
 double Stats1D<T>::getStdDev() {
-  if (stddev) return *stddev.get();
+  if (stddev_calculated) return *stddev.get();
   stddev = std::make_unique<double>(sqrt(getVariance()));
   return *stddev.get();
 }
@@ -216,7 +236,7 @@ double Stats1D<T>::getStdDev() {
  */
 template <typename T>
 double Stats1D<T>::getVariance() {
-  if (variance) return *variance.get();
+  if (variance_calculated) return *variance.get();
   double mean_tmp = getMean();
   double sum = 0;
   for (auto num : sorted_data) {
@@ -254,7 +274,7 @@ std::ostream& operator<<(std::ostream& os, Stats1D<T>& stats) {
      << "\nFive Number Summary:\n\tMinimum: " << fivenum.min
      << "\n\tFirst Quartile: " << fivenum.q1 << "\n\tMedian: " << fivenum.median
      << "\n\tThird Quartile: " << fivenum.q3 << "\n\tMaximum: " << fivenum.max
-     << "\nIQR:" << stats.getIQR() << "\nModes: [";
+     << "\nIQR: " << stats.getIQR() << "\nModes: [";
 
   std::vector<T> modes = stats.getModes();
   for (const auto& i : modes) {
