@@ -36,7 +36,7 @@ class GraphWidget : public SuperWidget2D {
 
   AxisWidget* createAxis(uint32_t allowed, AxisType typ, const Style* axisStyle,
                          const Style* axisTextStyle, bool isVert,
-                         AxisType* out);
+                         AxisType& out);
 
  public:
   AxisWidget* xAxis;

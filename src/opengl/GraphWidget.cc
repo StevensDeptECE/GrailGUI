@@ -32,7 +32,7 @@ GraphWidget::~GraphWidget() {
 AxisWidget* GraphWidget::createAxis(uint32_t allowed, AxisType typ,
                                     const Style* axisStyle,
                                     const Style* axisTextStyle, bool isVert,
-                                    AxisType* out) {
+                                    AxisType& out) {
   if (!(typ & allowed)) throw Ex1(Errcode::BAD_ARGUMENT);
 
   StyledMultiShape2D* mnew;
@@ -59,7 +59,7 @@ AxisWidget* GraphWidget::createAxis(uint32_t allowed, AxisType typ,
   c->addLayer(mnew);
   c->addLayer(tnew);
 
-  *out = typ;
+  out = typ;
 
   switch (typ) {
     case LINEAR: {
@@ -82,12 +82,12 @@ AxisWidget* GraphWidget::createAxis(uint32_t allowed, AxisType typ,
 
 void GraphWidget::createXAxis(AxisType typ) {
   xAxis = createAxis(allowedXAxis, typ, xAxisStyle, xAxisTextStyle, false,
-                     &xAxisType);
+                     xAxisType);
 }
 
 void GraphWidget::createYAxis(AxisType typ) {
   yAxis = createAxis(allowedYAxis, typ, yAxisStyle, yAxisTextStyle, true,
-                     &yAxisType);
+                     yAxisType);
 }
 
 void GraphWidget::setBaseStyle(const Style* s) { baseStyle = s; }
