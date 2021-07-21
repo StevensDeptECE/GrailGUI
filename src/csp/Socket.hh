@@ -1,20 +1,20 @@
 #pragma once
 /**
-         Represent a client/server socket pair
-         and call a templated handler.
-         TODO: For now the handle is a pointer, not templated.  This is slightly
-   larger and slower but only by one memory access
+  Represent a client/server socket pair and call a templated handler.
 
-         This is envisioned to eventually support the following:
+  TODO: For now the handle is a pointer, not templated.  This is slightly
+    larger and slower but only by one memory access
 
-         Protocols: TCP/IP V4, IPV6, UDP, SSL
+  This is envisioned to eventually support the following:
 
-         The socket base class contains an inline buffer, used to store data
-   read from the socket The socket should be agnostic as to the kind of message
-   being sent.  The protocol is delegated to the Request class.
+  Protocols: TCP/IP V4, IPV6, UDP, SSL
 
-         Handlers: HTTP, HTTPS (TLS), CSP, CSPTLS, HTTPMultithreaded
-         @author: Dov Kruger
+  The socket base class contains an inline buffer, used to store data
+  read from the socket The socket should be agnostic as to the kind of message
+  being sent.  The protocol is delegated to the Request class.
+
+  Handlers: HTTP, HTTPS (TLS), CSP, CSPTLS, HTTPMultithreaded
+  @author: Dov Kruger
  */
 
 //#include "csp/Request.hh"
@@ -26,17 +26,17 @@
 
 using namespace std;
 
-class Request; // forward reference, all code is included in .cc
+class Request;  // forward reference, all code is included in .cc
 class Socket {
  protected:
   const char* address;
   uint16_t port;
-  #ifdef __linux__
-       char sockaddress[16]; // placeholder big enough to hold sockaddr_in structure
-  #elif _WIN32
-      static WSADATA wsaData;
-      struct addrinfo* result;
-  #endif
+#ifdef __linux__
+  char sockaddress[16];  // placeholder big enough to hold sockaddr_in structure
+#elif _WIN32
+  static WSADATA wsaData;
+  struct addrinfo* result;
+#endif
   Request* req;    // to be called when a request is INCOMING (req->handle() )
   Buffer in, out;  // buffers to send and receive data
 

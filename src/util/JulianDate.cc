@@ -1,49 +1,43 @@
-#include "grail/Errors.hh"
-#include "util/Ex.hh"
 #include "util/JulianDate.hh"
 
-double JulianDate::epoch = 2000;
-const char* JulianDate::monthNames[12] =
-	{
-	 "January", "February", "March", "April", "May", "June",
-	 "July", "August", "September", "October", "November", "December"
-	};
-const char* JulianDate::monthAbbr[12] =
-	{
-	 "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-	 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-	};
+#include "util/Ex.hh"
 
-uint16_t JulianDate::daysUpTo[12] =
-	{
-	 0,  // Jan
-	 31, // Feb
-	 59, // Mar
-	 90, // Apr
-	 120,// May
-	 151,// Jun
-	 181,// Jul
-	 212,// Aug
-	 243,// Sep
-	 273,// Oct
-	 304,// Nov
-	 334// Dec
-	};
-uint16_t JulianDate::daysInMonth[12] =
-	{
-	 31,  // Jan
-	 28, // Feb
-	 31, // Mar
-	 30, // Apr
-	 31,// May
-	 30,// Jun
-	 31,// Jul
-	 31,// Aug
-	 30,// Sep
-	 31,// Oct
-	 30,// Nov
-	 31// Dec
-	};
+const double JulianDate::epoch = 2000;
+const char* JulianDate::monthNames[12] = {
+    "January", "February", "March",     "April",   "May",      "June",
+    "July",    "August",   "September", "October", "November", "December"};
+const char* JulianDate::monthAbbr[12] = {"Jan", "Feb", "Mar", "Apr",
+                                         "May", "Jun", "Jul", "Aug",
+                                         "Sep", "Oct", "Nov", "Dec"};
+
+const uint16_t JulianDate::daysUpTo[12] = {
+    0,    // Jan
+    31,   // Feb
+    59,   // Mar
+    90,   // Apr
+    120,  // May
+    151,  // Jun
+    181,  // Jul
+    212,  // Aug
+    243,  // Sep
+    273,  // Oct
+    304,  // Nov
+    334   // Dec
+};
+const uint16_t JulianDate::daysInMonth[12] = {
+    31,  // Jan
+    28,  // Feb
+    31,  // Mar
+    30,  // Apr
+    31,  // May
+    30,  // Jun
+    31,  // Jul
+    31,  // Aug
+    30,  // Sep
+    31,  // Oct
+    30,  // Nov
+    31   // Dec
+};
 
 // std::regex JulianDate::yyyy("yyyy");
 // std::regex JulianDate::yy("yy");
@@ -97,7 +91,7 @@ std::string JulianDate::getMonthName(double date){
   return monthName;
 }
 #endif
-    
+
 #if 0
 void JulianDate::format(MultiText* text, float x, float y, uint32_t style) {
 	uint32_t year, mm, dd, hh, mm, ss;
@@ -120,21 +114,19 @@ void JulianDate::format(MultiText* text, float x, float y, uint32_t style) {
 }
 #endif
 
+JulianDate::JulianDate(int32_t year, uint32_t month, uint32_t day,
+                       uint32_t hour, uint32_t min, uint32_t second) {
+  if (month < 1 || month > 12 || day < 1 ||
+      day > daysInMonth[month - 1] &&
+          !(month == 2 && day == 29 && isLeap(year))) {
+    throw Ex1(Errcode::BAD_DATE);
+  }
 
-JulianDate::JulianDate
-(int32_t year, uint32_t month, uint32_t day,
- uint32_t hour, uint32_t min, uint32_t second) {
-	if (month < 1 || month > 12 ||
-			day < 1 ||
-			day > daysInMonth[month - 1] && !(month == 2 && day == 29 && isLeap(year))) {
-		throw Ex1(Errcode::BAD_DATE);
-	}
-	
-	int32_t dY = year - epoch; 
-	int32_t leapYears = dY / 4 - dY / 100 + dY / 400; // is this true
+  int32_t dY = year - epoch;
+  int32_t leapYears = dY / 4 - dY / 100 + dY / 400;  // is this true
   int32_t extraDay = isLeap(year) && month > 2;
-	date = dY * 365 + leapYears + daysUpTo[month-1] + int32_t(day) +
-		(hour * 3600 + min * 60 + second) * invSecondsPerDay + extraDay - 1;
+  date = dY * 365 + leapYears + daysUpTo[month - 1] + int32_t(day) +
+         (hour * 3600 + min * 60 + second) * invSecondsPerDay + extraDay - 1;
 
 #if 0
 	// These cannot be stored in the object, which must be a single number
@@ -150,4 +142,3 @@ JulianDate::JulianDate
 	E = int((B-D)/30.6001);
 #endif
 }
-

@@ -1,5 +1,0 @@
-include ${GRAIL}/proj/settings.mk
-init: makeBuildDirectories
-
-makeBuildDirectories:
-	mkdir -p $(utilout) $(openglout) $(cspout) $(xdlout) $(LIBDIR) 

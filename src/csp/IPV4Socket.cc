@@ -7,13 +7,12 @@
   All encapsulation for different operating systems networking code is done here
 */
 
+#include <memory.h>
 #include <signal.h>
 
-#include <memory.h>
-
 //#include "csp/HTTPRequest.hh"
-#include "csp/csp.hh"
 #include "csp/SocketIO.hh"
+#include "csp/csp.hh"
 
 #ifdef _WIN32
 WSADATA Socket::wsaData;
@@ -38,20 +37,19 @@ inline void testResult(int result, const char *file, int lineNum, Errcode err) {
 
 // Initializes Winsock
 void Socket::classInit() {
-  #ifdef _WIN32
+#ifdef _WIN32
   testResult(WSAStartup(MAKEWORD(2, 2), &wsaData), __FILE__, __LINE__,
              Errcode::SOCKET);
-  #endif
+#endif
   return;
 }
 
 // Takes care of allocations made by Winsock
-void Socket::classCleanup() { 
-    #ifdef _WIN32
-    WSACleanup();
-    #endif
-  }
-
+void Socket::classCleanup() {
+#ifdef _WIN32
+  WSACleanup();
+#endif
+}
 
 #ifdef __linux__
 // Constructor for HTTP server
@@ -59,17 +57,16 @@ IPV4Socket::IPV4Socket(uint16_t port) : Socket(port) {
   int yes = 1;
   testResult(sckt = socket(AF_INET, SOCK_STREAM, 0), __FILE__, __LINE__,
              Errcode::SOCKET);
-  testResult(setsockopt(sckt, SOL_SOCKET, SO_REUSEADDR, (const char *) &yes, sizeof(yes)),
+  testResult(setsockopt(sckt, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(yes)),
              __FILE__, __LINE__, Errcode::SETSOCKOPT);
   memset(sockaddress, 0, sizeof(sockaddress));
-  sockaddr_in* sockAddr = (sockaddr_in*)sockaddress;
+  sockaddr_in *sockAddr = (sockaddr_in *)sockaddress;
   sockAddr->sin_family = AF_INET;
   sockAddr->sin_addr.s_addr = INADDR_ANY;
   sockAddr->sin_port = htons(port);
   ::bind(sckt, (struct sockaddr *)sockAddr, sizeof(sockaddr_in));
   testResult(listen(sckt, 20), __FILE__, __LINE__, Errcode::LISTEN);
 }
-
 
 // Constructor for csp/http client
 IPV4Socket::IPV4Socket(const char *addr, uint16_t port) : Socket(addr, port) {
@@ -82,7 +79,7 @@ IPV4Socket::IPV4Socket(const char *addr, uint16_t port) : Socket(addr, port) {
     throw Ex(__FILE__, __LINE__, Errcode::SERVER_INVALID);
   }
 
-  sockaddr_in* sockAddr = (sockaddr_in*)sockaddress;
+  sockaddr_in *sockAddr = (sockaddr_in *)sockaddress;
   sockAddr->sin_family = AF_INET;
   //    bcopy((char *)server->h_addr, (char *)&sockaddress.sin_addr.s_addr,
   //    server->h_length);
@@ -238,7 +235,7 @@ void IPV4Socket::wait() {
       // WSACleanup();
       return;
     }
-    
+
     if (returnsckt >= 0) {
       cout << "CONNECT SUCCESSFULLY" << endl;
       req->handle(returnsckt);
@@ -266,4 +263,3 @@ void IPV4Socket::send(uint32_t reqn) {
   out.flush();
   in.attachRead(sckt);
 }
-

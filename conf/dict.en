@@ -1,0 +1,3 @@
+#English dictionary
+#command  Display String  Explanation
+QUIT      "Quit"          Quit the program, will pop up a requester if needs to be saved

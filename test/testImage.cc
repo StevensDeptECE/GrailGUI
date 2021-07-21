@@ -1,32 +1,36 @@
-#include "grail/Grail.hh"
-#include "opengl/primitivesV2/Colors.hh"
+#include "opengl/GrailGUI.hh"
+#include "opengl/Image.hh"
+
 using namespace std;
+using namespace grail;
 
-class TestImage : public Grail {
+/*
+** Before running this test unzip apple.zip in test/textures/image_demo/
+** The images inside it are from https://www.youtube.com/watch?v=FtutLA63Cp8
+** we did not create them.
+*/
+class TestImage : public GLWin {
+  Image* img;
+  MainCanvas* c;
+
  public:
-  TestImage(const char filename[]){
-    images.push_back("right.png");
-    images.push_back("right.png");
-    images.push_back("right.png");
-  }
-  std::vector<std::string> images;
+  TestImage() : GLWin(0x000000, 0xCCCCCC, "TestImage") {}
 
-  void update()
-	{
-		currentTab()->update(); 
-	}
+  void update() {}
+
   void init() {
-    Style* s = getDefaultStyle();
-    Canvas* c = currentTab()->getMainCanvas();
-    Image::combineImage(images);
-    Image* image = new Image(200, 300, 300, 500, "test.jpg", s);
-    c->addLayer(image);
-    //image->addImage(900,500, 100,100, 0,0.5f, 0.25f,0.67f);  //! Logo
-    //image->addImage(800,400, 100,100, .375f,.5f, .625f,.7f); //! Face
-    
+    c = currentTab()->getMainCanvas();
+
+    img = c->addLayer(
+        new Image(c, 50, 50, 500, 500, "textures/image_demo/frame13.png", 1));
+
+    Image* img2 = c->addLayer(new Image(c, 50, 550, 300, 400, 1));
+    img2->addImage("textures/mars.jpg");
+    // overwrites the previously added image
+    img2->addImage("textures/sun.jpg");
   }
 };
 
 int main(int argc, char* argv[]) {
-  return Grail::init(new TestImage(argv[1]), "out.cml");
+  return GLWin::init(new TestImage(), 1000, 1000);
 }

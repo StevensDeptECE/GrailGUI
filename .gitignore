@@ -89,6 +89,15 @@ libs/libgrail.a
 
 # CMake
 cmake-build-*/
+cmake_install.cmake
+CMakeCache.txt
+CMakeFiles
+
+# Ninja
+build.ninja
+.ninja_deps
+.ninja_log
+
 build/
 # ! NOT FROM CMAKE -- our own custom makefile output directory!
 
@@ -144,3 +153,17 @@ lib/*
 BIGMAP.png
 errlog
 
+# Doxygen output
+docs/docbook
+docs/html
+docs/latex
+docs/man
+
+# Clang Language Server Cache
+.ccls-cache
+compile_commands.json
+
+# Block Map Loader
+*.bml
+
+external/

@@ -19,13 +19,25 @@ using namespace std;
   text to hold the coordinates for texturing
 */
 MultiText::MultiText(Canvas* c, const Style* style, uint32_t size)
-    : Shape(c), style(style) {
+    : Shape(c), style(style), transform(1.0f) {
   // if !once, once = !once was a thing
   vert.reserve(size * 24);
   const Font* f = style->f;  // FontFace::getFace(1)->getFont(0);
 }
 
 MultiText::MultiText(Canvas* c, const Style* style) : MultiText(c, style, 16) {}
+
+MultiText::MultiText(Canvas* c, const Style* style, uint32_t size, float angle,
+                     float x, float y)
+    : MultiText(c, style, size) {
+  transform = glm::translate(transform, glm::vec3(x, y, 0));
+  transform = glm::rotate(transform, angle, glm::vec3(0, 0, -1));
+  // transform = glm::translate(transform, glm::vec3(-x, -y, 0));
+}
+
+MultiText::MultiText(Canvas* c, const Style* style, float angle, float x,
+                     float y)
+    : MultiText(c, style, 16, angle, x, y) {}
 
 MultiText::~MultiText() {}
 
@@ -74,6 +86,25 @@ void MultiText::addChar(float x, float y, const Font* f, unsigned char c) {
   x += glyph->advance;
 }
 
+inline void MultiText::internalAdd(float x, float y, const Font* f, const char s[],
+                    uint32_t len) {
+  for (uint32_t i = 0; i < len; i++) {
+    const Font::Glyph* glyph = f->getGlyph(s[i]);
+    float x0 = x + glyph->bearingX,
+          x1 = x0 + glyph->sizeX;  // TODO: Not maxwidth, should be less for
+                                   // proportional fonts?
+    float y0 = y - glyph->bearingY, y1 = y0 + glyph->sizeY;
+    addPoint(x0, y0, /* fontLeft */ glyph->u0, glyph->v1);
+    addPoint(x0, y1, /* fontLeft */ glyph->u0, glyph->v0);
+    addPoint(x1, y1, /* fontRight */ glyph->u1, glyph->v0);
+    addPoint(x0, y0, /* fontLeft */ glyph->u0, glyph->v1);
+    addPoint(x1, y1, /* fontRight */ glyph->u1, glyph->v0);
+    addPoint(x1, y0, /* fontRight */ glyph->u1, glyph->v1);
+
+    x += glyph->advance;
+  }
+}
+
 // #if 0
 // // void MultiText::add(float x, float y, uint32_t v) {
 // //   const Font* f = style->f;
@@ -107,91 +138,94 @@ void MultiText::addChar(float x, float y, const Font* f, unsigned char c) {
 void MultiText::add(float x, float y, uint32_t v) {
   char s[10];
   int len = sprintf(s, "%u", v);
-  add(x, y, s, len);
+  internalAdd(x, y, style->f, s, len);
 }
 
 void MultiText::add(float x, float y, const Font* f, uint32_t v) {
   char s[10];
   int len = sprintf(s, "%u", v);
-  add(x, y, f, s, len);
+  internalAdd(x, y, f, s, len);
 }
 
 void MultiText::add(float x, float y, const Font* f, int32_t v) {
   char s[10];
   int len = sprintf(s, "%d", v);
-  add(x, y, f, s, len);
+  internalAdd(x, y, f, s, len);
 }
 
 void MultiText::addHex(float x, float y, const Font* f, uint32_t v) {
   char s[10];
   int len = sprintf(s, "%x", v);
-  add(x, y, f, s, len);
+  internalAdd(x, y, f, s, len);
 }
 void MultiText::addHex8(float x, float y, const Font* f, uint32_t v) {
   char s[10];
   int len = sprintf(s, "%08x", v);
-  add(x, y, f, s, len);
+  internalAdd(x, y, f, s, len);
 }
 
 void MultiText::add(float x, float y, float v) {
   char s[20];
   int len = sprintf(s, "%f", v);
-  add(x, y, s, len);
+  internalAdd(x, y, style->f, s, len);
 }
 
 void MultiText::add(float x, float y, const Font* f, float v) {
   char s[20];
   int len = sprintf(s, "%f", v);
-  add(x, y, f, s, len);
+  internalAdd(x, y, f, s, len);
 }
 
 void MultiText::add(float x, float y, double v) {
   char s[25];
   int len = sprintf(s, "%4.4lf", v);
-  add(x, y, s, len);
+  internalAdd(x, y, style->f, s, len);
 }
 
 void MultiText::add(float x, float y, const Font* f, double v) {
   char s[25];
   int len = sprintf(s, "%4.4lf", v);
-  add(x, y, f, s, len);
+  internalAdd(x, y, f, s, len);
 }
 
 void MultiText::add(float x, float y, const Font* f, double v, int fieldWidth,
                     int precision) {
-  char fmt[25];
+  char fmt[35];
   sprintf(fmt, "%%%d.%dlf", fieldWidth, precision);
-  char s[25];
+  char s[35];
   int len = sprintf(s, fmt, v);
-  add(x, y, f, s, len);
+  internalAdd(x, y, f, s, len);
 }
 
-void MultiText::addCentered(float x, float y, float w, float h, const Font* f,
-                            const char s[], uint32_t len) {
+void MultiText::addCentered(float x, float y, const Font* f, double v,
+                            int fieldWidth, int precision) {
+  char fmt[35];
+  sprintf(fmt, "%%%d.%dlf", fieldWidth, precision);
+  char s[35];
+  int len = sprintf(s, fmt, v);
+
   float textWidth = f->getWidth(s, len);
   float textHeight = f->getHeight();
-  float xSpace = max(w - textWidth, 0.0f) / 2;
-  float ySpace = max(h - textHeight, 0.0f) / 2;
 
-  add(x + xSpace, y + ySpace, f, s, len);
+  internalAdd(x - textWidth / 2, y - textHeight / 2, f, s, len);
 }
+
+void MultiText::addCentered(float x, float y, const Font* f, const char s[],
+                            uint32_t len) {
+  float textWidth = f->getWidth(s, len);
+  float textHeight = f->getHeight();
+
+  internalAdd(x - textWidth / 2, y - textHeight / 2, f, s, len);
+}
+
+
 void MultiText::add(float x, float y, const Font* f, const char s[],
                     uint32_t len) {
-  for (uint32_t i = 0; i < len; i++) {
-    const Font::Glyph* glyph = f->getGlyph(s[i]);
-    float x0 = x + glyph->bearingX,
-          x1 = x0 + glyph->sizeX;  // TODO: Not maxwidth, should be less for
-                                   // proportional fonts?
-    float y0 = y - glyph->bearingY, y1 = y0 + glyph->sizeY;
-    addPoint(x0, y0, /* fontLeft */ glyph->u0, glyph->v1);
-    addPoint(x0, y1, /* fontLeft */ glyph->u0, glyph->v0);
-    addPoint(x1, y1, /* fontRight */ glyph->u1, glyph->v0);
-    addPoint(x0, y0, /* fontLeft */ glyph->u0, glyph->v1);
-    addPoint(x1, y1, /* fontRight */ glyph->u1, glyph->v0);
-    addPoint(x1, y0, /* fontRight */ glyph->u1, glyph->v1);
+  internalAdd(x, y, f, s, len);
+}
 
-    x += glyph->advance;
-  }
+void MultiText::add(float x, float y, const Font* f, const std::string& s) {
+  internalAdd(x, y, f, s.c_str(), s.length());  
 }
 
 /*
@@ -199,7 +233,7 @@ void MultiText::add(float x, float y, const Font* f, const char s[],
   MultiText
 */
 void MultiText::add(float x, float y, const char s[], uint32_t len) {
-  add(x, y, style->f, s, len);
+  internalAdd(x, y, style->f, s, len);
 }
 
 // find the index of the first character over the margin with this font
@@ -229,9 +263,7 @@ void MultiText::checkAdd(float& x, float& y, const Font* f,
   add(x, y, f, c);
 }
 
-const Style* MultiText::getStyle() {
-  return style;
-}
+const Style* MultiText::getStyle() { return style; }
 
 void MultiText::update() {}
 
@@ -242,12 +274,15 @@ void MultiText::render() {
 
   Shader* s = Shader::useShader(GLWin::TEXT_SHADER);
   s->setVec4("textColor", style->getFgColor());
-  s->setMat4("projection", *(parentCanvas->getProjection()));
+  s->setMat4("projection", *parentCanvas->getProjection() * transform);
   s->setInt("ourTexture", 0);
 
+  // glPushAttrib(GL_CURRENT_BIT);
+  // glColor3f(0, 0, 255);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, textureId);
 
+  // glPopAttrib();
   // Update data
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   const int windowLen = 128 * 128 * 24;  // preallocate a

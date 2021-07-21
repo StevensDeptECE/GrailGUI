@@ -1,59 +1,31 @@
 #pragma once
-#include <memory>
-#include "opengl/Widget2D.hh"
-#include "opengl/Scale.hh"
-#include <string>
-#include <vector>
-#include <algorithm>
 
-class Style;
-class BarChartWidget : public Widget2D {
-private:
-  std::string title;
-  const Style* titleStyle;
-  const Style* barStyle;
-  std::unique_ptr<Scale> yAxisScale;
-  float relativeSpace; //space between bars as a fraction of bar width 
-  float min; //graph bottom, in graph units
-  float max;
-  float maxMultiplier; 
-  float tickSize;
-  float tickStart;
-  Scale *yAxis;
+#include "opengl/GraphWidget.hh"
 
-public:
-  BarChartWidget(StyledMultiShape2D* m, MultiText* t,
-   float x, float y, float w, float h,
-   const std::string& title, const Style *titleStyle,
-   const Style *barStyle, 
-   float min, float max, float maxMultiplier, float relativeSpace,
-   float tickSize, float tickStart, Scale *yAxis) : 
-    Widget2D(m, t, x, y, w, h), title(title), titleStyle(titleStyle), 
-    barStyle(barStyle), min(min), max(max), maxMultiplier(maxMultiplier), relativeSpace(relativeSpace),
-    tickSize(tickSize), tickStart(tickStart), yAxis(yAxis) {}
+class BarChartWidget : public GraphWidget {
+ private:
+  const Style *barStyle;  // for the thickness of bar outlines
+  std::vector<std::string> names;
+  std::vector<double> values;
+  std::vector<glm::vec4> barColors;
+  std::vector<glm::vec4> barOutlineColors;
+  double barWidth;
 
-  BarChartWidget(StyledMultiShape2D* m, MultiText* t, float x, float y, float w, float h) :
-    BarChartWidget(m,t, x, y, w, h, std::string (""), nullptr, nullptr,
-    0, 100, 1.25, 0.2, 10, x, new LinearScale()){} 
+ public:
+  BarChartWidget(Canvas *c, double x, double y, double w, double h)
+      : GraphWidget(c, x, y, w, h, DISCRETE_PERMITTED, FUNCTIONS_PERMITTED),
+        barStyle(nullptr),
+        values(std::vector<double>()),
+        names(std::vector<std::string>()),
+        barColors({grail::blue}),
+        barOutlineColors({grail::blue}),
+        barWidth(20) {}
 
-
-  BarChartWidget(StyledMultiShape2D* m, MultiText* t, float x, float y, float w, float h, 
-  const std::vector<float>& b) :
-    BarChartWidget(m,t, x, y, w, h, "", nullptr, nullptr,
-    0, 0, 1.25, 0.2, 10, x, new LinearScale()){
-      max = maxMultiplier*(*max_element(b.begin(), b.end()));
-    }  
-
-
-  void setMinMax(float min, float max){
-    this->min = min;
-    this->max = max;
-  }
-  void setAxisScale(Scale *yAxis){this->yAxis = yAxis;}
-  void setTitleStyle(const Style* s) { titleStyle = s;}
-  void chart(const std::vector<float>& b, 
-    const std::vector<std::string>& barNames, int rulerInterval);
-  //void chartLog(const float b[], int size, float relativeSpace, const std::string barNames[], int logBase);
-  void setTitle(const std::string& s);
+  void setBarStyle(const Style *s);
+  void setBarWidth(double width);
+  void setBarColors(const std::vector<glm::vec4> &colors);
+  void setBarOutlineColors(const std::vector<glm::vec4> &colors);
+  void setValues(const std::vector<double> &values);
+  void setNames(const std::vector<std::string> &names);
   void init() override;
 };
