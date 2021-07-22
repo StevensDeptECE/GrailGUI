@@ -9,6 +9,8 @@
 template <typename T>
 using quantile_func = std::function<double(std::vector<T>, double)>;
 
+/**
+ * */
 template <typename T>
 double r1(std::vector<T> data, double p) {
   double h = data.size() * p + 0.5;
@@ -72,13 +74,13 @@ double r9(std::vector<T> data, double p) {
 template <typename T>
 void init_quantile_algs(std::unordered_map<std::string, quantile_func<T>>* qa) {
   using namespace std::placeholders;
-  qa->insert_or_assign("R1", std::bind(r1<T>, _1, _2));
-  qa->insert_or_assign("R2", std::bind(r2<T>, _1, _2));
-  qa->insert_or_assign("R3", std::bind(r3<T>, _1, _2));
-  qa->insert_or_assign("R4", std::bind(r4<T>, _1, _2));
-  qa->insert_or_assign("R5", std::bind(r5<T>, _1, _2));
-  qa->insert_or_assign("R6", std::bind(r6<T>, _1, _2));
-  qa->insert_or_assign("R7", std::bind(r7<T>, _1, _2));
-  qa->insert_or_assign("R8", std::bind(r8<T>, _1, _2));
-  qa->insert_or_assign("R9", std::bind(r9<T>, _1, _2));
+  qa->insert_or_assign("R-1", std::bind(r1<T>, _1, _2));
+  qa->insert_or_assign("R-2", std::bind(r2<T>, _1, _2));
+  qa->insert_or_assign("R-3", std::bind(r3<T>, _1, _2));
+  qa->insert_or_assign("R-4", std::bind(r4<T>, _1, _2));
+  qa->insert_or_assign("R-5", std::bind(r5<T>, _1, _2));
+  qa->insert_or_assign("R-6", std::bind(r6<T>, _1, _2));
+  qa->insert_or_assign("R-7", std::bind(r7<T>, _1, _2));
+  qa->insert_or_assign("R-8", std::bind(r8<T>, _1, _2));
+  qa->insert_or_assign("R-9", std::bind(r9<T>, _1, _2));
 }

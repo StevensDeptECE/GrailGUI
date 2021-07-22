@@ -8,7 +8,7 @@ using namespace std;
 #define assertm(exp, msg) assert(((void)msg, exp))
 
 int main() {
-  defaultQuantile = "R6";
+  defaultQuantile = "R-6";
   int array[] = {1, 2, 2, 3, 3, 4, 5};
   Stats1D<int> stats_from_array = Stats1D<int>(array);
 
@@ -39,7 +39,8 @@ int main() {
        << stats_from_vec_double << "\n\n"
        << stats_from_vec_float << "\n\n";
 
-  string quant_algs[9] = {"R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9"};
+  string quant_algs[9] = {"R-1", "R-2", "R-3", "R-4", "R-5",
+                          "R-6", "R-7", "R-8", "R-9"};
   for (const auto& elem : quant_algs) {
     stats_from_vec_double.setQuantileAlgorithm(elem);
     cout << "\nQuantile alg " << elem << endl << stats_from_vec_double << endl;
