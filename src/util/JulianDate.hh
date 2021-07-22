@@ -139,6 +139,33 @@ public:
 		*ss = frac*60;
 	}
 
+
+unsigned dayOfWeek(int yy, int mm, int dd ){
+  int rst =                                                     
+	dd                                                      
+	+ ((153 * (mm + 12 * ((14 - mm) / 12) - 3) + 2) / 5) 
+	+ (365 * (yy + 4800 - ((14 - mm) / 12)))
+	+ ((yy + 4800 - ((14 - mm) / 12)) / 4)
+	- ((yy + 4800 - ((14 - mm) / 12)) / 100)
+	+ ((yy + 4800 - ((14 - mm) / 12)) / 400)
+	- 32045;
+
+	return (rst+1)%7 ;
+}
+
+bool isLeapYear(int year){
+  if(year % 4 != 0){
+    return 0;
+  }else if(year % 100 != 0){
+    return 1;
+  }else if(year % 400 != 0){
+    return 0;
+  }else{
+    return 1;
+  }
+}
+
+
   friend std::ostream& operator<<(std::ostream& s, const JulianDate& jd) {
     s << JulianDate::monthAbbr[jd.getMonth()-1];
     return s;

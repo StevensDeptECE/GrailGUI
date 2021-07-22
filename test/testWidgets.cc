@@ -79,20 +79,21 @@ class TestWidgets : public GLWin {
   }
 #endif
 
-  void testGapMinder(StyledMultiShape2D *gui, MultiText *guiText) {
+  void testGapMinder(Canvas *c) {
     vector<float> x = {100, 220, 50, 150, 300, 290, 230};
     vector<float> y = {150, 350, 222, 100, 290, 60, 200};
     vector<float> s = {3, 2, 6, 5, 4, 10, 15};
-    vector<glm::vec4> c = {grail::red,  grail::blue,   grail::green,
+    vector<glm::vec4> co = {grail::red,  grail::blue,   grail::green,
                            grail::cyan, grail::purple, grail::darkblue};
 
-    GapMinderWidget chart(gui, guiText, 550, 320, 400, 200, x, y);
-    chart.chart(y, x, s, 50, 50, c);
-
-    chart.setTitle("Title");
+    GapMinderWidget chart(c, 550, 320, 400, 200, x, y);
     chart.init();
+    chart.setTitle("Title");
+    chart.chart(y, x, s, 50, 50, co);
   }
 
+
+  #if 0
   void testSparkline(StyledMultiShape2D *gui, MultiText *guiText) {
     vector<float> x = {0, 50, 100, 150, 200, 250, 300};
     vector<float> y = {150, 350, 222, 100, 290, 60, 200};
@@ -106,6 +107,7 @@ class TestWidgets : public GLWin {
     chart2.chart(y2, x, grail::red);
     chart2.init();
   }
+  #endif
 
   void testScrollBar(StyledMultiShape2D *gui, MultiText *guiText) {
     const uint32_t scrollBarWidth = 50;
@@ -144,8 +146,8 @@ class TestWidgets : public GLWin {
 
     const Style *graphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
     //testCandlestick(gui, guiText);
-    testGapMinder(gui, guiText);
-    testSparkline(gui, guiText);
+    testGapMinder(c);
+    //testSparkline(gui, guiText);
     // testButton(gui, guiText);
     // testAngleText(gui, guiText, c, s);
 

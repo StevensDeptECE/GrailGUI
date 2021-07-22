@@ -4,6 +4,7 @@ set(grail-util
     HashMap.cc
     Prefs.cc
     Timers.cc
+    JulianDate.cc
 )
 
 list(TRANSFORM grail-util PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)

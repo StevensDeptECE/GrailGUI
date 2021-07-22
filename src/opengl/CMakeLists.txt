@@ -4,6 +4,7 @@ set(grail-opengl
     BarChartWidget.cc 
     BoxChartWidget.cc
     ButtonWidget.cc
+    CalendarWidget.cc
     CandlestickChartWidget.cc 
     Canvas.cc
     Colors.cc

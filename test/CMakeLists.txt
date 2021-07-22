@@ -25,6 +25,7 @@ add_grail_executable(SRC testPolyLines.cc LIBS grail)
 add_grail_executable(SRC testStyledMultishape.cc LIBS grail)
 add_grail_executable(SRC testText3.cc LIBS grail)
 add_grail_executable(SRC testWidgets.cc LIBS grail)
+add_grail_executable(SRC testCalendarWidget.cc LIBS grail)
 add_grail_executable(SRC ../src/csp/GenericXDLClient.cc LIBS grail)
 
 # setting up a new executable, only needs the two lines

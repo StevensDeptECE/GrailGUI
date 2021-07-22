@@ -2,8 +2,7 @@
 #include <string>
 #include <vector>
 #include <cstdlib>
-#include "opengl/GapMinderWidget.hh"
-#include "data/GapMinderLoader.hh"
+#include "opengl/SparklineWidget.hh"
 #include "opengl/GrailGUI.hh"
 
 using namespace std;
@@ -13,37 +12,28 @@ using namespace grail;
 class TestWidgets : public GLWin {
  public:
 
-  GapMinderWidget *chart;
+  SparklineWidget *chart;
   double startTime;
 
   TestWidgets() : GLWin(0x000000, 0xCCCCCC, "TestWidgets") {}
 
-  void testGapMinder(Canvas *c) {
+  void testSparkline(StyledMultiShape2D *gui, MultiText *guiText) {
 
-    const uint32_t bigSize = 1024*1024;
-    //gui->reserve(bigSize, bigSize, bigSize, 1024);
+    vector <double> y2 = {20, 10, 20, 30, 35, 25, 15, 17, 30, 19, 11, 22, 29, 10, 24, 31, 34, 8, 9, 10};
+    vector <double> xMax = {5};
 
-    string xData = "gdp_per_capita.csv";
-    string yData = "ddf--datapoints--poisonings_deaths_per_100000_people.csv";
-    string sData = "ddf--datapoints--vacc_rate--by--country--time.csv";
-
-    vector <float> x2 = {65000, 50000, 40000};
-    vector <float> y2 = {14, 3, 5};
-    vector <float> s2 = {80, 90, 95};
-    vector <glm::vec4> c2 = {grail::blue, grail::green, grail::red};
-
-    chart = new GapMinderWidget(c, 75, 50, 900, 450, x2, y2);
+    //graph values y2 from o to xMax
+    chart = new SparklineWidget(gui, guiText, 75, 50, 200, 100, xMax, y2);
+    chart->setAnimation(y2, 5, 100,grail::blue);
     //chart->chart(y2, x2, s2, 10000, 2, c2);
-    chart->loadData(yData, xData, sData, 2000, 2010, 10000, 2);
 
-    chart->setTitle("Title");
     chart->init();
   }
 
   void update(){
     
     double time = getTime();
-    if (time > startTime + 2 ) {
+    if (time > startTime + 0.01 ) {
       startTime = time;
       chart->update();
       setDirty();
@@ -65,9 +55,9 @@ class TestWidgets : public GLWin {
     MainCanvas *c = currentTab()->getMainCanvas();
     StyledMultiShape2D *gui = c->getGui();
 
-    MultiText *guiText = c->addLayer(new MultiText(c, s));
+    MultiText *guiText = c->getGuiText();
     
-    testGapMinder(c);
+    testSparkline(gui, guiText);
     
   }
 };

@@ -9,7 +9,8 @@
 using namespace std;
 
 void GapMinderWidget::init() {
-  update();
+  m = c->addLayer(new StyledMultiShape2D(c, barStyle));
+  t = c->addLayer(new MultiText(c, titleStyle));
 }
 
 void GapMinderWidget::setTitle(const string& s){
@@ -54,7 +55,7 @@ void GapMinderWidget::chart(const vector<float>& yLocations,
       float yPoint = yAxis->transform(yLocations[i]);
 
       m->fillCircle(xPoint, yPoint, rad[i], 5, c[i]);
-      m->drawCircle(xPoint, yPoint, rad[i], 5, grail::black);
+      //m->drawCircle(xPoint, yPoint, rad[i], 5, grail::black);
     }
 
     for (float yTick = minY; yTick <= maxY; yTick = yAxis->next(yTick)) {

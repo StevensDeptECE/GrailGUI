@@ -26,6 +26,14 @@ private:
   Scale *xAxis;
   float minMultiplier;
 
+  int count;
+  glm::vec4 lineColor;
+  std::vector <double> anim;
+  int nPerBox;
+  int smoothness;
+  std::vector <double> xVec;
+  std::vector <double> yVec;
+
 public:
   SparklineWidget(StyledMultiShape2D* m, MultiText* t,
    float x, float y, float w, float h,
@@ -36,7 +44,9 @@ public:
     Widget2D(m, t, x, y, w, h), title(title), titleStyle(titleStyle), 
     barStyle(barStyle), minX(minX), maxX(maxX), minY(minY), maxY(maxY), 
     maxMultiplier(maxMultiplier), minMultiplier(minMultiplier),
-    tickSize(tickSize), tickStart(tickStart), yAxis(yAxis), xAxis(xAxis){}
+    tickSize(tickSize), tickStart(tickStart), yAxis(yAxis), xAxis(xAxis){
+      glViewport(x, y, w, h);
+    }
 
   SparklineWidget(StyledMultiShape2D* m, MultiText* t, float x, float y, float w, float h) :
     SparklineWidget(m,t, x, y, w, h, std::string (""), nullptr, nullptr,
@@ -44,7 +54,7 @@ public:
 
 
   SparklineWidget(StyledMultiShape2D* m, MultiText* t, float x, float y, float w, float h, 
-  const std::vector<float>& xLocations, const std::vector<float>& yLocations) :
+  const std::vector<double>& xLocations, const std::vector<double>& yLocations) :
     SparklineWidget(m,t, x, y, w, h, "", nullptr, nullptr,
     0, 0, 0, 0, 1.2, 10, 10, x, new LinearScale(), new LinearScale()){
       maxY = maxMultiplier*(*max_element(yLocations.begin(), yLocations.end()));
@@ -58,9 +68,11 @@ public:
   }
   void setAxisScale(Scale *yAxis){this->yAxis = yAxis;}
   void setTitleStyle(const Style* s) { titleStyle = s;}
-  void chart(const std::vector<float>& yLocations, const std::vector<float>& xLocations,
+  void chart(const std::vector<double>& yLocations, const std::vector<double>& xLocations,
   glm::vec4& c);
   //void chartLog(const float b[], int size, float relativeSpace, const std::string barNames[], int logBase);
   void setTitle(const std::string& s);
   void init() override;
+  void setAnimation(const std::vector<double>& yLocations, int nPerBox, int smoothness, glm::vec4& c);
+  void update();
 };
