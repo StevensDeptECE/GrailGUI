@@ -47,6 +47,21 @@ class Stats1D {
   Stats1D(const Iterable& container, bool sorted = false)
       : Stats1D(std::begin(container), std::end(container), sorted) {}
 
+  Stats1D(const Stats1D<T>& orig) {
+    sorted_data = orig.sorted_data;
+    cache_flags = 0b00100000;
+  }
+
+  Stats1D& operator=(const Stats1D<T>& orig) {
+    if (this != &orig) {
+      std::cout << "assignment copy" << std::endl;
+      sorted_data = orig.sorted_data;
+      cache_flags = 0b00100000;
+    }
+
+    return *this;
+  }
+
   template <typename FowardIter>
   void updateData(FowardIter a, const FowardIter b, bool sorted = false);
 

@@ -48,9 +48,45 @@ void test_values() {
   assert(is_between(stats.getSummary().median, 190, 190));
 }
 
+// We've had undefined behavior in the past from this
+void test_container_of_stats() {
+  vector<double> data = {150, 350, 222, 100, 300, 130, 300, 250, 190,
+                         170, 100, 50,  20,  150, 200, 330, 200, 270,
+                         180, 300, 49,  247, 325, 114, 89};
+
+  vector<Stats1D<double>> v = vector<Stats1D<double>>();
+
+  for (int i = 0; i < data.size(); i += 5) {
+    auto first = data.begin() + i;
+    auto last = data.begin() + i + 5;
+    vector<double> currentData(first, last);
+    Stats1D<double> summary(currentData);
+    v.push_back(summary);
+  }
+
+  // for (auto& summary : v) {
+  //   cout << summary << endl;
+  // }
+}
+
+void test_copy_assignment() {
+  vector<double> data = {150, 350, 222, 100, 300, 130, 300,
+                         250, 190, 170, 100, 50,  20,  150};
+  vector<double> other = {200, 330, 200, 270, 180, 300, 49, 247, 325, 114, 89};
+
+  Stats1D<double> a(data);
+  std::cout << a << std::endl;
+
+  Stats1D<double> b(other);
+  a = b;
+  std::cout << a << std::endl;
+}
+
 int main() {
   test_contructor();
   test_values();
+  test_container_of_stats();
+  test_copy_assignment();
 
   // int array[] = {1, 2, 2, 3, 3, 4, 5};
   // Stats1D<int> stats_from_array = Stats1D<int>(array);
