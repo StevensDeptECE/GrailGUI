@@ -6,13 +6,18 @@
 #include <memory>
 #include <unordered_map>
 
+#include "util/Ex.hh"
+#include "xp/Quantile.hh"
+
+struct Summary {
+  double min, max, q1, q3, median;
+};
+
+/**< The default quantile algorithm used by future Stats1D objects*/
+static std::string defaultQuantile = "R-6";
+
 template <typename T>
 class Stats1D {
- public:
-  struct Summary {
-    double min, max, q1, q3, median;
-  };
-
  private:
   constexpr static uint8_t SORTED = 0b00100000;
   constexpr static uint8_t MEAN = 0b00010000;
@@ -29,6 +34,8 @@ class Stats1D {
   std::vector<T> modes;
 
   std::unique_ptr<struct Summary> fivenum;
+  std::string quantile = defaultQuantile;
+  std::unordered_map<std::string, quantile_func<T>> quantile_algorithms;
 
  public:
   Stats1D() = delete;
@@ -41,6 +48,7 @@ class Stats1D {
     if (!sorted) {
       sort(sorted_data.begin(), sorted_data.end());
     }
+    init_quantile_algs(&quantile_algorithms);
   }
 
   template <typename Iterable>
@@ -74,7 +82,8 @@ class Stats1D {
   struct Summary getSummary();
   double getStdDev();
   double getVariance();
-  double getQuantile(double percentile);
+  double getQuantile(double percentile, std::string quantile_algorithm = "");
+  void setQuantileAlgorithm(std::string alg);
 
   template <typename U>
   friend std::ostream& operator<<(std::ostream& os, Stats1D<U>& stats);
@@ -205,7 +214,7 @@ double Stats1D<T>::getIQR() {
  * @return struct Stats1D<T>::Summary A struct of the five number summary
  */
 template <typename T>
-struct Stats1D<T>::Summary Stats1D<T>::getSummary() {
+struct Summary Stats1D<T>::getSummary() {
   if ((cache_flags & FIVENUM) == FIVENUM) return *fivenum.get();
 
   struct Summary fn;
@@ -272,24 +281,66 @@ double Stats1D<T>::getVariance() {
 /**
  * @brief getQuantile - Gets a quantile of the sorted array
  *
- * This implements the R-6 algorithm for finding quantiles. Upon reviewing the
- * relevant paper, the index functions refer to an array with a starting index
- * of 1, but C++ is 0-indexed. As such, the added one that is expected in R-7
- * has been negated. (Hyndman and Fan, 1997).
+ * This uses Quantile.hh to calculate quantiles based on the desired quantile
+ * algorithm. By default, R-7 is used, but this can be changed for the object by
+ * either setting the defaultQuantile string before creating a Stats1D object or
+ * by calling Stats1D<T>::setQuantileAlgorithm.
  *
  * @param percentile The percentile to look for
+ * @param quantile_algorithm An optional string in the form of "R-[0-9]"
  * @return double The resultant quantile
  **/
 template <typename T>
-double Stats1D<T>::getQuantile(double percentile) {
-  double h = (sorted_data.size() + 1) * percentile - 1;
-  return sorted_data[floor(h)] +
-         (h - floor(h)) * (sorted_data[ceil(h)] - sorted_data[floor(h)]);
+double Stats1D<T>::getQuantile(double percentile,
+                               std::string quantile_algorithm) {
+  std::string alg_str = "";
+  if (quantile_algorithm != "") {
+    alg_str = quantile_algorithm;
+  } else {
+    alg_str = quantile;
+  }
+
+  auto alg = quantile_algorithms.find(alg_str);
+  if (alg != quantile_algorithms.end()) {
+    return (alg->second)(sorted_data, percentile);
+  } else {
+    throw std::runtime_error("Quantile algorithm " + quantile +
+                             " not found. Please run init_quantile_algs or "
+                             "pass in a valid quantile algorithm.");
+  }
+}
+
+/**
+ * @brief setQuantileAlgorithm - Sets the quantile algorithm used locally
+ *
+ * This allows the user to set the quantile algorithm manually, and on a
+ * per-object basis in order to ensure that they are getting the results they
+ * expect each time they get a quantile or generate a five number summary.
+ *
+ * An example use-case for this involves a need for getting quantiles that match
+ * the data, in order to use the result to query a database or a hashmap. In
+ * this instance, R-1 thorough R-3 would be ideal as they do no interpolation
+ * between array elements. Alternatively, if linear interpolation is okay and
+ * the data is approximately normal, then R-9 is approximately unbiased for the
+ * expected order statistic. Hyndman and Fan have recommended R-8 as the
+ * algorithm of choice for finding quantiles, but due to the more frequent use
+ * of R-6 and R-7, as well as the lack of division in the calculation, we have
+ * chosen to use R-7.
+ *
+ * @param alg The algorithm of choice, as a string in the form of "R-[0-9]"
+ **/
+template <typename T>
+void Stats1D<T>::setQuantileAlgorithm(std::string alg) {
+  if (alg.length() != 3) throw std::runtime_error("incorrect length");
+  if ((alg[0] != 'R' && alg[0] != 'r') || alg[1] != '-' || !isdigit(alg[2]) ||
+      alg[2] == '0')
+    throw Ex1(Errcode::BAD_ARGUMENT);
+  quantile = std::string("R-") + alg[2];
 }
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os, Stats1D<T>& stats) {
-  struct Stats1D<T>::Summary fivenum = stats.getSummary();
+  struct Summary fivenum = stats.getSummary();
   os << "# Points: " << stats.sorted_data.size()
      << "\nMean: " << stats.getMean() << "\nStdDev: " << stats.getStdDev()
      << "\nVariance: " << stats.getVariance()

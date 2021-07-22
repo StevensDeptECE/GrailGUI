@@ -8,6 +8,7 @@ using namespace std;
 #define is_between(num, lower, upper) ((num >= lower) && (num <= upper))
 
 void test_contructor() {
+  defaultQuantile = "R-6";
   int array[] = {1, 2, 2, 3, 3, 4, 5};
 
   Stats1D<int> stats_from_array = Stats1D<int>(array);
@@ -46,6 +47,14 @@ void test_values() {
   assert(is_between(stats.getQuantile(.75), 284.99, 285.01));
 
   assert(is_between(stats.getSummary().median, 190, 190));
+
+  /*
+  string quant_algs[9] = {"R-1", "R-2", "R-3", "R-4", "R-5",
+                          "R-6", "R-7", "R-8", "R-9"};
+  for (const auto& elem : quant_algs) {
+    stats_from_vec_double.setQuantileAlgorithm(elem);
+    cout << "\nQuantile alg " << elem << endl << stats_from_vec_double << endl;
+  }*/
 }
 
 // We've had undefined behavior in the past from this
