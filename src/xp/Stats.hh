@@ -14,16 +14,22 @@ struct Summary {
 };
 
 /**< The default quantile algorithm used by future Stats1D objects*/
-static std::string defaultQuantile = "R-7";
+static std::string defaultQuantile = "R-6";
 
 template <typename T>
 class Stats1D {
  private:
+  constexpr static uint8_t SORTED = 0b00100000;
+  constexpr static uint8_t MEAN = 0b00010000;
+  constexpr static uint8_t STDDEV = 0b00001000;
+  constexpr static uint8_t VARIANCE = 0b00000100;
+  constexpr static uint8_t IQR = 0b00000010;
+  constexpr static uint8_t FIVENUM = 0b00000001;
+
   std::vector<T> sorted_data;
-  uint32_t size;
-  // TODO: this could be done with one single number and bit operations
-  bool sorted, mean_calculated, stddev_calculated, variance_calculated,
-      iqr_calculated, fivenum_calculated;
+  // 0b00111111
+  // sorted, mean, stddev, variance, iqr, fivenum
+  uint8_t cache_flags;
   std::unique_ptr<double> mean, stddev, variance, iqr;
   std::vector<T> modes;
 
@@ -35,21 +41,13 @@ class Stats1D {
   Stats1D() = delete;
 
   template <typename FowardIter>
-  Stats1D(FowardIter a, const FowardIter b, bool sorted = false) {
+  Stats1D(FowardIter a, const FowardIter b, bool sorted = false)
+      : cache_flags(0b00100000) {
     sorted_data = std::vector<T>(a, b);
-    size = sorted_data.size();
 
     if (!sorted) {
       sort(sorted_data.begin(), sorted_data.end());
-      sorted = true;
     }
-
-    mean_calculated = false;
-    stddev_calculated = false;
-    variance_calculated = false;
-    iqr_calculated = false;
-    fivenum_calculated = false;
-
     init_quantile_algs(&quantile_algorithms);
   }
 
@@ -80,16 +78,13 @@ template <typename T>
 template <typename FowardIter>
 void Stats1D<T>::updateData(FowardIter a, const FowardIter b, bool sorted) {
   sorted_data = std::vector<T>(a, b);
-  size = sorted_data.size();
+
   if (!sorted) {
     sort(sorted_data.begin(), sorted_data.end());
-    sorted = true;
   }
-  mean_calculated = false;
-  stddev_calculated = false;
-  variance_calculated = false;
-  iqr_calculated = false;
-  fivenum_calculated = false;
+
+  cache_flags = 0b00100000;
+
   modes.clear();
 }
 
@@ -112,17 +107,20 @@ void Stats1D<T>::updateData(const Iterable& container, bool sorted) {
  */
 template <typename T>
 double Stats1D<T>::getMean() {
-  if (mean_calculated) return *mean;
+  if ((cache_flags & MEAN) == MEAN) return *mean;
 
   double mean_tmp = 0;
 
-  for (auto num : sorted_data) {
+  for (auto const& num : sorted_data) {
     mean_tmp += num;
   }
 
-  mean_tmp /= size;
+  mean_tmp /= sorted_data.size();
 
   mean = std::make_unique<double>(mean_tmp);
+
+  cache_flags |= MEAN;
+
   return *mean;
 }
 
@@ -139,13 +137,13 @@ double Stats1D<T>::getMean() {
  */
 template <typename T>
 std::vector<T> Stats1D<T>::getModes() {
-  if (modes.size() != 0 || size == 0) return modes;
+  if (modes.size() != 0) return modes;
 
   std::unordered_map<T, int> map;
 
   double biggest_mode = 1;
 
-  for (auto& num : sorted_data) {
+  for (auto const& num : sorted_data) {
     int tmp = 1;
     auto search = map.find(num);
 
@@ -160,7 +158,7 @@ std::vector<T> Stats1D<T>::getModes() {
     }
   }
 
-  for (auto& [key, value] : map) {
+  for (auto const& [key, value] : map) {
     if (value == biggest_mode) {
       modes.push_back(key);
     }
@@ -181,7 +179,7 @@ std::vector<T> Stats1D<T>::getModes() {
  */
 template <typename T>
 double Stats1D<T>::getIQR() {
-  if (iqr_calculated) return *iqr.get();
+  if ((cache_flags & IQR) == IQR) return *iqr.get();
 
   Stats1D<T>::getSummary();
   struct Summary fn = *fivenum.get();
@@ -202,7 +200,7 @@ double Stats1D<T>::getIQR() {
  */
 template <typename T>
 struct Summary Stats1D<T>::getSummary() {
-  if (fivenum_calculated) return *fivenum.get();
+  if ((cache_flags & FIVENUM) == FIVENUM) return *fivenum.get();
 
   struct Summary fn;
   fn.min = *sorted_data.begin();
@@ -213,6 +211,9 @@ struct Summary Stats1D<T>::getSummary() {
   fn.q3 = getQuantile(.75);
 
   fivenum = std::make_unique<struct Summary>(fn);
+
+  cache_flags |= FIVENUM;
+
   return *fivenum.get();
 }
 
@@ -228,8 +229,11 @@ struct Summary Stats1D<T>::getSummary() {
  */
 template <typename T>
 double Stats1D<T>::getStdDev() {
-  if (stddev_calculated) return *stddev.get();
+  if ((cache_flags & STDDEV) == STDDEV) return *stddev.get();
   stddev = std::make_unique<double>(sqrt(getVariance()));
+
+  cache_flags |= STDDEV;
+
   return *stddev.get();
 }
 
@@ -245,13 +249,17 @@ double Stats1D<T>::getStdDev() {
  */
 template <typename T>
 double Stats1D<T>::getVariance() {
-  if (variance_calculated) return *variance.get();
+  if ((cache_flags & VARIANCE) == VARIANCE) return *variance.get();
+
   double mean_tmp = getMean();
   double sum = 0;
-  for (auto num : sorted_data) {
+  for (auto const& num : sorted_data) {
     sum += pow(num - mean_tmp, 2);
   }
-  variance = std::make_unique<double>(sum / (size - 1));
+  variance = std::make_unique<double>(sum / (sorted_data.size() - 1));
+
+  cache_flags |= VARIANCE;
+
   return *variance.get();
 }
 
@@ -327,7 +335,7 @@ std::ostream& operator<<(std::ostream& os, Stats1D<T>& stats) {
      << "\nIQR: " << stats.getIQR() << "\nModes: [";
 
   std::vector<T> modes = stats.getModes();
-  for (const auto& i : modes) {
+  for (auto const& i : modes) {
     os << i << ", ";
   }
   os << "]";
