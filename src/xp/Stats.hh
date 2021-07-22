@@ -6,13 +6,17 @@
 #include <memory>
 #include <unordered_map>
 
+#include "util/Ex.hh"
+#include "xp/Quantile.hh"
+
+struct Summary {
+  double min, max, q1, q3, median;
+};
+
+static std::string defaultQuantile = "R7";
+
 template <typename T>
 class Stats1D {
- public:
-  struct Summary {
-    double min, max, q1, q3, median;
-  };
-
  private:
   std::vector<T> sorted_data;
   uint32_t size;
@@ -23,7 +27,8 @@ class Stats1D {
   std::vector<T> modes;
 
   std::unique_ptr<struct Summary> fivenum;
-  uint32_t getMedian(uint32_t left, uint32_t right);
+  std::string quantile = defaultQuantile;
+  std::unordered_map<std::string, quantile_func<T>> quantile_algorithms;
 
  public:
   Stats1D() = delete;
@@ -43,6 +48,7 @@ class Stats1D {
     variance_calculated = false;
     iqr_calculated = false;
     fivenum_calculated = false;
+    init_quantile_algs(&quantile_algorithms);
   }
 
   template <typename Iterable>
@@ -61,7 +67,8 @@ class Stats1D {
   struct Summary getSummary();
   double getStdDev();
   double getVariance();
-  double getQuantile(double percentile);
+  double getQuantile(double percentile, std::string quantile_algorithm = "");
+  void setQuantileAlgorithm(std::string alg);
 
   template <typename U>
   friend std::ostream& operator<<(std::ostream& os, Stats1D<U>& stats);
@@ -192,7 +199,7 @@ double Stats1D<T>::getIQR() {
  * @return struct Stats1D<T>::Summary A struct of the five number summary
  */
 template <typename T>
-struct Stats1D<T>::Summary Stats1D<T>::getSummary() {
+struct Summary Stats1D<T>::getSummary() {
   if (fivenum_calculated) return *fivenum.get();
 
   struct Summary fn;
@@ -250,24 +257,45 @@ double Stats1D<T>::getVariance() {
  * @brief getQuantile - Gets a quantile of the sorted array
  *
  * This looks like it implements the R-6 algorithm for finding quantiles, but
- *it is actually R-7. Upon reviewing the relevant paper, the index functions
- *refer to an array with a starting index of 1, but C++ is 0-indexed. As such,
- *the added one that is expected in R-7 has been negated. (Hyndman and Fan,
- *1997).
+ * it is actually R-7. Upon reviewing the relevant paper, the index functions
+ * refer to an array with a starting index of 1, but C++ is 0-indexed. As such,
+ * the added one that is expected in R-7 has been negated. (Hyndman and Fan,
+ * 1997).
  *
  * @param percentile The percentile to look for
  * @return double The resultant quantile
  **/
 template <typename T>
-double Stats1D<T>::getQuantile(double percentile) {
-  double h = (sorted_data.size() - 1) * percentile;
-  return sorted_data[floor(h)] +
-         (h - floor(h)) * (sorted_data[ceil(h)] - sorted_data[floor(h)]);
+double Stats1D<T>::getQuantile(double percentile,
+                               std::string quantile_algorithm) {
+  std::string alg_str = "";
+  if (quantile_algorithm != "") {
+    alg_str = quantile_algorithm;
+  } else {
+    alg_str = quantile;
+  }
+
+  auto alg = quantile_algorithms.find(alg_str);
+  if (alg != quantile_algorithms.end()) {
+    return (alg->second)(sorted_data, percentile);
+  } else {
+    throw std::runtime_error("Quantile algorithm " + quantile +
+                             " not found. Please run init_quantile_algs or "
+                             "pass in a valid quantile algorithm.");
+  }
+}
+
+template <typename T>
+void Stats1D<T>::setQuantileAlgorithm(std::string alg) {
+  if (alg.length() != 2) throw std::runtime_error("incorrect length");
+  if ((alg[0] != 'R' && alg[0] != 'r') || !isdigit(alg[1]) || alg[1] == '0')
+    throw Ex1(Errcode::BAD_ARGUMENT);
+  quantile = std::string("R") + alg[1];
 }
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os, Stats1D<T>& stats) {
-  struct Stats1D<T>::Summary fivenum = stats.getSummary();
+  struct Summary fivenum = stats.getSummary();
   os << "# Points: " << stats.sorted_data.size()
      << "\nMean: " << stats.getMean() << "\nStdDev: " << stats.getStdDev()
      << "\nVariance: " << stats.getVariance()
