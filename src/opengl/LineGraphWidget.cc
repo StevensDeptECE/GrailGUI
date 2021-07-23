@@ -1,7 +1,8 @@
+#define _USE_MATH_DEFINES
 #include "opengl/LineGraphWidget.hh"
 
 #include <algorithm>
-#include <numbers>
+//#include <numbers> For C++ 20 constants
 
 #include "util/Ex.hh"
 
@@ -46,8 +47,8 @@ void LineGraphWidget::createXAxis(AxisType a) {
 
 void LineGraphWidget::createYAxis(AxisType a) {
   yAxisType = a;
-  StyledMultiShape2D *rot90 = c->addLayer(
-      new StyledMultiShape2D(c, yAxisStyle, numbers::pi / 2, x - w, y + h));
+  StyledMultiShape2D *rot90 =
+      c->addLayer(new StyledMultiShape2D(c, yAxisStyle, M_PI_2, x - w, y + h));
   MultiText *t90 = c->addLayer(new MultiText(c, yAxisTextStyle, 0, x, y));
 
   switch (a) {
@@ -90,26 +91,24 @@ void LineGraphWidget::init() {
   if (xAxisType == AxisType::LOGARITHMIC) {
     double base = 1 / log(xInterval);
     double scale = w / abs(log(xMax) * base - log(xMin) * base);
-    transform(
-        xPoints.begin(), xPoints.end(), xPoints.begin(),
-        [=, this](double d) -> double { return x + scale * log(d) * base; });
+    transform(xPoints.begin(), xPoints.end(), xPoints.begin(),
+              [=](double d) -> double { return x + scale * log(d) * base; });
   } else {
     double scale = w / abs(xMax - xMin);
     transform(xPoints.begin(), xPoints.end(), xPoints.begin(),
-              [=, this](double d) -> double { return x + scale * d; });
+              [=](double d) -> double { return x + scale * d; });
   }
 
   if (yAxisType == AxisType::LOGARITHMIC) {
     double base = 1 / log(yInterval);
     double scale = -h / abs(log(yMax) * base - log(yMin) * base);
-    transform(yPoints.begin(), yPoints.end(), yPoints.begin(),
-              [=, this](double d) -> double {
-                return y + h + scale * log(d) * base;
-              });
+    transform(
+        yPoints.begin(), yPoints.end(), yPoints.begin(),
+        [=](double d) -> double { return y + h + scale * log(d) * base; });
   } else {
     double scale = -h / abs(yMax - yMin);
     transform(yPoints.begin(), yPoints.end(), yPoints.begin(),
-              [=, this](double d) -> double { return y + h + scale * d; });
+              [=](double d) -> double { return y + h + scale * d; });
   }
 
   double xPoint1 = xPoints[0];

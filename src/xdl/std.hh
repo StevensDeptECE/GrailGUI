@@ -120,11 +120,12 @@ class XDLIterator : public XDLType {
   XDLType* underlying;
 
  public:
-  XDLIterator(XDLType* underlying) : XDLType("Iterator"), underlying(underlying) {}
+  XDLIterator(XDLType* underlying)
+      : XDLType("Iterator"), underlying(underlying) {}
   DataType getDataType() const override { return (DataType)-1; }
   void write(Buffer& out) const override {}
   void writeMeta(Buffer& out) const override {}
-  XDLType* begin(Buffer& buf) override { return nullptr;}
+  XDLType* begin(Buffer& buf) override { return nullptr; }
   void addData(ArrayOfBytes* data) const override {}
   void addMeta(ArrayOfBytes* meta) const override {}
   XDLType* getUnderlying() const { return underlying; }
@@ -204,7 +205,7 @@ class U16 : public XDLBuiltinType {
   uint32_t fieldSize() const override;
   void write(Buffer& buf) const override;
   void addData(ArrayOfBytes* data) const override;
-  friend bool operator==(const U16& a, const U16& b) = default;
+  friend bool operator==(const U16& a, const U16& b) { return a.val == b.val; }
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
@@ -221,7 +222,7 @@ class U24 : public XDLBuiltinType {
   uint32_t fieldSize() const override;
   void write(Buffer& buf) const override;
   void addData(ArrayOfBytes* data) const override;
-  friend bool operator==(const U24& a, const U24& b) = default;
+  friend bool operator==(const U24& a, const U24& b) { return a.val == b.val; }
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
@@ -237,7 +238,7 @@ class U32 : public XDLBuiltinType {
   uint32_t fieldSize() const override;
   void write(Buffer& buf) const override;
   void addData(ArrayOfBytes* data) const override;
-  friend bool operator==(const U32& a, const U32& b) = default;
+  friend bool operator==(const U32& a, const U32& b) { return a.val == b.val; }
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
@@ -253,7 +254,7 @@ class U64 : public XDLBuiltinType {
   uint32_t fieldSize() const override;
   void write(Buffer& buf) const override;
   void addData(ArrayOfBytes* data) const override;
-  friend bool operator==(const U64& a, const U64& b) = default;
+  friend bool operator==(const U64& a, const U64& b) { return a.val == b.val; }
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
@@ -270,7 +271,9 @@ class U128 : public XDLBuiltinType {
   uint32_t fieldSize() const override;
   void write(Buffer& buf) const override;
   void addData(ArrayOfBytes* data) const override;
-  friend bool operator==(const U128& a, const U128& b) = default;
+  friend bool operator==(const U128& a, const U128& b) {
+    return a.a == b.a && a.b == b.b;
+  }
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
@@ -288,7 +291,9 @@ class U256 : public XDLBuiltinType {
   uint32_t fieldSize() const override;
   void write(Buffer& buf) const override;
   void addData(ArrayOfBytes* data) const override;
-  friend bool operator==(const U256& a, const U256& b) = default;
+  friend bool operator==(const U256& a, const U256& b) {
+    return a.a == b.a && a.b == b.b && a.c == b.c && a.d == b.d;
+  }
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
@@ -391,7 +396,9 @@ class I128 : public XDLBuiltinType {
   uint32_t fieldSize() const override;
   void write(Buffer& buf) const override;
   void addData(ArrayOfBytes* data) const override;
-  friend bool operator==(const I128& a, const I128& b) = default;
+  friend bool operator==(const I128& a, const I128& b) {
+    return a.a == b.a && a.b == b.b;
+  }
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
@@ -408,7 +415,9 @@ class I256 : public XDLBuiltinType {
   DataType getDataType() const override;
   uint32_t size() const override;
   uint32_t fieldSize() const override;
-  friend bool operator==(const I256& a, const I256& b) = default;
+  friend bool operator==(const I256& a, const I256& b) {
+    return a.a == b.a && a.b == b.b && a.c == b.c && a.d == b.d;
+  }
   void write(Buffer& buf) const override;
   void addData(ArrayOfBytes* data) const override;
   void display(Buffer& binaryIn, Buffer& asciiOut) const;
@@ -485,7 +494,7 @@ class Date : public XDLBuiltinType {
     date -= days;
     return *this;
   }
-  bool operator==(const Date& d) const = default;
+  bool operator==(const Date& d) const { return date == d.date; }
   // TODO: Revisit default comparison with later versions of C++
   // As of gcc 10.3.0, C++ 20 deletes the following function when
   // =default is used
@@ -804,8 +813,8 @@ class GenericList : public CompoundType {
  private:
   XDLCompiler* compiler;
   const XDLType* listType;
- // uint32_t size_;
- // uint32_t capacity_;
+  // uint32_t size_;
+  // uint32_t capacity_;
 
  public:
   GenericList(XDLCompiler* compiler, const std::string& name, DataType t)
@@ -813,7 +822,7 @@ class GenericList : public CompoundType {
   GenericList(XDLCompiler* compiler, const std::string& name,
               const XDLType* listType)
       : CompoundType(name), compiler(compiler), listType(listType) {}
-  XDLType* getListType() const { return (XDLType*) listType; }
+  XDLType* getListType() const { return (XDLType*)listType; }
   DataType getDataType() const override;
   uint32_t size() const override;
   uint32_t fieldSize() const override;
@@ -832,21 +841,19 @@ class GenericList : public CompoundType {
    public:
     Iterator(GenericList* list, Buffer& buf)
         : XDLIterator(list->getListType()), list(list), buf(buf) {
-          remaining = buf.readU16();
-        }
-        bool operator !() const {
-          return remaining <= 0;
-        }
-        XDLType* getListType() { return list->getListType(); }
+      remaining = buf.readU16();
+    }
+    bool operator!() const { return remaining <= 0; }
+    XDLType* getListType() { return list->getListType(); }
 #if 0
         bool operator != (const Iterator & other) {
           return remaining > 0;
         }
 #endif
-        Iterator& operator++() {
-          remaining--;
-          return *this;
-        }
+    Iterator& operator++() {
+      remaining--;
+      return *this;
+    }
   };
 };
 
@@ -954,17 +961,20 @@ class Struct : public CompoundType {
   void addData(ArrayOfBytes* data) const override;
   void addMeta(ArrayOfBytes* meta) const override;
   XDLType* begin(Buffer& buf) override { return new Iterator(this); }
-  class Iterator : public XDLIterator { 
-    private:
-     uint32_t currentField;
+  class Iterator : public XDLIterator {
+   private:
+    uint32_t currentField;
+
    public:
     Iterator(Struct* s) : XDLIterator(s), currentField(0) {}
     Struct* getStruct() { return (Struct*)underlying; }
-    const XDLType* operator *() const { return ((Struct*)underlying)->getMemberType(currentField); }
-    bool operator !() const {
+    const XDLType* operator*() const {
+      return ((Struct*)underlying)->getMemberType(currentField);
+    }
+    bool operator!() const {
       return currentField < ((Struct*)underlying)->getMemberCount();
     }
-    Iterator& operator ++() {
+    Iterator& operator++() {
       currentField++;
       return *this;
     }

@@ -13,6 +13,7 @@ set(grail-path
             ${grail-xdl}
             )
 
+
 if(${GRAIL_EXPERIMENTAL})
   add_subdirectory(xp)
   list(APPEND grail-path ${grail-xp})
@@ -48,6 +49,9 @@ if(${MPV_FOUND})
   target_link_libraries(grail ${MPV_LIBRARY})
   target_include_directories(grail INTERFACE ${MPV_INCLUDE_DIR})
 endif()
+
+# fmtlib
+target_link_libraries(grail fmt::fmt)
 
 # Shapelib
 target_link_libraries(grail shpgrail)

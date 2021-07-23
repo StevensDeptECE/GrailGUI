@@ -1,4 +1,6 @@
-#include <numbers>
+#define _USE_MATH_DEFINES
+//#include <numbers> For C++ 20 constants
+#include <cmath>
 #include <string>
 #include <vector>
 
@@ -42,7 +44,7 @@ Body::Body(Canvas* c, Style* s, Camera* cam, const std::string& name,
       orbitalRadius(orbitalRadius),
       orbitalFreq(1.0 / orbitalPeriod),
       rotationFreq(1.0 / rotationalPeriod) {
-  phase = numbers::pi;
+  phase = M_PI;
   MultiShape3D* body = c->addLayer(new MultiShape3D(c, cam, textureFile, &t));
   body->genOBJModel("models/sphere.obj");
   t.ident();

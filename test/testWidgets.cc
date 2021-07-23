@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+
 #include <cmath>
 #include <numbers>
 #include <string>
@@ -88,7 +90,7 @@ class TestWidgets : public GLWin {
                      const Style *s) {
     const char thing[] = "hello world";
     // guiText->add(0, 50, s->f, thing, strlen(thing));
-    MultiText *mt = c->addLayer(new MultiText(c, s, numbers::pi / 2, 100, 100));
+    MultiText *mt = c->addLayer(new MultiText(c, s, M_PI_2, 100, 100));
     mt->add(0, 0, s->f, thing, strlen(thing));
   }
 
@@ -106,7 +108,7 @@ class TestWidgets : public GLWin {
     MultiText *guiText = c->addLayer(new MultiText(c, s));
 
     StyledMultiShape2D *p =
-        c->addLayer(new StyledMultiShape2D(c, s, -numbers::pi / 4, 0, 0));
+        c->addLayer(new StyledMultiShape2D(c, s, -M_PI_4, 0, 0));
 
     const Style *graphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
     // testCandlestick(gui, guiText);
@@ -126,4 +128,9 @@ class TestWidgets : public GLWin {
 
 int main(int argc, char *argv[]) {
   return GLWin::init(new TestWidgets(), 1024, 600);
+}
+
+template <typename T>
+extern T foo(T a) {
+  return a;
 }

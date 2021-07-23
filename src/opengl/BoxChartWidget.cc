@@ -1,7 +1,9 @@
+#define _USE_MATH_DEFINES
 #include "opengl/BoxChartWidget.hh"
 
 #include <algorithm>
-#include <numbers>
+#include <cmath>
+//#include <numbers> For C++ 20 constants
 
 #include "util/Ex.hh"
 #include "xp/Stats.hh"
@@ -61,8 +63,8 @@ void BoxChartWidget::createXAxis(AxisType a) {
 void BoxChartWidget::createYAxis(AxisType a) {
   yAxisType = a;
 
-  StyledMultiShape2D *rot90 = c->addLayer(
-      new StyledMultiShape2D(c, yAxisStyle, numbers::pi / 2, x - w, y + h));
+  StyledMultiShape2D *rot90 =
+      c->addLayer(new StyledMultiShape2D(c, yAxisStyle, M_PI_2, x - w, y + h));
   MultiText *t90 = c->addLayer(new MultiText(c, yAxisTextStyle, 0, x, y));
 
   switch (a) {
@@ -126,7 +128,7 @@ void BoxChartWidget::init() {
 
     transform(currentBoxData.begin(), currentBoxData.end(),
               currentBoxData.begin(),
-              [=, this](double d) -> double { return y + h + yscale * d; });
+              [=](double d) -> double { return y + h + yscale * d; });
 
     Stats1D<double> dataSummary(&currentBoxData[0], pointsPerBox);
 

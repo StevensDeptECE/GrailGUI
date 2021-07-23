@@ -1,4 +1,5 @@
-#include <numbers>
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 #include "opengl/GrailGUI.hh"
 using namespace std;
@@ -7,7 +8,7 @@ class TestText3 : public GLWin {
  public:
   void numericFormatting(MultiText* m, const Font* f, float y) {
     m->add(10, y, f, 123);
-    m->addx(150, y, f, numbers::pi);
+    m->addx(150, y, f, M_PI);
     m->addx(400, y, f, 2.5f);
     m->addx(550, y, f, 123456789U);
     m->addx(700, y, f, 123456789012345678ULL);
@@ -32,7 +33,7 @@ class TestText3 : public GLWin {
     const Font* font = FontFace::get(fontFamily, 40, 0);
     const char s[] = "test";
     for (int a = 0; a < 360; a += 45)
-      m->add(x, y, 50, a * (numbers::pi / 180), font, s, sizeof(s) - 1);
+      m->add(x, y, 50, a * (M_PI / 180), font, s, sizeof(s) - 1);
   }
 
   float testOneFontFace(MultiText* m, const char fontFamily[], float yStart) {

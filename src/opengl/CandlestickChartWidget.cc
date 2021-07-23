@@ -56,8 +56,8 @@ void CandlestickChartWidget::createXAxis(AxisType a) {
 
 void CandlestickChartWidget::createYAxis(AxisType a) {
   yAxisType = a;
-  StyledMultiShape2D *rot90 = c->addLayer(
-      new StyledMultiShape2D(c, yAxisStyle, numbers::pi / 2, x - w, y + h));
+  StyledMultiShape2D *rot90 =
+      c->addLayer(new StyledMultiShape2D(c, yAxisStyle, M_PI_2, x - w, y + h));
   MultiText *t90 = c->addLayer(new MultiText(c, yAxisTextStyle, 0, x, y));
 
   switch (a) {
@@ -114,7 +114,7 @@ void CandlestickChartWidget::init() {
 
     transform(currentBoxData.begin(), currentBoxData.end(),
               currentBoxData.begin(),
-              [=, this](double d) -> double { return y + h + yscale * d; });
+              [=](double d) -> double { return y + h + yscale * d; });
 
     double xLocation = x + xscale * counter - halfBoxWidth;
     double yTopLine = currentBoxData.at(3) + correction;

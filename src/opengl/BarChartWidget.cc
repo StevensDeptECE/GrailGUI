@@ -1,7 +1,11 @@
+#define _USE_MATH_DEFINES
 #include "opengl/BarChartWidget.hh"
 
 #include <algorithm>
-#include <numbers>
+#include <cmath>
+
+// For C++ 20 use of numbers::pi
+//#include <numbers>
 
 #include "util/Ex.hh"
 
@@ -52,8 +56,8 @@ void BarChartWidget::createXAxis(AxisType a) {
 
 void BarChartWidget::createYAxis(AxisType a) {
   yAxisType = a;
-  StyledMultiShape2D *rot90 = c->addLayer(
-      new StyledMultiShape2D(c, yAxisStyle, numbers::pi / 2, x - w, y + h));
+  StyledMultiShape2D *rot90 =
+      c->addLayer(new StyledMultiShape2D(c, yAxisStyle, M_PI_2, x - w, y + h));
   MultiText *t90 = c->addLayer(new MultiText(c, yAxisTextStyle, 0, x, y));
 
   switch (a) {
@@ -95,14 +99,13 @@ void BarChartWidget::init() {
   if (yAxisType == AxisType::LOGARITHMIC) {
     base = 1 / log(axisInterval);
     scale = -h / abs(log(max) * base - log(min) * base);
-    transform(values.begin(), values.end(), values.begin(),
-              [=, this](double d) -> double {
-                return y + h + scale * log(d) * base;
-              });
+    transform(
+        values.begin(), values.end(), values.begin(),
+        [=](double d) -> double { return y + h + scale * log(d) * base; });
   } else {
     scale = -h / abs(max - min);
     transform(values.begin(), values.end(), values.begin(),
-              [=, this](double d) -> double { return y + h + scale * d; });
+              [=](double d) -> double { return y + h + scale * d; });
   }
 
   double barCorrection = (yAxisType == AxisType::LINEAR)
