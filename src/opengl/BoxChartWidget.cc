@@ -79,7 +79,7 @@ void BoxChartWidget::init() {
               currentBoxData.begin(),
               [=, this](double d) -> double { return y + h + yscale * d; });
 
-    Stats1D<double> dataSummary = Stats1D<double>(currentBoxData);
+    stats::Stats1D<double> dataSummary(currentBoxData);
 
     double xLocation = x + xscale * counter - halfBoxWidth;
     double yTopLine = dataSummary.getSummary().min;
