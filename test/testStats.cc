@@ -99,11 +99,14 @@ int main() {
   test_container_of_stats();
   test_copy_assignment();
 
-  // int array[] = {1, 2, 2, 3, 3, 4, 5};
-  // Stats1D<int> stats_from_array = Stats1D<int>(array);
+  int array[] = {1, 2, 3, 4, 5};
+  Stats1D<int> stats_from_array = Stats1D<int>(array);
 
-  // int* dynarray = new int[5]{1, 2, 3, 4, 5};
-  // Stats1D<int> stats_from_dynarray = Stats1D<int>(dynarray, dynarray + 5);
+  int* dynarray = new int[5]{1, 2, 3, 4, 5};
+  Stats1D<int64_t> stats_from_dynarray =
+      Stats1D<int64_t>(dynarray, dynarray + 5);
+
+  cout << pearson_correlation(stats_from_array, stats_from_dynarray) << endl;
 
   // std::vector<int> vec{1, 2, 3, 4, 5};
   // Stats1D<int> stats_from_vec = Stats1D<int>(vec);

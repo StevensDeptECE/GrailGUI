@@ -28,6 +28,8 @@ class Stats1D {
   template <typename Iterable>
   void updateData(const Iterable& container, bool sorted = false);
 
+  int size() { return original_data.size(); }
+
   double getMean();
   std::vector<T> getModes();
   double getIQR();
@@ -37,7 +39,7 @@ class Stats1D {
   double getQuantile(double percentile, QuantileAlgorithm alg);
   void setQuantileAlgorithm(QuantileAlgorithm alg);
 
-  // friend double t_test(const Stats1D<T>& thing1, const Stats1D<T>& thing2);
+  T operator[](int i) const { return original_data[i]; }
 
   template <typename U>
   friend std::ostream& operator<<(std::ostream& os, Stats1D<U>& stats);
@@ -108,6 +110,7 @@ class Stats1D {
   constexpr static uint8_t IQR = 0b00000010;
   constexpr static uint8_t FIVENUM = 0b00000001;
 
+  std::vector<T> original_data;
   std::vector<T> sorted_data;
   // 0b00111111
   // sorted, mean, stddev, variance, iqr, fivenum
@@ -121,14 +124,14 @@ class Stats1D {
 
 template <typename T>
 template <typename ForwardIter>
-Stats1D<T>::Stats1D(ForwardIter a, const ForwardIter b, bool sorted) {
-  sorted_data = std::vector<T>(a, b);
-
+Stats1D<T>::Stats1D(ForwardIter a, const ForwardIter b, bool sorted)
+    : original_data(a, b),
+      sorted_data(a, b),
+      cache_flags(SORTED),
+      defaultQuantile(QuantileAlgorithm::R6) {
   if (!sorted) {
     sort(sorted_data.begin(), sorted_data.end());
   }
-  cache_flags = SORTED;
-  defaultQuantile = QuantileAlgorithm::R6;
 }
 
 template <typename T>
@@ -363,6 +366,33 @@ double Stats1D<T>::getQuantile(double percentile, QuantileAlgorithm alg) {
 template <typename T>
 void Stats1D<T>::setQuantileAlgorithm(QuantileAlgorithm q) {
   quantile = q;
+}
+
+template <typename U, typename T>
+double expected_xy(Stats1D<T>& stats1, Stats1D<U>& stats2) {
+  double sum_xy = 0;
+  for (int i = 0; i < stats1.size(); i++) {
+    sum_xy += stats1[i] * stats2[i];
+  }
+  return sum_xy / stats1.size();
+}
+
+template <typename U, typename T>
+double covariance(Stats1D<T>& stats1, Stats1D<U>& stats2) {
+  // TODO: throw exception if not same length VECTOR_MIS...
+
+  double sum = 0;
+
+  for (int i = 0; i < stats1.size(); i++) {
+    sum += (stats1[i] - stats1.getMean()) * (stats2[i] - stats2.getMean());
+  }
+  // std::cout << sum / stats1.size() << std::endl;
+  return sum / (stats1.size() - 1);
+}
+
+template <typename U, typename T>
+double pearson_correlation(Stats1D<T>& stats1, Stats1D<U>& stats2) {
+  return covariance(stats1, stats2) / (stats1.getStdDev() * stats2.getStdDev());
 }
 
 template <typename T>
