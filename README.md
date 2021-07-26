@@ -1,4 +1,18 @@
-# Peter's Windows Port
+# How to build Grail on Linux and Windows
+
+This document describes how to build Grail on a number of different platforms. Grail requires a number of cutting edge tools, so the default ones may have to be replaced. Specifically, we need:
+
+  1. gcc-11. We use C++-20 language features including C++17 variadic templates, C++-20 concepts
+  1. CMake. We need some specific features so require 3.16 or better.
+  1. Ninja. We used make, but it is slower and labor intensive. CMake + Ninja is a big improvement.
+  1. Libraries
+    1. GLFW to manage windows
+    1. freetype to read fonts
+    1. mpv for audio and video
+  1. We also use vscode to edit collaboratively, though contributors may use anything as long as they don't change our formatting conventions.
+
+Older platforms can be modified to work, but the easiest way to develop with grail is to install on Ubuntu 20.04LTS or newer, or msys2 under windows.
+Instructions can be found below for various platforms.
 
 [![CMake](https://github.com/StevensDeptECE/GrailGUI/actions/workflows/cmake.yml/badge.svg?branch=main)](https://github.com/StevensDeptECE/GrailGUI/actions/workflows/cmake.yml)
 

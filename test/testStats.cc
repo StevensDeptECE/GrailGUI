@@ -4,27 +4,27 @@
 #include "xp/Stats.hh"
 
 using namespace std;
+using namespace stats;
 
 #define is_between(num, lower, upper) ((num >= lower) && (num <= upper))
 
 void test_contructor() {
-  defaultQuantile = "R-6";
   int array[] = {1, 2, 2, 3, 3, 4, 5};
 
-  Stats1D<int> stats_from_array = Stats1D<int>(array);
+  Stats1D<int> stats_from_array(array);
 
   int* dynarray = new int[5]{1, 2, 3, 4, 5};
 
-  Stats1D<float> stats_from_dynarray = Stats1D<float>(dynarray, dynarray + 5);
+  Stats1D<float> stats_from_dynarray(dynarray, dynarray + 5);
 
   std::vector<int> vec{1, 2, 3, 4, 5};
 
-  Stats1D<double> stats_from_vec = Stats1D<double>(vec);
-  Stats1D<int> stats_from_vec_begin = Stats1D<int>(vec.begin(), vec.end());
+  Stats1D<double> stats_from_vec(vec);
+  Stats1D<int> stats_from_vec_begin(vec.begin(), vec.end());
 
   std::list<uint64_t> list{1, 2, 3, 4, 5};
 
-  Stats1D<uint64_t> stats_from_list = Stats1D<uint64_t>(list);
+  Stats1D<uint64_t> stats_from_list(list);
 }
 
 void test_values() {
@@ -42,9 +42,11 @@ void test_values() {
 
   assert(is_between(stats.getIQR(), 177.99, 178.01));
 
-  assert(is_between(stats.getQuantile(.25), 106.99, 107.01));
+  assert(is_between(stats.getQuantile(.25, stats::QuantileAlgorithm::R6),
+                    106.99, 107.01));
 
-  assert(is_between(stats.getQuantile(.75), 284.99, 285.01));
+  assert(is_between(stats.getQuantile(.75, stats::QuantileAlgorithm::R6),
+                    284.99, 285.01));
 
   assert(is_between(stats.getSummary().median, 190, 190));
 
@@ -97,11 +99,14 @@ int main() {
   test_container_of_stats();
   test_copy_assignment();
 
-  // int array[] = {1, 2, 2, 3, 3, 4, 5};
-  // Stats1D<int> stats_from_array = Stats1D<int>(array);
+  int array[] = {1, 2, 3, 4, 5};
+  Stats1D<int> stats_from_array = Stats1D<int>(array);
 
-  // int* dynarray = new int[5]{1, 2, 3, 4, 5};
-  // Stats1D<int> stats_from_dynarray = Stats1D<int>(dynarray, dynarray + 5);
+  int* dynarray = new int[5]{1, 2, 3, 4, 5};
+  Stats1D<int64_t> stats_from_dynarray =
+      Stats1D<int64_t>(dynarray, dynarray + 5);
+
+  cout << pearson_correlation(stats_from_array, stats_from_dynarray) << endl;
 
   // std::vector<int> vec{1, 2, 3, 4, 5};
   // Stats1D<int> stats_from_vec = Stats1D<int>(vec);

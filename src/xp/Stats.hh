@@ -3,72 +3,24 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <memory>
 #include <unordered_map>
+#include <vector>
 
-#include "util/Ex.hh"
-#include "xp/Quantile.hh"
+namespace stats {
 
 struct Summary {
   double min, max, q1, q3, median;
 };
-
-/**< The default quantile algorithm used by future Stats1D objects*/
-static std::string defaultQuantile = "R-6";
+enum class QuantileAlgorithm { R1 = 0, R2, R3, R4, R5, R6, R7, R8, R9 };
 
 template <typename T>
 class Stats1D {
- private:
-  constexpr static uint8_t SORTED = 0b00100000;
-  constexpr static uint8_t MEAN = 0b00010000;
-  constexpr static uint8_t STDDEV = 0b00001000;
-  constexpr static uint8_t VARIANCE = 0b00000100;
-  constexpr static uint8_t IQR = 0b00000010;
-  constexpr static uint8_t FIVENUM = 0b00000001;
-
-  std::vector<T> sorted_data;
-  // 0b00111111
-  // sorted, mean, stddev, variance, iqr, fivenum
-  uint8_t cache_flags;
-  std::unique_ptr<double> mean, stddev, variance, iqr;
-  std::vector<T> modes;
-
-  std::unique_ptr<struct Summary> fivenum;
-  std::string quantile = defaultQuantile;
-  std::unordered_map<std::string, quantile_func<T>> quantile_algorithms;
-
  public:
-  Stats1D() = delete;
-
   template <typename FowardIter>
-  Stats1D(FowardIter a, const FowardIter b, bool sorted = false)
-      : cache_flags(0b00100000) {
-    sorted_data = std::vector<T>(a, b);
-
-    if (!sorted) {
-      sort(sorted_data.begin(), sorted_data.end());
-    }
-    init_quantile_algs(&quantile_algorithms);
-  }
+  Stats1D(FowardIter a, const FowardIter b, bool sorted = false);
 
   template <typename Iterable>
-  Stats1D(const Iterable& container, bool sorted = false)
-      : Stats1D(std::begin(container), std::end(container), sorted) {}
-
-  Stats1D(const Stats1D<T>& orig) {
-    sorted_data = orig.sorted_data;
-    cache_flags = 0b00100000;
-  }
-
-  Stats1D& operator=(const Stats1D<T>& orig) {
-    if (this != &orig) {
-      std::cout << "assignment copy" << std::endl;
-      sorted_data = orig.sorted_data;
-      cache_flags = 0b00100000;
-    }
-
-    return *this;
-  }
+  Stats1D(const Iterable& container, bool sorted = false);
 
   template <typename FowardIter>
   void updateData(FowardIter a, const FowardIter b, bool sorted = false);
@@ -76,18 +28,116 @@ class Stats1D {
   template <typename Iterable>
   void updateData(const Iterable& container, bool sorted = false);
 
+  int size() { return original_data.size(); }
+
   double getMean();
   std::vector<T> getModes();
   double getIQR();
-  struct Summary getSummary();
+  Summary getSummary();
   double getStdDev();
   double getVariance();
-  double getQuantile(double percentile, std::string quantile_algorithm = "");
-  void setQuantileAlgorithm(std::string alg);
+  double getQuantile(double percentile, QuantileAlgorithm alg);
+  void setQuantileAlgorithm(QuantileAlgorithm alg);
+
+  T operator[](int i) const { return original_data[i]; }
 
   template <typename U>
   friend std::ostream& operator<<(std::ostream& os, Stats1D<U>& stats);
+
+ private:
+  static double r1(const std::vector<T>& data, double p) {
+    double h = data.size() * p + 0.5;
+    return data[ceil(h - 0.5) - 1];
+  }
+
+  static double r2(const std::vector<T>& data, double p) {
+    double h = data.size() * p + 0.5;
+    return (data[ceil(h - 0.5) - 1] + data[floor(h + 0.5) - 1]) / 2;
+  }
+
+  static double r3(const std::vector<T>& data, double p) {
+    double h = data.size() * p;
+    return data[round(h) - 1];
+  }
+
+  static double interpolate_quantile(const std::vector<T>& data, double h) {
+    return data[floor(h) - 1] +
+           (h - floor(h)) * (data[ceil(h) - 1] - data[floor(h) - 1]);
+  }
+
+  static double r4(const std::vector<T>& data, double p) {
+    double h = data.size() * p;
+    return interpolate_quantile(data, h);
+  }
+
+  static double r5(const std::vector<T>& data, double p) {
+    double h = data.size() * p + 0.5;
+    return interpolate_quantile(data, h);
+  }
+
+  static double r6(const std::vector<T>& data, double p) {
+    double h = (data.size() + 1) * p;
+    return interpolate_quantile(data, h);
+  }
+
+  static double r7(const std::vector<T>& data, double p) {
+    double h = (data.size() - 1) * p + 1;
+    return interpolate_quantile(data, h);
+  }
+
+  static double r8(const std::vector<T>& data, double p) {
+    double h = (data.size() + 1 / 3) * p + 1 / 3;
+    return interpolate_quantile(data, h);
+  }
+
+  static double r9(const std::vector<T>& data, double p) {
+    double h = (data.size() + 0.25) * p + .375;
+    return interpolate_quantile(data, h);
+  }
+
+  typedef double (*quantile_func)(const std::vector<T>&, double);
+
+  /**< The default quantile algorithm used by future Stats1D objects*/
+  QuantileAlgorithm defaultQuantile;
+
+  static constexpr quantile_func quantile_function_map[] = {
+      &r1, &r2, &r3, &r4, &r5, &r6, &r7, &r8, &r9};
+
+  constexpr static uint8_t SORTED = 0b00100000;
+  constexpr static uint8_t MEAN = 0b00010000;
+  constexpr static uint8_t STDDEV = 0b00001000;
+  constexpr static uint8_t VARIANCE = 0b00000100;
+  constexpr static uint8_t IQR = 0b00000010;
+  constexpr static uint8_t FIVENUM = 0b00000001;
+
+  std::vector<T> original_data;
+  std::vector<T> sorted_data;
+  // 0b00111111
+  // sorted, mean, stddev, variance, iqr, fivenum
+  uint8_t cache_flags;
+  double mean, stddev, variance, iqr;
+  std::vector<T> modes;
+
+  Summary fivenum;
+  QuantileAlgorithm quantile = defaultQuantile;
 };
+
+template <typename T>
+template <typename ForwardIter>
+Stats1D<T>::Stats1D(ForwardIter a, const ForwardIter b, bool sorted)
+    : original_data(a, b),
+      sorted_data(a, b),
+      cache_flags(SORTED),
+      defaultQuantile(QuantileAlgorithm::R6) {
+  if (!sorted) {
+    sort(sorted_data.begin(), sorted_data.end());
+  }
+}
+
+template <typename T>
+template <typename Iterable>
+Stats1D<T>::Stats1D(const Iterable& container, bool sorted)
+    : Stats1D(std::begin(container), std::end(container), sorted) {}
 
 template <typename T>
 template <typename FowardIter>
@@ -122,7 +172,7 @@ void Stats1D<T>::updateData(const Iterable& container, bool sorted) {
  */
 template <typename T>
 double Stats1D<T>::getMean() {
-  if ((cache_flags & MEAN) == MEAN) return *mean;
+  if ((cache_flags & MEAN) == MEAN) return mean;
 
   double mean_tmp = 0;
 
@@ -132,11 +182,11 @@ double Stats1D<T>::getMean() {
 
   mean_tmp /= sorted_data.size();
 
-  mean = std::make_unique<double>(mean_tmp);
+  mean = mean_tmp;
 
   cache_flags |= MEAN;
 
-  return *mean;
+  return mean;
 }
 
 /**
@@ -194,12 +244,11 @@ std::vector<T> Stats1D<T>::getModes() {
  */
 template <typename T>
 double Stats1D<T>::getIQR() {
-  if ((cache_flags & IQR) == IQR) return *iqr.get();
+  if ((cache_flags & IQR) == IQR) return iqr;
 
-  Stats1D<T>::getSummary();
-  struct Summary fn = *fivenum.get();
-  iqr = std::make_unique<double>(fn.q3 - fn.q1);
-  return *iqr.get();
+  Summary fn = getSummary();
+  iqr = fn.q3 - fn.q1;
+  return iqr;
 }
 
 /**
@@ -214,22 +263,22 @@ double Stats1D<T>::getIQR() {
  * @return struct Stats1D<T>::Summary A struct of the five number summary
  */
 template <typename T>
-struct Summary Stats1D<T>::getSummary() {
-  if ((cache_flags & FIVENUM) == FIVENUM) return *fivenum.get();
+Summary Stats1D<T>::getSummary() {
+  if ((cache_flags & FIVENUM) == FIVENUM) return fivenum;
 
   struct Summary fn;
   fn.min = *sorted_data.begin();
   fn.max = *(sorted_data.end() - 1);
 
-  fn.q1 = getQuantile(.25);
-  fn.median = getQuantile(.50);
-  fn.q3 = getQuantile(.75);
+  fn.q1 = getQuantile(.25, defaultQuantile);
+  fn.median = getQuantile(.50, defaultQuantile);
+  fn.q3 = getQuantile(.75, defaultQuantile);
 
-  fivenum = std::make_unique<struct Summary>(fn);
+  fivenum = Summary(fn);
 
   cache_flags |= FIVENUM;
 
-  return *fivenum.get();
+  return fivenum;
 }
 
 /**
@@ -244,12 +293,12 @@ struct Summary Stats1D<T>::getSummary() {
  */
 template <typename T>
 double Stats1D<T>::getStdDev() {
-  if ((cache_flags & STDDEV) == STDDEV) return *stddev.get();
-  stddev = std::make_unique<double>(sqrt(getVariance()));
+  if ((cache_flags & STDDEV) == STDDEV) return stddev;
+  stddev = sqrt(getVariance());
 
   cache_flags |= STDDEV;
 
-  return *stddev.get();
+  return stddev;
 }
 
 /**
@@ -264,50 +313,35 @@ double Stats1D<T>::getStdDev() {
  */
 template <typename T>
 double Stats1D<T>::getVariance() {
-  if ((cache_flags & VARIANCE) == VARIANCE) return *variance.get();
+  if ((cache_flags & VARIANCE) == VARIANCE) return variance;
 
   double mean_tmp = getMean();
   double sum = 0;
   for (auto const& num : sorted_data) {
     sum += pow(num - mean_tmp, 2);
   }
-  variance = std::make_unique<double>(sum / (sorted_data.size() - 1));
+  variance = sum / (sorted_data.size() - 1);
 
   cache_flags |= VARIANCE;
 
-  return *variance.get();
+  return variance;
 }
 
 /**
  * @brief getQuantile - Gets a quantile of the sorted array
  *
  * This uses Quantile.hh to calculate quantiles based on the desired quantile
- * algorithm. By default, R-7 is used, but this can be changed for the object by
- * either setting the defaultQuantile string before creating a Stats1D object or
- * by calling Stats1D<T>::setQuantileAlgorithm.
+ * algorithm. By default, R-7 is used, but this can be changed for the object
+ *by either setting the defaultQuantile string before creating a Stats1D
+ *object or by calling Stats1D<T>::setQuantileAlgorithm.
  *
  * @param percentile The percentile to look for
  * @param quantile_algorithm An optional string in the form of "R-[0-9]"
  * @return double The resultant quantile
  **/
 template <typename T>
-double Stats1D<T>::getQuantile(double percentile,
-                               std::string quantile_algorithm) {
-  std::string alg_str = "";
-  if (quantile_algorithm != "") {
-    alg_str = quantile_algorithm;
-  } else {
-    alg_str = quantile;
-  }
-
-  auto alg = quantile_algorithms.find(alg_str);
-  if (alg != quantile_algorithms.end()) {
-    return (alg->second)(sorted_data, percentile);
-  } else {
-    throw std::runtime_error("Quantile algorithm " + quantile +
-                             " not found. Please run init_quantile_algs or "
-                             "pass in a valid quantile algorithm.");
-  }
+double Stats1D<T>::getQuantile(double percentile, QuantileAlgorithm alg) {
+  return (Stats1D<T>::quantile_function_map[(int)alg])(sorted_data, percentile);
 }
 
 /**
@@ -317,25 +351,48 @@ double Stats1D<T>::getQuantile(double percentile,
  * per-object basis in order to ensure that they are getting the results they
  * expect each time they get a quantile or generate a five number summary.
  *
- * An example use-case for this involves a need for getting quantiles that match
- * the data, in order to use the result to query a database or a hashmap. In
- * this instance, R-1 thorough R-3 would be ideal as they do no interpolation
- * between array elements. Alternatively, if linear interpolation is okay and
- * the data is approximately normal, then R-9 is approximately unbiased for the
- * expected order statistic. Hyndman and Fan have recommended R-8 as the
- * algorithm of choice for finding quantiles, but due to the more frequent use
- * of R-6 and R-7, as well as the lack of division in the calculation, we have
- * chosen to use R-7.
+ * An example use-case for this involves a need for getting quantiles that
+ *match the data, in order to use the result to query a database or a hashmap.
+ *In this instance, R-1 thorough R-3 would be ideal as they do no
+ *interpolation between array elements. Alternatively, if linear interpolation
+ *is okay and the data is approximately normal, then R-9 is approximately
+ *unbiased for the expected order statistic. Hyndman and Fan have recommended
+ *R-8 as the algorithm of choice for finding quantiles, but due to the more
+ *frequent use of R-6 and R-7, as well as the lack of division in the
+ *calculation, we have chosen to use R-7.
  *
  * @param alg The algorithm of choice, as a string in the form of "R-[0-9]"
  **/
 template <typename T>
-void Stats1D<T>::setQuantileAlgorithm(std::string alg) {
-  if (alg.length() != 3) throw std::runtime_error("incorrect length");
-  if ((alg[0] != 'R' && alg[0] != 'r') || alg[1] != '-' || !isdigit(alg[2]) ||
-      alg[2] == '0')
-    throw Ex1(Errcode::BAD_ARGUMENT);
-  quantile = std::string("R-") + alg[2];
+void Stats1D<T>::setQuantileAlgorithm(QuantileAlgorithm q) {
+  quantile = q;
+}
+
+template <typename U, typename T>
+double expected_xy(Stats1D<T>& stats1, Stats1D<U>& stats2) {
+  double sum_xy = 0;
+  for (int i = 0; i < stats1.size(); i++) {
+    sum_xy += stats1[i] * stats2[i];
+  }
+  return sum_xy / stats1.size();
+}
+
+template <typename U, typename T>
+double covariance(Stats1D<T>& stats1, Stats1D<U>& stats2) {
+  // TODO: throw exception if not same length VECTOR_MIS...
+
+  double sum = 0;
+
+  for (int i = 0; i < stats1.size(); i++) {
+    sum += (stats1[i] - stats1.getMean()) * (stats2[i] - stats2.getMean());
+  }
+  // std::cout << sum / stats1.size() << std::endl;
+  return sum / (stats1.size() - 1);
+}
+
+template <typename U, typename T>
+double pearson_correlation(Stats1D<T>& stats1, Stats1D<U>& stats2) {
+  return covariance(stats1, stats2) / (stats1.getStdDev() * stats2.getStdDev());
 }
 
 template <typename T>
@@ -356,3 +413,5 @@ std::ostream& operator<<(std::ostream& os, Stats1D<T>& stats) {
   os << "]";
   return os;
 }
+
+}  // namespace stats
