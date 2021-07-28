@@ -167,3 +167,4 @@ compile_commands.json
 *.bml
 
 external/
+bin/
