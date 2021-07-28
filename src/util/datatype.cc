@@ -66,7 +66,7 @@ const char* DataTypeNames[] = {"u8",
                                "unimpl"
                                "enum_size does not really exist"};
 
-HashMap<DataType> mapnames(uint32_t(DataType::ENUM_SIZE));
+HashMap<DataType> mapnames((uint32_t)(DataType::ENUM_SIZE));
 void loadmap() {
   for (int i = 0; i < int(DataType::ENUM_SIZE); i++)
     mapnames.add(DataTypeNames[i], (DataType)i);

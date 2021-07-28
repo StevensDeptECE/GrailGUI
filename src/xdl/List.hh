@@ -10,7 +10,7 @@ class List : public CompoundType {
  public:
   List(const std::string listName, uint32_t size = 16)
       : CompoundType(listName), impl(size) {}
-  DataType getDataType() const { return DataType::LIST16; }
+  DataType getDataType() const override { return DataType::LIST16; }
 
   template <typename U>
   U deref(U& obj) {
@@ -87,10 +87,11 @@ void List<T>::write(Buffer& buf) const {
   }
 }
 
-
 // TODO: Implement
 template <typename T>
 void List<T>::display(Buffer& binaryIn, Buffer& asciiOut) const {}
 
 template <typename T>
-XDLType* List<T>::begin(Buffer& buf)  {return nullptr; } //TODO: templated lists cannot return generic pointers: &impl[0];}
+XDLType* List<T>::begin(Buffer& buf) {
+  return nullptr;
+}  // TODO: templated lists cannot return generic pointers: &impl[0];}

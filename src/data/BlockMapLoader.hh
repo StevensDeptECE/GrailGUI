@@ -72,10 +72,10 @@ class BlockMapLoader : public BlockLoader {
   const static Method methods[];
   constexpr static float eps = 1e-6;
   static bool approxeq(double a, double b) {
-    return abs(b - a) < eps;  // TODO: is this good?
+    return std::abs(b - a) < eps;  // TODO: is this good?
   }
   static bool approxeqpt(float x1, float y1, float x2, float y2) {
-    return abs(x2 - x1) < eps && abs(y2 - y1) < eps;
+    return std::abs(x2 - x1) < eps && std::abs(y2 - y1) < eps;
   }
 
  public:

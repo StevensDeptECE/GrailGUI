@@ -175,7 +175,7 @@ class MultiText : public Shape {
   // a 16-bit unicode character like Java
   void addChar(float x, float y, const Font* f, const uint16_t c);
   float add(float x, float y, float space, float ang, const Font* f,
-           const char s[], uint32_t len);
+            const char s[], uint32_t len);
   float add(float x, float y, const char s[], uint32_t len);
   float add(float x, float y, const Font* f, const char s[], uint32_t len);
   float add(float x, float y, uint32_t v);
@@ -189,7 +189,7 @@ class MultiText : public Shape {
   float add(float x, float y, double v);
   float add(float x, float y, const Font* f, double v);
   float add(float x, float y, const Font* f, double v, int fieldWidth,
-           int precision);
+            int precision);
   float add(float x, float y, const Font* f, const std::string& s);
   void addCentered(float x, float, const Font* f, double v, int fieldWidth,
                    int precision);
@@ -209,7 +209,7 @@ class MultiText : public Shape {
   void clear() { vert.clear(); }
   void init() override;
 
-  void process_input(Inputs* in, float dt) {
+  void process_input(Inputs* in, float dt) override {
 #if 0
     if(x < 0 || x > GLWin::Width){
        velX =- velX;

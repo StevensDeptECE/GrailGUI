@@ -63,16 +63,16 @@ class Point : public CompoundType {
   void write(Buffer& out) const override;
   void writeMeta(Buffer& buf) const override;
 
-  DataType getDataType() const { return DataType::STRUCT8; }
-  uint32_t size() const { return 12; }
+  DataType getDataType() const override { return DataType::STRUCT8; }
+  uint32_t size() const override { return 12; }
 
-  void addData(ArrayOfBytes* data) const {
+  void addData(ArrayOfBytes* data) const override {
     data->addData(x);
     data->addData(y);
     data->addData(z);
   }
 
-  void addMeta(ArrayOfBytes* meta) const {
+  void addMeta(ArrayOfBytes* meta) const override {
     meta->addStruct("Point", 3);
     meta->addBuiltinMember(DataType::F64, "x");
     meta->addBuiltinMember(DataType::F64, "y");
