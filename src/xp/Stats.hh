@@ -16,18 +16,64 @@ enum class QuantileAlgorithm { R1 = 0, R2, R3, R4, R5, R6, R7, R8, R9 };
 template <typename T>
 class Stats1D {
  public:
+  /**
+   * @brief Construct a new Stats1D object
+   *
+   * @tparam FowardIter
+   * @param a
+   * @param b
+   * @param sorted
+   */
   template <typename FowardIter>
   Stats1D(FowardIter a, const FowardIter b, bool sorted = false);
 
+  /**
+   * @brief Construct a new Stats1D object
+   *
+   * @tparam Iterable
+   * @param container
+   * @param sorted
+   */
   template <typename Iterable>
   Stats1D(const Iterable& container, bool sorted = false);
 
+  /**
+   * @brief Update the internal data of the current object
+   *
+   * @details Replaces the internal original_data and sorted_data with the
+   * values supplied by the iterators. This will also reset the cache_flags, so
+   * various values will need to be recalculated when functions are called
+   * again.
+   *
+   * @tparam FowardIter
+   * @param a
+   * @param b
+   * @param sorted
+   */
   template <typename FowardIter>
   void updateData(FowardIter a, const FowardIter b, bool sorted = false);
 
+  /**
+   * @brief Update the internal data of the current object
+   *
+   * @details Replaces the internal original_data and sorted_data with the
+   * values supplied by the parameter. This will also reset the cache_flags, so
+   * various values will need to be recalculated when functions are called
+   * again.
+   *
+   *
+   * @tparam Iterable
+   * @param container
+   * @param sorted
+   */
   template <typename Iterable>
   void updateData(const Iterable& container, bool sorted = false);
 
+  /**
+   * @brief Returns the length of the internally stored data
+   *
+   * @return int
+   */
   int size() { return original_data.size(); }
 
   /**
@@ -170,10 +216,10 @@ class Stats1D {
   friend std::ostream& operator<<(std::ostream& os, Stats1D<U>& stats);
 
  private:
+  static double interpolate_quantile(const std::vector<T>& data, double h);
   static double r1(const std::vector<T>& data, double p);
   static double r2(const std::vector<T>& data, double p);
   static double r3(const std::vector<T>& data, double p);
-  static double interpolate_quantile(const std::vector<T>& data, double h);
   static double r4(const std::vector<T>& data, double p);
   static double r5(const std::vector<T>& data, double p);
   static double r6(const std::vector<T>& data, double p);
