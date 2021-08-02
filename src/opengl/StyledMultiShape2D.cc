@@ -374,10 +374,12 @@ void StyledMultiShape2D::drawGrid(float x0, float y0, float w, float h,
                                   uint32_t numHoriz, uint32_t numVert,
                                   const glm::vec4& c) {
   // draw vertical lines
-  float x = x0;
-  drawLine(x, y0, x, y0 + h, c);
+  float x = x0, y = y0;
+  const float dx = (w / numVert);
+  for (uint32_t indexVert = numVert + 1; indexVert > 0;
+       indexVert--, x += dx)
+    drawLine(x, y0, x, y0+h, c);
   // draw horizontal lines
-  float y = y0;
   const float dy = (h / numHoriz);
   for (uint32_t indexHoriz = numHoriz + 1; indexHoriz > 0;
        indexHoriz--, y += dy)

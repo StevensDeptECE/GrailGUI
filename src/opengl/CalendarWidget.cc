@@ -8,37 +8,76 @@
 using namespace std;
 
 void CalendarWidget::init() {
-  m->drawRectangle(x, y, w, h, color);
+  //sort(events.begin(), events.end());
+  yearTitle();
+  switch(viewType) {
+    case YEARLY:
+      drawYear();
+      break;
+    case MONTHLY:
+      drawMonth();
+      break;
+    case WEEKLY:
+      drawWeek();
+      break;
+    case DAILY:
+      break;
 
-  vector <string> weekDays = {"S", "M", "T", "W", "T", "F", "S"};
-  vector <string> monthNames = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", 
-    "SEP", "OCT", "NOV", "DEC"};
+    default:
+      break;
+  }
+}
 
-  t->add(x, y - 20, f, monthNames[month-1].c_str(), monthNames[month-1].size());
+void CalendarWidget::yearTitle(){
+  t->add(x+w - 40, y - 20, f, year);
+}
+
+void CalendarWidget::internalDrawMonth(float x, float y, float w, float h, int month, const Font* monthNameFont, const Font* dayFont) {
+  int days[42];
+  JulianDate j(year, month, 1); //TODO: this date not used at all, day of week calculated in next line
+  uint32_t weekDay = j.dayOfWeek(year, month, 1); // TODO: this method does not use j at all
+
+  for (int i = 0; i < 42; i++){
+    days[i] = 0;
+  }
+
+  for (int i = 0; i < 42; i++){
+    circles[i] = grail::black;
+  }
+
+  uint32_t daysInMonth = JulianDate::daysInMonth[month-1];
+  if (month == 2 && j.isLeapYear(year)) {
+    daysInMonth++;
+  }
+
+  
+  for (int i = 1; i <= daysInMonth; i++){
+    days[weekDay+i-1] = i;
+  }
+
+  t->add(x, y - 12, monthNameFont, JulianDate::monthAbbr[month-1], 3);
 
   float squareW = w/7;
   float squareH = h/7;
-
-  t->add(x+w - 40, y - 20, f, year);
   
   m->drawGrid(x, y, w, h, 7, 7, color);
 
   for (int i = 0; i < 7; i++){
-    t->add(x + i*squareW + squareW*0.4, y + squareH/2, f, weekDays[i].c_str(), weekDays[i].size());
-    if (i != 0){
-      m->drawLine(x+squareW*i, y, x+squareW*i, y+h, color);
-    }
+    t->add(x + i*squareW + squareW*0.4, y + squareH/2, monthNameFont, JulianDate::weekDays[i], 1);
   }
 
   int column = 0;
   int row = 1;
+  //int currentEvent = 0;
   for (int i = 0; i < 42; i++){
     if(days[i] != 0){
-      t->add(x + squareW*0.4 + column*squareW, y + squareH*0.6 + squareH*row, f, days[i]);
-      if (circles[i] != grail::black){
-        m->drawCircle(x + squareW/2 + column*squareW, y + squareH/2 + squareH*row, 
-            squareH*0.3, 5, circles[i]);
+      for (int k = 0; k < events.size(); k++){
+        if (events[k].month == month && events[k].day == days[i]){
+          m->fillEllipse(x + squareW/2 + column*squareW, y + squareH/2 + squareH*row, 
+            squareW*0.4, squareH*0.4, 5, events[k].circleColor);
+        }
       }
+      t->addCentered(x + squareW/2 + column*squareW, y + squareH/2 + squareH*row, dayFont, days[i]);
     }
     if(column == 6){
       row++;
@@ -49,12 +88,49 @@ void CalendarWidget::init() {
   }
 
 }
+void CalendarWidget::drawMonth() {
+  internalDrawMonth(x, y, w, h, month, monthViewMonthName, monthViewDayNumber);
+}
 
-void CalendarWidget::circleDate(int day, glm::vec4 color){
-  for (int i = 0; i < 42; i++){
-    if(days[i] == day){
-      circles[i] = color;
+void CalendarWidget::drawYear(){
+
+  cout << "hello in drawYear" << endl;
+
+  float smallW = w/(4+3*yearInBetweenSpace);
+  float smallH = h/(3+2*yearInBetweenSpace);
+  float spaceSizeW = smallW*yearInBetweenSpace;
+  float spaceSizeH = smallH*yearInBetweenSpace;
+
+  for (int i = 0; i< 3; i++){
+    for(int j = 0; j < 4; j++){
+      //setMonth(year, (j+1)+4*i);
+      internalDrawMonth(x + j*(smallW+spaceSizeW), y + i*(smallH+spaceSizeH), smallW, smallH, (j+1)+4*i, yearViewMonthName, yearViewDayNumber);
     }
   }
+
+  yearTitle();
+}
+
+void CalendarWidget::drawWeek() {
+}
+
+
+#if 0
+void CalendarWidget::circleDate(int day, glm::vec4 colorC){
+  for (int i = 0; i < 42; i++){
+    if(days[i] == day){
+      circles[i] = colorC;
+    }
+  }
+}
+#endif
+
+void CalendarWidget::circleDate(int day, int month, glm::vec4 colorC){
+  CalendarWidget::event e;
+  e.day = day;
+  e.month = month; 
+  e.circleColor = colorC;
+
+  events.push_back(e);
 }
 

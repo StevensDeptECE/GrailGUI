@@ -21,21 +21,26 @@ class TestWidgets : public GLWin {
     MainCanvas *c = currentTab()->getMainCanvas();
     StyledMultiShape2D *gui = c->getGui();
 
-    MultiText *guiText = c->addLayer(new MultiText(c, s));
+    //MultiText *guiText = c->addLayer(new MultiText(c, s));
+    MultiText *guiText = c->getGuiText();
 
-    const Font* f = FontFace::get("TIMES", 12, FontFace::BOLD);
+    const Font* f = FontFace::get("TIMES", 10, FontFace::BOLD);
 
-    CalendarWidget calendar(gui, guiText, 100, 100, 500, 400, 2021, 8, grail::black, f);
-    calendar.circleDate(6, grail::green);
-    calendar.circleDate(27, grail::red);
-    calendar.circleDate(30, grail::blue);
+    CalendarWidget calendar(gui, guiText, 50, 50, 1100, 550, 2021, 8, grail::black, f);
+    calendar.circleDate(6, 8, grail::green);
+    calendar.circleDate(27, 8, grail::red);
+    calendar.circleDate(30, 8, grail::blue);
+    calendar.circleDate(27, 2, grail::red);
+    calendar.setViewMonthly();
 
     calendar.init();
+
+    //calendar.drawYear();
     
   }
 
 };
 
 int main(int argc, char *argv[]) {
-  return GLWin::init(new TestWidgets(), 1024, 600);
+  return GLWin::init(new TestWidgets(), 1200, 700);
 }

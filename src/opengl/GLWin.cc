@@ -256,7 +256,7 @@ void GLWin::startWindow() {
   defaultStyle->setLineWidth(1);
   //  defaultStyle->setShaderIndex(COMMON_SHADER);
   guiStyle = new Style(guiFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
-  guiTextStyle = new Style(guiFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
+  guiTextStyle = new Style(guiFont, 0.5, 0.5, 0.5, 0, 0, 0, COMMON_SHADER);
   menuStyle = new Style(menuFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
   menuTextStyle = new Style(menuFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
   current = new Tab(this);

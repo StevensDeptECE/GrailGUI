@@ -186,6 +186,17 @@ void MultiText::addCentered(float x, float y, const Font* f, const char s[],
 
   add(x - textWidth / 2, y - textHeight / 2, f, s, len);
 }
+
+void MultiText::addCentered(float x, float y, const Font* f, uint32_t v) {
+  char s[16];
+  int len = sprintf(s, "%u", v);
+  float textWidth = f->getWidth(s, len);
+  float textHeight = f->getHeight();
+
+  add(x - textWidth / 2, y + textHeight / 2, f, s, len);
+}
+
+
 void MultiText::add(float x, float y, const Font* f, const char s[],
                     uint32_t len) {
   for (uint32_t i = 0; i < len; i++) {
