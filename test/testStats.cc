@@ -30,25 +30,30 @@ void test_contructor() {
 void test_values() {
   vector<double> data = {150, 350, 222, 100, 300, 130, 300, 250, 190,
                          170, 100, 50,  20,  150, 200, 330, 200, 270,
-                         180, 300, 49,  247, 325, 114, 89};
+                         180, 300, 49,  247, 325, 114, 89,  69};
 
   Stats1D<double> stats(data);
+  stats.setQuantileAlgorithm(stats::QuantileAlgorithm::R5);
 
-  assert(is_between(stats.getMean(), 191.4, 191.5));
+  assert(is_between(stats.getMean(), 186.72, 186.74));
 
-  assert(is_between(stats.getStdDev(), 96.16, 96.18));
+  assert(is_between(stats.getPopulationStdDev(), 95.35, 95.36));
 
-  assert(is_between(stats.getVariance(), 9250.16, 9250.18));
+  assert(is_between(stats.getSampleStdDev(), 97.24, 97.25));
 
-  assert(is_between(stats.getIQR(), 177.99, 178.01));
+  assert(is_between(stats.getPopulationVariance(), 9093.03, 9093.05));
 
-  assert(is_between(stats.getQuantile(.25, stats::QuantileAlgorithm::R6),
-                    106.99, 107.01));
+  assert(is_between(stats.getSampleVariance(), 9456.75, 9456.77));
 
-  assert(is_between(stats.getQuantile(.75, stats::QuantileAlgorithm::R6),
-                    284.99, 285.01));
+  assert(is_between(stats.getQuantile(.25, stats::QuantileAlgorithm::R5), 100,
+                    100));
 
-  assert(is_between(stats.getSummary().median, 190, 190));
+  assert(is_between(stats.getQuantile(.75, stats::QuantileAlgorithm::R5), 270,
+                    270));
+
+  assert(is_between(stats.getSummary().median, 185, 185));
+
+  assert(is_between(stats.getIQR(), 169.99, 170.1));
 
   /*
   string quant_algs[9] = {"R-1", "R-2", "R-3", "R-4", "R-5",
@@ -106,7 +111,7 @@ int main() {
   Stats1D<int64_t> stats_from_dynarray =
       Stats1D<int64_t>(dynarray, dynarray + 5);
 
-  cout << pearson_correlation(stats_from_array, stats_from_dynarray) << endl;
+  // cout << pearson_correlation(stats_from_array, stats_from_dynarray) << endl;
 
   // std::vector<int> vec{1, 2, 3, 4, 5};
   // Stats1D<int> stats_from_vec = Stats1D<int>(vec);
