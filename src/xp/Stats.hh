@@ -6,6 +6,12 @@
 #include <unordered_map>
 #include <vector>
 
+#define stats_check_cache_private(chosen_flags, cache_value) \
+  if ((cache_flags & chosen_flags) == chosen_flags) {        \
+    cache_flags |= chosen_flags;                             \
+    return cache_value;                                      \
+  }
+
 namespace stats {
 
 struct Summary {
@@ -41,9 +47,9 @@ class Stats1D {
    * @brief Update the internal data of the current object
    *
    * @details Replaces the internal original_data and sorted_data with the
-   * values supplied by the iterators. This will also reset the cache_flags, so
-   * various values will need to be recalculated when functions are called
-   * again.
+   * values supplied by the iterators. This will also reset the cache_flags,
+   * so various values will need to be recalculated when functions are
+   * called again.
    *
    * @tparam FowardIter
    * @param a
@@ -216,6 +222,8 @@ class Stats1D {
   friend std::ostream& operator<<(std::ostream& os, Stats1D<U>& stats);
 
  private:
+  double getSumSquares();
+
   static double interpolate_quantile(const std::vector<T>& data, double h);
   static double r1(const std::vector<T>& data, double p);
   static double r2(const std::vector<T>& data, double p);
@@ -235,22 +243,18 @@ class Stats1D {
   /**< The default quantile algorithm used by future Stats1D objects*/
   QuantileAlgorithm defaultQuantile;
 
-  constexpr static uint8_t SORTED = 0b10000000;
-  constexpr static uint8_t MEAN = 0b01000000;
-  constexpr static uint8_t POPSTDDEV = 0b00100000;
-  constexpr static uint8_t POPVARIANCE = 0b00010000;
-  constexpr static uint8_t SAMPSTDDEV = 0b00001000;
-  constexpr static uint8_t SAMPVARIANCE = 0b00000100;
-  constexpr static uint8_t IQR = 0b00000010;
-  constexpr static uint8_t FIVENUM = 0b00000001;
+  constexpr static uint8_t SORTED = 2;
+  constexpr static uint8_t MEAN = 4;
+  constexpr static uint8_t SUMSQ = 8;
+  constexpr static uint8_t IQR = 16;
+  constexpr static uint8_t FIVENUM = 32;
 
   std::vector<T> original_data;
   std::vector<T> sorted_data;
-  // sorted, mean, population stddev, population variance,
-  // sample stddev, sample variance, iqr, fivenum
-  // 0b11111111
+  // sorted, mean, variance, iqr, fivenum
+  // 0b00011111
   uint8_t cache_flags;
-  double mean, samp_stddev, samp_variance, pop_stddev, pop_variance, iqr;
+  double mean, stddev, sample_variance, population_variance, sum_sq, iqr;
   std::vector<T> modes;
 
   Summary fivenum;
@@ -273,21 +277,6 @@ template <typename T>
 template <typename Iterable>
 Stats1D<T>::Stats1D(const Iterable& container, bool sorted)
     : Stats1D(std::begin(container), std::end(container), sorted) {}
-
-template <typename T>
-template <typename FowardIter>
-void Stats1D<T>::updateData(FowardIter a, const FowardIter b, bool sorted) {
-  original_data(a, b);
-  sorted_data(a, b);
-
-  if (!sorted) {
-    sort(sorted_data.begin(), sorted_data.end());
-  }
-
-  cache_flags = SORTED;
-
-  modes.clear();
-}
 
 template <typename T>
 template <typename Iterable>
@@ -376,48 +365,42 @@ Summary Stats1D<T>::getSummary() {
 
 template <typename T>
 double Stats1D<T>::getSampleStdDev() {
-  if ((cache_flags & SAMPSTDDEV) == SAMPSTDDEV) return samp_stddev;
-
-  samp_stddev = sqrt(getSampleVariance());
-  cache_flags |= SAMPSTDDEV;
-  return samp_stddev;
+  return sqrt(getSampleVariance());
 }
 
 template <typename T>
 double Stats1D<T>::getPopulationStdDev() {
-  if ((cache_flags & POPSTDDEV) == POPSTDDEV) return pop_stddev;
+  return sqrt(getPopulationVariance());
+}
 
-  pop_stddev = sqrt(getPopulationVariance());
-  cache_flags |= POPSTDDEV;
-  return pop_stddev;
+// template <typename T>
+// inline double Stats1D<T>::check_cache(const uint8_t chosen_flags,
+//                                       double& cache_value) {
+//   if ((cache_flags & chosen_flags) == chosen_flags) return cache_value;
+// }
+
+// TODO: rename this to something not dumb
+template <typename T>
+double Stats1D<T>::getSumSquares() {
+  stats_check_cache_private(SUMSQ, sum_sq);
+
+  double mean_tmp = getMean();
+  double sum = 0;
+  for (auto const& num : sorted_data) {
+    sum += pow(num - mean_tmp, 2);
+  }
+
+  return sum_sq = sum;
 }
 
 template <typename T>
 double Stats1D<T>::getSampleVariance() {
-  if ((cache_flags & SAMPVARIANCE) == SAMPVARIANCE) return samp_variance;
-
-  double mean_tmp = getMean();
-  double sum = 0;
-  for (auto const& num : sorted_data) {
-    sum += pow(num - mean_tmp, 2);
-  }
-  samp_variance = sum / (sorted_data.size() - 1);
-  cache_flags |= SAMPVARIANCE;
-  return samp_variance;
+  return sample_variance = getSumSquares() / (sorted_data.size() - 1);
 }
 
 template <typename T>
 double Stats1D<T>::getPopulationVariance() {
-  if ((cache_flags & POPVARIANCE) == POPVARIANCE) return pop_variance;
-
-  double mean_tmp = getMean();
-  double sum = 0;
-  for (auto const& num : sorted_data) {
-    sum += pow(num - mean_tmp, 2);
-  }
-  pop_variance = sum / (sorted_data.size());
-  cache_flags |= POPVARIANCE;
-  return pop_variance;
+  return population_variance = getSumSquares() / (sorted_data.size());
 }
 
 template <typename T>
