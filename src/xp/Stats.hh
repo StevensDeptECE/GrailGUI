@@ -6,12 +6,6 @@
 #include <unordered_map>
 #include <vector>
 
-#define stats_check_cache_private(chosen_flags, cache_value) \
-  if ((cache_flags & chosen_flags) == chosen_flags) {        \
-    cache_flags |= chosen_flags;                             \
-    return cache_value;                                      \
-  }
-
 namespace stats {
 
 struct Summary {
@@ -222,7 +216,8 @@ class Stats1D {
   friend std::ostream& operator<<(std::ostream& os, Stats1D<U>& stats);
 
  private:
-  double getSumSquares();
+  double squared_deviation_from_mean();
+  inline bool check_cache_flags(uint8_t chosen_flags);
 
   static double interpolate_quantile(const std::vector<T>& data, double h);
   static double r1(const std::vector<T>& data, double p);
@@ -286,19 +281,17 @@ void Stats1D<T>::updateData(const Iterable& container, bool sorted) {
 
 template <typename T>
 double Stats1D<T>::getMean() {
-  if ((cache_flags & MEAN) == MEAN) return mean;
+  if (check_cache_flags(MEAN)) return mean;
+
+  cache_flags |= MEAN;
 
   double mean_tmp = 0;
-
   for (auto const& num : sorted_data) {
     mean_tmp += num;
   }
 
   mean_tmp /= sorted_data.size();
-
   mean = mean_tmp;
-
-  cache_flags |= MEAN;
 
   return mean;
 }
@@ -308,7 +301,6 @@ std::vector<T> Stats1D<T>::getModes() {
   if (modes.size() != 0) return modes;
 
   std::unordered_map<T, int> map;
-
   double biggest_mode = 1;
 
   for (auto const& num : sorted_data) {
@@ -337,16 +329,21 @@ std::vector<T> Stats1D<T>::getModes() {
 
 template <typename T>
 double Stats1D<T>::getIQR() {
-  if ((cache_flags & IQR) == IQR) return iqr;
+  if (check_cache_flags(IQR)) return iqr;
+
+  cache_flags |= IQR;
 
   Summary fn = getSummary();
   iqr = fn.q3 - fn.q1;
+
   return iqr;
 }
 
 template <typename T>
 Summary Stats1D<T>::getSummary() {
-  if ((cache_flags & FIVENUM) == FIVENUM) return fivenum;
+  if (check_cache_flags(FIVENUM)) return fivenum;
+
+  cache_flags |= FIVENUM;
 
   struct Summary fn;
   fn.min = *sorted_data.begin();
@@ -357,8 +354,6 @@ Summary Stats1D<T>::getSummary() {
   fn.q3 = getQuantile(.75, defaultQuantile);
 
   fivenum = Summary(fn);
-
-  cache_flags |= FIVENUM;
 
   return fivenum;
 }
@@ -373,16 +368,9 @@ double Stats1D<T>::getPopulationStdDev() {
   return sqrt(getPopulationVariance());
 }
 
-// template <typename T>
-// inline double Stats1D<T>::check_cache(const uint8_t chosen_flags,
-//                                       double& cache_value) {
-//   if ((cache_flags & chosen_flags) == chosen_flags) return cache_value;
-// }
-
-// TODO: rename this to something not dumb
 template <typename T>
-double Stats1D<T>::getSumSquares() {
-  stats_check_cache_private(SUMSQ, sum_sq);
+double Stats1D<T>::squared_deviation_from_mean() {
+  if (check_cache_flags(SUMSQ)) return sum_sq;
 
   double mean_tmp = getMean();
   double sum = 0;
@@ -394,13 +382,20 @@ double Stats1D<T>::getSumSquares() {
 }
 
 template <typename T>
+bool Stats1D<T>::check_cache_flags(uint8_t chosen_flags) {
+  return (cache_flags & chosen_flags) == chosen_flags;
+}
+
+template <typename T>
 double Stats1D<T>::getSampleVariance() {
-  return sample_variance = getSumSquares() / (sorted_data.size() - 1);
+  return sample_variance =
+             squared_deviation_from_mean() / (sorted_data.size() - 1);
 }
 
 template <typename T>
 double Stats1D<T>::getPopulationVariance() {
-  return population_variance = getSumSquares() / (sorted_data.size());
+  return population_variance =
+             squared_deviation_from_mean() / sorted_data.size();
 }
 
 template <typename T>
@@ -413,14 +408,14 @@ void Stats1D<T>::setQuantileAlgorithm(QuantileAlgorithm q) {
   defaultQuantile = q;
 }
 
-template <typename U, typename T>
-double expected_xy(Stats1D<T>& stats1, Stats1D<U>& stats2) {
-  double sum_xy = 0;
-  for (int i = 0; i < stats1.size(); i++) {
-    sum_xy += stats1[i] * stats2[i];
-  }
-  return sum_xy / stats1.size();
-}
+// template <typename U, typename T>
+// double expected_xy(Stats1D<T>& stats1, Stats1D<U>& stats2) {
+//   double sum_xy = 0;
+//   for (int i = 0; i < stats1.size(); i++) {
+//     sum_xy += stats1[i] * stats2[i];
+//   }
+//   return sum_xy / stats1.size();
+// }
 
 // template <typename U, typename T>
 // double covariance(Stats1D<T>& stats1, Stats1D<U>& stats2) {

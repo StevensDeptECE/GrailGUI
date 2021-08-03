@@ -9,7 +9,7 @@ using namespace stats;
 #define is_between(num, lower, upper) ((num >= lower) && (num <= upper))
 
 void test_contructor() {
-  int array[] = {1, 2, 2, 3, 3, 4, 5};
+  int array[]{1, 2, 2, 3, 3, 4, 5};
 
   Stats1D<int> stats_from_array(array);
 
@@ -54,14 +54,6 @@ void test_values() {
   assert(is_between(stats.getSummary().median, 185, 185));
 
   assert(is_between(stats.getIQR(), 169.99, 170.1));
-
-  /*
-  string quant_algs[9] = {"R-1", "R-2", "R-3", "R-4", "R-5",
-                          "R-6", "R-7", "R-8", "R-9"};
-  for (const auto& elem : quant_algs) {
-    stats_from_vec_double.setQuantileAlgorithm(elem);
-    cout << "\nQuantile alg " << elem << endl << stats_from_vec_double << endl;
-  }*/
 }
 
 // We've had undefined behavior in the past from this
@@ -79,10 +71,6 @@ void test_container_of_stats() {
     Stats1D<double> summary(currentData);
     v.push_back(summary);
   }
-
-  // for (auto& summary : v) {
-  //   cout << summary << endl;
-  // }
 }
 
 void test_copy_assignment() {
@@ -103,26 +91,4 @@ int main() {
   test_values();
   test_container_of_stats();
   test_copy_assignment();
-
-  int array[] = {1, 2, 3, 4, 5};
-  Stats1D<int> stats_from_array = Stats1D<int>(array);
-
-  int* dynarray = new int[5]{1, 2, 3, 4, 5};
-  Stats1D<int64_t> stats_from_dynarray =
-      Stats1D<int64_t>(dynarray, dynarray + 5);
-
-  // cout << pearson_correlation(stats_from_array, stats_from_dynarray) << endl;
-
-  // std::vector<int> vec{1, 2, 3, 4, 5};
-  // Stats1D<int> stats_from_vec = Stats1D<int>(vec);
-  // Stats1D<int> stats_from_vec_begin = Stats1D<int>(vec.begin(), vec.end());
-
-  // std::list<int> list{1, 2, 3, 4, 5};
-  // Stats1D<int> stats_from_list = Stats1D<int>(list);
-
-  // cout << stats_from_array << "\n\n"
-  //      << stats_from_dynarray << "\n\n"
-  //      << stats_from_vec << "\n\n"
-  //      << stats_from_vec_begin << "\n\n"
-  //      << stats_from_list;
 }
