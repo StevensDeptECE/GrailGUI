@@ -99,13 +99,14 @@ void BarChartWidget::init() {
   if (yAxisType == AxisType::LOGARITHMIC) {
     base = 1 / log(axisInterval);
     scale = -h / abs(log(max) * base - log(min) * base);
-    transform(
-        values.begin(), values.end(), values.begin(),
-        [=](double d) -> double { return y + h + scale * log(d) * base; });
+    transform(values.begin(), values.end(), values.begin(),
+              [=, this](double d) -> double {
+                return y + h + scale * log(d) * base;
+              });
   } else {
     scale = -h / abs(max - min);
     transform(values.begin(), values.end(), values.begin(),
-              [=](double d) -> double { return y + h + scale * d; });
+              [=, this](double d) -> double { return y + h + scale * d; });
   }
 
   double barCorrection = (yAxisType == AxisType::LINEAR)

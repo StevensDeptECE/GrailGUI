@@ -8,6 +8,10 @@
 
 using namespace std;
 
+/**
+ * @brief An enumerated class of XDL types that can be transferred
+ *
+ */
 enum class DataType {
   U8,    // unsigned int 0..255
   U16,   // unsigned int 0..65535

@@ -26,22 +26,6 @@
 #include "util/datatype.hh"
 
 /*
-  XDLType is the base class of all XDL-generated code.
-  Because any information in the class will increase the runtime size of
-  all children instead of storing a string typename inside XDLType, we will use
-  a table At constructor time, the built-in types look up the offset in the
-  table and store that (a 32-bit quantity) For a user-defined type, it
-  registers the name in a HashMap in SymbolTable, and then quickly turns the
-  string into an offset into the type table. This means the overhead of XDLType
-  is:
-
-          1. a pointer to the VFT since there are virtual functions
-                2. the offset to the name in the array
-
-                This is a total of 12 bytes, or 8 for a 32-bit platform.
-
-                For speed, all methods that return a string object should return
-   const string& The string must already exist so that nothing is allocated
  */
 
 class XDLCompiler;
@@ -53,6 +37,26 @@ class XDLIterator;
 class ArrayOfBytes;
 
 class UnImpl;
+
+/**
+ * @brief XDLType is the base class of all XDL-generated code.
+ *
+ * Because any information in the class will increase the runtime size of
+ * all children instead of storing a string typename inside XDLType, we will use
+ * a table At constructor time, the built-in types look up the offset in the
+ * table and store that (a 32-bit quantity) For a user-defined type, it
+ * registers the name in a HashMap in SymbolTable, and then quickly turns the
+ * string into an offset into the type table. This means the overhead of XDLType
+ * is:
+ *
+ *   1. a pointer to the VFT since there are virtual functions
+ *   2. the offset to the name in the array
+ *
+ *   This is a total of 12 bytes, or 8 for a 32-bit platform.
+ *
+ * For speed, all methods that return a string object should return
+ * const string& The string must already exist so that nothing is allocated
+ */
 class XDLType {
  protected:
   const static std::string empty;
@@ -115,6 +119,16 @@ class XDLType {
   static DataType readType(Buffer& in);
 };
 
+/**
+ * @brief A custom iterator superclass for XDLTypes
+ *
+ * Most XDL Types do not need any form of iterator to view the data, but some of
+ * the container types (such as structs and lists) could use iterator types to
+ * make the rendering process easier. This class is intended to be used as a
+ * superclass for custom iterators for those containers, so there is a common
+ * set of methods that could be used to traverse through and render each
+ * datatype.
+ */
 class XDLIterator : public XDLType {
  protected:
   XDLType* underlying;
@@ -133,10 +147,13 @@ class XDLIterator : public XDLType {
   uint32_t fieldSize() const override { return 0; }
 };
 
-/*
-        XDLRaw loads block binary data and can write it directly to the client
-        without bothering to analyze. Useful for large datasets that don't
-   change often. Uses extremely little CPU
+/**
+ * @brief A XDL type for raw binary data
+ *
+ *
+ * XDLRaw loads block binary data and can write it directly to the client
+ * without bothering to analyze. Useful for large datasets that don't
+ * change often. Uses extremely little CPU.
  */
 class XDLRaw : public XDLType {
  private:
@@ -157,6 +174,14 @@ class XDLRaw : public XDLType {
   XDLType* begin(Buffer& buf) override;
 };
 
+/**
+ * @brief A superclass for primitive XDL types
+ *
+ * Most primitive XDL types (such as integers, floats, and strings) have a
+ * common set of results for a some methods from the XDLType class. Instead of
+ * reimplementing those results for each of those subclasses, this superclass
+ * was written instead.
+ */
 class XDLBuiltinType : public XDLType {
  private:
   DataType t;
@@ -169,6 +194,14 @@ class XDLBuiltinType : public XDLType {
   XDLType* begin(Buffer& buf) override;
 };
 
+/**
+ * @brief A superclass for complex XDL types
+ *
+ * An XDL compound type is usually either a container for other XDL types or a
+ * wrapper around another XDL type. These types are named with a unique name
+ * (unlike the XDLBuiltinType, which is named its typename) and are often used
+ * for data transport.
+ */
 class CompoundType : public XDLType {
  public:
   CompoundType(const std::string& name) : XDLType(name) {}
@@ -179,6 +212,10 @@ class CompoundType : public XDLType {
   virtual void writeMeta(Buffer& buf) const = 0;
 };
 
+/**
+ * @brief A unsigned 8-bit integer
+ *
+ */
 class U8 : public XDLBuiltinType {
  private:
   uint8_t val;
@@ -194,6 +231,10 @@ class U8 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief An unsigned 16-bit integer
+ *
+ */
 class U16 : public XDLBuiltinType {
  private:
   uint16_t val;
@@ -210,6 +251,14 @@ class U16 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief An unsigned 24-bit integer
+ *
+ * The unsigned 24 bit integer was specifically designed for storing color
+ * values. Any color space that stores color with three integers under 255 (RGB,
+ * HSV, HSL, etc.) uses three unsigned 8-bit integers and can be stored in a
+ * 24-bit integer mask.
+ */
 class U24 : public XDLBuiltinType {
  private:
   uint32_t val;
@@ -227,6 +276,10 @@ class U24 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief An unsigned 32-bit integer
+ *
+ */
 class U32 : public XDLBuiltinType {
  private:
   uint32_t val;
@@ -243,6 +296,10 @@ class U32 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief An unsigned 64-bit integer
+ *
+ */
 class U64 : public XDLBuiltinType {
  private:
   uint64_t val;
@@ -259,6 +316,12 @@ class U64 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief An unsigned 128-bit integer
+ *
+ * Since C++ does not have 128-bit integers in the STL, this is stored with two
+ * unsigned 64-bit integers.
+ */
 class U128 : public XDLBuiltinType {
  private:
   uint64_t a, b;
@@ -278,6 +341,12 @@ class U128 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief An unsigned 256-bit integer
+ *
+ * Since C++ does not have 256-bit integers in the STL, this is stored with four
+ * unsigned 64-bit integers
+ */
 class U256 : public XDLBuiltinType {
  private:
   uint64_t a, b, c, d;
@@ -298,6 +367,10 @@ class U256 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief A signed 8-bit integer
+ *
+ */
 class I8 : public XDLBuiltinType {
  private:
   int8_t val;
@@ -314,6 +387,10 @@ class I8 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief A signed 16-bit integer
+ *
+ */
 class I16 : public XDLBuiltinType {
  private:
   int16_t val;
@@ -330,6 +407,13 @@ class I16 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief A signed 24-bit integer
+ *
+ * Unlike its unsigned counterpart, a signed 24-bit integer is not as useful for
+ * colors, as colors are not normally signed. This XDL type was primarily
+ * implemented so each unsigned integer type would have a signed counterpart.
+ */
 class I24 : public XDLBuiltinType {
  private:
   int32_t val;
@@ -346,6 +430,10 @@ class I24 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief A signed 32-bit integer
+ *
+ */
 class I32 : public XDLBuiltinType {
  private:
   int32_t val;
@@ -362,6 +450,10 @@ class I32 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief A signed 64-bit integer
+ *
+ */
 class I64 : public XDLBuiltinType {
  private:
   int8_t val;
@@ -378,6 +470,13 @@ class I64 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief A signed 128-bit integer
+ *
+ * Since C++ does not have 128-bit integers in the STL as of C++ 20, this is
+ * implemented using one signed 64-bit integer (to store data with the signed
+ * bit) and one unsigned 64-bit integer (to store the rest of the data).
+ */
 class I128 : public XDLBuiltinType {
  private:
   int64_t a;
@@ -403,6 +502,13 @@ class I128 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief A signed 256-bit integer
+ *
+ * Since C++ does not have 256-bit integers in the STL as of C++ 20, this is
+ * implemented using one signed 64-bit integer (to store data with the signed
+ * bit) and three unsigned 64-bit integers (to store the rest of the data).
+ */
 class I256 : public XDLBuiltinType {
  private:
   int64_t a;
@@ -424,6 +530,10 @@ class I256 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief A Boolean type
+ *
+ */
 class Bool : public XDLBuiltinType {
  private:
   bool val;
@@ -439,6 +549,10 @@ class Bool : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief A single-precision floating-point number
+ *
+ */
 class F32 : public XDLBuiltinType {
  private:
   float val;
@@ -454,6 +568,10 @@ class F32 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief A double-precision floating-point number
+ *
+ */
 class F64 : public XDLBuiltinType {
  private:
   double val;
@@ -470,6 +588,14 @@ class F64 : public XDLBuiltinType {
 };
 
 class JulianDate;
+/**
+ * @brief A date type (relative to a static epoch)
+ *
+ * This date type, while not as precise as Julian dates, allows storage of dates
+ * relative to any epoch. Although the epoch is static, this could stil mean
+ * that the dates could be created relative to a calendar's start date, or
+ * something similar.
+ */
 class Date : public XDLBuiltinType {
  private:
   int32_t date;
@@ -539,6 +665,13 @@ class Date : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief A date type that stores Julian days
+ *
+ * A Julian date is a count of the days since January 1st, 4173 BC on the Julian
+ * calendar. Julian dates are frequently used by astronomers, and are used in
+ * Grail's demos primarily for simulations of planets.
+ */
 class JulianDate : public XDLBuiltinType {
  public:
   friend class Date;
@@ -648,6 +781,10 @@ class Timestamp : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief An 8-bit string of characters
+ *
+ */
 class String8 : public XDLBuiltinType {
  private:
   std::string val;
@@ -665,6 +802,10 @@ class String8 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief A 16-bit string of characters
+ *
+ */
 class String16 : public XDLBuiltinType {
  private:
   std::string val;
@@ -682,6 +823,10 @@ class String16 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief A 32-bit string of characters
+ *
+ */
 class String32 : public XDLBuiltinType {
  private:
   std::string val;
@@ -698,6 +843,10 @@ class String32 : public XDLBuiltinType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
 };
 
+/**
+ * @brief A 64-bit string of characters
+ *
+ */
 class String64 : public XDLBuiltinType {
  private:
   std::string val;
@@ -809,6 +958,16 @@ class User : public XDLType {
   GenericList is the metadata for a list of unknown type coming in.
   A hardcoded type is more efficient
 */
+
+/**
+ * @brief A generic list of metadata
+ *
+ * This XDL container type allows a user to send and receive lists of data of
+ * any type. This is particularly useful for dealing with data created or
+ * manipulated by a user. When combined with the templated List type in list.hh,
+ * a server could send the templated list and the client could receive the data
+ * as a generic list (meaning significant performance boost on the server side).
+ */
 class GenericList : public CompoundType {
  private:
   XDLCompiler* compiler;
@@ -857,6 +1016,8 @@ class GenericList : public CompoundType {
   };
 };
 
+#if 0
+//TODO: There is already an XDLBuiltinType. Ensure that nothing uses this and then delete it.
 class BuiltinType : public XDLType {
  private:
   DataType t;
@@ -872,7 +1033,12 @@ class BuiltinType : public XDLType {
   void format(Buffer& binaryIn, Buffer& asciiOut, const char fmt[]) const;
   XDLType* begin(Buffer& buf) override;
 };
+#endif
 
+/**
+ * @brief A wrapper type that allows XDL types to be defined as different types
+ *
+ */
 class TypeDef : public CompoundType {
  private:
   const XDLType* type;
@@ -893,6 +1059,12 @@ class TypeDef : public CompoundType {
   XDLType* begin(Buffer& buf) override { return ((XDLType*)type)->begin(buf); }
 };
 
+/**
+ * @brief A structure of data, similar to C-style structs
+ *
+ * XDL structs allow multiple of any XDL type to be added to themselves and then
+ * sent to a client as one package of known datatypes.
+ */
 class Struct : public CompoundType {
  protected:
   class Member {
@@ -961,6 +1133,11 @@ class Struct : public CompoundType {
   void addData(ArrayOfBytes* data) const override;
   void addMeta(ArrayOfBytes* meta) const override;
   XDLType* begin(Buffer& buf) override { return new Iterator(this); }
+  /**
+   * @brief An implementation of XDLIterator for structs
+   *
+   * This makes it easier to iterate through a struct and render its contents
+   */
   class Iterator : public XDLIterator {
    private:
     uint32_t currentField;
@@ -981,6 +1158,10 @@ class Struct : public CompoundType {
   };
 };
 
+/**
+ * @brief A wrapper on C++'s regex type for XDL
+ *
+ */
 class Regex : public CompoundType {
  private:
   std::regex rexp;
@@ -1002,6 +1183,13 @@ class Regex : public CompoundType {
   XDLType* begin(Buffer& buf) override;
 };
 
+/**
+ * @brief An XDL type for unimplemented types
+ *
+ * This allows operations to fail out because a required type was never
+ * implemented, or because the behavior is not allowed or undefined. This type
+ * is most similar to a null pointer in other languages.
+ */
 class UnImpl : public XDLType {
  private:
  public:
@@ -1017,6 +1205,10 @@ class UnImpl : public XDLType {
 };
 
 // TODO: Add leap years
+/**
+ * @brief A calendar of dates
+ *
+ */
 class Calendar : public CompoundType {
  private:
   std::string calendarName;  // name of this calendar
@@ -1046,6 +1238,15 @@ class Calendar : public CompoundType {
   void addMeta(ArrayOfBytes* meta) const override;
 };
 
+/**
+ * @brief A container for storing both raw data and metadata
+ *
+ * The array of bytes stores data and metadata in separate DynArrays as raw
+ * binary data. This makes sending the data and metadata as easy as writing
+ * whichever is requested directly to the buffer. Similarly, the client could
+ * read from the buffer into an ArrayOfBytes, parse out the types from the
+ * metadata, and then repeatedly iterate through the data.
+ */
 class ArrayOfBytes : public CompoundType {
  private:
   uint8_t* currentData;
@@ -1091,19 +1292,27 @@ class ArrayOfBytes : public CompoundType {
   XDLType* begin(Buffer& buf) override { return this; }
 };
 
-inline DataType typeToDataType(uint8_t) { return DataType::U8; }
-inline DataType typeToDataType(uint16_t) { return DataType::U16; }
-inline DataType typeToDataType(uint32_t) { return DataType::U32; }
-inline DataType typeToDataType(uint64_t) { return DataType::U64; }
-inline DataType typeToDataType(int8_t) { return DataType::I8; }
-inline DataType typeToDataType(int16_t) { return DataType::I16; }
-inline DataType typeToDataType(int32_t) { return DataType::I32; }
-inline DataType typeToDataType(int64_t) { return DataType::I64; }
-inline DataType typeToDataType(float) { return DataType::F32; }
-inline DataType typeToDataType(double) { return DataType::F64; }
-inline DataType typeToDataType(bool) { return DataType::BOOL; }
-inline DataType typeToDataType(const std::string& str) {
-  int length = str.length();
+/**
+ * @brief Convert C++ types to XDL DataTypes
+ *
+ * @return DataType
+ */
+constexpr DataType typeToDataType(uint8_t) { return DataType::U8; }
+constexpr DataType typeToDataType(uint16_t) { return DataType::U16; }
+constexpr DataType typeToDataType(uint32_t) { return DataType::U32; }
+constexpr DataType typeToDataType(uint64_t) { return DataType::U64; }
+constexpr DataType typeToDataType(int8_t) { return DataType::I8; }
+constexpr DataType typeToDataType(int16_t) { return DataType::I16; }
+constexpr DataType typeToDataType(int32_t) { return DataType::I32; }
+constexpr DataType typeToDataType(int64_t) { return DataType::I64; }
+constexpr DataType typeToDataType(float) { return DataType::F32; }
+constexpr DataType typeToDataType(double) { return DataType::F64; }
+constexpr DataType typeToDataType(bool) { return DataType::BOOL; }
+
+/*
+* constexpr lengths for std::strings unimplemented as of GCC 11.1.0
+constexpr DataType typeToDataType(const std::string& str) {
+  int length = std::char_traits<char>::length(str.c_str());
   if (length <= UINT8_MAX)
     return DataType::STRING8;
   else if (length <= UINT16_MAX)
@@ -1112,9 +1321,10 @@ inline DataType typeToDataType(const std::string& str) {
     return DataType::STRING32;
   else
     return DataType::STRING64;
-}
-inline DataType typeToDataType(const char* str) {
-  int length = strlen(str);
+}*/
+
+constexpr DataType typeToDataType(const char* str) {
+  int length = std::char_traits<char>::length(str);
   if (length <= UINT8_MAX)
     return DataType::STRING8;
   else if (length <= UINT16_MAX)
@@ -1126,6 +1336,6 @@ inline DataType typeToDataType(const char* str) {
 }
 
 template <typename T>
-inline DataType typeToDataType(T arg) {
+constexpr DataType typeToDataType(T arg) {
   return DataType::UNIMPL;
 }

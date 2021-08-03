@@ -128,7 +128,7 @@ void BoxChartWidget::init() {
 
     transform(currentBoxData.begin(), currentBoxData.end(),
               currentBoxData.begin(),
-              [=](double d) -> double { return y + h + yscale * d; });
+              [=, this](double d) -> double { return y + h + yscale * d; });
 
     Stats1D<double> dataSummary(&currentBoxData[0], pointsPerBox);
 

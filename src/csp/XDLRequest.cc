@@ -115,32 +115,24 @@ XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
   s->addMember("point", s2);
   s->addMember("bach", new F64(27.657));
 
-  // st->addRoot(s);
-  // Buffer ans(32768);
-  // ans.write(uint32_t(1));
-  // ans.write(uint64_t(3));
-  // ans.write(float(1.5));
-  // ans.write(float(2.5));
-  // ans.write(float(3.5));
-  // ans.write(double(123.456));
-
-  //  st->attachData(1, 2, {1, 2, 3}, 2.5);
   xdlData.add(s);
 
   // page 2
   // Metadata LIST8 ??? U32
   // st = new SymbolTable(compiler);
   // st->addRoot();
-  xdlData.add(new GenericList(compiler, "fred", DataType::U32));
+  auto fred = new List<uint32_t>("fred");
+  fred->add(1, 2, 3, 4, 5, 6, 7, 8, 100);
+  xdlData.add(fred);
 
   // page4
   // Metadata LIST8 6mylist ??? STRUCT8 6Person 3 STRING8, 9firstname STRING8,
   // 8lastname, U32 3age
   // st = new SymbolTable(compiler);
   s = new Struct(compiler, "Person");
-  s->addBuiltin("firstname", DataType::STRING8);
-  s->addBuiltin("lastname", DataType::STRING8);
-  s->addBuiltin("age", DataType::U32);
+  s->addMember("firstname", new String8("Dov"));
+  s->addMember("lastname", new String8("Kruger"));
+  s->addMember("age", new U32(1000));
   // st->addRoot();
   xdlData.add(new GenericList(compiler, "people", s));
 

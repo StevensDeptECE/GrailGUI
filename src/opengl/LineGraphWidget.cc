@@ -91,24 +91,26 @@ void LineGraphWidget::init() {
   if (xAxisType == AxisType::LOGARITHMIC) {
     double base = 1 / log(xInterval);
     double scale = w / abs(log(xMax) * base - log(xMin) * base);
-    transform(xPoints.begin(), xPoints.end(), xPoints.begin(),
-              [=](double d) -> double { return x + scale * log(d) * base; });
+    transform(
+        xPoints.begin(), xPoints.end(), xPoints.begin(),
+        [=, this](double d) -> double { return x + scale * log(d) * base; });
   } else {
     double scale = w / abs(xMax - xMin);
     transform(xPoints.begin(), xPoints.end(), xPoints.begin(),
-              [=](double d) -> double { return x + scale * d; });
+              [=, this](double d) -> double { return x + scale * d; });
   }
 
   if (yAxisType == AxisType::LOGARITHMIC) {
     double base = 1 / log(yInterval);
     double scale = -h / abs(log(yMax) * base - log(yMin) * base);
-    transform(
-        yPoints.begin(), yPoints.end(), yPoints.begin(),
-        [=](double d) -> double { return y + h + scale * log(d) * base; });
+    transform(yPoints.begin(), yPoints.end(), yPoints.begin(),
+              [=, this](double d) -> double {
+                return y + h + scale * log(d) * base;
+              });
   } else {
     double scale = -h / abs(yMax - yMin);
     transform(yPoints.begin(), yPoints.end(), yPoints.begin(),
-              [=](double d) -> double { return y + h + scale * d; });
+              [=, this](double d) -> double { return y + h + scale * d; });
   }
 
   double xPoint1 = xPoints[0];

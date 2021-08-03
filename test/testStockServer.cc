@@ -12,7 +12,7 @@ Log srvlog;  // log all important events for security and debugging
 class StockQuote {
  public:
   float open, high, low, close;
-  StockQuote(float open, float high, float low, float close)
+  constexpr StockQuote(float open, float high, float low, float close)
       : open(open), high(high), low(low), close(close) {}
   void write(Buffer& buf) const {
     buf.write(open);

@@ -114,7 +114,7 @@ void CandlestickChartWidget::init() {
 
     transform(currentBoxData.begin(), currentBoxData.end(),
               currentBoxData.begin(),
-              [=](double d) -> double { return y + h + yscale * d; });
+              [=, this](double d) -> double { return y + h + yscale * d; });
 
     double xLocation = x + xscale * counter - halfBoxWidth;
     double yTopLine = currentBoxData.at(3) + correction;

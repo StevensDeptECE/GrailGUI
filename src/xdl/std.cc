@@ -714,16 +714,17 @@ void TypeDef::display(Buffer& binaryIn, Buffer& asciiOut) const {}
 void TypeDef::format(Buffer& binaryIn, Buffer& asciiOut,
                      const char fmt[]) const {}
 
+/*
 uint32_t BuiltinType::size() const {
   return 0;  // TODO: this is unclean! We do this some other way for all
              // builtin types, but if we just did it here the code would
              // simplify
-}
+}*/
 
-XDLType* BuiltinType::begin(Buffer& buf) { return this; }
+// XDLType* BuiltinType::begin(Buffer& buf) { return this; }
 XDLType* XDLRaw::begin(Buffer& buf) { return this; }
 
-void BuiltinType::write(Buffer& buf) const {
+/*void BuiltinType::write(Buffer& buf) const {
   // buf.write(val);
 }
 
@@ -735,10 +736,9 @@ void BuiltinType::display(Buffer& binaryIn, Buffer& asciiOut) const {}
 
 void BuiltinType::format(Buffer& binaryIn, Buffer& asciiOut,
                          const char fmt[]) const {}
-
-
+*/
 Regex::Regex(const string& name, const string& exp)
-      : CompoundType(name), rexp(exp) {}
+    : CompoundType(name), rexp(exp) {}
 
 void Regex::write(Buffer& buf) const { buf.write(rexp); }
 
@@ -759,7 +759,6 @@ uint32_t Regex::fieldSize() const { return 0; }
 
 DataType Regex::getDataType() const { return DataType::REGEX; }
 
-
 uint32_t UnImpl::size() const { return 0; }
 
 void UnImpl::write(Buffer& buf) const { throw Ex1(Errcode::UNIMPLEMENTED); }
@@ -769,9 +768,10 @@ void UnImpl::writeMeta(Buffer& buf) const { throw Ex1(Errcode::UNIMPLEMENTED); }
 DataType UnImpl::getDataType() const { return DataType::UNIMPL; }
 
 void XDLBuiltinType::addMeta(ArrayOfBytes* meta) const { meta->addMeta(t); }
-XDLType* XDLBuiltinType::begin(Buffer& buf) { 
-  return nullptr; // TODO: this will crash if you don't return an actual object
- }
+XDLType* XDLBuiltinType::begin(Buffer& buf) {
+  return nullptr;  // TODO: this will crash if you don't return an actual
+                   //  object
+}
 
 void ArrayOfBytes::write(Buffer& b) const { return; }
 uint32_t ArrayOfBytes::size() const { return data.size() + metadata.size(); }
@@ -978,7 +978,7 @@ uint32_t String64::fieldSize() const { return 22; }
 uint32_t UnImpl::fieldSize() const { return 0; }
 uint32_t TypeDef::fieldSize() const { return 0; }
 
-//TODO: write function to calculate max size when Struct is made
+// TODO: write function to calculate max size when Struct is made
 uint32_t Struct::fieldSize() const { return 22; }  // return maxFieldSize; }
 uint32_t GenericList::fieldSize() const { return listType->fieldSize(); }
 
