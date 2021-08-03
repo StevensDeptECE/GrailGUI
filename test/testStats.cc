@@ -1,3 +1,5 @@
+#include <time.h>
+
 #include <cassert>
 #include <list>
 
@@ -25,6 +27,8 @@ void test_contructor() {
   std::list<uint64_t> list{1, 2, 3, 4, 5};
 
   Stats1D<uint64_t> stats_from_list(list);
+
+  Stats1D<int> stats_from_inline{0, 1, 2, 3, 4, 5};
 }
 
 void test_values() {
@@ -71,6 +75,10 @@ void test_container_of_stats() {
     Stats1D<double> summary(currentData);
     v.push_back(summary);
   }
+
+  for (auto& summary : v) {
+    cout << summary.five_number_summary().max << endl;
+  }
 }
 
 void test_copy_assignment() {
@@ -79,11 +87,11 @@ void test_copy_assignment() {
   vector<double> other = {200, 330, 200, 270, 180, 300, 49, 247, 325, 114, 89};
 
   Stats1D<double> a(data);
-  std::cout << a << std::endl;
+  cout << a << endl;
 
   Stats1D<double> b(other);
   a = b;
-  std::cout << a << std::endl;
+  cout << a << endl;
 }
 
 int main() {
@@ -91,4 +99,15 @@ int main() {
   test_values();
   test_container_of_stats();
   test_copy_assignment();
+
+  // constexpr uint64_t n = 10000000;
+  // double* x = new double[n];
+  // for (uint64_t i = 0; i < n; i++) x[i] = i;
+  // Stats1D<double> stat(x, x + n);
+  // clock_t t0 = clock();
+  // double sum = stat.variance();
+  // clock_t t1 = clock();
+  // cout << "Elapsed: " << (t1 - t0) << '\n';
+  // cout << "sum=" << sum << '\n';
+  // delete[] x;
 }

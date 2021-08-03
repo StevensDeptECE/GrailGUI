@@ -38,6 +38,13 @@ class Stats1D {
   Stats1D(const Iterable& container, bool sorted = false);
 
   /**
+   * @brief Construct a new Stats1D object
+   *
+   * @param init
+   */
+  Stats1D(std::initializer_list<T> init);
+
+  /**
    * @brief Update the internal data of the current object
    *
    * @details Replaces the internal original_data and sorted_data with the
@@ -50,8 +57,8 @@ class Stats1D {
    * @param b
    * @param sorted
    */
-  template <typename FowardIter>
-  void update_data(FowardIter a, const FowardIter b, bool sorted = false);
+  // template <typename FowardIter>
+  // void update_data(FowardIter a, const FowardIter b, bool sorted = false);
 
   /**
    * @brief Update the internal data of the current object
@@ -66,8 +73,8 @@ class Stats1D {
    * @param container
    * @param sorted
    */
-  template <typename Iterable>
-  void update_data(const Iterable& container, bool sorted = false);
+  // template <typename Iterable>
+  // void update_data(const Iterable& container, bool sorted = false);
 
   /**
    * @brief Returns the length of the internally stored data
@@ -249,7 +256,7 @@ class Stats1D {
   // sorted, mean, variance, iqr, fivenum
   // 0b00011111
   uint8_t cache_flags;
-  double mean_, stdev_, sum_sq_, iqr_;
+  double mean_, stdev_, sqr_dev_, iqr_;
   std::vector<T> modes;
 
   Summary fivenum;
@@ -273,10 +280,14 @@ Stats1D<T>::Stats1D(const Iterable& container, bool sorted)
     : Stats1D(std::begin(container), std::end(container), sorted) {}
 
 template <typename T>
-template <typename Iterable>
-void Stats1D<T>::update_data(const Iterable& container, bool sorted) {
-  updateData(std::begin(container), std::end(container), sorted);
-}
+Stats1D<T>::Stats1D(std::initializer_list<T> init)
+    : Stats1D(std::begin(init), std::end(init)) {}
+
+// template <typename T>
+// template <typename Iterable>
+// void Stats1D<T>::update_data(const Iterable& container, bool sorted) {
+//   updateData(std::begin(container), std::end(container), sorted);
+// }
 
 template <typename T>
 double Stats1D<T>::mean() {
@@ -365,7 +376,7 @@ double Stats1D<T>::pstdev() {
 
 template <typename T>
 double Stats1D<T>::squared_deviation_from_mean() {
-  if (check_cache_flags(SUMSQ)) return sum_sq_;
+  if (check_cache_flags(SUMSQ)) return sqr_dev_;
 
   double mean_tmp = mean();
   double sum = 0;
@@ -373,7 +384,7 @@ double Stats1D<T>::squared_deviation_from_mean() {
     sum += pow(num - mean_tmp, 2);
   }
 
-  return sum_sq_ = sum;
+  return sqr_dev_ = sum;
 }
 
 template <typename T>
