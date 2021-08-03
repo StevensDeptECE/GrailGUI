@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "DG_misc.h"
 #include "opengl/Errcode.hh"
 #include "util/Ex.hh"
 
@@ -238,7 +239,12 @@ void GLWin::startWindow() {
   // singleton initialization here
   // TODO: is there any more elegant way?
   if (!hasBeenInitialized) {
-    *(string *)&baseDir = getenv("GRAIL");
+    std::string tmp = DG_GetExecutableDir();
+    cout << tmp << endl;
+    tmp.erase(tmp.end() - 4, tmp.end());
+    cout << tmp << endl;
+    *(string *)&baseDir = tmp;
+    cout << "Basedir in glwin: " << baseDir << endl;
     FontFace::initAll();
   }
   defaultFont = (Font *)FontFace::get("TIMES", 16, FontFace::BOLD);

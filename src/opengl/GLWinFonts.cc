@@ -475,14 +475,14 @@ void FontFace::initAll() {
   // if (hasBeenInitialized) return;
   // hasBeenInitialized = true;
   // TODO: load from config file
-  std::string fontPath = GLWin::baseDir + "/conf/fonts/";
+  std::string fontPath = GLWin::baseDir + "conf/fonts/";
   cout << "FONT PATH = " << fontPath << endl;
 
   if (FT_Init_FreeType(&FontFace::ftLib))
     throw Ex1(Errcode::INITIALIZE_FREETYPE);
   // Create a hashmap with the name and filepath of all fonts specified in
   // dirPaths
-  string baseDir = getBaseDir();
+  string baseDir = GLWin::baseDir;
   string fontBase = baseDir + "conf/fonts/";
   ifstream fontConf(baseDir + "conf/fonts.conf");
   string faceName, facePath;

@@ -1,6 +1,5 @@
 set(grail-xp
   Calendar.cc
-  Stats.cc
   lzmadecode.cc
 )
 
