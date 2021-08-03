@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <initializer_list>
 #include <iostream>
 #include <unordered_map>
 #include <vector>
@@ -42,7 +43,7 @@ class Stats1D {
    *
    * @param init
    */
-  Stats1D(std::initializer_list<T> init);
+  Stats1D(const std::initializer_list<T> init, bool sorted = false);
 
   /**
    * @brief Update the internal data of the current object
@@ -57,8 +58,8 @@ class Stats1D {
    * @param b
    * @param sorted
    */
-  // template <typename FowardIter>
-  // void update_data(FowardIter a, const FowardIter b, bool sorted = false);
+  template <typename FowardIter>
+  void update_data(FowardIter a, const FowardIter b, bool sorted = false);
 
   /**
    * @brief Update the internal data of the current object
@@ -73,8 +74,23 @@ class Stats1D {
    * @param container
    * @param sorted
    */
-  // template <typename Iterable>
-  // void update_data(const Iterable& container, bool sorted = false);
+  template <typename Iterable>
+  void update_data(const Iterable& container, bool sorted = false);
+
+  /**
+   * @brief Update the internal data of the current object
+   *
+   * @details Replaces the internal original_data and sorted_data with the
+   * values supplied by the parameter. This will also reset the cache_flags, so
+   * various values will need to be recalculated when functions are called
+   * again.
+   *
+   *
+   * @tparam Iterable
+   * @param container
+   * @param sorted
+   */
+  void update_data(const std::initializer_list<T> data, bool sorted = false);
 
   /**
    * @brief Returns the length of the internally stored data
@@ -280,14 +296,34 @@ Stats1D<T>::Stats1D(const Iterable& container, bool sorted)
     : Stats1D(std::begin(container), std::end(container), sorted) {}
 
 template <typename T>
-Stats1D<T>::Stats1D(std::initializer_list<T> init)
-    : Stats1D(std::begin(init), std::end(init)) {}
+Stats1D<T>::Stats1D(std::initializer_list<T> init, bool sorted)
+    : Stats1D(std::begin(init), std::end(init), sorted) {}
 
-// template <typename T>
-// template <typename Iterable>
-// void Stats1D<T>::update_data(const Iterable& container, bool sorted) {
-//   updateData(std::begin(container), std::end(container), sorted);
-// }
+template <typename T>
+template <typename ForwardIter>
+void Stats1D<T>::update_data(ForwardIter a, const ForwardIter b, bool sorted) {
+  original_data = std::vector<T>(a, b);
+  sorted_data = std::vector<T>(a, b);
+
+  if (!sorted) {
+    sort(std::begin(sorted_data), std::end(sorted_data));
+  }
+
+  cache_flags = SORTED;
+
+  modes.clear();
+}
+
+template <typename T>
+template <typename Iterable>
+void Stats1D<T>::update_data(const Iterable& container, bool sorted) {
+  update_data(std::begin(container), std::end(container), sorted);
+}
+
+template <typename T>
+void Stats1D<T>::update_data(const std::initializer_list<T> data, bool sorted) {
+  update_data(std::begin(data), std::end(data), sorted);
+}
 
 template <typename T>
 double Stats1D<T>::mean() {

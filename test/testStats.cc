@@ -94,13 +94,34 @@ void test_copy_assignment() {
   cout << a << endl;
 }
 
+void test_update_data() {
+  Stats1D<int> v{150, 350, 222, 100, 300, 130, 300,
+                 250, 190, 170, 100, 50,  20,  150};
+  vector<int> new_data{200, 330, 200, 270, 180, 300, 49, 247, 325, 114, 89};
+
+  double old_variance = v.variance();
+
+  v.update_data(new_data);
+
+  double new_variance = v.variance();
+
+  assert(old_variance != new_variance);
+
+  v.update_data(
+      {150, 350, 222, 100, 300, 130, 300, 250, 190, 170, 100, 50, 20, 150});
+
+  double newer_new_variance = v.variance();
+
+  assert(old_variance == newer_new_variance);
+}
+
 int main() {
   test_contructor();
   test_values();
   test_container_of_stats();
   test_copy_assignment();
 
-  // constexpr uint64_t n = 10000000;
+  // constexpr uint64_t n = 100000000;
   // double* x = new double[n];
   // for (uint64_t i = 0; i < n; i++) x[i] = i;
   // Stats1D<double> stat(x, x + n);
