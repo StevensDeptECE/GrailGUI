@@ -51,7 +51,7 @@ class Stats1D {
    * @param sorted
    */
   template <typename FowardIter>
-  void updateData(FowardIter a, const FowardIter b, bool sorted = false);
+  void update_data(FowardIter a, const FowardIter b, bool sorted = false);
 
   /**
    * @brief Update the internal data of the current object
@@ -67,7 +67,7 @@ class Stats1D {
    * @param sorted
    */
   template <typename Iterable>
-  void updateData(const Iterable& container, bool sorted = false);
+  void update_data(const Iterable& container, bool sorted = false);
 
   /**
    * @brief Returns the length of the internally stored data
@@ -87,7 +87,7 @@ class Stats1D {
    * @tparam T Any numeric type
    * @return double The mean of a dataset
    */
-  double getMean();
+  double mean();
 
   /**
    * @brief Finds the modes of a numeric type
@@ -100,7 +100,7 @@ class Stats1D {
    * @tparam T Any numeric type
    * @return vector<T> A vector of modes of a dataset
    */
-  std::vector<T> getModes();
+  std::vector<T> multimode();
 
   /**
    * @brief Calculates the IQR of a numeric type
@@ -112,7 +112,7 @@ class Stats1D {
    * @tparam T Any numeric type
    * @return T The IQR of a dataset
    */
-  double getIQR();
+  double iqr();
 
   /**
    * @brief Returns a struct containing the five number summary of a numeric
@@ -125,7 +125,7 @@ class Stats1D {
    * @tparam T Any generic type
    * @return struct Stats1D<T>::Summary A struct of the five number summary
    */
-  Summary getSummary();
+  Summary five_number_summary();
 
   /**
    * @brief Calculates the standard deviation of a numeric type
@@ -137,7 +137,7 @@ class Stats1D {
    * @tparam T Any numeric type
    * @return double The standard deviation of a dataset
    */
-  double getSampleStdDev();
+  double stdev();
 
   /**
    * @brief Calculates the standard deviation of a numeric type
@@ -149,7 +149,7 @@ class Stats1D {
    * @tparam T Any numeric type
    * @return double The standard deviation of a dataset
    */
-  double getPopulationStdDev();
+  double pstdev();
 
   /**
    * @brief Calculates the variance of a numeric type
@@ -161,7 +161,7 @@ class Stats1D {
    * @tparam T Any numeric type
    * @return double The variance of a dataset
    */
-  double getSampleVariance();
+  double variance();
 
   /**
    * @brief Calculates the variance of a numeric type
@@ -173,7 +173,7 @@ class Stats1D {
    * @tparam T Any numeric type
    * @return double The variance of a dataset
    */
-  double getPopulationVariance();
+  double pvariance();
 
   /**
    * @brief getQuantile - Gets a quantile of the sorted array
@@ -187,7 +187,7 @@ class Stats1D {
    * @param quantile_algorithm An optional string in the form of "R-[0-9]"
    * @return double The resultant quantile
    **/
-  double getQuantile(double percentile, QuantileAlgorithm alg);
+  double quantile(double percentile, QuantileAlgorithm alg);
 
   /**
    * @brief setQuantileAlgorithm - Sets the quantile algorithm used locally
@@ -208,7 +208,7 @@ class Stats1D {
    *
    * @param alg The algorithm of choice, as a string in the form of "R-[0-9]"
    **/
-  void setQuantileAlgorithm(QuantileAlgorithm alg);
+  void set_quantile_alg(QuantileAlgorithm alg);
 
   T operator[](int i) const { return original_data[i]; }
 
@@ -236,7 +236,7 @@ class Stats1D {
       &r1, &r2, &r3, &r4, &r5, &r6, &r7, &r8, &r9};
 
   /**< The default quantile algorithm used by future Stats1D objects*/
-  QuantileAlgorithm defaultQuantile;
+  QuantileAlgorithm default_quantile_alg;
 
   constexpr static uint8_t SORTED = 2;
   constexpr static uint8_t MEAN = 4;
@@ -249,11 +249,10 @@ class Stats1D {
   // sorted, mean, variance, iqr, fivenum
   // 0b00011111
   uint8_t cache_flags;
-  double mean, stddev, sample_variance, population_variance, sum_sq, iqr;
+  double mean_, stdev_, sum_sq_, iqr_;
   std::vector<T> modes;
 
   Summary fivenum;
-  QuantileAlgorithm quantile = defaultQuantile;
 };
 
 template <typename T>
@@ -262,7 +261,7 @@ Stats1D<T>::Stats1D(ForwardIter a, const ForwardIter b, bool sorted)
     : original_data(a, b),
       sorted_data(a, b),
       cache_flags(SORTED),
-      defaultQuantile(QuantileAlgorithm::R6) {
+      default_quantile_alg(QuantileAlgorithm::R6) {
   if (!sorted) {
     sort(sorted_data.begin(), sorted_data.end());
   }
@@ -275,13 +274,13 @@ Stats1D<T>::Stats1D(const Iterable& container, bool sorted)
 
 template <typename T>
 template <typename Iterable>
-void Stats1D<T>::updateData(const Iterable& container, bool sorted) {
+void Stats1D<T>::update_data(const Iterable& container, bool sorted) {
   updateData(std::begin(container), std::end(container), sorted);
 }
 
 template <typename T>
-double Stats1D<T>::getMean() {
-  if (check_cache_flags(MEAN)) return mean;
+double Stats1D<T>::mean() {
+  if (check_cache_flags(MEAN)) return mean_;
 
   cache_flags |= MEAN;
 
@@ -291,13 +290,11 @@ double Stats1D<T>::getMean() {
   }
 
   mean_tmp /= sorted_data.size();
-  mean = mean_tmp;
-
-  return mean;
+  return mean_ = mean_tmp;
 }
 
 template <typename T>
-std::vector<T> Stats1D<T>::getModes() {
+std::vector<T> Stats1D<T>::multimode() {
   if (modes.size() != 0) return modes;
 
   std::unordered_map<T, int> map;
@@ -328,19 +325,17 @@ std::vector<T> Stats1D<T>::getModes() {
 }
 
 template <typename T>
-double Stats1D<T>::getIQR() {
-  if (check_cache_flags(IQR)) return iqr;
+double Stats1D<T>::iqr() {
+  if (check_cache_flags(IQR)) return iqr_;
 
   cache_flags |= IQR;
 
-  Summary fn = getSummary();
-  iqr = fn.q3 - fn.q1;
-
-  return iqr;
+  Summary fn = five_number_summary();
+  return iqr_ = fn.q3 - fn.q1;
 }
 
 template <typename T>
-Summary Stats1D<T>::getSummary() {
+Summary Stats1D<T>::five_number_summary() {
   if (check_cache_flags(FIVENUM)) return fivenum;
 
   cache_flags |= FIVENUM;
@@ -349,9 +344,9 @@ Summary Stats1D<T>::getSummary() {
   fn.min = *sorted_data.begin();
   fn.max = *(sorted_data.end() - 1);
 
-  fn.q1 = getQuantile(.25, defaultQuantile);
-  fn.median = getQuantile(.50, defaultQuantile);
-  fn.q3 = getQuantile(.75, defaultQuantile);
+  fn.q1 = quantile(.25, default_quantile_alg);
+  fn.median = quantile(.50, default_quantile_alg);
+  fn.q3 = quantile(.75, default_quantile_alg);
 
   fivenum = Summary(fn);
 
@@ -359,26 +354,26 @@ Summary Stats1D<T>::getSummary() {
 }
 
 template <typename T>
-double Stats1D<T>::getSampleStdDev() {
-  return sqrt(getSampleVariance());
+double Stats1D<T>::stdev() {
+  return sqrt(variance());
 }
 
 template <typename T>
-double Stats1D<T>::getPopulationStdDev() {
-  return sqrt(getPopulationVariance());
+double Stats1D<T>::pstdev() {
+  return sqrt(pvariance());
 }
 
 template <typename T>
 double Stats1D<T>::squared_deviation_from_mean() {
-  if (check_cache_flags(SUMSQ)) return sum_sq;
+  if (check_cache_flags(SUMSQ)) return sum_sq_;
 
-  double mean_tmp = getMean();
+  double mean_tmp = mean();
   double sum = 0;
   for (auto const& num : sorted_data) {
     sum += pow(num - mean_tmp, 2);
   }
 
-  return sum_sq = sum;
+  return sum_sq_ = sum;
 }
 
 template <typename T>
@@ -387,25 +382,23 @@ bool Stats1D<T>::check_cache_flags(uint8_t chosen_flags) {
 }
 
 template <typename T>
-double Stats1D<T>::getSampleVariance() {
-  return sample_variance =
-             squared_deviation_from_mean() / (sorted_data.size() - 1);
+double Stats1D<T>::variance() {
+  return squared_deviation_from_mean() / (sorted_data.size() - 1);
 }
 
 template <typename T>
-double Stats1D<T>::getPopulationVariance() {
-  return population_variance =
-             squared_deviation_from_mean() / sorted_data.size();
+double Stats1D<T>::pvariance() {
+  return squared_deviation_from_mean() / sorted_data.size();
 }
 
 template <typename T>
-double Stats1D<T>::getQuantile(double percentile, QuantileAlgorithm alg) {
+double Stats1D<T>::quantile(double percentile, QuantileAlgorithm alg) {
   return (Stats1D<T>::quantile_function_map[(int)alg])(sorted_data, percentile);
 }
 
 template <typename T>
-void Stats1D<T>::setQuantileAlgorithm(QuantileAlgorithm q) {
-  defaultQuantile = q;
+void Stats1D<T>::set_quantile_alg(QuantileAlgorithm q) {
+  default_quantile_alg = q;
 }
 
 // template <typename U, typename T>
@@ -438,19 +431,18 @@ void Stats1D<T>::setQuantileAlgorithm(QuantileAlgorithm q) {
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os, Stats1D<T>& stats) {
-  struct Summary fivenum = stats.getSummary();
-  os << "# Points: " << stats.sorted_data.size()
-     << "\nMean: " << stats.getMean()
-     << "\nSample StdDev: " << stats.getSampleStdDev()
-     << "\nPopulation StdDev: " << stats.getPopulationStdDev()
-     << "\nSample Variance: " << stats.getSampleVariance()
-     << "\nPopulation Variance: " << stats.getPopulationVariance()
+  struct Summary fivenum = stats.five_number_summary();
+  os << "# Points: " << stats.sorted_data.size() << "\nMean: " << stats.mean()
+     << "\nSample StdDev: " << stats.stdev()
+     << "\nPopulation StdDev: " << stats.pstdev()
+     << "\nSample Variance: " << stats.variance()
+     << "\nPopulation Variance: " << stats.pvariance()
      << "\nFive Number Summary:\n\tMinimum: " << fivenum.min
      << "\n\tFirst Quartile: " << fivenum.q1 << "\n\tMedian: " << fivenum.median
      << "\n\tThird Quartile: " << fivenum.q3 << "\n\tMaximum: " << fivenum.max
-     << "\nIQR: " << stats.getIQR() << "\nModes: [";
+     << "\nIQR: " << stats.iqr() << "\nModes: [";
 
-  std::vector<T> modes = stats.getModes();
+  std::vector<T> modes = stats.multimode();
   for (auto const& i : modes) {
     os << i << ", ";
   }

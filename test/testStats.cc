@@ -33,27 +33,27 @@ void test_values() {
                          180, 300, 49,  247, 325, 114, 89,  69};
 
   Stats1D<double> stats(data);
-  stats.setQuantileAlgorithm(stats::QuantileAlgorithm::R5);
+  stats.set_quantile_alg(stats::QuantileAlgorithm::R5);
 
-  assert(is_between(stats.getMean(), 186.72, 186.74));
+  assert(is_between(stats.mean(), 186.72, 186.74));
 
-  assert(is_between(stats.getPopulationStdDev(), 95.35, 95.36));
+  assert(is_between(stats.pstdev(), 95.35, 95.36));
 
-  assert(is_between(stats.getSampleStdDev(), 97.24, 97.25));
+  assert(is_between(stats.stdev(), 97.24, 97.25));
 
-  assert(is_between(stats.getPopulationVariance(), 9093.03, 9093.05));
+  assert(is_between(stats.pvariance(), 9093.03, 9093.05));
 
-  assert(is_between(stats.getSampleVariance(), 9456.75, 9456.77));
+  assert(is_between(stats.variance(), 9456.75, 9456.77));
 
-  assert(is_between(stats.getQuantile(.25, stats::QuantileAlgorithm::R5), 100,
-                    100));
+  assert(
+      is_between(stats.quantile(.25, stats::QuantileAlgorithm::R5), 100, 100));
 
-  assert(is_between(stats.getQuantile(.75, stats::QuantileAlgorithm::R5), 270,
-                    270));
+  assert(
+      is_between(stats.quantile(.75, stats::QuantileAlgorithm::R5), 270, 270));
 
-  assert(is_between(stats.getSummary().median, 185, 185));
+  assert(is_between(stats.five_number_summary().median, 185, 185));
 
-  assert(is_between(stats.getIQR(), 169.99, 170.1));
+  assert(is_between(stats.iqr(), 169.99, 170.1));
 }
 
 // We've had undefined behavior in the past from this
