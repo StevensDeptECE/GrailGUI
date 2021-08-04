@@ -170,7 +170,6 @@ void writeMeta(char*& buf, const Point& p) {
   writeMeta(buf, Type::F64, "x");
   writeMeta(buf, Type::F64, "y");
   writeMeta(buf, Type::F64, "z");
-  buf += sizeof(uint32_t);
 }
 
 class StockQuote {
@@ -323,27 +322,17 @@ int main() {
   char buffer[1024];
   char metadata[1024];
   Point p(1, 2, 3);
-
-  char* buf = buffer;
-  char* meta = metadata;
   List<uint32_t> numbers("numpy");
   numbers.add(3);
   numbers.add(1);
   numbers.add(4);
 
-
   List<Point> points("fred");
   for (int i = 0; i < 2; i++)
     points.add(Point(i,i+1,i+2));
 
-  #if 0
-  writeBoth(buf, meta, uint32_t(2));
-  writeBoth(buf, meta, uint64_t(123456789012345678ULL));
-  writeBoth(buf, meta, 1.5);
-  writeBoth(buf, meta,  p);
-  writeBoth(buf, meta, points);
-  writeBoth(buf, meta, numbers);
-#endif
+  char* buf = buffer;
+  char* meta = metadata;
 
   writeBuf(buf, meta,
            uint32_t(2),
