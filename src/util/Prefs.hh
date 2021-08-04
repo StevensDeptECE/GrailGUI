@@ -22,6 +22,7 @@ class Prefs {
 
   bool trySavingShader;  // set true first, if it fails, set false
 
+  std::string getBaseDir() const { return baseDir; }
   std::string getConfDir() const { return baseDir + "conf/"; }
   std::string getFontDir() const { return baseDir + "conf/fonts/"; }
   std::string getShaderDir() const { return baseDir + "shaders/"; }

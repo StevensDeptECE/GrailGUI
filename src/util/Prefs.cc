@@ -8,10 +8,12 @@
 #define DG_MISC_IMPLEMENTATION
 #include "DG_misc.h"
 
+#define CUTE_PATH_IMPLEMENTATION
+#include "cute_path.h"
+
 using namespace std;
 Prefs::Prefs()
-    : baseDir(DG_GetExecutableDir()),
-      preferredX(0),
+    : preferredX(0),
       preferredY(0),
       preferredWidth(1024),
       preferredHeight(1024),
@@ -22,7 +24,15 @@ Prefs::Prefs()
       shaderBinaryFormat(0),
       fastLoadShaders(false),
       trySavingShader(true) {
-  baseDir.erase(baseDir.end() - 4, baseDir.end());
+  const char *full_path = DG_GetExecutableDir();
+
+  char out[CUTE_PATH_MAX_PATH];
+
+  path_pop(full_path, out);
+
+  baseDir = out;
+  baseDir += '/';
+
   cout << "BaseDir: " << baseDir << endl;
 }
 

@@ -237,10 +237,6 @@ void FontFace::emptyFaces() {
   faces.clear();
 }
 
-string getBaseDir() {
-  string baseDir = getenv("GRAIL");
-  return baseDir + "/";
-}
 unordered_map<string, string> FontFace::pathByName;
 
 void FontFace::setTexture(const uint8_t bitmap[], uint32_t w, uint32_t h) {
@@ -411,7 +407,7 @@ void FontFace::saveFonts(const uint8_t* combinedBitmap,
                          uint32_t totalWidthAllFaces,
                          uint32_t maxHeightAllFaces) {
   ofstream fastfont(
-      getBaseDir() + "fast.glfont",
+      GLWin::baseDir + "fast.glfont",
       ios::binary);  // save a binary file for rapid loading next time
   FastFontHeader header;
   header.magic = 0x544E4644;
