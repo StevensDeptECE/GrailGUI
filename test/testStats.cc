@@ -4,6 +4,9 @@
 
 #include "xp/Stats.hh"
 
+using namespace stats;
+using stats::QuantileAlgorithm;
+
 #define is_between(num, lower, upper) ((num >= lower) && (num <= upper))
 
 using namespace std;
@@ -12,7 +15,7 @@ int main() {
                          170, 100, 50,  20,  150, 200, 330, 200, 270,
                          180, 300, 49,  247, 325, 114, 89,  69};
 
-  assert(is_between(stats::mean(data), 186.72, 186.74));
+  assert(is_between(mean(data), 186.72, 186.74));
 
   assert(is_between(stats::pstdev(data), 95.35, 95.36));
 
@@ -22,7 +25,7 @@ int main() {
 
   assert(is_between(stats::variance(data), 9456.75, 9456.77));
 
-  double q1 = stats::quantile(data, .25, stats::QuantileAlgorithm::R5);
+  double q1 = stats::quantile(data, .25, QuantileAlgorithm::R5);
   assert(is_between(q1, 100, 100));
 
   assert(is_between(stats::quantile(data, .75, stats::QuantileAlgorithm::R5),
