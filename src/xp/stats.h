@@ -153,7 +153,7 @@ double r9(const Iterable& data, double p) {
 
 template <typename Iterable>
 double quantile(const Iterable& data, double percentile,
-                QuantileAlgorithm alg = QuantileAlgorithm::R5) {
+                QuantileAlgorithm alg = QuantileAlgorithm::R6) {
   std::vector<double> sorted(std::begin(data), std::end(data));
   sort(sorted.begin(), sorted.end());
 
@@ -189,6 +189,21 @@ double quantile(const Iterable& data, double percentile,
   }
 
   return val;
+}
+
+template <typename Iterable>
+Summary five_number_summary(const Iterable& data,
+                            QuantileAlgorithm alg = QuantileAlgorithm::R6) {
+  std::vector<double> sorted(std::begin(data), std::end(data));
+  sort(sorted.begin(), sorted.end());
+
+  Summary fn = {.min = *sorted.begin(),
+                .max = *(sorted.end() - 1),
+                .q1 = quantile(sorted, .25, alg),
+                .q3 = quantile(sorted, .75, alg),
+                .median = quantile(sorted, .50, alg)};
+
+  return fn;
 }
 
 }  // namespace stats
