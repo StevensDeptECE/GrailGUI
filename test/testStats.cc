@@ -37,4 +37,6 @@ int main() {
 
   assert(is_between(stats::iqr(data, stats::QuantileAlgorithm::R5), 169.99,
                     170.1));
+
+  for (auto const& n : stats::multimode(data)) cout << n << endl;
 }

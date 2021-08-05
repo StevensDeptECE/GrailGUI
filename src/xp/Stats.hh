@@ -6,6 +6,16 @@
 #include <cmath>
 #include <optional>
 
+/**
+ * A library providing functions for calculating mathematical statsitics of
+ * numeric (not complex/imaginary) data. This is not meant to be a replacement
+ * to massive machine learning libraries like dlib or CUDA, just something small
+ * to include with projects that need basic statsistics.
+ *
+ * All of these functions are designed to take in a generic iterable of some
+ * kind (arrays, vectors, etc) and return a double precison floating point
+ * number.
+ */
 namespace stats {
 
 namespace detail {
@@ -82,11 +92,29 @@ double r9(const Iterable& data, double p) {
 }  // namespace detail
 
 struct Summary {
-  double min, max, q1, q3, median;
+  double min;    /** */
+  double max;    /** */
+  double q1;     /** */
+  double q3;     /** */
+  double median; /** */
 };
 
 enum class QuantileAlgorithm { R1 = 0, R2, R3, R4, R5, R6, R7, R8, R9 };
 
+/**
+ * @brief Returns the sample arithmetic mean of data.
+ *
+ * The arithmetic mean is the sum of the data divided by the number of data
+ * points. Often it's refered to as "the average", but it's only one of many
+ * different mathematical averages.
+ *
+ * TODO: implement this
+ * If data is empty, an exception should be thrown (not implemented yet).
+ *
+ * @tparam Iterable
+ * @param data an iterable of numbers.
+ * @return double the mean of data.
+ */
 template <typename Iterable>
 double mean(const Iterable& data) {
   double mean_tmp = 0;
@@ -97,6 +125,19 @@ double mean(const Iterable& data) {
   return mean_tmp /= std::size(data);
 }
 
+/**
+ * @brief Returns a vector of the most frequently occuring values.
+ *
+ * This will return multiple values if there are multiple modes, and values will
+ * be in the order they were first encountered in the data.
+ *
+ * TODO: add a check for this
+ * If data is empty an empty vector will be returned.
+ *
+ * @tparam Iterable
+ * @param data an iterable of numbers.
+ * @return std::vector<double> the modes of the data.
+ */
 template <typename Iterable>
 std::vector<double> multimode(const Iterable& data) {
   std::unordered_map<double, int> map;
@@ -105,16 +146,14 @@ std::vector<double> multimode(const Iterable& data) {
 
   for (auto const& num : data) {
     int tmp = 1;
-    auto search = map.find(num);
 
-    if (search != map.end()) {
+    if (auto search = map.find(num); search != map.end()) {
       tmp = search->second + 1;
     }
 
-    map.insert_or_assign(num, tmp);
-
-    if (tmp > biggest_mode) {
+    if (tmp >= biggest_mode) {
       biggest_mode = tmp;
+      map.insert_or_assign(num, tmp);
     }
   }
 
@@ -127,30 +166,109 @@ std::vector<double> multimode(const Iterable& data) {
   return modes;
 }
 
+/**
+ * @brief Returns the sample variance of data.
+ *
+ * Variance, also called the second moment about the mean, is a measure of the
+ * variability / spread of data. A large variance indicates that the data is
+ * spread out, and a small variance indicates it is clustered closely around the
+ * mean.
+ *
+ * If the optional second argument xbar is given, it should be the mean of the
+ * data. If it is missing or {} (the default), the mean is automatically
+ * calculated.
+ *
+ * TODO: make the reference to pvariance jump there in documentation (if it
+ * doesn't already)
+ * Use this function when your data is a sample from a
+ * population. To calculate the variance from the entire population, see
+ * pvariance().
+ *
+ * TODO: implement this exception
+ * If data contains less than two values, an exception should be thrown.
+ *
+ * @tparam Iterable
+ * @param data an iterable of at least two real-valued numbers.
+ * @param xbar the mean of the data.
+ * @return double the variance of the data.
+ */
 template <typename Iterable>
-double variance(const Iterable& data, std::optional<double> mu = {}) {
-  return detail::squared_deviation_from_mean(data, mu.value_or(mean(data))) /
+double variance(const Iterable& data, std::optional<double> xbar = {}) {
+  return detail::squared_deviation_from_mean(data, xbar.value_or(mean(data))) /
          (std::size(data) - 1);
 }
 
+/**
+ * @brief Returns the population variance of the data.
+ *
+ * Variance, also called the second moment about the mean, is a measure of the
+ * variability / spread of data. A large variance indicates that the data is
+ * spread out, and a small variance indicates it is clustered closely around the
+ * mean.
+ *
+ * If the optional second argument @p mu is given, it is typically the mean of
+ * the @p data. It can also be used to compute the second moment around a point
+ * that is not the mean. If it is missing or {} (the default), the arithmetic
+ * mean is automatically calculated.
+ *
+ * Use this functio to calculate the variance from the entire population, to
+ * estimate the variance from a sample, the variance() function is usually a
+ * better choice.
+ *
+ * If data contains less than two values, an exception should be thrown.
+ *
+ * TODO: show an example here and for other functions
+ * \b Usage:
+ * \code
+ *
+ * \endcoe
+ *
+ * @tparam Iterable
+ * @param data an iterable of at least two real-valued numbers.
+ * @param mu where to calculate the second moment around.
+ * @return double the population variance of the data.
+ */
 template <typename Iterable>
 double pvariance(const Iterable& data, std::optional<double> mu = {}) {
   return detail::squared_deviation_from_mean(data, mu.value_or(mean(data))) /
          (std::size(data));
 }
 
+/**
+ * @brief
+ *
+ * @tparam Iterable
+ * @param data
+ * @param xbar
+ * @return double
+ */
 template <typename Iterable>
 double stdev(const Iterable& data, std::optional<double> xbar = {}) {
-  double mu = xbar.value_or(mean(data));
-  return sqrt(variance(data, mu));
+  return sqrt(variance(data, xbar.value_or(mean(data))));
 }
 
+/**
+ * @brief
+ *
+ * @tparam Iterable
+ * @param data
+ * @param mu
+ * @return double
+ */
 template <typename Iterable>
-double pstdev(const Iterable& data, std::optional<double> xbar = {}) {
-  double mu = xbar.value_or(mean(data));
-  return sqrt(pvariance(data, mu));
+double pstdev(const Iterable& data, std::optional<double> mu = {}) {
+  return sqrt(pvariance(data, mu.value_or(mean(data))));
 }
 
+/**
+ * @brief
+ *
+ * @tparam Iterable
+ * @param data
+ * @param percentile
+ * @param alg
+ * @return double
+ */
 template <typename Iterable>
 double quantile(const Iterable& data, double percentile,
                 QuantileAlgorithm alg = QuantileAlgorithm::R6) {
@@ -191,6 +309,14 @@ double quantile(const Iterable& data, double percentile,
   return val;
 }
 
+/**
+ * @brief
+ *
+ * @tparam Iterable
+ * @param data
+ * @param alg
+ * @return Summary
+ */
 template <typename Iterable>
 Summary five_number_summary(const Iterable& data,
                             QuantileAlgorithm alg = QuantileAlgorithm::R6) {
@@ -209,6 +335,14 @@ Summary five_number_summary(const Iterable& data,
 // TODO: does this really need to exist if we have the five number summary?
 // could we just make the five number sum be more descriptive with its fields
 // (equivalent to one var stats on a ti calculator?)
+/**
+ * @brief
+ *
+ * @tparam Iterable
+ * @param data
+ * @param alg
+ * @return double
+ */
 template <typename Iterable>
 double iqr(const Iterable& data,
            QuantileAlgorithm alg = QuantileAlgorithm::R6) {
