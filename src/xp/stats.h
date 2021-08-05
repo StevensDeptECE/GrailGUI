@@ -206,4 +206,16 @@ Summary five_number_summary(const Iterable& data,
   return fn;
 }
 
+// TODO: does this really need to exist if we have the five number summary?
+// could we just make the five number sum be more descriptive with its fields
+// (equivalent to one var stats on a ti calculator?)
+template <typename Iterable>
+double iqr(const Iterable& data,
+           QuantileAlgorithm alg = QuantileAlgorithm::R6) {
+  std::vector<double> sorted(std::begin(data), std::end(data));
+  sort(sorted.begin(), sorted.end());
+
+  return quantile(sorted, .75, alg) - quantile(sorted, .25, alg);
+}
+
 }  // namespace stats

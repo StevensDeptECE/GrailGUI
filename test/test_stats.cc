@@ -32,5 +32,6 @@ int main() {
       stats::five_number_summary(data, stats::QuantileAlgorithm::R5).median;
   assert(is_between(median, 185, 185));
 
-  // assert(is_between(stats::iqr(), 169.99, 170.1));
+  assert(is_between(stats::iqr(data, stats::QuantileAlgorithm::R5), 169.99,
+                    170.1));
 }
