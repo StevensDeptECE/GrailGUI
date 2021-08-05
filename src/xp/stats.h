@@ -88,4 +88,107 @@ double pstdev(const Iterable& data, std::optional<double> xbar = {}) {
   return sqrt(pvariance(data, mu));
 }
 
+namespace {
+
+template <typename Iterable>
+double r1(const Iterable& data, double p) {
+  double h = data.size() * p + 0.5;
+  return data[ceil(h - 0.5) - 1];
+}
+
+template <typename Iterable>
+double r2(const Iterable& data, double p) {
+  double h = data.size() * p + 0.5;
+  return (data[ceil(h - 0.5) - 1] + data[floor(h + 0.5) - 1]) / 2;
+}
+
+template <typename Iterable>
+double r3(const Iterable& data, double p) {
+  double h = data.size() * p;
+  return data[round(h) - 1];
+}
+
+template <typename Iterable>
+double interpolate_quantile(const Iterable& data, double h) {
+  return data[floor(h) - 1] +
+         (h - floor(h)) * (data[ceil(h) - 1] - data[floor(h) - 1]);
+}
+
+template <typename Iterable>
+double r4(const Iterable& data, double p) {
+  double h = data.size() * p;
+  return interpolate_quantile(data, h);
+}
+
+template <typename Iterable>
+double r5(const Iterable& data, double p) {
+  double h = data.size() * p + 0.5;
+  return interpolate_quantile(data, h);
+}
+
+template <typename Iterable>
+double r6(const Iterable& data, double p) {
+  double h = (data.size() + 1) * p;
+  return interpolate_quantile(data, h);
+}
+
+template <typename Iterable>
+double r7(const Iterable& data, double p) {
+  double h = (data.size() - 1) * p + 1;
+  return interpolate_quantile(data, h);
+}
+
+template <typename Iterable>
+double r8(const Iterable& data, double p) {
+  double h = (data.size() + 1 / 3) * p + 1 / 3;
+  return interpolate_quantile(data, h);
+}
+
+template <typename Iterable>
+double r9(const Iterable& data, double p) {
+  double h = (data.size() + 0.25) * p + .375;
+  return interpolate_quantile(data, h);
+}
+}  // namespace
+
+template <typename Iterable>
+double quantile(const Iterable& data, double percentile,
+                QuantileAlgorithm alg = QuantileAlgorithm::R5) {
+  std::vector<double> sorted(std::begin(data), std::end(data));
+  sort(sorted.begin(), sorted.end());
+
+  double val;
+  switch (alg) {
+    case QuantileAlgorithm::R1:
+      val = r1(sorted, percentile);
+      break;
+    case QuantileAlgorithm::R2:
+      val = r2(sorted, percentile);
+      break;
+    case QuantileAlgorithm::R3:
+      val = r3(sorted, percentile);
+      break;
+    case QuantileAlgorithm::R4:
+      val = r4(sorted, percentile);
+      break;
+    case QuantileAlgorithm::R5:
+      val = r5(sorted, percentile);
+      break;
+    case QuantileAlgorithm::R6:
+      val = r6(sorted, percentile);
+      break;
+    case QuantileAlgorithm::R7:
+      val = r7(sorted, percentile);
+      break;
+    case QuantileAlgorithm::R8:
+      val = r8(sorted, percentile);
+      break;
+    case QuantileAlgorithm::R9:
+      val = r9(sorted, percentile);
+      break;
+  }
+
+  return val;
+}
+
 }  // namespace stats

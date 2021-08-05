@@ -22,13 +22,11 @@ int main() {
 
   assert(is_between(stats::variance(data), 9456.75, 9456.77));
 
-  // assert(
-  //   is_between(stats::quantile(.25, stats::QuantileAlgorithm::R5), 100,
-  //   100));
+  double q1 = stats::quantile(data, .25, stats::QuantileAlgorithm::R5);
+  assert(is_between(q1, 100, 100));
 
-  // assert(
-  //    is_between(stats::quantile(.75, stats::QuantileAlgorithm::R5), 270,
-  //    270));
+  assert(is_between(stats::quantile(data, .75, stats::QuantileAlgorithm::R5),
+                    270, 270));
 
   //  assert(is_between(stats::five_number_summary().median, 185, 185));
 
