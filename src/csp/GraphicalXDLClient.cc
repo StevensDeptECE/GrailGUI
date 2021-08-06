@@ -199,12 +199,12 @@ void Renderer::renderListDown() {
     cerr << "Expected generic list!";
     return;
   }
-  Method* elementRenderer = rendererFind(i->getDataType());
+  Method* elementRenderer = rendererFind(elementType->getDataType());
   if (!elementRenderer) {
     cerr << "bad renderer";
     return;
   }
-  for (; !i && y < bounds.height; ++i, y += rowSize) {
+  for (; !*i && y < bounds.height; ++i, y += rowSize) {
     (this->**elementRenderer)();
   }
   // endPage = i;

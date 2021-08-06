@@ -45,10 +45,6 @@ void SymbolTable::writeMeta(Buffer& metadataBuf) {
     types[i]->writeMeta(metadataBuf);
 }
 #endif
-void SymbolTable::write(Buffer& out) {
-  Struct* s = (Struct*)getMemberType(root);
-  s->write(out);
-}
 
 void SymbolTable::readMeta(Buffer& metadataBuf) {
   DataType dt = metadataBuf.readType();
