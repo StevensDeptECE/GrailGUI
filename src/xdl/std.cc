@@ -238,6 +238,9 @@ const XDLType* XDLType::readMeta(XDLCompiler* compiler, Buffer& in) {
   return unimpl;
 }
 
+// XDLIterator::XDLIterator(XDLType* underlying)
+//    : XDLType("Iterator"), underlying(underlying) {}
+
 DataType U8::getDataType() const { return DataType::U8; }
 uint32_t U8::size() const { return 1; }
 void write(Buffer& buf, const U8& data) { buf.write(data.val); }
@@ -994,8 +997,9 @@ uint32_t UnImpl::fieldSize() const { return 0; }
 uint32_t TypeDef::fieldSize() const { return 0; }
 
 // TODO: write function to calculate max size when Struct is made
-uint32_t Struct::fieldSize() const { return 22; }  // return maxFieldSize; }
-uint32_t GenericList::fieldSize() const { return listType->fieldSize(); }
+uint32_t Struct::fieldSize() const { return 22; }  // return maxFieldSize;
+} uint32_t GenericList::fieldSize() const { return listType->fieldSize();
+}
 
 uint32_t XDLRaw::fieldSize() const { return 0; }
 */
@@ -1044,9 +1048,10 @@ void String32::writeXDL(Buffer& buf) const { write(buf, val); }
 void String64::writeXDL(Buffer& buf) const { write(buf, val); }
 
 void Struct::writeXDL(Buffer& buf) const { write(buf, *this); }
+void Struct::Iterator::writeXDL(Buffer& buf) const {}
 void GenericList::writeXDL(Buffer& buf) const { write(buf, *this); }
+void GenericList::Iterator::writeXDL(Buffer& buf) const {}
 void XDLRaw::writeXDL(Buffer& buf) const { write(buf, *this); }
-void XDLIterator::writeXDL(Buffer& buf) const { write(buf, *this); }
 void TypeDef::writeXDL(Buffer& buf) const { type->writeXDL(buf); }
 void ArrayOfBytes::writeXDL(Buffer& buf) const {}
 
@@ -1082,9 +1087,10 @@ void String32::writeXDLMeta(Buffer& buf) const { writeMeta(buf, *this); }
 void String64::writeXDLMeta(Buffer& buf) const { writeMeta(buf, *this); }
 
 void Struct::writeXDLMeta(Buffer& buf) const { writeMeta(buf, *this); }
+void Struct::Iterator::writeXDLMeta(Buffer& buf) const {}
 void GenericList::writeXDLMeta(Buffer& buf) const { writeMeta(buf, *this); }
+void GenericList::Iterator::writeXDLMeta(Buffer& buf) const {}
 void XDLRaw::writeXDLMeta(Buffer& buf) const { writeMeta(buf, *this); }
-void XDLIterator::writeXDLMeta(Buffer& buf) const { writeMeta(buf, *this); }
 void TypeDef::writeXDLMeta(Buffer& buf) const { type->writeXDLMeta(buf); }
 void ArrayOfBytes::writeXDLMeta(Buffer& buf) const {}
 

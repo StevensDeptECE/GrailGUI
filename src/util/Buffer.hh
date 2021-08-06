@@ -52,10 +52,11 @@ class Buffer {
   void displayHTTPRaw();  // TODO: eliminate! die die die
 
   void flush() {  // TODO: this will fail if we overflow slightly
+    uint32_t writeSize = (p - buffer >= size) ? size : (p - buffer);
     if (isSockBuf)
-      SocketIO::send(fd, buffer, p - buffer, 0);
+      SocketIO::send(fd, buffer, writeSize, 0);
     else {
-      if (::write(fd, buffer, p - buffer) < 0) throw Ex1(Errcode::FILE_WRITE);
+      if (::write(fd, buffer, writeSize) < 0) throw Ex1(Errcode::FILE_WRITE);
     }
     p = buffer;
     availSize = size;
@@ -429,6 +430,7 @@ class Buffer {
   int32_t availSize;  // how much space is left in the buffer
   char* p;            // cursor to current byte for reading/writing
   int fd;  // file descriptor for file backing this buffer (read or write)
+  uint32_t blockSize;  // Max block size for output
   void checkAvailableRead(size_t sz) {
     if (availSize < sz) {
       size_t overflowSize = availSize;

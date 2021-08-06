@@ -197,7 +197,7 @@ float MultiText::add(float x, float y, const Font* f, double v) {
 }
 
 float MultiText::add(float x, float y, const Font* f, double v, int fieldWidth,
-                    int precision) {
+                     int precision) {
   char fmt[35];
   sprintf(fmt, "%%%d.%dlf", fieldWidth, precision);
   char s[35];
@@ -247,7 +247,7 @@ void MultiText::addCentered(float x, float y, float w, float h, const Font* f,
   float textWidth = f->getWidth(s, len);
   float textHeight = f->getHeight();
 
-  internalAdd(x + (w- textWidth) / 2, y + (w- textHeight) / 2, f, s, len);
+  internalAdd(x + (w - textWidth) / 2, y + (w - textHeight) / 2, f, s, len);
 }
 
 inline void rotateAround(float xc, float yc, float cosa, float sina, float& x,
@@ -258,7 +258,7 @@ inline void rotateAround(float xc, float yc, float cosa, float sina, float& x,
 }
 
 float MultiText::add(float x, float y, float space, float ang, const Font* f,
-                    const char s[], uint32_t len) {
+                     const char s[], uint32_t len) {
   float startx = x, starty = y;
   x += space;
   double cosa = cos(ang), sina = sin(ang);
@@ -310,11 +310,11 @@ float MultiText::add(float x, float y, float space, float ang, const Font* f,
 }
 
 float MultiText::add(float x, float y, const Font* f, const char s[],
-                    uint32_t len) {
+                     uint32_t len) {
   return internalAdd(x, y, f, s, len);
 }
 
-float  MultiText::add(float x, float y, const Font* f, const std::string& s) {
+float MultiText::add(float x, float y, const Font* f, const std::string& s) {
   return internalAdd(x, y, f, s.c_str(), s.length());
 }
 
@@ -376,8 +376,6 @@ void MultiText::render() {
   // Update data
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   const int windowLen = 128 * 128 * 24;  // preallocate a
-  46 * (2 + 3 + 6 + 4) *
-      24;  // TODO: This was too small. We need a better policy?
   glBufferSubData(GL_ARRAY_BUFFER, 0, vert.size() * sizeof(float),
                   &vert[0]);  // TODO: Right now we draw the entire string!
   glDrawArrays(GL_TRIANGLES, 0, vert.size());

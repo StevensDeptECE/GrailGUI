@@ -137,12 +137,9 @@ class XDLIterator : public XDLType {
       : XDLType("Iterator"), underlying(underlying) {}
   DataType getDataType() const override { return (DataType)-1; }
   XDLType* begin(Buffer& buf) override { return nullptr; }
-  void writeXDL(Buffer& buf) const override;
-  void writeXDLMeta(Buffer& buf) const override;
-  void addData(ArrayOfBytes* data) const override {}
-  void addMeta(ArrayOfBytes* meta) const override {}
   XDLType* getUnderlying() const { return underlying; }
   uint32_t size() const override { return underlying->size(); }
+  virtual XDLIterator* clone() = 0;
 };
 
 /**
@@ -968,6 +965,12 @@ class GenericList : public CompoundType {
       remaining--;
       return *this;
     }
+
+    void writeXDL(Buffer& buf) const override;
+    void writeXDLMeta(Buffer& buf) const override;
+    void addData(ArrayOfBytes* data) const override {}
+    void addMeta(ArrayOfBytes* meta) const override {}
+    XDLIterator* clone() override { return new Iterator(*this); }
   };
 };
 
@@ -1114,6 +1117,12 @@ class Struct : public CompoundType {
       currentField++;
       return *this;
     }
+
+    void writeXDL(Buffer& buf) const override;
+    void writeXDLMeta(Buffer& buf) const override;
+    void addData(ArrayOfBytes* data) const override {}
+    void addMeta(ArrayOfBytes* meta) const override {}
+    XDLIterator* clone() override { return new Iterator(*this); }
   };
 };
 

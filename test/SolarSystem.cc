@@ -91,6 +91,7 @@ class SolarSystem : public GLWin {
   void panLeft() { cam->translate(-1, 0, 0); }
 
   void init() {
+    setUpdateTime(1.0 / 60);
     setDt(0.1);
     earthOrbitAngle = 1.0 / 365.2425;
     earthRotationAngle = 0.9972;  // Earth rotates in 23h 56m 4.1s.
