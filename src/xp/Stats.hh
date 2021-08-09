@@ -370,6 +370,11 @@ double iqr(const Iterable& data,
   return quantile(sorted, .75, alg) - quantile(sorted, .25, alg);
 }
 
+namespace aliases {
+using stats::QuantileAlgorithm;
+using stats::Summary;
+}  // namespace aliases
+
 }  // namespace stats
 
 #endif  // STATS_H_
