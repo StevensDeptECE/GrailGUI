@@ -18,7 +18,7 @@ int main() {
                          180, 300, 49,  247, 325, 114, 89,  69};
 
   double mean = stats::mean(data);
-  double median = stats::median(data);
+  double median = stats::median(data).value();
   double pstdev = stats::pstdev(data, mean);
   double stdev = stats::stdev(data, mean);
   double pvariance = stats::pvariance(data, mean);
@@ -52,7 +52,7 @@ int main() {
 
   std::vector<double> empty;
   try {
-    double med = stats::median(empty);
+    double mn = stats::mean(empty);
   } catch (const stats_error& e) {
     cout << e.what() << endl;
   }

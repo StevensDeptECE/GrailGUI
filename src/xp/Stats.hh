@@ -143,12 +143,12 @@ double mean(const Iterable& data) {
  * @return double
  */
 template <typename Iterable>
-double median(const Iterable& data) {
+std::optional<double> median(const Iterable& data) {
   std::vector<double> sorted(std::begin(data), std::end(data));
   sort(sorted.begin(), sorted.end());
   int n = sorted.size();
 
-  if (n == 0) throw_stats_error("no median for empty data");  // exception here
+  if (n == 0) return {};  // exception here
 
   if (n % 2 == 1) {
     return sorted[n / 2];
@@ -440,6 +440,9 @@ double iqr(const Iterable& data,
 namespace aliases {
 using stats::QuantileAlgorithm;
 using stats::Summary;
+// TODO: move this error, if we use it, into it's own namespace, or the base
+// namespace
+using stats::detail::stats_error;
 }  // namespace aliases
 
 }  // namespace stats
