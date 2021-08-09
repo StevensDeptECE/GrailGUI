@@ -2,300 +2,559 @@
 
 #include <algorithm>
 #include <cmath>
+#include <initializer_list>
 #include <iostream>
-#include <memory>
+#include <unordered_map>
 #include <vector>
 
-using namespace std;
+namespace stats {
+
+struct Summary {
+  double min, max, q1, q3, median;
+};
+enum class QuantileAlgorithm { R1 = 0, R2, R3, R4, R5, R6, R7, R8, R9 };
 
 template <typename T>
 class Stats1D {
  public:
-  struct Summary {
-    double min, max, q1, q3, median;
-  };
+  /**
+   * @brief Construct a new Stats1D object
+   *
+   * @tparam FowardIter
+   * @param a
+   * @param b
+   * @param sorted
+   */
+  template <typename FowardIter>
+  Stats1D(FowardIter a, const FowardIter b, bool sorted = false);
 
- private:
-  T* array;
-  std::vector<T> sorted_array;
-  uint32_t size;
-  bool sorted;
-  std::unique_ptr<double> mean, stddev, variance;
-  std::unique_ptr<T> iqr;
-  std::vector<T> modes;
+  /**
+   * @brief Construct a new Stats1D object
+   *
+   * @tparam Iterable
+   * @param container
+   * @param sorted
+   */
+  template <typename Iterable>
+  Stats1D(const Iterable& container, bool sorted = false);
 
-  std::unique_ptr<struct Summary> fivenum;
-  uint32_t getMedian(uint32_t left, uint32_t right);
+  /**
+   * @brief Construct a new Stats1D object
+   *
+   * @param init
+   */
+  Stats1D(const std::initializer_list<T> init, bool sorted = false);
 
- public:
-  Stats1D() = delete;
-  Stats1D(T* array, uint32_t size, bool sorted = false);
-  void updateArray(T* newArray, uint32_t newSize, bool sorted = false);
-  double getMean();
-  std::vector<T> getModes();
-  T getIQR();
-  struct Summary getSummary();
-  double getStdDev();
-  double getVariance();
-  double getQuantile(double percentile);
+  /**
+   * @brief Update the internal data of the current object
+   *
+   * @details Replaces the internal original_data and sorted_data with the
+   * values supplied by the iterators. This will also reset the cache_flags,
+   * so various values will need to be recalculated when functions are
+   * called again.
+   *
+   * @tparam FowardIter
+   * @param a
+   * @param b
+   * @param sorted
+   */
+  template <typename FowardIter>
+  void update_data(FowardIter a, const FowardIter b, bool sorted = false);
+
+  /**
+   * @brief Update the internal data of the current object
+   *
+   * @details Replaces the internal original_data and sorted_data with the
+   * values supplied by the parameter. This will also reset the cache_flags, so
+   * various values will need to be recalculated when functions are called
+   * again.
+   *
+   *
+   * @tparam Iterable
+   * @param container
+   * @param sorted
+   */
+  template <typename Iterable>
+  void update_data(const Iterable& container, bool sorted = false);
+
+  /**
+   * @brief Update the internal data of the current object
+   *
+   * @details Replaces the internal original_data and sorted_data with the
+   * values supplied by the parameter. This will also reset the cache_flags, so
+   * various values will need to be recalculated when functions are called
+   * again.
+   *
+   *
+   * @tparam Iterable
+   * @param container
+   * @param sorted
+   */
+  void update_data(const std::initializer_list<T> data, bool sorted = false);
+
+  /**
+   * @brief Returns the length of the internally stored data
+   *
+   * @return int
+   */
+  int size() { return original_data.size(); }
+
+  /**
+   * @brief Calculates mean of a numeric type
+   *
+   * For a dataset without outliers or skew, the mean will represent the
+   * center of a dataset. Together with the standard deviation, it is useful
+   * for catching extreme values and describing the distribution of the
+   * data.
+   *
+   * @tparam T Any numeric type
+   * @return double The mean of a dataset
+   */
+  double mean();
+
+  /**
+   * @brief Finds the modes of a numeric type
+   *
+   * The mode of a dataset is value that most frequently appears.
+   *
+   * This returns a vector in order to allow the possibility of multiple modes,
+   * rather than just returning one of many modes.
+   *
+   * @tparam T Any numeric type
+   * @return vector<T> A vector of modes of a dataset
+   */
+  std::vector<T> multimode();
+
+  /**
+   * @brief Calculates the IQR of a numeric type
+   *
+   * The interquartile range is the 50% range between the first and third
+   * quartile of a dataset. Together with the median of the dataset, it presents
+   * an alternative to the mean and standard deviation for finding outliers.
+   *
+   * @tparam T Any numeric type
+   * @return T The IQR of a dataset
+   */
+  double iqr();
+
+  /**
+   * @brief Returns a struct containing the five number summary of a numeric
+   * type
+   *
+   * The five number summary contains the minimum, maximum, median, first
+   * quartile, and third quartile. These values are useful to describe the
+   * distribution of the dataset and find outliers.
+   *
+   * @tparam T Any generic type
+   * @return struct Stats1D<T>::Summary A struct of the five number summary
+   */
+  Summary five_number_summary();
+
+  /**
+   * @brief Calculates the standard deviation of a numeric type
+   *
+   * The standard deviation of a dataset describes the spread of a data. A
+   * higher standard deviation indicates that the data is spread further from
+   * the mean of the dataset.
+   *
+   * @tparam T Any numeric type
+   * @return double The standard deviation of a dataset
+   */
+  double stdev();
+
+  /**
+   * @brief Calculates the standard deviation of a numeric type
+   *
+   * The standard deviation of a dataset describes the spread of a data. A
+   * higher standard deviation indicates that the data is spread further from
+   * the mean of the dataset.
+   *
+   * @tparam T Any numeric type
+   * @return double The standard deviation of a dataset
+   */
+  double pstdev();
+
+  /**
+   * @brief Calculates the variance of a numeric type
+   *
+   * The variance of a dataset is the square of standard deviation and is
+   * another descriptor of the spread of a dataset. Among its many uses are
+   * sampling, inference, hypothesis testing, and goodness of fit.
+   *
+   * @tparam T Any numeric type
+   * @return double The variance of a dataset
+   */
+  double variance();
+
+  /**
+   * @brief Calculates the variance of a numeric type
+   *
+   * The variance of a dataset is the square of standard deviation and is
+   * another descriptor of the spread of a dataset. Among its many uses are
+   * sampling, inference, hypothesis testing, and goodness of fit.
+   *
+   * @tparam T Any numeric type
+   * @return double The variance of a dataset
+   */
+  double pvariance();
+
+  /**
+   * @brief getQuantile - Gets a quantile of the sorted array
+   *
+   * This uses Quantile.hh to calculate quantiles based on the desired quantile
+   * algorithm. By default, R-7 is used, but this can be changed for the object
+   *by either setting the defaultQuantile string before creating a Stats1D
+   *object or by calling Stats1D<T>::setQuantileAlgorithm.
+   *
+   * @param percentile The percentile to look for
+   * @param quantile_algorithm An optional string in the form of "R-[0-9]"
+   * @return double The resultant quantile
+   **/
+  double quantile(double percentile, QuantileAlgorithm alg);
+
+  /**
+   * @brief setQuantileAlgorithm - Sets the quantile algorithm used locally
+   *
+   * This allows the user to set the quantile algorithm manually, and on a
+   * per-object basis in order to ensure that they are getting the results they
+   * expect each time they get a quantile or generate a five number summary.
+   *
+   * An example use-case for this involves a need for getting quantiles that
+   *match the data, in order to use the result to query a database or a hashmap.
+   *In this instance, R-1 thorough R-3 would be ideal as they do no
+   *interpolation between array elements. Alternatively, if linear interpolation
+   *is okay and the data is approximately normal, then R-9 is approximately
+   *unbiased for the expected order statistic. Hyndman and Fan have recommended
+   *R-8 as the algorithm of choice for finding quantiles, but due to the more
+   *frequent use of R-6 and R-7, as well as the lack of division in the
+   *calculation, we have chosen to use R-7.
+   *
+   * @param alg The algorithm of choice, as a string in the form of "R-[0-9]"
+   **/
+  void set_quantile_alg(QuantileAlgorithm alg);
+
+  T operator[](int i) const { return original_data[i]; }
+
   template <typename U>
   friend std::ostream& operator<<(std::ostream& os, Stats1D<U>& stats);
+
+ private:
+  double squared_deviation_from_mean();
+  inline bool check_cache_flags(uint8_t chosen_flags);
+
+  static double interpolate_quantile(const std::vector<T>& data, double h);
+  static double r1(const std::vector<T>& data, double p);
+  static double r2(const std::vector<T>& data, double p);
+  static double r3(const std::vector<T>& data, double p);
+  static double r4(const std::vector<T>& data, double p);
+  static double r5(const std::vector<T>& data, double p);
+  static double r6(const std::vector<T>& data, double p);
+  static double r7(const std::vector<T>& data, double p);
+  static double r8(const std::vector<T>& data, double p);
+  static double r9(const std::vector<T>& data, double p);
+
+  typedef double (*quantile_func)(const std::vector<T>&, double);
+
+  static constexpr quantile_func quantile_function_map[] = {
+      &r1, &r2, &r3, &r4, &r5, &r6, &r7, &r8, &r9};
+
+  /**< The default quantile algorithm used by future Stats1D objects*/
+  QuantileAlgorithm default_quantile_alg;
+
+  constexpr static uint8_t SORTED = 2;
+  constexpr static uint8_t MEAN = 4;
+  constexpr static uint8_t SUMSQ = 8;
+  constexpr static uint8_t IQR = 16;
+  constexpr static uint8_t FIVENUM = 32;
+
+  std::vector<T> original_data;
+  std::vector<T> sorted_data;
+  // sorted, mean, variance, iqr, fivenum
+  // 0b00011111
+  uint8_t cache_flags;
+  double mean_, stdev_, sqr_dev_, iqr_;
+  std::vector<T> modes;
+
+  Summary fivenum;
 };
 
-/**
- * @brief Construct a new Stats1D object of a numeric type
- *
- * The array may be of any numeric type and may be unsorted when it is passed
- * into the object. The size of the array is assumed to match the size of the
- * variable. The sorted flag defaults to false.
- *
- * If a mistake is made when creating the array, or the array is updated, use
- * updateArray to make any necessary changes.
- *
- * @tparam T Any numeric type
- * @param array A pointer to the array to be analyzed
- * @param size The size of the array to be analyzed
- * @param sorted A flag indicating if the array is sorted
- */
 template <typename T>
-Stats1D<T>::Stats1D(T* array, uint32_t size, bool sorted)
-    : array(array), size(size) {
-  sorted_array = vector<T>(array, (array + size));
+template <typename ForwardIter>
+Stats1D<T>::Stats1D(ForwardIter a, const ForwardIter b, bool sorted)
+    : original_data(a, b),
+      sorted_data(a, b),
+      cache_flags(SORTED),
+      default_quantile_alg(QuantileAlgorithm::R6) {
   if (!sorted) {
-    sort(sorted_array.begin(), sorted_array.end());
-    sorted = true;
+    sort(sorted_data.begin(), sorted_data.end());
   }
 }
 
-/**
- * @brief Updates the content of the array
- *
- * @tparam T Any numeric type
- * @param newArray A new array
- * @param newSize A new size
- * @param sorted A new sorted flag, defaults to the existing flag
- */
 template <typename T>
-void Stats1D<T>::updateArray(T* newArray, uint32_t newSize, bool sorted) {
-  this->array = array;
-  this->size = size;
-  this->sorted = sorted;
+template <typename Iterable>
+Stats1D<T>::Stats1D(const Iterable& container, bool sorted)
+    : Stats1D(std::begin(container), std::end(container), sorted) {}
+
+template <typename T>
+Stats1D<T>::Stats1D(std::initializer_list<T> init, bool sorted)
+    : Stats1D(std::begin(init), std::end(init), sorted) {}
+
+template <typename T>
+template <typename ForwardIter>
+void Stats1D<T>::update_data(ForwardIter a, const ForwardIter b, bool sorted) {
+  original_data = std::vector<T>(a, b);
+  sorted_data = std::vector<T>(a, b);
+
   if (!sorted) {
-    sort(sorted_array.begin(), sorted_array.end());
-    sorted = true;
+    sort(std::begin(sorted_data), std::end(sorted_data));
   }
+
+  cache_flags = SORTED;
+
+  modes.clear();
 }
 
-/**
- * @brief Calculates mean of a numeric type
- *
- * For a dataset without outliers or skew, the mean will represent the
- * center of a dataset. Together with the standard deviation, it is useful
- * for catching extreme values and describing the distribution of the
- * data.
- *
- * @tparam T Any numeric type
- * @return double The mean of a dataset
- */
 template <typename T>
-double Stats1D<T>::getMean() {
-  if (mean) return *mean;
+template <typename Iterable>
+void Stats1D<T>::update_data(const Iterable& container, bool sorted) {
+  update_data(std::begin(container), std::end(container), sorted);
+}
+
+template <typename T>
+void Stats1D<T>::update_data(const std::initializer_list<T> data, bool sorted) {
+  update_data(std::begin(data), std::end(data), sorted);
+}
+
+template <typename T>
+double Stats1D<T>::mean() {
+  if (check_cache_flags(MEAN)) return mean_;
+
+  cache_flags |= MEAN;
+
   double mean_tmp = 0;
-  for (int i = 0; i < size; i++) {
-    mean_tmp += array[i];
+  for (auto const& num : sorted_data) {
+    mean_tmp += num;
   }
-  mean_tmp /= size;
 
-  mean = make_unique<double>(mean_tmp);
-  return *mean;
+  mean_tmp /= sorted_data.size();
+  return mean_ = mean_tmp;
 }
 
-/**
- * @brief Finds the modes of a numeric type
- *
- * The mode of a dataset is value that most frequently appears.
- *
- * This returns a vector in order to allow the possibility of multiple modes,
- * rather than just returning one of many modes.
- *
- * @tparam T Any numeric type
- * @return vector<T> A vector of modes of a dataset
- */
 template <typename T>
-vector<T> Stats1D<T>::getModes() {
-  if (modes.size() != 0 || size == 0) return modes;
-  if (!sorted) {
-    sort(sorted_array.begin(), sorted_array.end());
-    sorted = !sorted;
+std::vector<T> Stats1D<T>::multimode() {
+  if (modes.size() != 0) return modes;
+
+  std::unordered_map<T, int> map;
+  double biggest_mode = 1;
+
+  for (auto const& num : sorted_data) {
+    int tmp = 1;
+    auto search = map.find(num);
+
+    if (search != map.end()) {
+      tmp = search->second + 1;
+    }
+
+    map.insert_or_assign(num, tmp);
+
+    if (tmp > biggest_mode) {
+      biggest_mode = tmp;
+    }
   }
 
-  T curMode;
-  uint32_t curOcc, maxOcc;
-
-  for (int i = 0; i < size; i++) {
-    curOcc = (curMode == array[i]) ? (++curOcc) : curOcc;
-    if (maxOcc < curOcc && curOcc != 1) {
-      maxOcc = curOcc;
-      curMode = array[i];
-      modes.clear();
-      modes.push_back(array[i]);
-    } else if (maxOcc == curOcc) {
-      modes.push_back(array[i]);
+  for (auto const& [key, value] : map) {
+    if (value == biggest_mode) {
+      modes.push_back(key);
     }
   }
 
   return modes;
 }
 
-/**
- * @brief Calculates the IQR of a numeric type
- *
- * The interquartile range is the 50% range between the first and third quartile
- * of a dataset. Together with the median of the dataset, it presents an
- * alternative to the mean and standard deviation for finding outliers.
- *
- * @tparam T Any numeric type
- * @return T The IQR of a dataset
- */
 template <typename T>
-T Stats1D<T>::getIQR() {
-  if (iqr) return *iqr.get();
-  if (!sorted) {
-    sort(sorted_array.begin(), sorted_array.end());
-    sorted = !sorted;
-  }
-  Stats1D<T>::getSummary();
-  struct Summary fn = *fivenum.get();
-  iqr = make_unique<T>(fn.q3 - fn.q1);
-  return *iqr.get();
+double Stats1D<T>::iqr() {
+  if (check_cache_flags(IQR)) return iqr_;
+
+  cache_flags |= IQR;
+
+  Summary fn = five_number_summary();
+  return iqr_ = fn.q3 - fn.q1;
 }
 
-/**
- * @brief Returns a struct containing the five number summary of a numeric type
- *
- * The five number summary contains the minimum, maximum, median, first
- * quartile, and third quartile. These values are useful to describe the
- * distribution of the dataset and find outliers.
- *
- * @tparam T Any generic type
- * @return struct Stats1D<T>::Summary A struct of the five number summary
- */
 template <typename T>
-struct Stats1D<T>::Summary Stats1D<T>::getSummary() {
-  if (fivenum) return *fivenum.get();
-  if (!sorted) {
-    sort(sorted_array.begin(), sorted_array.end());
-    sorted = !sorted;
-  }
+Summary Stats1D<T>::five_number_summary() {
+  if (check_cache_flags(FIVENUM)) return fivenum;
+
+  cache_flags |= FIVENUM;
+
   struct Summary fn;
-  fn.min = sorted_array[0];
-  fn.max = sorted_array[size - 1];
+  fn.min = *sorted_data.begin();
+  fn.max = *(sorted_data.end() - 1);
 
-  // double q1_ind = .25 * size;
-  // double mid_ind = .5 * size;
-  // double q3_ind = .75 * size;
-  // double epsilon = 1 / 10000;
-  // if (fmod(q1_ind, 1) > epsilon)
-  //   fn.q1 = (array[static_cast<uint32_t>(floor(q1_ind))] +
-  //            array[static_cast<uint32_t>(ceil(q1_ind))]) /
-  //           2.0;
-  // else
-  //   fn.q1 = array[static_cast<uint32_t>(q1_ind)];
+  fn.q1 = quantile(.25, default_quantile_alg);
+  fn.median = quantile(.50, default_quantile_alg);
+  fn.q3 = quantile(.75, default_quantile_alg);
 
-  // if (fmod(mid_ind, 1) > epsilon)
-  //   fn.median = (array[static_cast<uint32_t>(floor(mid_ind))] +
-  //                array[static_cast<uint32_t>(ceil(mid_ind))]) /
-  //               2.0;
-  // else
-  //   fn.median = array[static_cast<uint32_t>(mid_ind)];
+  fivenum = Summary(fn);
 
-  // if (fmod(q3_ind, 1) > epsilon)
-  //   fn.q3 = (array[static_cast<uint32_t>(floor(q3_ind))] +
-  //            array[static_cast<uint32_t>(ceil(q3_ind))]) /
-  //           2.0;
-  // else
-  //   fn.q3 = array[static_cast<uint32_t>(q3_ind)];
-
-  fn.q1 = getQuantile(.25);
-  fn.median = getQuantile(.50);
-  fn.q3 = getQuantile(.75);
-
-  fivenum = make_unique<struct Summary>(fn);
-  return *fivenum.get();
+  return fivenum;
 }
 
-/**
- * @brief Calculates the standard deviation of a numeric type
- *
- * The standard deviation of a dataset describes the spread of a data. A higher
- * standard deviation indicates that the data is spread further from the mean of
- * the dataset.
- *
- * @tparam T Any numeric type
- * @return double The standard deviation of a dataset
- */
 template <typename T>
-double Stats1D<T>::getStdDev() {
-  if (stddev) return *stddev.get();
-  stddev = make_unique<double>(sqrt(getVariance()));
-  return *stddev.get();
+double Stats1D<T>::stdev() {
+  return sqrt(variance());
 }
 
-/**
- * @brief Calculates the variance of a numeric type
- *
- * The variance of a dataset is the square of standard deviation and is another
- * descriptor of the spread of a dataset. Among its many uses are sampling,
- * inference, hypothesis testing, and goodness of fit.
- *
- * @tparam T Any numeric type
- * @return double The variance of a dataset
- */
 template <typename T>
-double Stats1D<T>::getVariance() {
-  if (variance) return *variance.get();
-  double mean_tmp = getMean();
+double Stats1D<T>::pstdev() {
+  return sqrt(pvariance());
+}
+
+template <typename T>
+double Stats1D<T>::squared_deviation_from_mean() {
+  if (check_cache_flags(SUMSQ)) return sqr_dev_;
+
+  double mean_tmp = mean();
   double sum = 0;
-  for (int i = 0; i < size; i++) {
-    sum += pow(array[i] - mean_tmp, 2);
+  for (auto const& num : sorted_data) {
+    sum += pow(num - mean_tmp, 2);
   }
-  variance = make_unique<double>(sum / (size - 1));
-  return *variance.get();
-}
 
-/**
- * @brief getQuantile - Gets a quantile of the sorted array
- *
- * This looks like it implements the R-6 algorithm for finding quantiles, but it
- * is actually R-7. Upon reviewing the relevant paper, the index functions refer
- * to an array with a starting index of 1, but C++ is 0-indexed. As such, the
- * added one that is expected in R-7 has been negated. (Hyndman and Fan, 1997).
- *
- * @param percentile The percentile to look for
- * @return double The resultant quantile
- **/
-template <typename T>
-double Stats1D<T>::getQuantile(double percentile) {
-  double h = (sorted_array.size() - 1) * percentile;
-  return sorted_array[floor(h)] +
-         (h - floor(h)) * (sorted_array[ceil(h)] - sorted_array[floor(h)]);
+  return sqr_dev_ = sum;
 }
 
 template <typename T>
-ostream& operator<<(ostream& os, Stats1D<T>& stats) {
-  struct Stats1D<T>::Summary fivenum = stats.getSummary();
-  os << "# Points: " << stats.sorted_array.size()
-     << "\nMean: " << stats.getMean() << "\nStdDev: " << stats.getStdDev()
-     << "\nVariance: " << stats.getVariance()
+bool Stats1D<T>::check_cache_flags(uint8_t chosen_flags) {
+  return (cache_flags & chosen_flags) == chosen_flags;
+}
+
+template <typename T>
+double Stats1D<T>::variance() {
+  return squared_deviation_from_mean() / (sorted_data.size() - 1);
+}
+
+template <typename T>
+double Stats1D<T>::pvariance() {
+  return squared_deviation_from_mean() / sorted_data.size();
+}
+
+template <typename T>
+double Stats1D<T>::quantile(double percentile, QuantileAlgorithm alg) {
+  return (Stats1D<T>::quantile_function_map[(int)alg])(sorted_data, percentile);
+}
+
+template <typename T>
+void Stats1D<T>::set_quantile_alg(QuantileAlgorithm q) {
+  default_quantile_alg = q;
+}
+
+// template <typename U, typename T>
+// double expected_xy(Stats1D<T>& stats1, Stats1D<U>& stats2) {
+//   double sum_xy = 0;
+//   for (int i = 0; i < stats1.size(); i++) {
+//     sum_xy += stats1[i] * stats2[i];
+//   }
+//   return sum_xy / stats1.size();
+// }
+
+// template <typename U, typename T>
+// double covariance(Stats1D<T>& stats1, Stats1D<U>& stats2) {
+//   // TODO: throw exception if not same length VECTOR_MIS...
+
+//   double sum = 0;
+
+//   for (int i = 0; i < stats1.size(); i++) {
+//     sum += (stats1[i] - stats1.getMean()) * (stats2[i] - stats2.getMean());
+//   }
+//   // std::cout << sum / stats1.size() << std::endl;
+//   return sum / (stats1.size() - 1);
+// }
+
+// template <typename U, typename T>
+// double pearson_correlation(Stats1D<T>& stats1, Stats1D<U>& stats2) {
+//   return covariance(stats1, stats2) / (stats1.getStdDev() *
+//   stats2.getStdDev());
+// }
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, Stats1D<T>& stats) {
+  struct Summary fivenum = stats.five_number_summary();
+  os << "# Points: " << stats.sorted_data.size() << "\nMean: " << stats.mean()
+     << "\nSample StdDev: " << stats.stdev()
+     << "\nPopulation StdDev: " << stats.pstdev()
+     << "\nSample Variance: " << stats.variance()
+     << "\nPopulation Variance: " << stats.pvariance()
      << "\nFive Number Summary:\n\tMinimum: " << fivenum.min
      << "\n\tFirst Quartile: " << fivenum.q1 << "\n\tMedian: " << fivenum.median
      << "\n\tThird Quartile: " << fivenum.q3 << "\n\tMaximum: " << fivenum.max
-     << "\nIQR:" << stats.getIQR() << "\nModes: [";
+     << "\nIQR: " << stats.iqr() << "\nModes: [";
 
-  vector<T> modes = stats.getModes();
-  for (const auto& i : modes) {
+  std::vector<T> modes = stats.multimode();
+  for (auto const& i : modes) {
     os << i << ", ";
   }
   os << "]";
   return os;
 }
+
+template <typename T>
+double Stats1D<T>::r1(const std::vector<T>& data, double p) {
+  double h = data.size() * p + 0.5;
+  return data[ceil(h - 0.5) - 1];
+}
+
+template <typename T>
+double Stats1D<T>::r2(const std::vector<T>& data, double p) {
+  double h = data.size() * p + 0.5;
+  return (data[ceil(h - 0.5) - 1] + data[floor(h + 0.5) - 1]) / 2;
+}
+
+template <typename T>
+double Stats1D<T>::r3(const std::vector<T>& data, double p) {
+  double h = data.size() * p;
+  return data[round(h) - 1];
+}
+
+template <typename T>
+double Stats1D<T>::interpolate_quantile(const std::vector<T>& data, double h) {
+  return data[floor(h) - 1] +
+         (h - floor(h)) * (data[ceil(h) - 1] - data[floor(h) - 1]);
+}
+
+template <typename T>
+double Stats1D<T>::r4(const std::vector<T>& data, double p) {
+  double h = data.size() * p;
+  return interpolate_quantile(data, h);
+}
+
+template <typename T>
+double Stats1D<T>::r5(const std::vector<T>& data, double p) {
+  double h = data.size() * p + 0.5;
+  return interpolate_quantile(data, h);
+}
+
+template <typename T>
+double Stats1D<T>::r6(const std::vector<T>& data, double p) {
+  double h = (data.size() + 1) * p;
+  return interpolate_quantile(data, h);
+}
+
+template <typename T>
+double Stats1D<T>::r7(const std::vector<T>& data, double p) {
+  double h = (data.size() - 1) * p + 1;
+  return interpolate_quantile(data, h);
+}
+
+template <typename T>
+double Stats1D<T>::r8(const std::vector<T>& data, double p) {
+  double h = (data.size() + 1 / 3) * p + 1 / 3;
+  return interpolate_quantile(data, h);
+}
+
+template <typename T>
+double Stats1D<T>::r9(const std::vector<T>& data, double p) {
+  double h = (data.size() + 0.25) * p + .375;
+  return interpolate_quantile(data, h);
+}
+
+}  // namespace stats

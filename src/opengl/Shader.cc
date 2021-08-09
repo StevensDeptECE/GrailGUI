@@ -142,7 +142,11 @@ uint32_t Shader::load(const char shaderName[], const char vertRelPath[],
   return shaders.size() - 1;
 }
 
-void Shader::cleanup() { glDeleteProgram(progID); }
+void Shader::cleanup() {
+  if (glIsProgram(progID) == GL_TRUE) {
+    glDeleteProgram(progID);
+  }
+}
 
 void Shader::cleanAll() {
   for (auto &s : shaders) {

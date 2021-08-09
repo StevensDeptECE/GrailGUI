@@ -6,7 +6,6 @@
 // TODO: gl.h can't be included multiple times, really ugly.
 // is there a fix?
 //#include <GL/gl.h>
-#include "opengl/InteractiveWidget2D.hh"
 #include "opengl/MultiText.hh"
 #include "opengl/StyledMultiShape2D.hh"
 #include "opengl/util/Camera.hh"
@@ -20,8 +19,10 @@ void Canvas::cleanup() {
     delete s;
   }
   layers.clear();
-  delete cam;
-  cam = nullptr;
+  if (!cam) {
+    delete cam;
+    cam = nullptr;
+  }
 }
 
 void Canvas::render() {
@@ -45,8 +46,7 @@ Camera* Canvas::setLookAtProjection(float eyeX, float eyeY, float eyeZ,
 
 MainCanvas::MainCanvas(GLWin* parent)
     : Canvas(parent, parent->getDefaultStyle(), 0, 0, parent->getWidth(),
-             parent->getHeight(), parent->getWidth(), parent->getHeight()),
-      widgets(8) {
+             parent->getHeight(), parent->getWidth(), parent->getHeight()) {
   gui = new StyledMultiShape2D(this, parent->getGuiStyle());
   guiText = new MultiText(this, parent->getGuiTextStyle(), 16384);
   menu = new StyledMultiShape2D(this, parent->getMenuStyle());

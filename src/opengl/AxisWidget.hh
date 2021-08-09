@@ -24,21 +24,23 @@ class AxisWidget : public Widget2D {
   void addAxisTitle();
 
  public:
-  AxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y, double w,
+  AxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y, double w,
              double h, double minBound = 0, double maxBound = 0,
              double tickInterval = 1, double tickDrawSize = 5,
              bool showTicks = true, bool isVert = false,
              std::string axisTitle = "",
-             const glm::vec4 &axisColor = grail::black,
-             const glm::vec4 &tickColor = grail::black, int tickFormatWidth = 2,
+             const glm::vec4& axisColor = grail::black,
+             const glm::vec4& tickColor = grail::black, int tickFormatWidth = 2,
              int tickFormatPrecision = 2, double bottomOffset = 0);
+
+  virtual ~AxisWidget();
 
   void setTickDrawSize(double i);
   void setShowTicks(bool b);
   void setIsVert(bool b);
   void setTitle(std::string text);
-  void setAxisColor(const glm::vec4 &color);
-  void setTickColor(const glm::vec4 &color);
+  void setAxisColor(const glm::vec4& color);
+  void setTickColor(const glm::vec4& color);
   void setTickFormat(int width, int precision);
   double getTickInterval();
   double getMinBound();
@@ -62,7 +64,7 @@ class LinearAxisWidget : public AxisWidget {
   void setTickLabels(std::vector<std::string>) override{};
 
  public:
-  LinearAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
+  LinearAxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y,
                    double w, double h);
   void setBounds(double minBound, double maxBound) override;
   void setTickInterval(double tickInterval) override;
@@ -76,7 +78,7 @@ class LogAxisWidget : public AxisWidget {
   void setTickLabels(std::vector<std::string>) override{};
 
  public:
-  LogAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
+  LogAxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y,
                 double w, double h);
   void setBounds(double minBound, double maxBound) override;
   void setTickInterval(double tickInterval) override;
@@ -92,7 +94,7 @@ class TextAxisWidget : public AxisWidget {
   std::vector<std::string> tickLabels;
 
  public:
-  TextAxisWidget(StyledMultiShape2D *m, MultiText *t, double x, double y,
+  TextAxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y,
                  double w, double h);
   void setTickLabels(std::vector<std::string> tickLabels) override;
   void init() override;

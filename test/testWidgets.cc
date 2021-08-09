@@ -9,6 +9,7 @@
 #include "opengl/CandlestickChartWidget.hh"
 #include "opengl/GapMinderWidget.hh"
 #include "opengl/GrailGUI.hh"
+#include "opengl/PositionTool.hh"
 #include "opengl/ScrollbarWidget.hh"
 #include "opengl/SparklineWidget.hh"
 #include "opengl/util/Transformation.hh"
@@ -94,6 +95,17 @@ class TestWidgets : public GLWin {
     mt->add(0, 0, s->f, thing, strlen(thing));
   }
 
+  void testPositionTool(StyledMultiShape2D *gui, MultiText *guiText) {
+    vector<float> X = {334, 56};
+    vector<float> Y = {234, 52};
+    vector<float> R = {45, 34};
+
+    PositionTool test(gui, guiText, 50, 320, 400, 200, X, Y, R);
+    test.addNewCord(123, 53, 25);
+    test.update(123, 345, 1);
+    test.init();
+  }
+
   void init() {
     const Style *s =
         new Style("TIMES", 24, 1, 0, 0, 0,  // black background (unused)
@@ -121,6 +133,7 @@ class TestWidgets : public GLWin {
 
     bindEvent(Inputs::WHEELUP, &TestWidgets::scrollUp, this);
     bindEvent(Inputs::WHEELDOWN, &TestWidgets::scrollDown, this);
+    testPositionTool(gui, guiText);
   }
 
   void update() { scrollbar->update(); }

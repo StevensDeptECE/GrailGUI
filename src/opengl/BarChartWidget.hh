@@ -13,7 +13,7 @@ class BarChartWidget : public GraphWidget {
 
  public:
   BarChartWidget(Canvas *c, double x, double y, double w, double h)
-      : GraphWidget(c, x, y, w, h),
+      : GraphWidget(c, x, y, w, h, DISCRETE_PERMITTED, FUNCTIONS_PERMITTED),
         barStyle(nullptr),
         values(std::vector<double>()),
         names(std::vector<std::string>()),
@@ -27,7 +27,5 @@ class BarChartWidget : public GraphWidget {
   void setBarOutlineColors(const std::vector<glm::vec4> &colors);
   void setValues(const std::vector<double> &values);
   void setNames(const std::vector<std::string> &names);
-  void createXAxis(AxisType a = AxisType::TEXT) override;
-  void createYAxis(AxisType a) override;
   void init() override;
 };

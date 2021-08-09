@@ -7,85 +7,40 @@
 
 using namespace std;
 
-void CandlestickChartWidget::setLineStyle(const Style *s) { lineStyle = s; }
+void CandlestickChartWidget::setLineStyle(const Style* s) { lineStyle = s; }
 
-void CandlestickChartWidget::setBoxStyle(const Style *s) { boxStyle = s; }
+void CandlestickChartWidget::setBoxStyle(const Style* s) { boxStyle = s; }
 
 void CandlestickChartWidget::setBoxWidth(double width) { boxWidth = width; }
 
 void CandlestickChartWidget::setBoxColors(
-    const std::vector<glm::vec4> &colors) {
+    const std::vector<glm::vec4>& colors) {
   boxColors = colors;
 }
 
 void CandlestickChartWidget::setBoxOutlineColors(
-    const std::vector<glm::vec4> &colors) {
+    const std::vector<glm::vec4>& colors) {
   outlineColors = colors;
 }
 
-void CandlestickChartWidget::setData(const vector<double> &data) {
+void CandlestickChartWidget::setData(const vector<double>& data) {
   this->data = data;
 }
 
-void CandlestickChartWidget::setNames(const vector<std::string> &names) {
+void CandlestickChartWidget::setNames(const vector<std::string>& names) {
   this->names = names;
 }
 
-void CandlestickChartWidget::createXAxis(AxisType a) {
-  xAxisType = a;
-  StyledMultiShape2D *mnew = c->addLayer(new StyledMultiShape2D(c, xAxisStyle));
-  MultiText *tnew = c->addLayer(new MultiText(c, xAxisTextStyle));
-
-  switch (a) {
-    case LINEAR: {
-      cout << "a candlestick chart can't have a linear x axis\n";
-      throw Ex1(Errcode::BAD_ARGUMENT);
-    }; break;
-
-    case LOGARITHMIC: {
-      cout << "a candlestick chart can't have a logarithmic x axis\n";
-      throw Ex1(Errcode::BAD_ARGUMENT);
-    }; break;
-
-    case TEXT: {
-      xAxis = new TextAxisWidget(mnew, tnew, x, y, w, h);
-      xAxis->setTickLabels(names);
-    }; break;
-  }
-}
-
-void CandlestickChartWidget::createYAxis(AxisType a) {
-  yAxisType = a;
-  StyledMultiShape2D *rot90 =
-      c->addLayer(new StyledMultiShape2D(c, yAxisStyle, M_PI_2, x - w, y + h));
-  MultiText *t90 = c->addLayer(new MultiText(c, yAxisTextStyle, 0, x, y));
-
-  switch (a) {
-    case LINEAR: {
-      yAxis = new LinearAxisWidget(rot90, t90, 0, 0, h, w);
-    }; break;
-
-    case LOGARITHMIC: {
-      cout << "a candlestick chart can't have a logarithmic y axis\n";
-      throw Ex1(Errcode::BAD_ARGUMENT);
-    }; break;
-
-    case TEXT: {
-      cout << "a candlestick chart can't have a text y axis\n";
-      throw Ex1(Errcode::BAD_ARGUMENT);
-    }; break;
-  }
-}
-
 void CandlestickChartWidget::init() {
+  xAxis->setTickLabels(names);
   if (data.size() < 4) {
     cerr << "the data vector must contain at least one data set (minimum 4 "
             "points)\n";
     throw(Ex1(Errcode::VECTOR_ZERO_LENGTH));
   }
 
-  StyledMultiShape2D *lines = c->addLayer(new StyledMultiShape2D(c, lineStyle));
-  StyledMultiShape2D *boxes = c->addLayer(new StyledMultiShape2D(c, boxStyle));
+  StyledMultiShape2D* lines = c->addLayer(new StyledMultiShape2D(c, lineStyle));
+  StyledMultiShape2D* boxes = c->addLayer(new StyledMultiShape2D(c, boxStyle));
 
   double min = yAxis->getMinBound();
   double max = yAxis->getMaxBound();
@@ -148,13 +103,13 @@ void CandlestickChartWidget::init() {
 }
 
 #if 0
-void CandlestickChartWidget::chart(const vector<float> &b, int rulerInterval,
+void CandlestickChartWidget::chart(const vector<float>& b, int rulerInterval,
                                    int dataPointsPerBar) {
   yAxis->init(min, max, y + h, -h, rulerInterval);
 
   double wBar = w / (b.size() / dataPointsPerBar +
-                     (relativeSpace * (b.size() / dataPointsPerBar + 1)));
-  double spaceBetweenBars = relativeSpace * wBar;
+                     (relativeSpace*  (b.size() / dataPointsPerBar + 1)));
+  double spaceBetweenBars = relativeSpace*  wBar;
 
   for (int start = 0; start < b.size(); start += dataPointsPerBar) {
     float day[dataPointsPerBar];
@@ -175,8 +130,8 @@ void CandlestickChartWidget::chart(const vector<float> &b, int rulerInterval,
       }
     }
 
-    double xBar = ((start / dataPointsPerBar) + 1) * spaceBetweenBars +
-                  (start / dataPointsPerBar) * wBar + x;
+    double xBar = ((start / dataPointsPerBar) + 1)*  spaceBetweenBars +
+                  (start / dataPointsPerBar)*  wBar + x;
     double yTopBar = yAxis->transform(dayMax);
     double yBottomBar = yAxis->transform(dayMin);
 
@@ -203,7 +158,7 @@ void CandlestickChartWidget::chart(const vector<float> &b, int rulerInterval,
                      spaceBetweenBars / 3, tickE, grail::blue);
   }
 
-  const Font *f = FontFace::get("TIMES", 12, FontFace::BOLD);
+  const Font* f = FontFace::get("TIMES", 12, FontFace::BOLD);
 
   for (float yTick = min; yTick <= max; yTick = yAxis->next(yTick)) {
     float yScreen = yAxis->transform(yTick);

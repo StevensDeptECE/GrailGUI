@@ -102,13 +102,13 @@ void XDLRaw::display(Buffer& binaryIn, Buffer& asciiOut) const {}
 void XDLRaw::format(Buffer& binaryIn, Buffer& asciiOut,
                     const char fmt[]) const {}
 
-inline void Struct::addSym(const string& memberName, const XDLType* t) {
+ void Struct::addSym(const string& memberName, const XDLType* t) {
   byName.add(memberName.c_str(), types.size());
   members.add(Member(memberNames.length(), memberName.length(), t));
   memberNames += memberName;
 }
 
-inline void Struct::addSymCheckNull(const string& name, const XDLType* t2) {
+ void Struct::addSymCheckNull(const string& name, const XDLType* t2) {
   const XDLType* t = getMemberType(name);
   if (t == nullptr) {  // undefined symbol
     compiler->undefinedSymbol(name);
@@ -118,7 +118,7 @@ inline void Struct::addSymCheckNull(const string& name, const XDLType* t2) {
   addSym(name, t2);
 }
 
-inline void Struct::addSymCheckDup(const string& name, const XDLType* t2) {
+ void Struct::addSymCheckDup(const string& name, const XDLType* t2) {
   const XDLType* t = getMemberType(name);
   if (t != nullptr) {  // undefined symbol
     compiler->duplicateSymbol(name);

@@ -100,7 +100,7 @@ class TestBoxChart : public GLWin {
 
     // create x axis (categories)
     ccw.setNames(names);
-    ccw.createXAxis();
+    ccw.createXAxis(GraphWidget::AxisType::TEXT);
 
     // set releavant x axis parameters
     // if you try to set something not applicable to a text axis (as that's what

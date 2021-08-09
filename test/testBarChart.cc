@@ -81,7 +81,7 @@ class TestBarChart : public GLWin {
 
     // create x axis (categories)
     bcw.setNames(names);
-    bcw.createXAxis();
+    bcw.createXAxis(GraphWidget::AxisType::TEXT);
 
     // set releavant x axis parameters
     // if you try to set something not applicable to a text axis (as that's what

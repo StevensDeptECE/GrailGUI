@@ -15,8 +15,6 @@ class TestVideoPlayer : public GLWin {
         startTime(0),
         v(nullptr) {}
 
-  ~TestVideoPlayer() { delete v; }
-
   void update() { v->update(); }
 
   void init() {
