@@ -82,11 +82,11 @@ void BoxChartWidget::init() {
     stats::Stats1D<double> dataSummary(currentBoxData);
 
     double xLocation = x + xscale * counter - halfBoxWidth;
-    double yTopLine = dataSummary.getSummary().min;
-    double yBottomLine = dataSummary.getSummary().max;
-    double yMedianLine = dataSummary.getSummary().median;
-    double yBoxTop = dataSummary.getSummary().q1;
-    double yBoxBottom = dataSummary.getSummary().q3;
+    double yTopLine = dataSummary.five_number_summary().min;
+    double yBottomLine = dataSummary.five_number_summary().max;
+    double yMedianLine = dataSummary.five_number_summary().median;
+    double yBoxTop = dataSummary.five_number_summary().q1;
+    double yBoxBottom = dataSummary.five_number_summary().q3;
 
     // top whisker line
     whiskers->drawLine(xLocation, yTopLine, xLocation + boxWidth, yTopLine,

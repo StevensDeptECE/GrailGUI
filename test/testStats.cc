@@ -1,3 +1,5 @@
+#include <time.h>
+
 #include <cassert>
 #include <list>
 
@@ -9,7 +11,7 @@ using namespace stats;
 #define is_between(num, lower, upper) ((num >= lower) && (num <= upper))
 
 void test_contructor() {
-  int array[] = {1, 2, 2, 3, 3, 4, 5};
+  int array[]{1, 2, 2, 3, 3, 4, 5};
 
   Stats1D<int> stats_from_array(array);
 
@@ -25,38 +27,37 @@ void test_contructor() {
   std::list<uint64_t> list{1, 2, 3, 4, 5};
 
   Stats1D<uint64_t> stats_from_list(list);
+
+  Stats1D<int> stats_from_inline{0, 1, 2, 3, 4, 5};
 }
 
 void test_values() {
   vector<double> data = {150, 350, 222, 100, 300, 130, 300, 250, 190,
                          170, 100, 50,  20,  150, 200, 330, 200, 270,
-                         180, 300, 49,  247, 325, 114, 89};
+                         180, 300, 49,  247, 325, 114, 89,  69};
 
   Stats1D<double> stats(data);
+  stats.set_quantile_alg(stats::QuantileAlgorithm::R5);
 
-  assert(is_between(stats.getMean(), 191.4, 191.5));
+  assert(is_between(stats.mean(), 186.72, 186.74));
 
-  assert(is_between(stats.getStdDev(), 96.16, 96.18));
+  assert(is_between(stats.pstdev(), 95.35, 95.36));
 
-  assert(is_between(stats.getVariance(), 9250.16, 9250.18));
+  assert(is_between(stats.stdev(), 97.24, 97.25));
 
-  assert(is_between(stats.getIQR(), 177.99, 178.01));
+  assert(is_between(stats.pvariance(), 9093.03, 9093.05));
 
-  assert(is_between(stats.getQuantile(.25, stats::QuantileAlgorithm::R6),
-                    106.99, 107.01));
+  assert(is_between(stats.variance(), 9456.75, 9456.77));
 
-  assert(is_between(stats.getQuantile(.75, stats::QuantileAlgorithm::R6),
-                    284.99, 285.01));
+  assert(
+      is_between(stats.quantile(.25, stats::QuantileAlgorithm::R5), 100, 100));
 
-  assert(is_between(stats.getSummary().median, 190, 190));
+  assert(
+      is_between(stats.quantile(.75, stats::QuantileAlgorithm::R5), 270, 270));
 
-  /*
-  string quant_algs[9] = {"R-1", "R-2", "R-3", "R-4", "R-5",
-                          "R-6", "R-7", "R-8", "R-9"};
-  for (const auto& elem : quant_algs) {
-    stats_from_vec_double.setQuantileAlgorithm(elem);
-    cout << "\nQuantile alg " << elem << endl << stats_from_vec_double << endl;
-  }*/
+  assert(is_between(stats.five_number_summary().median, 185, 185));
+
+  assert(is_between(stats.iqr(), 169.99, 170.1));
 }
 
 // We've had undefined behavior in the past from this
@@ -75,9 +76,9 @@ void test_container_of_stats() {
     v.push_back(summary);
   }
 
-  // for (auto& summary : v) {
-  //   cout << summary << endl;
-  // }
+  for (auto& summary : v) {
+    cout << summary.five_number_summary().max << endl;
+  }
 }
 
 void test_copy_assignment() {
@@ -86,11 +87,32 @@ void test_copy_assignment() {
   vector<double> other = {200, 330, 200, 270, 180, 300, 49, 247, 325, 114, 89};
 
   Stats1D<double> a(data);
-  std::cout << a << std::endl;
+  cout << a << endl;
 
   Stats1D<double> b(other);
   a = b;
-  std::cout << a << std::endl;
+  cout << a << endl;
+}
+
+void test_update_data() {
+  Stats1D<int> v{150, 350, 222, 100, 300, 130, 300,
+                 250, 190, 170, 100, 50,  20,  150};
+  vector<int> new_data{200, 330, 200, 270, 180, 300, 49, 247, 325, 114, 89};
+
+  double old_variance = v.variance();
+
+  v.update_data(new_data);
+
+  double new_variance = v.variance();
+
+  assert(old_variance != new_variance);
+
+  v.update_data(
+      {150, 350, 222, 100, 300, 130, 300, 250, 190, 170, 100, 50, 20, 150});
+
+  double newer_new_variance = v.variance();
+
+  assert(old_variance == newer_new_variance);
 }
 
 int main() {
@@ -99,25 +121,14 @@ int main() {
   test_container_of_stats();
   test_copy_assignment();
 
-  int array[] = {1, 2, 3, 4, 5};
-  Stats1D<int> stats_from_array = Stats1D<int>(array);
-
-  int* dynarray = new int[5]{1, 2, 3, 4, 5};
-  Stats1D<int64_t> stats_from_dynarray =
-      Stats1D<int64_t>(dynarray, dynarray + 5);
-
-  cout << pearson_correlation(stats_from_array, stats_from_dynarray) << endl;
-
-  // std::vector<int> vec{1, 2, 3, 4, 5};
-  // Stats1D<int> stats_from_vec = Stats1D<int>(vec);
-  // Stats1D<int> stats_from_vec_begin = Stats1D<int>(vec.begin(), vec.end());
-
-  // std::list<int> list{1, 2, 3, 4, 5};
-  // Stats1D<int> stats_from_list = Stats1D<int>(list);
-
-  // cout << stats_from_array << "\n\n"
-  //      << stats_from_dynarray << "\n\n"
-  //      << stats_from_vec << "\n\n"
-  //      << stats_from_vec_begin << "\n\n"
-  //      << stats_from_list;
+  // constexpr uint64_t n = 100000000;
+  // double* x = new double[n];
+  // for (uint64_t i = 0; i < n; i++) x[i] = i;
+  // Stats1D<double> stat(x, x + n);
+  // clock_t t0 = clock();
+  // double sum = stat.variance();
+  // clock_t t1 = clock();
+  // cout << "Elapsed: " << (t1 - t0) << '\n';
+  // cout << "sum=" << sum << '\n';
+  // delete[] x;
 }
