@@ -23,6 +23,9 @@ class MultiText : public Shape {
   float velX = 1, velY = 1;
   float internalAdd(float x, float y, const Font* f, const char s[],
                     uint32_t len);
+  float internalAddBox(float x, float y, float w, float h, const Font* f,
+                        const char s[], uint32_t len);
+
   uint32_t formatLead0(char destBuf[], uint8_t printVal) {
     uint32_t d0 = printVal / 100;
     destBuf[0] = '0' + d0;
@@ -202,6 +205,18 @@ class MultiText : public Shape {
   void addCentered(float x, float y, const Font* f, const char s[],
                    uint32_t len);
 
+  void addBox(float x, float y, float w, float h, const Font* f, const char s[],
+                   uint32_t len) { internalAddBox(x, y, w, h, f, s, len); }
+  void addBox(float x, float y, float w, float h, const Font* f, const std::string& s) {
+    internalAddBox(x, y, w, h, f, s.c_str(), s.length());
+  }
+  template <typename T>
+  float addBox(float x, float y, float w, float h, const Font* f, T printVal) {
+    char buf[32];
+    uint32_t len = format(buf, printVal);
+    return internalAdd(x, y, f, buf + (sizeof(buf) - len), len);
+  }
+  
   void checkAdd(float& x, float& y, const Font* f, const unsigned char c,
                 float endMargin, float rowSize, float startOverMargin);
   uint32_t findFirstOverMargin(float x, const Font* f, const char s[],
