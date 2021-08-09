@@ -29,6 +29,7 @@ class JulianDate {
 public:
   friend class Date;
   static const double epoch;
+  static const int weekDaysSizes[7];
   static const char* weekDays[7];
   static const uint16_t daysUpTo[12];
   static const uint16_t daysInMonth[12];

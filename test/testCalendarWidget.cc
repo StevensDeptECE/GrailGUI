@@ -27,15 +27,19 @@ class TestWidgets : public GLWin {
     const Font* f = FontFace::get("TIMES", 10, FontFace::BOLD);
 
     CalendarWidget calendar(gui, guiText, 50, 50, 1100, 550, 2021, 8, grail::black, f);
-    calendar.circleDate(6, 8, grail::green);
-    calendar.circleDate(27, 8, grail::red);
-    calendar.circleDate(30, 8, grail::blue);
-    calendar.circleDate(27, 2, grail::red);
-    calendar.setViewMonthly();
+
+    string event = "this is an event";
+    calendar.circleDate(6, 8, grail::green, event);
+    calendar.circleDate(27, 8, grail::red, event);
+    calendar.circleDate(30, 8, grail::blue, event);
+    calendar.circleDate(27, 2, grail::red, event);
+    calendar.setViewWeekly();
+
+    calendar.setDayInWeek(30);
 
     calendar.init();
 
-    //calendar.drawYear();
+    
     
   }
 

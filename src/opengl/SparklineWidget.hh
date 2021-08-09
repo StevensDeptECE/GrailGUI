@@ -26,6 +26,8 @@ private:
   Scale *xAxis;
   float minMultiplier;
 
+  Canvas ca;
+
   int count;
   glm::vec4 lineColor;
   std::vector <double> anim;

@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include "Document.hh"
 
 using namespace std;
 
@@ -33,26 +34,13 @@ void CalendarWidget::yearTitle(){
 }
 
 void CalendarWidget::internalDrawMonth(float x, float y, float w, float h, int month, const Font* monthNameFont, const Font* dayFont) {
-  int days[42];
   JulianDate j(year, month, 1); //TODO: this date not used at all, day of week calculated in next line
   uint32_t weekDay = j.dayOfWeek(year, month, 1); // TODO: this method does not use j at all
 
-  for (int i = 0; i < 42; i++){
-    days[i] = 0;
-  }
-
-  for (int i = 0; i < 42; i++){
-    circles[i] = grail::black;
-  }
 
   uint32_t daysInMonth = JulianDate::daysInMonth[month-1];
   if (month == 2 && j.isLeapYear(year)) {
     daysInMonth++;
-  }
-
-  
-  for (int i = 1; i <= daysInMonth; i++){
-    days[weekDay+i-1] = i;
   }
 
   t->add(x, y - 12, monthNameFont, JulianDate::monthAbbr[month-1], 3);
@@ -68,16 +56,18 @@ void CalendarWidget::internalDrawMonth(float x, float y, float w, float h, int m
 
   int column = 0;
   int row = 1;
+  int day = 1;
   //int currentEvent = 0;
   for (int i = 0; i < 42; i++){
-    if(days[i] != 0){
+    if(i >= weekDay && day <= daysInMonth){
       for (int k = 0; k < events.size(); k++){
-        if (events[k].month == month && events[k].day == days[i]){
+        if (events[k].month == month && events[k].day == day){
           m->fillEllipse(x + squareW/2 + column*squareW, y + squareH/2 + squareH*row, 
             squareW*0.4, squareH*0.4, 5, events[k].circleColor);
         }
       }
-      t->addCentered(x + squareW/2 + column*squareW, y + squareH/2 + squareH*row, dayFont, days[i]);
+      t->addCentered(x + squareW/2 + column*squareW, y + squareH/2 + squareH*row, dayFont, day);
+      day++;
     }
     if(column == 6){
       row++;
@@ -112,24 +102,59 @@ void CalendarWidget::drawYear(){
 }
 
 void CalendarWidget::drawWeek() {
-}
 
+  t->add(x, y - 12, weekViewMonthName, JulianDate::monthAbbr[month-1], 3);
 
-#if 0
-void CalendarWidget::circleDate(int day, glm::vec4 colorC){
-  for (int i = 0; i < 42; i++){
-    if(days[i] == day){
-      circles[i] = colorC;
+  float squareW = w/7;
+  float squareH = h*weekRatio;
+
+  m->drawGrid(x, y, w, h*weekRatio, 2, 7, color);
+  m->drawGrid(x, y+h*weekRatio, w, h*(1-weekRatio), 1, 7, color);
+
+  JulianDate j(year, month, 1);
+
+  uint32_t daysInPreviousMonth = JulianDate::daysInMonth[month-1];
+  if (month == 2 && j.isLeapYear(year)) {
+    daysInPreviousMonth++;
+  }
+
+  uint32_t weekDay = j.dayOfWeek(year, month, dayInWeek);
+
+  int day;
+  bool previous = false;
+  if (dayInWeek-weekDay >= 0){
+    day = dayInWeek - weekDay;
+  }else{
+    day = daysInPreviousMonth + dayInWeek-weekDay;
+    previous = true;
+  }
+
+  uint32_t daysInMonth = JulianDate::daysInMonth[month-1];
+  if (month == 2 && j.isLeapYear(year)) {
+    daysInMonth++;
+  }
+
+  for (int i = 0; i < 7; i++){
+    t->addCentered(x + i*squareW + squareW/2, y + squareH/4, weekViewMonthName, JulianDate::weekDays[i], 
+      JulianDate::weekDaysSizes[i]);
+    if(previous){
+      daysInMonth = daysInPreviousMonth;
+    }
+    t->addCentered(x + i*squareW + squareW/2, y + squareH*3/4, weekViewMonthName, day);
+    if(day < daysInMonth){
+      day++;
+    }else{
+      day = 1;
     }
   }
 }
-#endif
 
-void CalendarWidget::circleDate(int day, int month, glm::vec4 colorC){
+void CalendarWidget::circleDate(int day, int month, glm::vec4 colorC, string description){
   CalendarWidget::event e;
   e.day = day;
   e.month = month; 
   e.circleColor = colorC;
+  e.description = description;
 
   events.push_back(e);
 }

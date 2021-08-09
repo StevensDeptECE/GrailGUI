@@ -3,6 +3,7 @@
 #include "util/Ex.hh"
 
 const double JulianDate::epoch = 2000;
+const int JulianDate::weekDaysSizes[] = {6, 6, 7, 9, 8, 6, 8};
 const char* JulianDate::weekDays[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 const char* JulianDate::monthNames[12] = {
