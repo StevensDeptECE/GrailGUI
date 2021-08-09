@@ -49,4 +49,11 @@ int main() {
 
   cout << stats::mode(data) << endl;
   for (auto const& n : stats::multimode(data)) cout << n << endl;
+
+  std::vector<double> empty;
+  try {
+    double med = stats::median(empty);
+  } catch (const stats_error& e) {
+    cout << e.what() << endl;
+  }
 }

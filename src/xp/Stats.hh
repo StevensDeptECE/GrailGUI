@@ -4,27 +4,41 @@
 
 #include <algorithm>
 #include <cmath>
+#include <exception>
+#include <numeric>
 #include <optional>
 
 /**
  * A library providing functions for calculating mathematical statsitics of
- * numeric (not complex/imaginary) data. This is not meant to be a replacement
- * to massive machine learning libraries like dlib or CUDA, just something small
- * to include with projects that need basic statsistics.
+ * numeric (not complex/imaginary) data. This is not meant to be a
+ * replacement to massive machine learning libraries like dlib or CUDA, just
+ * something small to include with projects that need basic statsistics.
  *
  * All of these functions are designed to take in a generic iterable of some
  * kind (arrays, vectors, etc) and return a double precison floating point
  * number.
  */
 namespace stats {
-
 namespace detail {
+
+class stats_error : public std::exception {
+  std::string msg_;
+
+ public:
+  stats_error(const std::string& msg, const std::string& file, const int line)
+      : msg_("Error in file: " + file + " at line " + std::to_string(line) +
+             ":\n" + msg) {}
+  const char* what() const noexcept { return msg_.c_str(); }
+};
+
+#define throw_stats_error(msg) \
+  throw stats::detail::stats_error(msg, __FILE__, __LINE__)
 
 template <typename Iterable>
 double squared_deviation_from_mean(const Iterable& data, double mu) {
   double sum = 0;
   for (auto const& num : data) {
-    sum += pow(num - mu, 2);
+    sum += std::pow(num - mu, 2);
   }
 
   return sum;
@@ -117,12 +131,8 @@ enum class QuantileAlgorithm { R1 = 0, R2, R3, R4, R5, R6, R7, R8, R9 };
  */
 template <typename Iterable>
 double mean(const Iterable& data) {
-  double mean_tmp = 0;
-  for (auto const& num : data) {
-    mean_tmp += num;
-  }
-
-  return mean_tmp /= std::size(data);
+  double sum = std::accumulate(std::begin(data), std::end(data), 0.0);
+  return sum /= std::size(data);
 }
 
 /**
@@ -138,8 +148,7 @@ double median(const Iterable& data) {
   sort(sorted.begin(), sorted.end());
   int n = sorted.size();
 
-  if (n == 0)
-    ;  // exception here
+  if (n == 0) throw_stats_error("no median for empty data");  // exception here
 
   if (n % 2 == 1) {
     return sorted[n / 2];
@@ -163,8 +172,7 @@ double median_low(const Iterable& data) {
   sort(sorted.begin(), sorted.end());
   int n = sorted.size();
 
-  if (n == 0)
-    ;  // exception here
+  if (n == 0) throw_stats_error("no median for empty data");  // exception here
 
   if (n % 2 == 1) {
     return sorted[n / 2];
@@ -242,8 +250,8 @@ double mode(const Iterable& data) {
  *
  * Variance, also called the second moment about the mean, is a measure of the
  * variability / spread of data. A large variance indicates that the data is
- * spread out, and a small variance indicates it is clustered closely around the
- * mean.
+ * spread out, and a small variance indicates it is clustered closely around
+ * the mean.
  *
  * If the optional second argument xbar is given, it should be the mean of the
  * data. If it is missing or {} (the default), the mean is automatically
@@ -274,13 +282,13 @@ double variance(const Iterable& data, std::optional<double> xbar = {}) {
  *
  * Variance, also called the second moment about the mean, is a measure of the
  * variability / spread of data. A large variance indicates that the data is
- * spread out, and a small variance indicates it is clustered closely around the
- * mean.
+ * spread out, and a small variance indicates it is clustered closely around
+ * the mean.
  *
  * If the optional second argument @p mu is given, it is typically the mean of
- * the @p data. It can also be used to compute the second moment around a point
- * that is not the mean. If it is missing or {} (the default), the arithmetic
- * mean is automatically calculated.
+ * the @p data. It can also be used to compute the second moment around a
+ * point that is not the mean. If it is missing or {} (the default), the
+ * arithmetic mean is automatically calculated.
  *
  * Use this functio to calculate the variance from the entire population, to
  * estimate the variance from a sample, the variance() function is usually a
