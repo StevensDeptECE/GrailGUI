@@ -160,15 +160,11 @@ std::vector<double> multimode(const Iterable& data) {
   double biggest_mode = 1;
 
   for (auto const& num : data) {
-    int tmp = 1;
-
-    if (auto search = map.find(num); search != map.end()) {
-      tmp = search->second + 1;
-    }
-
-    if (tmp >= biggest_mode) {
-      biggest_mode = tmp;
-      map.insert_or_assign(num, tmp);
+    if (map.find(num) == map.end()) {
+      map[num] = 1;
+    } else {
+      map[num] += 1;
+      if (map[num] > biggest_mode) biggest_mode += 1;
     }
   }
 
@@ -179,6 +175,13 @@ std::vector<double> multimode(const Iterable& data) {
   }
 
   return modes;
+}
+
+template <typename Iterable>
+double mode(const Iterable& data) {
+  std::vector<double> modes = multimode(data);
+  if (modes.size()) return multimode(data)[0];
+  // TODO: implement exception to throw when we have zero length thing
 }
 
 /**
