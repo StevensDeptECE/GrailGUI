@@ -125,11 +125,21 @@ double mean(const Iterable& data) {
   return mean_tmp /= std::size(data);
 }
 
+/**
+ * @brief
+ *
+ * @tparam Iterable
+ * @param data
+ * @return double
+ */
 template <typename Iterable>
 double median(const Iterable& data) {
   std::vector<double> sorted(std::begin(data), std::end(data));
   sort(sorted.begin(), sorted.end());
   int n = sorted.size();
+
+  if (n == 0)
+    ;  // exception here
 
   if (n % 2 == 1) {
     return sorted[n / 2];
@@ -138,6 +148,49 @@ double median(const Iterable& data) {
     int i = n / 2;
     return (sorted[i - 1] + sorted[i]) / 2;
   }
+}
+
+/**
+ * @brief
+ *
+ * @tparam Iterable
+ * @param data
+ * @return double
+ */
+template <typename Iterable>
+double median_low(const Iterable& data) {
+  std::vector<double> sorted(std::begin(data), std::end(data));
+  sort(sorted.begin(), sorted.end());
+  int n = sorted.size();
+
+  if (n == 0)
+    ;  // exception here
+
+  if (n % 2 == 1) {
+    return sorted[n / 2];
+
+  } else {
+    return sorted[n / 2 - 1];
+  }
+}
+
+/**
+ * @brief
+ *
+ * @tparam Iterable
+ * @param data
+ * @return double
+ */
+template <typename Iterable>
+double median_high(const Iterable& data) {
+  std::vector<double> sorted(std::begin(data), std::end(data));
+  sort(sorted.begin(), sorted.end());
+  int n = sorted.size();
+
+  if (n == 0)
+    ;  // exception here
+
+  return sorted[n / 2];
 }
 
 /**
@@ -239,7 +292,7 @@ double variance(const Iterable& data, std::optional<double> xbar = {}) {
  * \b Usage:
  * \code
  *
- * \endcoe
+ * \endcode
  *
  * @tparam Iterable
  * @param data an iterable of at least two real-valued numbers.
@@ -253,12 +306,15 @@ double pvariance(const Iterable& data, std::optional<double> mu = {}) {
 }
 
 /**
- * @brief
+ * @brief Returns the sample standard deviation of the data.
+ *
+ * Returns the sample standard deviation (square root of the variance) of the
+ * data. See varaince() for arguments and other details.
  *
  * @tparam Iterable
- * @param data
- * @param xbar
- * @return double
+ * @param data an iterable of at least two real-valued numbers.
+ * @param xbar the mean of the data.
+ * @return double the sample standard deviation of the data.
  */
 template <typename Iterable>
 double stdev(const Iterable& data, std::optional<double> xbar = {}) {
@@ -266,12 +322,15 @@ double stdev(const Iterable& data, std::optional<double> xbar = {}) {
 }
 
 /**
- * @brief
+ * @brief Returns the population standard deviation of the data.
+ *
+ * Returns the population standard deviation (square root of the variance) of
+ * the data. See varaince() for arguments and other details.
  *
  * @tparam Iterable
- * @param data
- * @param mu
- * @return double
+ * @param data an iterable of at least two real-valued numbers.
+ * @param mu where calculate the second moment around.
+ * @return double the population stdandard deviation of the data.
  */
 template <typename Iterable>
 double pstdev(const Iterable& data, std::optional<double> mu = {}) {
