@@ -100,7 +100,7 @@ inline void GLWin::doit(GLWin *w, uint32_t input) {
 
 void GLWin::keyCallback(GLFWwindow *win, int key, int scancode, int action,
                         int mods) {
-  uint32_t input = (mods << 9) | key;
+  uint32_t input = (mods << 11) | (action << 9) | key;
   cerr << "key: " << key << " mods: " << mods << " input=" << input << '\n';
   doit(winMap[win], input);
 }
@@ -127,7 +127,7 @@ void GLWin::scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
 
 void GLWin::windowRefreshCallback(GLFWwindow *win) {
   GLWin *w = GLWin::getWin(win);
-  w->dirty = true;
+  w->needsRender = true;
 }
 
 void GLAPIENTRY messageCallback(GLenum source, GLenum type, GLuint id,
@@ -165,6 +165,7 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const char title[],
       startTime(0),
       endTime(0),
       t(startTime),
+      updateTime(0),
       dt(1),
       tabs(4),
       faces(16) {
@@ -334,8 +335,19 @@ GLWin::~GLWin() {
 //   // std::cout<<"Added: " << name.c_str()<<std::endl;
 // }
 
+// TODO: Change so -1 is no update, 0 is continuous update and dt > 0 is update
+// every dt
+// TODO: Implement set framerates
+inline void GLWin::checkUpdate() {
+  if (updateTime == 0 ||
+      (updateTime > 0 && glfwGetTime() > lastRenderTime + updateTime)) {
+    lastRenderTime = glfwGetTime();
+    dirty = true;
+  }
+}
+
 void GLWin::mainLoop() {
-  dirty = true;
+  needsRender = true;
   init();      // call the child class method to set up
   baseInit();  // call grails initialization for shaders
 
@@ -351,10 +363,8 @@ void GLWin::mainLoop() {
     //    dt = current - lastFrame;
     float startRender = glfwGetTime();
     lastRenderTime = startRender;
-    glfwPollEvents();  // Check and call events
 
-    if (dirty) {
-      float startRender = glfwGetTime();
+    if (needsRender) {
       glClearColor(1.0f, 1.0f, 1.0f, 1.0f);  // Clear the colorbuffer and depth
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       render();
@@ -372,11 +382,16 @@ void GLWin::mainLoop() {
       } else {
         frameCount++;
       }
-
-      dirty = false;
+      needsRender = false;
     }
     t += dt;
-    update();
+    dirty = false;
+    glfwPollEvents();  // Check and call events
+    checkUpdate();
+    if (dirty) {
+      update();
+      needsRender = true;
+    }
   }
   cleanup();
   glfwDestroyWindow(win);
@@ -714,11 +729,3 @@ void GLWin::loadBindings() {
 }
 
 double GLWin::getTime() { return glfwGetTime(); }
-
-bool GLWin::checkUpdate(double dt) {
-  if (glfwGetTime() > lastRenderTime + dt) {
-    lastRenderTime = glfwGetTime();
-    return true;
-  }
-  return false;
-}

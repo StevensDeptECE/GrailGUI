@@ -24,10 +24,13 @@ class SymbolTable : public Struct {
   Struct* addStruct(const string& name);
   void addXDLType(const std::string& name, XDLType* xdlType);
   // void writeMeta(Buffer& metadataBuf) override;
-  void write(Buffer& out);
   // read in metadata from buffer and return pointer to the type being added to
   // the symbol table
   void readMeta(Buffer& metadataBuf);
   // dump a specific type as text
   void displayText(Buffer& binaryIn, Buffer& asciiOut) const;
+  friend void write(Buffer& out, const SymbolTable& st) {
+    const Struct* s = (Struct*)(st.getMemberType(st.root));
+    write(out, *s);
+  }
 };

@@ -54,9 +54,12 @@ class GLWin {
   uint32_t saveW, saveH;
   uint32_t frameNum;
   double lastRenderTime;  // Stores last time of update
+  double updateTime;      // Stores time between animation frames
   char frameName[32];
   DynArray<Tab*> tabs;  // list of web pages, ie tabs
   Tab* current;         // current (active) tab
+  void checkUpdate();
+
  public:
   static std::string baseDir;
   double mouseX, mouseY;
@@ -64,7 +67,7 @@ class GLWin {
   bool dragMode;
   int winXPos, winYPos;    // location of the top-left of the window in pixels
   uint32_t width, height;  // width and height of the window in pixels
-  bool dirty, dirty2;
+  bool dirty, needsRender;
   bool focused;
   uint32_t exitAfter;  // if not zero, will terminate
 
@@ -98,11 +101,13 @@ class GLWin {
     MOUSE2 = 2,
     MOUSE3 = 3,
     MOUSE4 = 4,
+    KEY_RELEASE = 512,
+    KEY_REPEAT = 1024,
     PRESS = 8,
     RELEASE = 0,
-    CTRL = 512,
-    SHIFT = 1024,
-    ALT = 2048
+    CTRL = 2048,
+    SHIFT = 4096,
+    ALT = 8192
   };
 
   /*
@@ -225,6 +230,7 @@ class GLWin {
 
   uint32_t getWidth() const { return width; }
   uint32_t getHeight() const { return height; }
+  void setUpdateTime(double dt) { updateTime = dt; }
 
   static glm::mat4* getProjection() { return &projection; }
   virtual void init();
@@ -333,5 +339,4 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   static void helloWorld(GLWin* w);
 
   double getTime();
-  bool checkUpdate(double dt);
 };

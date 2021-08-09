@@ -73,13 +73,10 @@ class List : public CompoundType {
   }
 
   uint32_t size() const override { return impl.size(); }
-  uint32_t fieldSize() const override {
-    if (impl.size() > 0) return impl[0].fieldSize();
+  uint32_t fieldSize(const List<T>& list) {
+    if (list.size() > 0) return fieldSize(list[0]);
     return 1;
   }
-  void write(Buffer& buf) const override;
-  void write(Buffer& buf, DynArray<T> tl) const;
-  void writeMeta(Buffer& buf) const override;
   void read(Buffer& buf) {
     uint32_t len = buf._readU16();
     T val;
@@ -97,36 +94,24 @@ class List : public CompoundType {
   }
 
   XDLType* begin(Buffer&) override;
+  void writeXDL(Buffer& buf) const;
+  void writeXDLMeta(Buffer& buf) const;
+  const T& operator[](uint32_t i) const { return impl[i]; }
+  T& operator[](uint32_t i) { return impl[i]; }
 };
 
 template <typename T>
-void List<T>::writeMeta(Buffer& buf) const {
-  buf.write(getDataType());
-  buf.write(XDLType::getTypeName());
-  if (typeToDataType(impl[0]) != DataType::UNIMPL) {
-    buf.write(typeToDataType(impl[0]));
-  } else {  // if (is_base_of<XDLType, T>::value) {
-    impl[0].writeMeta(buf);
-  }
-  // else {
-  // buf.write(typeid(T).name());
-  //}
+void writeMeta(Buffer& buf, const List<T>& list) {
+  buf.write(list.getDataType());
+  buf.write(list.getTypeName());
+  writeMeta(buf, list[0]);
 }
 
-// TODO: figure out how to do compile-time writing of c++ primitives
-// typeToDataType gets called at runtime, but making it a compile-time
-// call requires removing the dependence on the class (since 'this' isnt
-// constexpr)
 template <typename T>
-void List<T>::write(Buffer& buf) const {
-  buf.write(uint16_t(impl.size()));
-  for (uint32_t i = 0; i < impl.size(); i++) {
-    if (typeToDataType(impl[0]) != DataType::UNIMPL) {
-      buf.write(impl[i]);
-    } else {
-      impl[i].write(buf);
-    }
-    buf.checkAvailableWrite();
+void write(Buffer& buf, const List<T>& list) {
+  buf.write(uint16_t(list.size()));
+  for (uint32_t i = 0; i < list.size(); i++) {
+    write(buf, (list[i]));
   }
 }
 
@@ -138,3 +123,13 @@ template <typename T>
 XDLType* List<T>::begin(Buffer& buf) {
   return nullptr;
 }  // TODO: templated lists cannot return generic pointers: &impl[0];}
+
+template <typename T>
+void List<T>::writeXDL(Buffer& buf) const {
+  write(buf, *this);
+}
+
+template <typename T>
+void List<T>::writeXDLMeta(Buffer& buf) const {
+  writeMeta(buf, *this);
+}

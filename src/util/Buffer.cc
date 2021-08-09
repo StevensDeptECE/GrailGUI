@@ -8,6 +8,9 @@
 using namespace std;
 // const string HTTPRequest::GET = "GET";
 
+/*
+  open a buffer on a socket for writing
+*/
 Buffer::Buffer(size_t initialSize, bool writing)
     : writing(writing), size(initialSize) {
   availSize = writing ? size : 0;

@@ -14,13 +14,14 @@ class StockQuote {
   float open, high, low, close;
   constexpr StockQuote(float open, float high, float low, float close)
       : open(open), high(high), low(low), close(close) {}
-  void write(Buffer& buf) const {
-    buf.write(open);
-    buf.write(high);
-    buf.write(low);
-    buf.write(close);
+  friend void write(Buffer& buf, const StockQuote& data) {
+    buf.write(data.open);
+    buf.write(data.high);
+    buf.write(data.low);
+    buf.write(data.close);
+    buf.checkAvailableWrite();
   }
-  void writeMeta(Buffer& buf) const {
+  friend void writeMeta(Buffer& buf, const StockQuote& data) {
     buf.writeStructMeta("StockQuote", 4);
     buf.write(DataType::F32, "open");
     buf.write(DataType::F32, "high");
@@ -36,7 +37,7 @@ int main(int argc, char* argv[]) {
   try {
     IPV4Socket s(port);
     List<const StockQuote> quotes("AAPL");
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 70; i++) {
       quotes.add(StockQuote(i, i, i, i));
     }
     XDLRequest req(&quotes);

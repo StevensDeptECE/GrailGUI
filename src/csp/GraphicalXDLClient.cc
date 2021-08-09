@@ -34,10 +34,12 @@ class Renderer {
     BoundBox(float x, float y, uint32_t w, uint32_t h)
         : x0(x), y0(y), width(w), height(h) {}
   };
-  typedef void (Renderer::*Method)();
+  typedef void (Renderer::*Method)(XDLIterator&);
 
  private:
   XDLType* it;           /**< the iterator to the XDLType to be drawn */
+  XDLIterator* lastPage; /**< Stores the start of the current page*/
+  XDLIterator* endPage;  /**< Stores the end of the current page*/
   StyledMultiShape2D* m; /**< Stores and renders graphics onto the screen */
   MultiText* t;          /**< Stores and renders text onto the screen */
 
@@ -59,16 +61,6 @@ class Renderer {
   /**< Size for each row of data, related to font + spacing if it's text */
   float rowSize;
   float x, y; /**< Current render position */
-
-  void registerIterator(XDLType* xdl_it) {
-    CompoundType* comp = dynamic_cast<CompoundType*>(xdl_it);
-    if (comp != nullptr) {
-      it = (XDLIterator*)xdl_it->begin(in);
-    } else {
-      auto method = renderMap[xdl_it->getDataType()];
-      (this->*method)();
-    }
-  }
 
   void registerRenderers() {
     registerRenderer(DataType::STRUCT8, &Renderer::renderStructAcross);
@@ -128,7 +120,7 @@ class Renderer {
         in(in),
         dataBuffer(65536),
         bounds(b) {
-    registerIterator(it);
+    // registerIterator(it);
     registerRenderers();
   }
 
@@ -151,10 +143,6 @@ class Renderer {
       : Renderer(it, c, requests, byName, in, BoundBox(x0, y0, width, height)) {
   }
 
-  void advance(XDLIterator* endPage) {
-    // it = endPage + 1;
-  }
-
   Method* rendererFind(DataType t) {
     auto i = renderMap.find(t);
     if (i == renderMap.end()) return nullptr;
@@ -171,47 +159,72 @@ class Renderer {
   }
 
   void registerRenderer(DataType t, Method m) { renderMap[t] = m; }
-  void renderListDown();
-  void renderStructAcross();
+  void renderListDown(XDLIterator& parentIterator);
+  void renderStructAcross(XDLIterator& parentIterator);
   void renderSubStructAcross(Struct* s);
   void renderStructNameValue();
-  void renderObjectMetadataAcross();
-  void renderU32();
-  void renderU64();
-  void renderF32();
-  void renderF64();
+  void renderObjectMetadataAcross(XDLIterator& parentIterator);
+  void renderU32(XDLIterator&);
+  void renderU64(XDLIterator&);
+  void renderF32(XDLIterator&);
+  void renderF64(XDLIterator&);
+  void nextPage();
+  void prevPage();
   void update();
 };
 
 void Renderer::update() {
+  t->clear();
+  m->clear();
   Method* elementRenderer = rendererFind(it);
   if (!elementRenderer) {
     cerr << "bad renderer";
     return;
   }
-  (this->**elementRenderer)();
+  XDLIterator* i = dynamic_cast<XDLIterator*>(it);
+  if (i == nullptr) {
+    cerr << "the page iterator is not an iterator, not drawing";
+    return;
+  }
+  (this->**elementRenderer)(*i);
 }
 
-void Renderer::renderListDown() {
-  GenericList::Iterator* i = dynamic_cast<GenericList::Iterator*>(it);
-  XDLType* elementType = i->getListType();
-  if (i == nullptr) {
+void Renderer::nextPage() {
+  lastPage = ((XDLIterator*)it)->clone();
+  it = endPage;
+}
+
+void Renderer::prevPage() { it = lastPage; }
+
+void Renderer::renderListDown(XDLIterator& parentIterator) {
+  GenericList::Iterator* currentPage =
+      dynamic_cast<GenericList::Iterator*>(&parentIterator);
+  if (currentPage == nullptr) {
     cerr << "Expected generic list!";
     return;
   }
-  Method* elementRenderer = rendererFind(i->getDataType());
+  GenericList::Iterator i =
+      *currentPage;  // make a copy to work with to draw this screenful
+  XDLType* elementType = i.getListType();
+  Method* elementRenderer = rendererFind(elementType->getDataType());
   if (!elementRenderer) {
     cerr << "bad renderer";
     return;
   }
   for (; !i && y < bounds.height; ++i, y += rowSize) {
-    (this->**elementRenderer)();
+    x = bounds.x0;
+    XDLIterator* childIterator = (XDLIterator*)((GenericList*)i.getUnderlying())
+                                     ->getListType()
+                                     ->begin(in);
+    // call the appropriate renderer for this object
+    (this->**elementRenderer)(*childIterator);
+    delete childIterator;
   }
-  // endPage = i;
+  endPage = new GenericList::Iterator(i);
 }
 
-void Renderer::renderObjectMetadataAcross() {
-  Struct::Iterator* i = dynamic_cast<Struct::Iterator*>(it);
+void Renderer::renderObjectMetadataAcross(XDLIterator& parentIterator) {
+  Struct::Iterator* i = dynamic_cast<Struct::Iterator*>(&parentIterator);
   Struct* s = i->getStruct();
   if (i == nullptr) {
     cerr << "Expected generic list!";
@@ -229,16 +242,17 @@ void Renderer::renderObjectMetadataAcross() {
   // endPage = current iterator position;
 }
 
-void Renderer::renderStructAcross() {
-  Struct::Iterator* startPage = dynamic_cast<Struct::Iterator*>(it);
-  if (startPage == nullptr) {
-    cerr << "Expected generic list!";
+void Renderer::renderStructAcross(XDLIterator& parentIterator) {
+  Struct::Iterator* currentPosition =
+      dynamic_cast<Struct::Iterator*>(&parentIterator);
+  if (currentPosition == nullptr) {
+    cerr << "Expected structure!";
     return;
   }
-  Struct* s = startPage->getStruct();
+  Struct* s = currentPosition->getStruct();
   Method elementRenderer;
 
-  for (Struct::Iterator j = *startPage; !j; ++j) {
+  for (Struct::Iterator j = *currentPosition; !j; ++j) {
     const XDLType* m = *j;
     if (m->getDataType() == DataType::STRUCT8) {
       renderSubStructAcross((Struct*)m);
@@ -248,7 +262,7 @@ void Renderer::renderStructAcross() {
         cerr << "bad renderer datatype=" << uint32_t(m->getDataType())
              << " typename=" << m->getTypeName() << '\n';
       }
-      (this->**elementRenderer)();
+      (this->**elementRenderer)(j);
       x += 150;
     }
   }
@@ -267,20 +281,20 @@ void Renderer::renderSubStructAcross(Struct* s) {
         cerr << "bad renderer datatype=" << uint32_t(m->getDataType())
              << " typename=" << m->getTypeName() << '\n';
       }
-      (this->**elementRenderer)();
+      (this->**elementRenderer)(j);
     }
     x += 150;
   }
 }
 
 void Renderer::renderStructNameValue() { return; }
-void Renderer::renderU32() {
+void Renderer::renderU32(XDLIterator&) {
   Buffer& incpy = in;
   t->add(x, y, in.readU32());
 }
-void Renderer::renderU64() { t->add(x, y, in.readU64()); }
-void Renderer::renderF32() { t->add(x, y, in.readF32()); }
-void Renderer::renderF64() { t->add(x, y, in.readF64()); }
+void Renderer::renderU64(XDLIterator&) { t->add(x, y, in.readU64()); }
+void Renderer::renderF32(XDLIterator&) { t->add(x, y, in.readF32()); }
+void Renderer::renderF64(XDLIterator&) { t->add(x, y, in.readF64()); }
 
 /*
   This generic client demonstrates the ability to send a request to an XDL
@@ -338,13 +352,19 @@ class GraphicalXDLClient : public GLWin {
   }
   void init() {
     readData(reqID);
+    bindEvent(Inputs::PAGEDOWN, &GraphicalXDLClient::pageDown, this);
     update();
   }
 
-  void update() {
-    if (dirty) {
-      r->update();
-    }
+  void update() { r->update(); }
+  void pageDown() {
+    r->nextPage();
+    setDirty();
+  }
+
+  void pageUp() {
+    r->prevPage();
+    setDirty();
   }
 };
 int main(int argc, char* argv[]) {

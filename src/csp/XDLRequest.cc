@@ -60,8 +60,6 @@ class Point : public CompoundType {
   double x, y, z;
   Point(double x, double y, double z)
       : CompoundType("Point"), x(x), y(y), z(z) {}
-  void write(Buffer& out) const override;
-  void writeMeta(Buffer& buf) const override;
 
   DataType getDataType() const override { return DataType::STRUCT8; }
   uint32_t size() const override { return 12; }
@@ -78,9 +76,20 @@ class Point : public CompoundType {
     meta->addBuiltinMember(DataType::F64, "y");
     meta->addBuiltinMember(DataType::F64, "z");
   }
-};
 
-void write(Buffer& out, const Point& p);
+  friend void write(Buffer& buf, const Point& p) {
+    buf.write(p.x);
+    buf.write(p.y);
+    buf.write(p.z);
+  }
+
+  friend void writeMeta(Buffer& buf, const Point& p) {
+    buf.writeStructMeta("Point", 3);
+    buf.write(DataType::F64, "x");
+    buf.write(DataType::F64, "y");
+    buf.write(DataType::F64, "z");
+  }
+};
 
 XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
   // buildData(xdlData, Point(1, 2, 3));
@@ -216,8 +225,8 @@ void XDLRequest::handle(int fd) {
 
   const XDLType* x = xdlData[requestId];
   // Struct* s = (Struct*)st->getSymbol(root);
-  x->writeMeta(out);
-  x->write(out);
+  x->writeXDLMeta(out);
+  x->writeXDL(out);
   out.displayRaw();
   out.flush();
 }
