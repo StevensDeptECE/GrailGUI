@@ -20,6 +20,7 @@ class TestVideoPlayer : public GLWin {
   void update() { v->update(); }
 
   void init() {
+    setFrameRate(0);
     startTime = getTime();
     MainCanvas *c = currentTab()->getMainCanvas();
 
@@ -27,7 +28,7 @@ class TestVideoPlayer : public GLWin {
 
     // playing a link from youtube (and maybe other places idk) requires you to
     // have youtube-dl installed
-    v->loadFile("res/badapple.mkv");
+    v->loadFile("https://youtu.be/4wKrqzfrRs8");
     v->cropVideo(0, 0, 65, 65);
     v->setVolume(50);
     v->setPlaying();

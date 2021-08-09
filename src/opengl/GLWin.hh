@@ -53,7 +53,8 @@ class GLWin {
   uint8_t* saveBuffer;  // buffer used to save screenshots
   uint32_t saveW, saveH;
   uint32_t frameNum;
-  double lastRenderTime;  // Stores last time of update
+  double lastRenderTime;  // Stores last time of render
+  double lastUpdateTime;  // Stores last time of update
   double updateTime;      // Stores time between animation frames
   char frameName[32];
   DynArray<Tab*> tabs;  // list of web pages, ie tabs
@@ -230,7 +231,9 @@ class GLWin {
 
   uint32_t getWidth() const { return width; }
   uint32_t getHeight() const { return height; }
-  void setUpdateTime(double dt) { updateTime = dt; }
+  void setFrameRate(double framerate) {
+    updateTime = (framerate == 0) ? 0 : (1.0 / framerate);
+  }
 
   static glm::mat4* getProjection() { return &projection; }
   virtual void init();

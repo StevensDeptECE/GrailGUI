@@ -166,6 +166,7 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const char title[],
       endTime(0),
       t(startTime),
       updateTime(0),
+      lastUpdateTime(0),
       dt(1),
       tabs(4),
       faces(16) {
@@ -340,8 +341,8 @@ GLWin::~GLWin() {
 // TODO: Implement set framerates
 inline void GLWin::checkUpdate() {
   if (updateTime == 0 ||
-      (updateTime > 0 && glfwGetTime() > lastRenderTime + updateTime)) {
-    lastRenderTime = glfwGetTime();
+      (updateTime > 0 && glfwGetTime() > lastUpdateTime + updateTime)) {
+    lastUpdateTime = glfwGetTime();
     dirty = true;
   }
 }
