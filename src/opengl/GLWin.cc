@@ -238,7 +238,7 @@ void GLWin::startWindow() {
   // singleton initialization here
   // TODO: is there any more elegant way?
   if (!hasBeenInitialized) {
-    *(string *)&baseDir = getenv("GRAIL");
+    baseDir = prefs.getBaseDir();
     FontFace::initAll();
   }
   defaultFont = (Font *)FontFace::get("TIMES", 16, FontFace::BOLD);

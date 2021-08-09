@@ -237,10 +237,6 @@ void FontFace::emptyFaces() {
   faces.clear();
 }
 
-string getBaseDir() {
-  string baseDir = getenv("GRAIL");
-  return baseDir + "/";
-}
 unordered_map<string, string> FontFace::pathByName;
 
 void FontFace::setTexture(const uint8_t bitmap[], uint32_t w, uint32_t h) {
@@ -411,7 +407,7 @@ void FontFace::saveFonts(const uint8_t* combinedBitmap,
                          uint32_t totalWidthAllFaces,
                          uint32_t maxHeightAllFaces) {
   ofstream fastfont(
-      getBaseDir() + "fast.glfont",
+      GLWin::baseDir + "fast.glfont",
       ios::binary);  // save a binary file for rapid loading next time
   FastFontHeader header;
   header.magic = 0x544E4644;
@@ -475,14 +471,14 @@ void FontFace::initAll() {
   // if (hasBeenInitialized) return;
   // hasBeenInitialized = true;
   // TODO: load from config file
-  std::string fontPath = GLWin::baseDir + "/conf/fonts/";
+  std::string fontPath = GLWin::baseDir + "conf/fonts/";
   cout << "FONT PATH = " << fontPath << endl;
 
   if (FT_Init_FreeType(&FontFace::ftLib))
     throw Ex1(Errcode::INITIALIZE_FREETYPE);
   // Create a hashmap with the name and filepath of all fonts specified in
   // dirPaths
-  string baseDir = getBaseDir();
+  string baseDir = GLWin::baseDir;
   string fontBase = baseDir + "conf/fonts/";
   ifstream fontConf(baseDir + "conf/fonts.conf");
   string faceName, facePath;
