@@ -125,11 +125,26 @@ double mean(const Iterable& data) {
   return mean_tmp /= std::size(data);
 }
 
+template <typename Iterable>
+double median(const Iterable& data) {
+  std::vector<double> sorted(std::begin(data), std::end(data));
+  sort(sorted.begin(), sorted.end());
+  int n = sorted.size();
+
+  if (n % 2 == 1) {
+    return sorted[n / 2];
+
+  } else {
+    int i = n / 2;
+    return (sorted[i - 1] + sorted[i]) / 2;
+  }
+}
+
 /**
  * @brief Returns a vector of the most frequently occuring values.
  *
- * This will return multiple values if there are multiple modes, and values will
- * be in the order they were first encountered in the data.
+ * This will return multiple values if there are multiple modes, and values
+ * will be in the order they were first encountered in the data.
  *
  * TODO: add a check for this
  * If data is empty an empty vector will be returned.
