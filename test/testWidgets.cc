@@ -20,9 +20,14 @@ using namespace grail;
 class TestWidgets : public GLWin {
  private:
   ScrollbarWidget *scrollbar;
+  ButtonWidget *button;
 
  public:
   TestWidgets() : GLWin(0x000000, 0xCCCCCC, "TestWidgets") {}
+  ~TestWidgets() {
+    delete scrollbar;
+    delete button;
+  }
 
   void scrollUp() {
     scrollbar->scroll(-5);
@@ -45,8 +50,8 @@ class TestWidgets : public GLWin {
     gui->fillRectangle(boxSize * 1.5, boxSize * 1.5, drawSize * .4,
                        drawSize / 5, black);
 
-    ButtonWidget b(c, 0, 0, 100, 50, "hello", "helloWorld");
-    b.init();
+    button = new ButtonWidget(c, 0, 0, 300, 50, "hello", "helloWorld");
+    button->init();
   }
 
   void testGapMinder(StyledMultiShape2D *gui, MultiText *guiText) {
@@ -126,7 +131,7 @@ class TestWidgets : public GLWin {
     // testCandlestick(gui, guiText);
     testGapMinder(gui, guiText);
     testSparkline(gui, guiText);
-    // testButton(gui, guiText);
+    testButton(c, gui, guiText);
     testAngleText(gui, guiText, c, s);
 
     testScrollBar(gui, guiText);

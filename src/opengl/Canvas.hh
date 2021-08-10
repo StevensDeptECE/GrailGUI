@@ -120,7 +120,7 @@ class MainCanvas : public Canvas {
   void render();
   void cleanup();
 
-  void click(float xPress, float yPress, float xRelease, float yRelease);
+  void click();
 
   void addClickableWidget(InteractiveWidget2D* w) { widgets.add(w); }
   void addButton(const char text[], float x, float y, float w, float h);

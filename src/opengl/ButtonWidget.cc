@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "fmt/core.h"
 #include "opengl/GLWin.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/MultiText.hh"
@@ -9,9 +10,11 @@
 #include "opengl/Tab.hh"
 using namespace std;
 
-void ButtonWidget::init() {}
-
-void ButtonWidget::click(float xPress, float yPress, float xRelease,
-                         float yRelease) {
-  cout << "Button clicked" << text;
+void ButtonWidget::click(float mouseX, float mouseY) {
+  isPressed = !isPressed;
+  if (isPressed) {
+    fmt::print("Button clicked {} at ({}, {})\n", text, mouseX, mouseY);
+  }
 }
+
+void ButtonWidget::init() {}

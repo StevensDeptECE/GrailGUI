@@ -28,6 +28,7 @@
 #endif
 #include <cstring>
 
+#include "fmt/core.h"
 #include "opengl/Style.hh"
 #include "opengl/Tab.hh"
 #include "stb/stb_image_write.h"
@@ -113,8 +114,8 @@ void GLWin::mouseButtonCallback(GLFWwindow *win, int button, int action,
   // (uint32_t)mouseYPos);
   GLWin *w = winMap[win];
   uint32_t input = (mods << 9) | (action << 3) | button;
-  cerr << "mouse! " << button << ", action=" << action << w->mouseX << ","
-       << w->mouseY << " input=" << input << '\n';
+  fmt::print("mouse!{}, action={}, location=({}, {}), input={}\n", button,
+             action, w->mouseX, w->mouseY, input);
   doit(w, input);
 }
 
@@ -127,6 +128,7 @@ void GLWin::scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
 
 void GLWin::windowRefreshCallback(GLFWwindow *win) {
   GLWin *w = GLWin::getWin(win);
+  glfwGetWindowSize(win, (int *)&w->width, (int *)&w->height);
   w->needsRender = true;
 }
 
@@ -248,13 +250,13 @@ void GLWin::startWindow() {
   guiFont = bigFont;
   menuFont = bigFont;
 
-  defaultStyle = new Style(defaultFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
+  defaultStyle = new Style(defaultFont, 0.5, 0.5, 0.5, 0, 0, 0, COMMON_SHADER);
   defaultStyle->setLineWidth(1);
   //  defaultStyle->setShaderIndex(COMMON_SHADER);
-  guiStyle = new Style(guiFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
-  guiTextStyle = new Style(guiFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
-  menuStyle = new Style(menuFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
-  menuTextStyle = new Style(menuFont, 0, 0, 0, 1, 0, 0, COMMON_SHADER);
+  guiStyle = new Style(guiFont, 0.5, 0.5, 0.5, 0, 0, 0, COMMON_SHADER);
+  guiTextStyle = new Style(guiFont, 0.5, 0.5, 0.5, 0, 0, 0, COMMON_SHADER);
+  menuStyle = new Style(menuFont, 0.5, 0.5, 0.5, 0, 0, 0, COMMON_SHADER);
+  menuTextStyle = new Style(menuFont, 0.5, 0.5, 0.5, 0, 0, 0, COMMON_SHADER);
   current = new Tab(this);
   tabs.add(current);
   hasBeenInitialized = true;
@@ -584,7 +586,7 @@ void GLWin::panDown2D() {
 void GLWin::clickOnWidget(GLWin *w) {
   w->mousePressX = w->mouseX, w->mousePressY = w->mouseY;
   MainCanvas *c = w->currentTab()->getMainCanvas();
-  c->click(w->mouseX, w->mouseY, w->mouseX, w->mouseY);
+  c->click();
 }
 
 void GLWin::pressOnWidget(GLWin *w) {
@@ -647,7 +649,7 @@ uint32_t GLWin::registerCallback(uint32_t input, const char name[], Security s,
 }
 
 uint32_t GLWin::registerCallback(uint32_t input, const char name[], Security s,
-                                 function<void()> action) {
+                                 function<void(void)> action) {
   uint32_t securityIndex = uint32_t(s);
   // SAFE = 0..999, RESTRICTED=1000.1999, ASK=2000..2999
   uint32_t actNum = 1000 * securityIndex + numActions[securityIndex]++;

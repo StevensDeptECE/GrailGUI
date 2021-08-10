@@ -6,6 +6,7 @@
 // TODO: gl.h can't be included multiple times, really ugly.
 // is there a fix?
 //#include <GL/gl.h>
+#include "opengl/InteractiveWidget2D.hh"
 #include "opengl/MultiText.hh"
 #include "opengl/StyledMultiShape2D.hh"
 #include "opengl/util/Camera.hh"
@@ -46,7 +47,8 @@ Camera* Canvas::setLookAtProjection(float eyeX, float eyeY, float eyeZ,
 
 MainCanvas::MainCanvas(GLWin* parent)
     : Canvas(parent, parent->getDefaultStyle(), 0, 0, parent->getWidth(),
-             parent->getHeight(), parent->getWidth(), parent->getHeight()) {
+             parent->getHeight(), parent->getWidth(), parent->getHeight()),
+      widgets(10) {
   gui = new StyledMultiShape2D(this, parent->getGuiStyle());
   guiText = new MultiText(this, parent->getGuiTextStyle(), 16384);
   menu = new StyledMultiShape2D(this, parent->getMenuStyle());
@@ -86,6 +88,12 @@ void MainCanvas::init() {
   guiText->init();
   menu->init();
   menuText->init();
+  getWin()->registerCallback(GLWin::Inputs::MOUSE0_PRESS,
+                             "Widget Callback- Press", GLWin::Security::SAFE,
+                             bind(&MainCanvas::click, this));
+  getWin()->registerCallback(GLWin::Inputs::MOUSE0_RELEASE,
+                             "Widget Callback- Release", GLWin::Security::SAFE,
+                             bind(&MainCanvas::click, this));
 }
 
 void MainCanvas::render() {
@@ -106,14 +114,17 @@ void MainCanvas::cleanup() {
   //  menuText->cleanup();
 }
 
-void MainCanvas::click(float xPress, float yPress, float xRelease,
-                       float yRelease) {
+void MainCanvas::click() {
   /*
   widgets are added sequentially, and each one is on top of the others
   unless we define a z-order. In the absence of that, go backward, the
   first one found that the mouse click is inside is it.
   */
-  for (int i = widgets.size() - 1; i > 0; i--) {
-    if (widgets[i]->checkClick(xPress, yPress, xRelease, yRelease)) return;
+  GLWin* win = getWin();
+  float mouseX = win->mouseX;
+  float mouseY = win->mouseY;
+
+  for (int i = widgets.size() - 1; i >= 0; i--) {
+    if (widgets[i]->checkClick(mouseX, mouseY)) return;
   }
 }

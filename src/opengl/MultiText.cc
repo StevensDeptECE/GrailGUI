@@ -107,8 +107,9 @@ inline float MultiText::internalAdd(float x, float y, const Font* f,
   return x;
 }
 
-inline float MultiText::internalAddBox(float x, float y, float w, float h, const Font* f,
-                                    const char s[], uint32_t len) {
+inline float MultiText::internalAddBox(float x, float y, float w, float h,
+                                       const Font* f, const char s[],
+                                       uint32_t len) {
   float leftMargin = x, rightMargin = x + w;
   for (uint32_t i = 0; i < len; i++) {
     const Font::Glyph* glyph = f->getGlyph(s[i]);
@@ -120,7 +121,7 @@ inline float MultiText::internalAddBox(float x, float y, float w, float h, const
       x1 = x0 + glyph->sizeX;
       y += f->getHeight();
     }
-                                   // proportional fonts?
+    // proportional fonts?
     float y0 = y - glyph->bearingY, y1 = y0 + glyph->sizeY;
     addPoint(x0, y0, /* fontLeft */ glyph->u0, glyph->v1);
     addPoint(x0, y1, /* fontLeft */ glyph->u0, glyph->v0);
@@ -274,7 +275,13 @@ void MultiText::addCentered(float x, float y, float w, float h, const Font* f,
   float textWidth = f->getWidth(s, len);
   float textHeight = f->getHeight();
 
-  internalAdd(x + (w - textWidth) / 2, y + (w - textHeight) / 2, f, s, len);
+  internalAdd(x + (w - textWidth) / 2,
+              y + (h - textHeight) / 2 + f->getHeight() * .75, f, s, len);
+}
+// horizontally and vertically centered text
+void MultiText::addCentered(float x, float y, float w, float h, const Font* f,
+                            const string& s) {
+  addCentered(x, y, w, h, f, s.c_str(), s.length());
 }
 
 inline void rotateAround(float xc, float yc, float cosa, float sina, float& x,

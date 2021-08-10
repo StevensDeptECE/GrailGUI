@@ -97,15 +97,14 @@ class GLWin {
     F12 = 301,
     WHEELUP = 401,
     WHEELDOWN = 399,
-    MOUSE0 = 0,
     MOUSE1 = 1,
     MOUSE2 = 2,
     MOUSE3 = 3,
     MOUSE4 = 4,
     KEY_RELEASE = 512,
     KEY_REPEAT = 1024,
-    PRESS = 8,
-    RELEASE = 0,
+    MOUSE0_PRESS = 8,
+    MOUSE0_RELEASE = 0,
     CTRL = 2048,
     SHIFT = 4096,
     ALT = 8192
@@ -124,7 +123,7 @@ class GLWin {
         map an integer code to a function to execute
         the actions are all the publicly available performance the code can DO
   */
-  inline static std::array<std::function<void()>, 4096> actionMap;
+  inline static std::array<std::function<void(void)>, 4096> actionMap;
   static HashMap<uint32_t> actionNameMap;
   uint32_t lookupAction(const char actionName[]);
   //	static GLWin* w;
@@ -283,7 +282,7 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   uint32_t registerCallback(uint32_t input, const char name[], Security s,
                             void (GLWin::*callback)());
   uint32_t registerCallback(uint32_t input, const char name[], Security s,
-                            std::function<void()> action);
+                            std::function<void(void)> action);
   template <typename T, typename U>
   uint32_t registerCallback(uint32_t input, const char name[], Security s,
                             void (T::*callback)(), U* ptr) {
