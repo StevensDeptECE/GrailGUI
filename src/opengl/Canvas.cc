@@ -16,9 +16,8 @@ using namespace std;
 Canvas::~Canvas() { cleanup(); }
 
 void Canvas::cleanup() {
-  for (auto s : layers) {
-    delete s;
-  }
+  for (uint32_t i = 0; i < layers.size(); i++)
+    delete layers[i];
   layers.clear();
   if (!cam) {
     delete cam;
@@ -31,9 +30,8 @@ void Canvas::render() {
   Shader::useShader(style->getShaderIndex())->setMat4("projection", projection);
   glViewport(vpX, w->height - vpH - vpY, vpW, vpH);
 
-  for (const auto& l : layers) {
-    l->render();
-  }
+  for (uint32_t i = 0; i < layers.size(); i++)
+    layers[i]->render();
 }
 
 Camera* Canvas::setLookAtProjection(float eyeX, float eyeY, float eyeZ,

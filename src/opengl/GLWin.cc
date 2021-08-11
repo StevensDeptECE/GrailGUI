@@ -159,10 +159,16 @@ void GLWin::classCleanup() {
   XDLType::classCleanup();
 }
 
-GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const char title[],
+inline glm::vec4 uint2vec4(uint32_t color) {
+  return glm::vec4((color >> 24) / 255.0f, ((color >> 16) & 0xFF) / 255.0f,
+                   ((color >> 8) & 0xFF) / 255.0f, (color & 0xFF) / 255.0f);
+}
+
+GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const string &title,
              uint32_t exitAfter)
-    : bgColor(bgColor),
-      fgColor(fgColor),
+    : bgColor(uint2vec4(bgColor)),
+      fgColor(uint2vec4(fgColor)),
+      title(title),
       exitAfter(exitAfter),
       startTime(0),
       endTime(0),
@@ -172,11 +178,6 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const char title[],
       dt(1),
       tabs(4),
       faces(16) {
-  if (title != nullptr) {
-    this->title = title;
-  } else {
-    this->title = "";
-  }
   for (int i = 0; i < 3; i++) numActions[i] = 0;
   loadBindings();
   glfwInit();
@@ -196,14 +197,17 @@ HashMap<uint32_t> GLWin::actionNameMap(64, 4096);
 bool GLWin::ranStaticInits = false;
 bool GLWin::hasBeenInitialized = false;
 GLWin::GLWin(uint32_t w, uint32_t h, uint32_t bgColor, uint32_t fgColor,
-             const char title[], uint32_t exitAfter)
+             const string& title, uint32_t exitAfter)
     : GLWin(bgColor, fgColor, title, exitAfter) {
   setSize(w, h);
   startWindow();
 }
 
+void GLWin::setTitle(const std::string &title) {}
+MainCanvas* GLWin::getMainCanvas() { return currentTab()->getMainCanvas(); }
+
 void GLWin::startWindow() {
-  win = glfwCreateWindow(width, height, title, nullptr, nullptr);
+  win = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
   if (win == nullptr) {
     glfwTerminate();
     throw "Failed to open GLFW window";
@@ -314,9 +318,7 @@ void GLWin::cleanup() {
 
 void GLWin::init() {}
 void GLWin::render() {
-  for (int i = 0; i < tabs.size(); ++i) {
-    tabs[i]->render();
-  }
+  currentTab()->render();
 }
 // default is no animation. Override if you want your class to animate
 void GLWin::update() {}
@@ -367,7 +369,8 @@ void GLWin::mainLoop() {
     lastRenderTime = startRender;
 
     if (needsRender) {
-      glClearColor(1.0f, 1.0f, 1.0f, 1.0f);  // Clear the colorbuffer and depth
+      glClearColor(bgColor.r, bgColor.g, bgColor.b,
+                   bgColor.a);  // Clear the colorbuffer and depth
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       render();
       renderTime += glfwGetTime() - startRender;

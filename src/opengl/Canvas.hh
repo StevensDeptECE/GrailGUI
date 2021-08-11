@@ -1,7 +1,6 @@
 #pragma once
 
-#include <cstring>
-#include <vector>
+//#include <cstring>
 
 #include "opengl/GLWin.hh"
 #include "opengl/Shape.hh"
@@ -12,7 +11,7 @@ class Style;
 class Canvas {
  protected:
   GLWin* w;
-  std::vector<Shape*> layers;
+  DynArray<Shape*> layers;
   uint32_t vpX, vpY, vpW, vpH;  // viewport
   uint32_t pX, pY;              // projection
   glm::mat4 projection;         // the projection currently used
@@ -26,6 +25,7 @@ class Canvas {
          uint32_t vpH, uint32_t pX, uint32_t pY)
       :  // viewport, projection
         w(w),
+        layers(4),
         style(style),
         vpX(vpX),
         vpY(vpY),
@@ -61,7 +61,7 @@ class Canvas {
   // Add layer pointer and return its index
   template <typename S>
   S* addLayer(S* shape) {
-    layers.push_back(shape);
+    layers.add(shape);
     return shape;
   }
 

@@ -21,6 +21,7 @@ class Tab;
 class Style;
 class Font;
 class XDLIterator;
+class MainCanvas;
 
 class GLWin {
  protected:
@@ -45,7 +46,7 @@ class GLWin {
   static bool ranStaticInits;
   static bool hasBeenInitialized;
   static std::unordered_map<GLFWwindow*, GLWin*> winMap;
-  const char* title;
+  std::string title;
   double startTime;     // start of simulation time, default 0
   double endTime;       // end of simulation time, default 0
   double t;             // master time variable for animations
@@ -165,7 +166,7 @@ class GLWin {
 
  private:
   GLFWwindow* win;
-  uint32_t bgColor, fgColor;
+  glm::vec4 bgColor, fgColor;
   DynArray<FontFace> faces;
 
   static GLWin* getWin(GLFWwindow* win) {
@@ -204,22 +205,20 @@ class GLWin {
  public:
   // static std::unordered_map<std::string, std::string> pathByName;
   GLWin(uint32_t bgColor = 0x000000FF, uint32_t fgColor = 0xFFFFFFFF,
-        const char title[] = nullptr,
-        uint32_t exitAfter =
-            0);  // 0xRRGGBBaa = color (RGB, alpha =
-                 // opacity) possible source of bugs
-                 //! need to call setSize, startWindow manually
-                 // exitAfter150Frames: for debugging/benchmarking purposes
+        const std::string& title = "", uint32_t exitAfter = 0);
+  // 0xRRGGBBaa = color (RGB, alpha = opacity) possible source of bugs
+  //! need to call setSize, startWindow manually
+  // exitAfter150Frames: for debugging/benchmarking purposes
   GLWin(uint32_t w, uint32_t h, uint32_t bgColor, uint32_t fgColor,
-        const char title[],
-        uint32_t exitAfter = 0);  // use this constructor for standalone
-                                  // to build window (all in one)
-
+        const std::string& title, uint32_t exitAfter = 0);
+  
+  void setTitle(const std::string& title);
   virtual ~GLWin();
   static int init(GLWin* g, uint32_t w, uint32_t h, uint32_t exitAfter = 0);
   static int init(GLWin* g, uint32_t exitAfter = 0) {
     return init(g, 1024, 1024, exitAfter);
   }
+  MainCanvas* getMainCanvas();
 
   Tab* currentTab() { return current; }
 
