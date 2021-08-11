@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "opengl/Shape_impl.cc"
+#include "opengl/Shape_impl.hh"
 
 class MultiShape : public Shape {
  protected:

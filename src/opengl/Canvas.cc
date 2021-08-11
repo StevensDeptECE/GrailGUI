@@ -13,6 +13,8 @@
 
 using namespace std;
 
+Canvas::Canvas(Tab* tab) : Canvas(tab->getParentWin(), tab) {}
+
 Canvas::~Canvas() { cleanup(); }
 
 void Canvas::cleanup() {
@@ -43,14 +45,11 @@ Camera* Canvas::setLookAtProjection(float eyeX, float eyeY, float eyeZ,
   return cam;
 }
 
-MainCanvas::MainCanvas(GLWin* parent)
-    : Canvas(parent, parent->getDefaultStyle(), 0, 0, parent->getWidth(),
-             parent->getHeight(), parent->getWidth(), parent->getHeight()),
-      widgets(10) {
-  gui = new StyledMultiShape2D(this, parent->getGuiStyle());
-  guiText = new MultiText(this, parent->getGuiTextStyle(), 16384);
-  menu = new StyledMultiShape2D(this, parent->getMenuStyle());
-  menuText = new MultiText(this, parent->getMenuTextStyle(), 16384);
+MainCanvas::MainCanvas(Tab* tab) : Canvas(tab), widgets(10) {
+  gui = new StyledMultiShape2D(this, w->getGuiStyle());
+  guiText = new MultiText(this, w->getGuiTextStyle(), 16384);
+  menu = new StyledMultiShape2D(this, w->getMenuStyle());
+  menuText = new MultiText(this, w->getMenuTextStyle(), 16384);
 }
 
 MainCanvas::~MainCanvas() {
@@ -86,11 +85,11 @@ void MainCanvas::init() {
   guiText->init();
   menu->init();
   menuText->init();
-  getWin()->registerCallback(GLWin::Inputs::MOUSE0_PRESS,
-                             "Widget Callback- Press", GLWin::Security::SAFE,
+  tab->registerCallback(Tab::Inputs::MOUSE0_PRESS,
+                             "Widget Callback- Press", Tab::Security::SAFE,
                              bind(&MainCanvas::click, this));
-  getWin()->registerCallback(GLWin::Inputs::MOUSE0_RELEASE,
-                             "Widget Callback- Release", GLWin::Security::SAFE,
+  tab->registerCallback(Tab::Inputs::MOUSE0_RELEASE,
+                             "Widget Callback- Release", Tab::Security::SAFE,
                              bind(&MainCanvas::click, this));
 }
 

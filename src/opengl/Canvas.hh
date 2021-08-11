@@ -8,9 +8,11 @@
 
 class Camera;
 class Style;
+class Tab;
 class Canvas {
  protected:
   GLWin* w;
+  Tab* tab;
   DynArray<Shape*> layers;
   uint32_t vpX, vpY, vpW, vpH;  // viewport
   uint32_t pX, pY;              // projection
@@ -21,10 +23,17 @@ class Canvas {
   Camera* cam;
 
  public:
-  Canvas(GLWin* w, const Style* style, uint32_t vpX, uint32_t vpY, uint32_t vpW,
-         uint32_t vpH, uint32_t pX, uint32_t pY)
+  Canvas(Tab* tab);
+  Canvas(GLWin* w, Tab* tab)
+      : Canvas(w, tab, w->getDefaultStyle(), 0, 0, w->getWidth(),
+               w->getHeight(), w->getWidth(), w->getHeight()) {}
+
+  Canvas(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint32_t vpY,
+         uint32_t vpW, uint32_t vpH, uint32_t pX,
+         uint32_t pY)
       :  // viewport, projection
         w(w),
+        tab(tab),
         layers(4),
         style(style),
         vpX(vpX),
@@ -46,6 +55,7 @@ class Canvas {
   uint32_t getWidth() const { return vpW; }
   uint32_t getHeight() const { return vpH; }
   GLWin* getWin() const { return w; };
+  Tab* getTab() const { return tab; }
   glm::mat4* getProjection() { return &projection; }
   void setProjection(const glm::mat4& proj) { projection = proj; }
 
@@ -107,7 +117,7 @@ class MainCanvas : public Canvas {
   DynArray<InteractiveWidget2D*> widgets;
 
  public:
-  MainCanvas(GLWin* parent);
+  MainCanvas(Tab* tab);
   ~MainCanvas();
   MainCanvas(const MainCanvas&) = delete;
   MainCanvas& operator=(const MainCanvas&) = delete;

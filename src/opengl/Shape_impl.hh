@@ -1,5 +1,8 @@
 #pragma once
+
+#ifndef __glad_h_
 #include <glad/glad.h>
+#endif
 #include "opengl/Shape.hh"
 #include "opengl/Shader.hh"
 

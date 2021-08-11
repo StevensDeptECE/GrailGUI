@@ -1,13 +1,12 @@
-#define _USE_MATH_DEFINES
-//#include <numbers> For C++ 20 constants
 #include <cmath>
+#include <numbers>
 #include <string>
-#include <vector>
 
 #include "opengl/Errcode.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/MultiShape3D.hh"
 #include "opengl/util/Transformation.hh"
+#include "util/DynArray.hh"
 #include "util/Ex.hh"
 using namespace std;
 
@@ -30,13 +29,13 @@ class Body {
   Vec3d a;   // acceleration
 #endif
  public:
-  Body(Canvas* c, Style* s, Camera* cam, const std::string& name,
+  Body(Canvas* c, const Style* s, Camera* cam, const std::string& name,
        const char textureFile[], double r, double orbitalRadius,
        double orbitalPeriod, double rotationalPeriod, double axialTilt);
   void update(double time);
 };
 
-Body::Body(Canvas* c, Style* s, Camera* cam, const std::string& name,
+Body::Body(Canvas* c, const Style* s, Camera* cam, const std::string& name,
            const char textureFile[], double r, double orbitalRadius,
            double orbitalPeriod, double rotationalPeriod, double axialTilt)
     : name(name),
@@ -44,7 +43,7 @@ Body::Body(Canvas* c, Style* s, Camera* cam, const std::string& name,
       orbitalRadius(orbitalRadius),
       orbitalFreq(1.0 / orbitalPeriod),
       rotationFreq(1.0 / rotationalPeriod) {
-  phase = M_PI;
+  phase = numbers::pi;
   MultiShape3D* body = c->addLayer(new MultiShape3D(c, cam, textureFile, &t));
   body->genOBJModel("models/sphere.obj");
   t.ident();
@@ -64,8 +63,15 @@ void Body::update(double time) {
   cout << t << '\n';
 }
 
-class SolarSystem : public GLWin {
+// TODO; Implement polar coordinates???
+// TODO: Implement panUp/Down for 2D-like views
+// TODO: Follow planets
+
+class SolarSystem {
  private:
+  Camera* cam;
+  Tab* tab;
+  MainCanvas* c;
   Transformation tSky;
   Transformation tEarth;
   Transformation tSun;
@@ -78,21 +84,10 @@ class SolarSystem : public GLWin {
 
   float jupiterOrbitFreq;
   float jupiterRotationFreq;
-  vector<Body> bodies;  // list of all bodies to be drawn
-  Camera* cam;
+  DynArray<Body> bodies;  // list of all bodies to be drawn
 
  public:
-  // TODO; Implement polar coordinates???
-  // TODO: Implement panUp/Down for 2D-like views
-  // TODO: Follow planets
-  void panBack() { cam->translate(0, 0, +1); }
-  void panForward() { cam->translate(0, 0, -1); }
-  void panRight() { cam->translate(+1, 0, 0); }
-  void panLeft() { cam->translate(-1, 0, 0); }
-
-  void init() {
-    setFrameRate(60);
-    setDt(0.0001);
+  SolarSystem() : bodies(10) {
     earthOrbitAngle = 1.0 / 365.2425;
     earthRotationAngle = 0.9972;  // Earth rotates in 23h 56m 4.1s.
     moonOrbitAngle = 1.0 / 28.5;  // moon orbits about once every 28.5 days,
@@ -100,55 +95,45 @@ class SolarSystem : public GLWin {
 
     jupiterOrbitFreq = earthOrbitAngle / 12;  // 12 of our earth years
     jupiterRotationFreq = 0.45;               // 10 hours-ish?
+    defineBindings();
+  }
 
-    const Style* s = getDefaultStyle();
-    const Font* font = getDefaultFont();
-    Canvas* c = currentTab()->getMainCanvas();
+  void init(Tab* tab) {
+    this->tab = tab;
+    c = tab->getMainCanvas();
     cam = c->setLookAtProjection(2, 3, 40, 0, 0, 0, 0, 0, 1);
-    //#if 0
-    MultiShape3D* sky =
-        c->addLayer(new MultiShape3D(c, cam, "textures/sky1.png", &tSky));
-    sky->genOBJModel("models/spacesky.obj");
+    GLWin* w = tab->getParentWin();
+    const Style* s = w->getDefaultStyle();
+    const Font* font = w->getDefaultFont();
+    MultiShape3D* sky = c->addLayer(new MultiShape3D(
+        c, cam, "textures/sky1.png", &tSky, "models/spacesky.obj"));
     // tSky.translate(0,0,-10);
     // tSky.scale(10);
 
-    MultiShape3D* earth =
-        c->addLayer(new MultiShape3D(c, cam, "textures/earth.jpg", &tEarth));
-    earth->genOBJModel("models/sphere.obj");
-
-    MultiShape3D* sun =
-        c->addLayer(new MultiShape3D(c, cam, "textures/sun.jpg", &tSun));
-    sun->genOBJModel("models/sphere.obj");
-
+    MultiShape3D* earth = c->addLayer(new MultiShape3D(c, cam, "textures/earth.jpg", &tEarth, "models/sphere.obj"));
+    MultiShape3D* sun = c->addLayer(new MultiShape3D(c, cam, "textures/sun.jpg", &tSun, "models/sphere.obj"));
     MultiShape3D* moon =
-        c->addLayer(new MultiShape3D(c, cam, "textures/moon.jpg", &tMoon));
-    moon->genOBJModel("models/sphere.obj");
-    //#endif
-    //    bodies.push_back(Body(s, c, cam, "Earth", "textures/earth.jpg", 5, 3,
-    //    365.2425, 0.996, 23.5 )); bodies.push_back(Body(s, c, cam, "Mars",
-    //    "textures/mars.jpg", 0.2, 11, 687, 1.14, 0)); bodies.push_back(Body(s,
-    //    c, cam, "Earth", "textures/earth.jpg", 1, 14, 365.2425, 0.996, 23.5
-    //    )); bodies.push_back(Body(s, c, cam, "Jupiter",
-    //    "textures/jupiter.jpg", 1.5, 0, 12*365.2425, 0.48, 0 ));
+        c->addLayer(new MultiShape3D(c, cam, "textures/moon.jpg", &tMoon, "models/sphere.obj"));
     MultiShape3D* jupiter = c->addLayer(
-        new MultiShape3D(c, cam, "textures/jupiter.jpg", &tJupiter));
-    jupiter->genOBJModel("models/sphere.obj");
-
-    // right arrow = pan right
-    // left arrow = pan left
-    // page up = zoom out
-    // page down = zoom in
-    bindEvent(Inputs::RARROW, &SolarSystem::panRight, this);
-    bindEvent(Inputs::LARROW, &SolarSystem::panLeft, this);
-    bindEvent(Inputs::UPARROW, &SolarSystem::panForward, this);
-    bindEvent(Inputs::DOWNARROW, &SolarSystem::panBack, this);
-    bindEvent(Inputs::INSERT, &SolarSystem::speedTime, this);
-    bindEvent(Inputs::DEL, &SolarSystem::slowTime, this);
+        new MultiShape3D(c, cam, "textures/jupiter.jpg", &tJupiter, "models/sphere.obj"));
+    
+    bodies.add(Body(c, s, cam, "Earth", "textures/earth.jpg", 5, 3, 365.2425,
+                    0.996, 23.5));
+    bodies.add(
+        Body(c, s, cam, "Mars", "textures/mars.jpg", 0.2, 11, 687, 1.14, 0));
+    bodies.add(Body(c, s, cam, "Earth", "textures/earth.jpg", 1, 14, 365.2425,
+                    0.996, 23.5));
+    bodies.add(Body(c, s, cam, "Jupiter", "textures/jupiter.jpg", 1.5, 0,
+                    12 * 365.2425, 0.48, 0));
   }
+
+  void panBack();
+  void panForward();
+  void panRight();
+  void panLeft();
+
   void update() {
-    Canvas* c = currentTab()->getMainCanvas();
-    c->getWin()->setDirty();
-    double t = time();
+    double t = tab->time();
     //#if 0
     tEarth.ident();  // set to the identity transformation
     tEarth.rotate(earthOrbitAngle * t, 0, 1, 0);
@@ -177,27 +162,53 @@ class SolarSystem : public GLWin {
     tJupiter.rotate(-jupiterOrbitFreq * t, 0, 1, 0);
     tJupiter.rotate((float)(jupiterRotationFreq * t), 0.0f, 1.0f, 0.0f);
     tJupiter.scale(1.5);
-
-// cout << "t=" << t << '\t' << "earth rot=" << earthRotationAngle*t << '\n' <<
-// tEarth;
-#if 0
-    for (auto& b : bodies) {
-      b.update(t);
-    }
-#endif
   }
+  void defineBindings();
 };
+
+void SolarSystem::panBack() { cam->translate(0, 0, +1); }
+void SolarSystem::panForward() { cam->translate(0, 0, -1); }
+void SolarSystem::panRight() { cam->translate(+1, 0, 0); }
+void SolarSystem::panLeft() { cam->translate(-1, 0, 0); }
+
+void SolarSystem::defineBindings() {
+  tab->bindEvent(Tab::Inputs::RARROW, &SolarSystem::panRight, this);
+  tab->bindEvent(Tab::Inputs::LARROW, &SolarSystem::panLeft, this);
+  tab->bindEvent(Tab::Inputs::UPARROW, &SolarSystem::panForward, this);
+  tab->bindEvent(Tab::Inputs::DOWNARROW, &SolarSystem::panBack, this);
+}
+
+void grailmain(int argc, char* argv[], GLWin* w) {
+  Tab* tab = w->currentTab();
+  Canvas* c = tab->getMainCanvas();
+  tab->setFrameRate(60);
+  tab->setDt(0.0001);
+  SolarSystem solar;
+
+  // right arrow = pan right
+  // left arrow = pan left
+  // page up = zoom out
+  // page down = zoom in
+}
 
 int main(int argc, char* argv[]) {
   try {
-    return GLWin::init(new SolarSystem(), 800, 800);
-  } catch (const char msg[]) {
-    cerr << msg << '\n';
-  } catch (Ex& e) {
-    cout << e << '\n';
-  } catch (exception& e) {
-    cout << e.what() << '\n';
+    GLWin w(1024, 800, 0xFFFFFFFF, 0x000000FF, "Grail Window");
+    w.startWindow();
+    w.exitAfter = false;
+    grailmain(argc, argv, &w);
+    // g->t = thread(crun, g);
+    w.mainLoop();
+    // TODO: move this to GLWin::cleanup or destructor?  FontFace::emptyFaces();
+    return 0;
+  } catch (const Ex& e) {
+    cerr << e << '\n';
+  } catch (const char* msg) {
+    cerr << msg << endl;
+  } catch (const std::exception& e) {
+    cerr << e.what() << endl;
   } catch (...) {
-    cerr << "unknown exception handled\n";
+    cerr << "uncaught exception! (ouch)\n";
   }
+  return 1;  // if exception caught return error
 }

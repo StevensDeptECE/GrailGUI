@@ -3,7 +3,6 @@
 #endif
 
 #include "GLWin.hh"
-
 #include <unistd.h>
 
 #include <iostream>
@@ -88,22 +87,12 @@ void GLWin::windowFocusCallback(GLFWwindow *win, int focused) {
   }
 }
 
-inline void GLWin::doit(GLWin *w, uint32_t input) {
-  if (w == nullptr) {
-    cerr << "no mapping for window to GLWin\n";
-    throw Ex1(Errcode::UNDEFINED);
-  }
-  uint32_t act = GLWin::inputMap[input];
-  if (act == 0) return;
-  auto a = GLWin::actionMap[act];
-  a();  // execute the action
-}
 
 void GLWin::keyCallback(GLFWwindow *win, int key, int scancode, int action,
                         int mods) {
   uint32_t input = (mods << 11) | (action << 9) | key;
   cerr << "key: " << key << " mods: " << mods << " input=" << input << '\n';
-  doit(winMap[win], input);
+  winMap[win]->currentTab()->doit(input);
 }
 
 void GLWin::mouseButtonCallback(GLFWwindow *win, int button, int action,
@@ -116,14 +105,14 @@ void GLWin::mouseButtonCallback(GLFWwindow *win, int button, int action,
   uint32_t input = (mods << 9) | (action << 3) | button;
   fmt::print("mouse!{}, action={}, location=({}, {}), input={}\n", button,
              action, w->mouseX, w->mouseY, input);
-  doit(w, input);
+  winMap[win]->currentTab()->doit(input);
 }
 
 void GLWin::scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
   // cout << "xoffset=" << xoffset << " yoffset=" << yoffset << '\n';
   // todo: we would have to copy offsets into the object given the way this is
   uint32_t input = 400;
-  doit(winMap[win], input + int(yoffset));
+  winMap[win]->currentTab()->doit(input + int(yoffset));
 }
 
 void GLWin::windowRefreshCallback(GLFWwindow *win) {
@@ -170,16 +159,8 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const string &title,
       fgColor(uint2vec4(fgColor)),
       title(title),
       exitAfter(exitAfter),
-      startTime(0),
-      endTime(0),
-      t(startTime),
-      updateTime(0),
-      lastUpdateTime(0),
-      dt(1),
       tabs(4),
       faces(16) {
-  for (int i = 0; i < 3; i++) numActions[i] = 0;
-  loadBindings();
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -193,7 +174,6 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const string &title,
   // all static library initializations go here
   if (!ranStaticInits) GLWin::classInit();
 }
-HashMap<uint32_t> GLWin::actionNameMap(64, 4096);
 bool GLWin::ranStaticInits = false;
 bool GLWin::hasBeenInitialized = false;
 GLWin::GLWin(uint32_t w, uint32_t h, uint32_t bgColor, uint32_t fgColor,
@@ -339,16 +319,6 @@ GLWin::~GLWin() {
 //   // std::cout<<"Added: " << name.c_str()<<std::endl;
 // }
 
-// TODO: Change so -1 is no update, 0 is continuous update and dt > 0 is update
-// every dt
-// TODO: Implement set framerates
-inline void GLWin::checkUpdate() {
-  if (updateTime == 0 ||
-      (updateTime > 0 && glfwGetTime() > lastUpdateTime + updateTime)) {
-    lastUpdateTime = glfwGetTime();
-    dirty = true;
-  }
-}
 
 void GLWin::mainLoop() {
   needsRender = true;
@@ -389,10 +359,12 @@ void GLWin::mainLoop() {
       }
       needsRender = false;
     }
-    t += dt;
+    currentTab()->tick(); // update time in current tab for any models using simulation time
     dirty = false;
     glfwPollEvents();  // Check and call events
-    checkUpdate();
+    //note: any events needing a refresh should set dirty = true
+    if (currentTab()->checkUpdate())
+      setDirty();
     if (dirty) {
       update();
       needsRender = true;
@@ -483,22 +455,6 @@ void GLWin::saveFrame() {
   statements checking for specific keys.
 */
 
-/*
-  Actions pertaining to the time axis.
-  This should work independently of any projection.
-  If you don't want time in your application, just ignore this.
-  However, the minimal amount of code provides very useful
-  API for anyone interested in moving through data in time.
-
-  TODO: We could add an action to go to a particular point in time but
-  we don't currently have a way to pass parameters to actions
-  This is going to change.
-*/
-void GLWin::gotoStartTime() { t = startTime; }
-void GLWin::gotoEndTime() { t = endTime; }
-void GLWin::speedTime() { dt *= 2; }
-void GLWin::slowTime() { dt *= 0.5; }
-void GLWin::resetTimeDilation() { dt = 1; }
 
 /*
   actions for selecting objects in a scene
@@ -537,200 +493,3 @@ void GLWin::toggleSelectObject3D() {
   // it
 }
 
-/*
-  actions for a 2d environment
-*/
-
-void GLWin::resetProjection2D() {
-  currentTab()->getMainCanvas()->resetProjection();
-}
-
-void GLWin::zoomIn2D() {
-  MainCanvas *c = currentTab()->getMainCanvas();
-  glm::mat4 *proj = c->getProjection();
-  *proj = glm::scale(*proj,
-                     glm::vec3(1.2));  // TODO: make zoom in factor a variable
-}
-
-void GLWin::zoomOut2D() {
-  MainCanvas *c = currentTab()->getMainCanvas();
-  glm::mat4 *proj = c->getProjection();
-  *proj = glm::scale(*proj, glm::vec3(1 / 1.2));
-}
-
-void GLWin::panRight2D() {
-  MainCanvas *c = currentTab()->getMainCanvas();
-  glm::mat4 *proj = c->getProjection();
-  const float x = -100;  // TODO: make this in model coordinates!
-  *proj = glm::translate(*proj, glm::vec3(x, 0, 0));
-}
-
-void GLWin::panLeft2D() {
-  MainCanvas *c = currentTab()->getMainCanvas();
-  glm::mat4 *proj = c->getProjection();
-  const float x = +100;  // TODO: make this in model coordinates!
-  *proj = glm::translate(*proj, glm::vec3(x, 0, 0));
-}
-
-void GLWin::panUp2D() {
-  MainCanvas *c = currentTab()->getMainCanvas();
-  glm::mat4 *proj = c->getProjection();
-  const float y = 100;  // TODO: make this in model coordinates!
-  *proj = glm::translate(*proj, glm::vec3(0, y, 0));
-}
-
-void GLWin::panDown2D() {
-  MainCanvas *c = currentTab()->getMainCanvas();
-  glm::mat4 *proj = c->getProjection();
-  const float y = -100;  // TODO: make this in model coordinates!
-  *proj = glm::translate(*proj, glm::vec3(0, y, 0));
-}
-
-void GLWin::clickOnWidget(GLWin *w) {
-  w->mousePressX = w->mouseX, w->mousePressY = w->mouseY;
-  MainCanvas *c = w->currentTab()->getMainCanvas();
-  c->click();
-}
-
-void GLWin::pressOnWidget(GLWin *w) {
-  w->mousePressX = w->mouseX, w->mousePressY = w->mouseY;
-  w->dragMode = true;
-}
-
-void GLWin::releaseWidget(GLWin *w) { w->dragMode = false; }
-/*
-  Page environment (like a book reader)
-*/
-
-void GLWin::gotoTop() {}
-void GLWin::gotoBottom() {}
-void GLWin::scrollUp() {}
-void GLWin::scrollDown() {}
-void GLWin::pageUp() {}
-void GLWin::pageDown() {}
-void GLWin::sectionUp() {}
-void GLWin::sectionDown() {}
-
-uint32_t GLWin::internalRegisterAction(const char name[], Security s,
-                                       void (GLWin::*action)()) {
-  function<void()> action_fnptr = std::bind(action, this);
-  return internalRegisterAction(name, s, action_fnptr);
-}
-
-uint32_t GLWin::internalRegisterAction(const char name[], Security s,
-                                       function<void()> action) {
-  uint32_t securityIndex = uint32_t(s);
-  // SAFE = 0..999, RESTRICTED=1000.1999, ASK=2000..2999
-  uint32_t actNum = 1000 * securityIndex + numActions[securityIndex]++;
-  // TODO: do something if 1000 action functions exceeded. For now, completely
-  // unnecessary
-  if (numActions[securityIndex] > 1000) {
-    cerr << "Error! action Table is full for security " << securityIndex
-         << '\n';
-  }
-  // cout << "Setting action " << actNum << " for action " << name << '\n';
-  setAction(actNum, action);
-  actionNameMap.add(name, actNum);
-  return actNum;
-}
-
-uint32_t GLWin::lookupAction(const char actionName[]) {
-  uint32_t *act_code = actionNameMap.get(actionName);
-  if (act_code) return *act_code;
-  cerr << "Input binding failed: " << actionName << '\n';
-  return 0;
-}
-
-void GLWin::bind(uint32_t input, const char actionName[]) {
-  setEvent(input, lookupAction(actionName));
-}
-
-uint32_t GLWin::registerCallback(uint32_t input, const char name[], Security s,
-                                 void (GLWin::*callback)()) {
-  auto cb_funcptr = std::bind(callback, this);
-  return registerCallback(input, name, s, cb_funcptr);
-}
-
-uint32_t GLWin::registerCallback(uint32_t input, const char name[], Security s,
-                                 function<void(void)> action) {
-  uint32_t securityIndex = uint32_t(s);
-  // SAFE = 0..999, RESTRICTED=1000.1999, ASK=2000..2999
-  uint32_t actNum = 1000 * securityIndex + numActions[securityIndex]++;
-  // TODO: do something if 1000 action functions exceeded. For now, completely
-  // unnecessary
-  if (numActions[securityIndex] > 1000) {
-    cerr << "Error! action Table is full for security " << securityIndex
-         << '\n';
-  }
-  // cout << "Setting action " << actNum << " for action " << name << '\n';
-  setAction(actNum, action);
-  actionNameMap.add(name, actNum);
-  setEvent(input, lookupAction(name));
-  return actNum;
-}
-
-void GLWin::bind2DOrtho() {
-  bind(Inputs::LARROW, "panLeft2D");
-  bind(Inputs::RARROW, "panRight2D");
-  bind(Inputs::UPARROW, "panUp2D");
-  bind(Inputs::DOWNARROW, "panDown2D");
-  bind(Inputs::PAGEUP, "zoomIn2D");
-  bind(Inputs::PAGEDOWN, "zoomOut2D");
-}
-
-void GLWin::bind3D() {
-  bind(Inputs::INSERT, "speedTime");
-  bind(Inputs::DEL, "slowTime");
-  bind(Inputs::RARROW, "panRight3D");
-  bind(Inputs::LARROW, "panLeft3D");
-  bind(Inputs::PAGEUP, "zoomIn3D");
-  bind(Inputs::PAGEDOWN, "zoomOut3D");
-  //  bind(Inputs::MOUSE0|Inputs::PRESS|Inputs::ALT, "xyz");
-}
-void GLWin::loadBindings() {
-  registerAction(Security::RESTRICTED, &GLWin::quit);
-  registerAction(Security::SAFE, &GLWin::refresh);
-  registerAction(Security::ASK, &GLWin::saveFrame);
-
-  registerAction(Security::SAFE, &GLWin::gotoStartTime);
-  registerAction(Security::SAFE, &GLWin::gotoEndTime);
-  registerAction(Security::SAFE, &GLWin::speedTime);
-  registerAction(Security::SAFE, &GLWin::slowTime);
-  registerAction(Security::SAFE, &GLWin::resetTimeDilation);
-
-  registerAction(Security::SAFE, &GLWin::resetProjection3D);
-  registerAction(Security::SAFE, &GLWin::zoomOut3D);
-  registerAction(Security::SAFE, &GLWin::zoomIn3D);
-  registerAction(Security::SAFE, &GLWin::panRight3D);
-  registerAction(Security::SAFE, &GLWin::panLeft3D);
-  registerAction(Security::SAFE, &GLWin::panUp3D);
-  registerAction(Security::SAFE, &GLWin::panDown3D);
-  registerAction(Security::SAFE, &GLWin::selectObject3D);
-  registerAction(Security::SAFE, &GLWin::addSelectObject3D);
-  registerAction(Security::SAFE, &GLWin::toggleSelectObject3D);
-
-  registerAction(Security::SAFE, &GLWin::resetProjection2D);
-  registerAction(Security::SAFE, &GLWin::zoomOut2D);
-  registerAction(Security::SAFE, &GLWin::zoomIn2D);
-  registerAction(Security::SAFE, &GLWin::panRight2D);
-  registerAction(Security::SAFE, &GLWin::panLeft2D);
-  registerAction(Security::SAFE, &GLWin::panUp2D);
-  registerAction(Security::SAFE, &GLWin::panDown2D);
-
-  registerAction(Security::SAFE, &GLWin::gotoTop);
-  registerAction(Security::SAFE, &GLWin::gotoBottom);
-  registerAction(Security::SAFE, &GLWin::scrollUp);
-  registerAction(Security::SAFE, &GLWin::scrollDown);
-  registerAction(Security::SAFE, &GLWin::pageUp);
-  registerAction(Security::SAFE, &GLWin::pageDown);
-  registerAction(Security::SAFE, &GLWin::sectionUp);
-  registerAction(Security::SAFE, &GLWin::sectionDown);
-
-  // TODO: How to define actions that take parameters, in this case a string?
-  //  registerAction(Security::SAFE, playSound);
-
-  // bind3D();
-  // bind2DOrtho();
-}
-
-double GLWin::getTime() { return glfwGetTime(); }

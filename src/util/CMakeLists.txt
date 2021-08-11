@@ -1,5 +1,6 @@
 set(grail-util 
     Buffer.cc
+    Callbacks.cc
     datatype.cc
     HashMap.cc
     Prefs.cc
