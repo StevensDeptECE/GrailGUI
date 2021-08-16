@@ -2,6 +2,7 @@
 #include <numbers>
 #include <string>
 
+#include "opengl/Animated.hh"
 #include "opengl/Errcode.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/MultiShape3D.hh"
@@ -67,11 +68,9 @@ void Body::update(double time) {
 // TODO: Implement panUp/Down for 2D-like views
 // TODO: Follow planets
 
-class SolarSystem {
+class SolarSystem : public Animated {
  private:
   Camera* cam;
-  Tab* tab;
-  MainCanvas* c;
   Transformation tSky;
   Transformation tEarth;
   Transformation tSun;
@@ -87,7 +86,7 @@ class SolarSystem {
   DynArray<Body> bodies;  // list of all bodies to be drawn
 
  public:
-  SolarSystem(Tab* tab) : tab(tab), bodies(10) {
+  SolarSystem(Tab* tab) : Animated(tab), bodies(10) {
     earthOrbitAngle = 1.0 / 365.2425;
     earthRotationAngle = 0.9972;  // Earth rotates in 23h 56m 4.1s.
     moonOrbitAngle = 1.0 / 28.5;  // moon orbits about once every 28.5 days,
@@ -95,7 +94,6 @@ class SolarSystem {
 
     jupiterOrbitFreq = earthOrbitAngle / 12;  // 12 of our earth years
     jupiterRotationFreq = 0.45;               // 10 hours-ish?
-    c = tab->getMainCanvas();
     cam = c->setLookAtProjection(2, 3, 40, 0, 0, 0, 0, 0, 1);
     GLWin* w = tab->getParentWin();
     const Style* s = w->getDefaultStyle();
@@ -178,18 +176,15 @@ void SolarSystem::defineBindings() {
   tab->bindEvent(Tab::Inputs::DOWNARROW, &SolarSystem::panBack, this);
 }
 
-void grailmain(int argc, char* argv[], GLWin* w) {
-  Tab* tab = w->currentTab();
-  Canvas* c = tab->getMainCanvas();
-  tab->setFrameRate(60);
-  tab->setDt(0.0001);
-  SolarSystem solar(tab);
+void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+  defaultTab->addAnimated(new SolarSystem(defaultTab));
 }
 
 int main(int argc, char* argv[]) {
   try {
     GLWin w(1024, 800, 0xFFFFFFFF, 0x000000FF, "Grail Window");
-    grailmain(argc, argv, &w);
+    Tab* tab = w.currentTab();
+    grailmain(argc, argv, &w, tab);
     w.mainLoop();
     // g->t = thread(crun, g);
     // TODO: move this to GLWin::cleanup or destructor?  FontFace::emptyFaces();

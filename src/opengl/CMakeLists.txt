@@ -1,4 +1,5 @@
 set(grail-opengl
+    Animated.cc    
     AxisWidget.cc
     BarChartWidget.cc 
     BoxChartWidget.cc

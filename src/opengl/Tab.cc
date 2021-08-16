@@ -3,13 +3,11 @@
 #include <cstring>
 #include <iostream>
 
+#include "opengl/Animated.hh"
 #include "opengl/GLWin.hh"
 #include "opengl/MultiText.hh"
 #include "opengl/Style.hh"
 #include "opengl/StyledMultiShape2D.hh"
-
-#include <GLFW/glfw3.h>
-
 //#include <time.h>
 
 //#ifdef _WIN32
@@ -17,7 +15,7 @@
 //#endif
 using namespace std;
 
-Tab::Tab(GLWin* parent)
+Tab::Tab(GLWin *parent)
     : CallbackHandler(),
       startTime(0),
       t(startTime),
@@ -26,6 +24,7 @@ Tab::Tab(GLWin* parent)
       parent(parent),
       canvases(16),
       styles(16),
+      animatedMembers(4),
       mainCanvas(this) {}
 
 void Tab::init() {
@@ -54,6 +53,9 @@ bool Tab::checkUpdate() {
 }
 
 void Tab::update() {
+  for (int i = 0; i < animatedMembers.size(); ++i) {
+    animatedMembers[i]->update();
+  }
   for (int i = 0; i < canvases.size(); ++i) {
     canvases[i]->update();
   }
@@ -82,13 +84,12 @@ void Tab::render() {
 
 Tab::~Tab() { cleanup(); }
 
-Canvas* Tab::addCanvas(const Style* style, uint32_t vpX, uint32_t vpY,
+Canvas *Tab::addCanvas(const Style *style, uint32_t vpX, uint32_t vpY,
                        uint32_t vpW, uint32_t vpH) {
-  Canvas* c = new Canvas(parent, this, style, vpX, vpY, vpW, vpH, vpW, vpH);
+  Canvas *c = new Canvas(parent, this, style, vpX, vpY, vpW, vpH, vpW, vpH);
   canvases.add(c);
   return c;
 }
-
 
 /*
   Actions pertaining to the time axis.
@@ -107,20 +108,13 @@ void Tab::speedTime() { dt *= 2; }
 void Tab::slowTime() { dt *= 0.5; }
 void Tab::resetTimeDilation() { dt = 1; }
 
-
-void Tab::tick() {
-  t += dt;
-}
-
-
+void Tab::tick() { t += dt; }
 
 /*
   actions for a 2d environment
 */
 
-void Tab::resetProjection2D() {
-  mainCanvas.resetProjection();
-}
+void Tab::resetProjection2D() { mainCanvas.resetProjection(); }
 
 void Tab::zoomIn2D() {
   glm::mat4 *proj = mainCanvas.getProjection();
@@ -170,8 +164,8 @@ void Tab::loadBindings() {
   using namespace std::placeholders;
   using CBSec = CallbackHandler::Security;
 
-  registerAction(CBSec::RESTRICTED, &GLWin::quit,parent);
-  registerAction(CBSec::SAFE, &GLWin::refresh,parent);
+  registerAction(CBSec::RESTRICTED, &GLWin::quit, parent);
+  registerAction(CBSec::SAFE, &GLWin::refresh, parent);
   registerAction(CBSec::ASK, &GLWin::saveFrame, parent);
 
   registerAction(CBSec::SAFE, &Tab::gotoStartTime, this);

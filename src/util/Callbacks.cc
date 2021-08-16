@@ -1,33 +1,31 @@
 #include "util/Callbacks.hh"
+
 #include "util/Ex.hh"
 
 using namespace std;
 
+CallbackHandler::CallbackHandler() {
+  for (int i = 0; i < 3; i++) numActions[i] = 1;
+}
 
-CallbackHandler::CallbackHandler()
-  {
-    for (int i = 0; i < 3; i++) numActions[i] = 0;
+HashMap<uint32_t> CallbackHandler::actionNameMap(64, 4096);
+std::array<uint32_t, 32768> inputMap();
+
+uint32_t CallbackHandler::internalRegisterAction(const char name[], Security s,
+                                                 function<void()> action) {
+  uint32_t securityIndex = uint32_t(s);
+  // SAFE = 0..999, RESTRICTED=1000.1999, ASK=2000..2999
+  uint32_t actNum = 1000 * securityIndex + numActions[securityIndex]++;
+  // TODO: do something if 1000 action functions exceeded. For now, completely
+  // unnecessary
+  if (numActions[securityIndex] > 1000) {
+    cerr << "Error! action Table is full for security " << securityIndex
+         << '\n';
   }
-
-  HashMap<uint32_t> CallbackHandler::actionNameMap(64, 4096);
-  std::array<uint32_t, 32768> inputMap();
-  
-  uint32_t CallbackHandler::internalRegisterAction(const char name[],
-                                                   Security s,
-                                                   function<void()> action) {
-    uint32_t securityIndex = uint32_t(s);
-    // SAFE = 0..999, RESTRICTED=1000.1999, ASK=2000..2999
-    uint32_t actNum = 1000 * securityIndex + numActions[securityIndex]++;
-    // TODO: do something if 1000 action functions exceeded. For now, completely
-    // unnecessary
-    if (numActions[securityIndex] > 1000) {
-      cerr << "Error! action Table is full for security " << securityIndex
-           << '\n';
-    }
-    // cout << "Setting action " << actNum << " for action " << name << '\n';
-    setAction(actNum, action);
-    actionNameMap.add(name, actNum);
-    return actNum;
+  // cout << "Setting action " << actNum << " for action " << name << '\n';
+  setAction(actNum, action);
+  actionNameMap.add(name, actNum);
+  return actNum;
 }
 
 uint32_t CallbackHandler::lookupAction(const char actionName[]) {
@@ -41,9 +39,9 @@ void CallbackHandler::bind(uint32_t input, const char actionName[]) {
   setEvent(input, lookupAction(actionName));
 }
 
-
-uint32_t CallbackHandler::registerCallback(uint32_t input, const char name[], Security s,
-                                 function<void(void)> action) {
+uint32_t CallbackHandler::registerCallback(uint32_t input, const char name[],
+                                           Security s,
+                                           function<void(void)> action) {
   uint32_t securityIndex = uint32_t(s);
   // SAFE = 0..999, RESTRICTED=1000.1999, ASK=2000..2999
   uint32_t actNum = 1000 * securityIndex + numActions[securityIndex]++;
@@ -60,13 +58,12 @@ uint32_t CallbackHandler::registerCallback(uint32_t input, const char name[], Se
   return actNum;
 }
 
- void CallbackHandler::doit(uint32_t input) {
+void CallbackHandler::doit(uint32_t input) {
   uint32_t act = CallbackHandler::inputMap[input];
   if (act == 0) return;
   auto a = CallbackHandler::actionMap[act];
   a();  // execute the action
 }
-
 
 void CallbackHandler::bind2DOrtho() {
   bind(Inputs::LARROW, "panLeft2D");

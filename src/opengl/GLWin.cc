@@ -3,6 +3,7 @@
 #endif
 
 #include "GLWin.hh"
+
 #include <unistd.h>
 
 #include <iostream>
@@ -86,7 +87,6 @@ void GLWin::windowFocusCallback(GLFWwindow *win, int focused) {
     glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
   }
 }
-
 
 void GLWin::keyCallback(GLFWwindow *win, int key, int scancode, int action,
                         int mods) {
@@ -177,14 +177,14 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const string &title,
 bool GLWin::ranStaticInits = false;
 bool GLWin::hasBeenInitialized = false;
 GLWin::GLWin(uint32_t w, uint32_t h, uint32_t bgColor, uint32_t fgColor,
-             const string& title, uint32_t exitAfter)
+             const string &title, uint32_t exitAfter)
     : GLWin(bgColor, fgColor, title, exitAfter) {
   setSize(w, h);
   startWindow();
 }
 
 void GLWin::setTitle(const std::string &title) {}
-MainCanvas* GLWin::getMainCanvas() { return currentTab()->getMainCanvas(); }
+MainCanvas *GLWin::getMainCanvas() { return currentTab()->getMainCanvas(); }
 
 void GLWin::startWindow() {
   win = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
@@ -297,11 +297,9 @@ void GLWin::cleanup() {
 }
 
 void GLWin::init() {}
-void GLWin::render() {
-  currentTab()->render();
-}
+void GLWin::render() { currentTab()->render(); }
 // default is no animation. Override if you want your class to animate
-void GLWin::update() {}
+void GLWin::update() { currentTab()->update(); }
 
 // declare prototype access to static function in other file which calls
 // FaceFont::cleanup()
@@ -318,7 +316,6 @@ GLWin::~GLWin() {
 //   pathByName[name] = path;
 //   // std::cout<<"Added: " << name.c_str()<<std::endl;
 // }
-
 
 void GLWin::mainLoop() {
   needsRender = true;
@@ -359,12 +356,12 @@ void GLWin::mainLoop() {
       }
       needsRender = false;
     }
-    currentTab()->tick(); // update time in current tab for any models using simulation time
+    currentTab()->tick();  // update time in current tab for any models using
+                           // simulation time
     dirty = false;
     glfwPollEvents();  // Check and call events
-    //note: any events needing a refresh should set dirty = true
-    if (currentTab()->checkUpdate())
-      setDirty();
+    // note: any events needing a refresh should set dirty = true
+    if (currentTab()->checkUpdate()) setDirty();
     if (dirty) {
       update();
       needsRender = true;
@@ -455,7 +452,6 @@ void GLWin::saveFrame() {
   statements checking for specific keys.
 */
 
-
 /*
   actions for selecting objects in a scene
 */
@@ -492,4 +488,3 @@ void GLWin::toggleSelectObject3D() {
   // if object is not in  the selected list put it there. if it is there, remove
   // it
 }
-
