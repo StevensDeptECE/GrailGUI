@@ -101,12 +101,12 @@ class TestDrawBlockMap : public GLWin {
         new ButtonWidget(c, 0, 0, 200, 100, "Click Me!", "mapZoomIn"));
     mv = c->addLayer(new MapView2D(c, s2, new BlockMapLoader(filename)));
 
-    bindEvent(Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);
-    bindEvent(Inputs::WHEELDOWN, &TestDrawBlockMap::mapZoomOut, this);
-    bindEvent(Inputs::RARROW, &TestDrawBlockMap::mapPanRight, this);
-    bindEvent(Inputs::LARROW, &TestDrawBlockMap::mapPanLeft, this);
-    bindEvent(Inputs::UPARROW, &TestDrawBlockMap::mapPanUp, this);
-    bindEvent(Inputs::DOWNARROW, &TestDrawBlockMap::mapPanDown, this);
+    bindEvent(Tab::Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);
+    bindEvent(Tab::Inputs::WHEELDOWN, &TestDrawBlockMap::mapZoomOut, this);
+    bindEvent(Tab::Inputs::RARROW, &TestDrawBlockMap::mapPanRight, this);
+    bindEvent(Tab::Inputs::LARROW, &TestDrawBlockMap::mapPanLeft, this);
+    bindEvent(Tab::Inputs::UPARROW, &TestDrawBlockMap::mapPanUp, this);
+    bindEvent(Tab::Inputs::DOWNARROW, &TestDrawBlockMap::mapPanDown, this);
     update();
   }
 
