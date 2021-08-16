@@ -6,7 +6,7 @@
 #include <chrono>
 #include <cstdint>
 #include <iostream>
-
+/*
 class Benchmark {
  private:
   uint64_t elapsedUserTime, elapsedSystemTime, elapsedWallTime,
@@ -96,7 +96,7 @@ class Benchmark {
     std::cout << msg << '\n';
     a.displayavg(iter);
   }
-};
+};*/
 
 class CBenchmark {
  private:

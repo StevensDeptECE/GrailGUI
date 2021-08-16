@@ -330,8 +330,8 @@ constexpr void testAll(T data) {
                         bind(_formatgrl3<T>, dest, data));
   CBenchmark::benchmark("grail format RtoL 4 char", n,
                         bind(_formatgrl4<T>, dest, data));
-  Benchmark::benchmark("grail format RtoL 4char, sys benchmark", n,
-                       bind(_formatgrl4<T>, dest, data));
+  // Benchmark::benchmark("grail format RtoL 4char, sys benchmark", n,
+  //                     bind(_formatgrl4<T>, dest, data));
   print("{}\n", data);
 }
 

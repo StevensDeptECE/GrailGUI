@@ -32,6 +32,7 @@ add_grail_executable(SRC ../src/csp/SimpleXDLServer.cc LIBS grail)
 add_grail_executable(SRC testfmt.cc LIBS grail)
 #add_grail_executable(SRC testStats.cc LIBS grail)
 #add_grail_executable(BINNAME testSolar SRC DrawNASAEphemerisSolarSystem2d.cc LIBS grail)
+add_grail_executable(SRC loadESRIShapefile.cc LIBS grail)
 
 if(${MPV_FOUND})
   #add_grail_executable(SRC testAudio.cc LIBS grail)
