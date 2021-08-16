@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
     Buffer& in = s.getIn();
     in.displayRawRead();
     XDLCompiler compiler("");
-    SymbolTable st(&compiler);
+    SymbolTable* st = new SymbolTable(&compiler);
     const XDLType* metadata = XDLType::readMeta(&compiler, in);
     Buffer out("client.txt", 32768);
 

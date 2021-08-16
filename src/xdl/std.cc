@@ -86,7 +86,12 @@ void XDLType::classInit() {
 }
 
 void XDLType::classCleanup() {
-  for (uint32_t i = 0; i < types.size(); i++) delete types[i];
+  for (uint32_t i = 0; i < types.size(); i++) {
+    if (types[i] != nullptr) {
+      delete types[i];
+      types[i] = nullptr;
+    }
+  }
 }
 
 DataType XDLRaw::getDataType() const {
@@ -102,13 +107,13 @@ void XDLRaw::display(Buffer& binaryIn, Buffer& asciiOut) const {}
 void XDLRaw::format(Buffer& binaryIn, Buffer& asciiOut,
                     const char fmt[]) const {}
 
- void Struct::addSym(const string& memberName, const XDLType* t) {
+void Struct::addSym(const string& memberName, const XDLType* t) {
   byName.add(memberName.c_str(), types.size());
   members.add(Member(memberNames.length(), memberName.length(), t));
   memberNames += memberName;
 }
 
- void Struct::addSymCheckNull(const string& name, const XDLType* t2) {
+void Struct::addSymCheckNull(const string& name, const XDLType* t2) {
   const XDLType* t = getMemberType(name);
   if (t == nullptr) {  // undefined symbol
     compiler->undefinedSymbol(name);
@@ -118,7 +123,7 @@ void XDLRaw::format(Buffer& binaryIn, Buffer& asciiOut,
   addSym(name, t2);
 }
 
- void Struct::addSymCheckDup(const string& name, const XDLType* t2) {
+void Struct::addSymCheckDup(const string& name, const XDLType* t2) {
   const XDLType* t = getMemberType(name);
   if (t != nullptr) {  // undefined symbol
     compiler->duplicateSymbol(name);

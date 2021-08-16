@@ -3,29 +3,29 @@
 #include "xdl/SymbolTable.hh"
 
 class XDLCompiler {
-private:
-  SymbolTable symbols;
+ private:
+  // Destructor not necessary for symbols, is deleted during XDL's cleanup
+  SymbolTable* symbols;
   uint32_t errorCount;
   uint32_t warningCount;
   string filename;
   uint32_t lineNumber;
   void displayMessage(const std::string& msg) {
-    //TODO use log? switch from string to integer message number
+    // TODO use log? switch from string to integer message number
     cerr << filename << ": " << lineNumber << '\t' << msg << '\n';
   }
   void readfile();
 
-public:
+ public:
   XDLCompiler(const char filename[]);
   XDLCompiler();
 
-  SymbolTable& getSymbolTable() { return symbols; }
+  SymbolTable* getSymbolTable() { return symbols; }
   void generateCode() {
-    if (errorCount > 0)
-      return;
+    if (errorCount > 0) return;
     // do whatever you do in this compiler
   }
-  
+
   void error(const std::string& msg) {
     displayMessage(msg);
     errorCount++;
