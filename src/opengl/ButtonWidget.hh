@@ -6,6 +6,7 @@
 class ButtonWidget : public InteractiveWidget2D {
  private:
   std::string text;
+  std::function<void(void)> func;
 
  public:
   void click(float mouseX, float mouseY) override;
@@ -21,4 +22,9 @@ class ButtonWidget : public InteractiveWidget2D {
     // lookup action in GLWin and doit!
   }
   void init() override;
+
+  template <typename Func>
+  void setAction(Func func) {
+    this->func = func;
+  }
 };

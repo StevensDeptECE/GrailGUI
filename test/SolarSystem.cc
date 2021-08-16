@@ -87,7 +87,7 @@ class SolarSystem {
   DynArray<Body> bodies;  // list of all bodies to be drawn
 
  public:
-  SolarSystem() : bodies(10) {
+  SolarSystem(Tab* tab) : tab(tab), bodies(10) {
     earthOrbitAngle = 1.0 / 365.2425;
     earthRotationAngle = 0.9972;  // Earth rotates in 23h 56m 4.1s.
     moonOrbitAngle = 1.0 / 28.5;  // moon orbits about once every 28.5 days,
@@ -95,28 +95,26 @@ class SolarSystem {
 
     jupiterOrbitFreq = earthOrbitAngle / 12;  // 12 of our earth years
     jupiterRotationFreq = 0.45;               // 10 hours-ish?
-    defineBindings();
-  }
-
-  void init(Tab* tab) {
-    this->tab = tab;
     c = tab->getMainCanvas();
     cam = c->setLookAtProjection(2, 3, 40, 0, 0, 0, 0, 0, 1);
     GLWin* w = tab->getParentWin();
     const Style* s = w->getDefaultStyle();
     const Font* font = w->getDefaultFont();
+    defineBindings();
     MultiShape3D* sky = c->addLayer(new MultiShape3D(
         c, cam, "textures/sky1.png", &tSky, "models/spacesky.obj"));
     // tSky.translate(0,0,-10);
     // tSky.scale(10);
 
-    MultiShape3D* earth = c->addLayer(new MultiShape3D(c, cam, "textures/earth.jpg", &tEarth, "models/sphere.obj"));
-    MultiShape3D* sun = c->addLayer(new MultiShape3D(c, cam, "textures/sun.jpg", &tSun, "models/sphere.obj"));
-    MultiShape3D* moon =
-        c->addLayer(new MultiShape3D(c, cam, "textures/moon.jpg", &tMoon, "models/sphere.obj"));
-    MultiShape3D* jupiter = c->addLayer(
-        new MultiShape3D(c, cam, "textures/jupiter.jpg", &tJupiter, "models/sphere.obj"));
-    
+    MultiShape3D* earth = c->addLayer(new MultiShape3D(
+        c, cam, "textures/earth.jpg", &tEarth, "models/sphere.obj"));
+    MultiShape3D* sun = c->addLayer(new MultiShape3D(
+        c, cam, "textures/sun.jpg", &tSun, "models/sphere.obj"));
+    MultiShape3D* moon = c->addLayer(new MultiShape3D(
+        c, cam, "textures/moon.jpg", &tMoon, "models/sphere.obj"));
+    MultiShape3D* jupiter = c->addLayer(new MultiShape3D(
+        c, cam, "textures/jupiter.jpg", &tJupiter, "models/sphere.obj"));
+#if 0
     bodies.add(Body(c, s, cam, "Earth", "textures/earth.jpg", 5, 3, 365.2425,
                     0.996, 23.5));
     bodies.add(
@@ -125,6 +123,8 @@ class SolarSystem {
                     0.996, 23.5));
     bodies.add(Body(c, s, cam, "Jupiter", "textures/jupiter.jpg", 1.5, 0,
                     12 * 365.2425, 0.48, 0));
+#endif
+    update();
   }
 
   void panBack();
@@ -183,22 +183,15 @@ void grailmain(int argc, char* argv[], GLWin* w) {
   Canvas* c = tab->getMainCanvas();
   tab->setFrameRate(60);
   tab->setDt(0.0001);
-  SolarSystem solar;
-
-  // right arrow = pan right
-  // left arrow = pan left
-  // page up = zoom out
-  // page down = zoom in
+  SolarSystem solar(tab);
 }
 
 int main(int argc, char* argv[]) {
   try {
     GLWin w(1024, 800, 0xFFFFFFFF, 0x000000FF, "Grail Window");
-    w.startWindow();
-    w.exitAfter = false;
     grailmain(argc, argv, &w);
-    // g->t = thread(crun, g);
     w.mainLoop();
+    // g->t = thread(crun, g);
     // TODO: move this to GLWin::cleanup or destructor?  FontFace::emptyFaces();
     return 0;
   } catch (const Ex& e) {
