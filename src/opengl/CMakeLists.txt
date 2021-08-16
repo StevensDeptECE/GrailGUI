@@ -39,4 +39,5 @@ set(grail-opengl
 )
 
 list(TRANSFORM grail-opengl PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
+
 set(grail-opengl ${grail-opengl} PARENT_SCOPE)

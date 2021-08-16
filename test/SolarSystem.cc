@@ -9,6 +9,7 @@
 #include "opengl/util/Transformation.hh"
 #include "util/DynArray.hh"
 #include "util/Ex.hh"
+
 using namespace std;
 
 class Body {
@@ -180,6 +181,7 @@ void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
   defaultTab->addAnimated(new SolarSystem(defaultTab));
 }
 
+// TODO: replace with Main.cc once serverside is stable
 int main(int argc, char* argv[]) {
   try {
     GLWin w(1024, 800, 0xFFFFFFFF, 0x000000FF, "Grail Window");

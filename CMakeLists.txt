@@ -120,6 +120,12 @@ target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/external/glm)
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/external/fmt/include)
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/external)
 
+target_include_directories(grailserver PUBLIC ${PROJECT_SOURCE_DIR}/src)
+target_include_directories(grailserver PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(grailserver PUBLIC ${PROJECT_SOURCE_DIR}/external/glm)
+target_include_directories(grailserver PUBLIC ${PROJECT_SOURCE_DIR}/external/fmt/include)
+target_include_directories(grailserver PUBLIC ${PROJECT_SOURCE_DIR}/external)
+
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
     target_include_directories(grail PUBLIC /mingw64/include)
 endif()

@@ -35,6 +35,7 @@ void grailmain(int argc, char* argv[], GLWin* w, Tab* tab) {
   tab->addAnimated(new Globe(tab));
 }
 
+// TODO: replace with Main.cc once serverside is stable
 int main(int argc, char* argv[]) {
   try {
     GLWin w(1024, 800, 0xFFFFFFFF, 0x000000FF, "Grail Window");

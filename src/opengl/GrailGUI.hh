@@ -6,3 +6,4 @@
 #include "opengl/Style.hh"
 #include "opengl/StyledMultiShape2D.hh"
 #include "opengl/Tab.hh"
+#include "util/Ex.hh"
