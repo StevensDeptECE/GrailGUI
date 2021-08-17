@@ -3,10 +3,11 @@
 #include <algorithm>
 #include <numbers>
 
+#include "stats/stats.hh"
 #include "util/Ex.hh"
-#include "xp/Stats.hh"
 
 using namespace std;
+using namespace stats::aliases;
 
 void BoxChartWidget::setWhiskerStyle(const Style* s) { whiskerStyle = s; }
 
@@ -79,7 +80,7 @@ void BoxChartWidget::init() {
               currentBoxData.begin(),
               [=, this](double d) -> double { return y + h + yscale * d; });
 
-    stats::Summary summary = stats::five_number_summary(currentBoxData);
+    OneVarStats summary = stats::one_var_stats(currentBoxData);
 
     double xLocation = x + xscale * counter - halfBoxWidth;
     double yTopLine = summary.min;
