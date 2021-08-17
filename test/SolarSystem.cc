@@ -15,6 +15,7 @@ using namespace std;
 class Body {
  private:
   std::string name;  // for label, if desired
+	Body* orbits; // the body around which this one orbits, or nullptr if none
   double r;  // radius in m, for OpenGL you will have to scale, float can't
              // handle space well
   double orbitalRadius;  // distance of circular orbit
@@ -24,7 +25,7 @@ class Body {
   double axialTilt;     // TODO: this should be a full vector, and if you want
                         // accuracy, precession...
   double phase;
-  Transformation t;
+  Transformation trans;
 #if 0
   Vec3d pos; // position
   Vec3d v;   // velocity
@@ -33,36 +34,40 @@ class Body {
  public:
   Body(Canvas* c, const Style* s, Camera* cam, const std::string& name,
        const char textureFile[], double r, double orbitalRadius,
-       double orbitalPeriod, double rotationalPeriod, double axialTilt);
+       double orbitalPeriod, double rotationalPeriod, double axialTilt,
+			 double startTime, Body* orbits = nullptr);
   void update(double time);
 };
 
 Body::Body(Canvas* c, const Style* s, Camera* cam, const std::string& name,
            const char textureFile[], double r, double orbitalRadius,
-           double orbitalPeriod, double rotationalPeriod, double axialTilt)
+           double orbitalPeriod, double rotationalPeriod, double axialTilt,
+					 double startTime, Body* orbits)
     : name(name),
       r(r),
       orbitalRadius(orbitalRadius),
       orbitalFreq(1.0 / orbitalPeriod),
-      rotationFreq(1.0 / rotationalPeriod) {
-  phase = numbers::pi;
-  MultiShape3D* body = c->addLayer(new MultiShape3D(c, cam, textureFile, &t));
+      rotationFreq(1.0 / rotationalPeriod),
+			orbits(orbits)
+{
+  phase = numbers::pi; //TODO: unused for now, add so bodies can be placed at initial positions in orbit
+  MultiShape3D* body = c->addLayer(new MultiShape3D(c, cam, textureFile, &trans));
   body->genOBJModel("models/sphere.obj");
-  t.ident();
-  t.scale(r);
+  update(startTime);
 }
 
-void Body::update(double time) {
-  t.ident();  // set to the identity transformation
-  cout << "name= " << name << " orbitalFreq=" << orbitalFreq * time << '\n';
-  t.rotate(orbitalFreq * time, 0, 1, 0);
-  t.translate(orbitalRadius, 0, 0);
-  t.rotate(-orbitalFreq * time, 0, 1, 0);
-  t.rotate((float)(axialTilt * DEG2RAD<double>), 0.0f, 0.0f,
+void Body::update(double t) {
+  trans.ident();  // set to the identity transformation
+  cout << "name= " << name << " orbitalFreq=" << orbitalFreq * t << '\n';
+  trans.rotate(orbitalFreq * t, 0, 1, 0);
+  trans.translate(orbitalRadius, 0, 0);
+  trans.rotate(-orbitalFreq * t, 0, 1, 0);
+  trans.rotate((float)(axialTilt * DEG2RAD<double>), 0.0f, 0.0f,
            1.0f);  // TODO: fix general axial tilt
-  t.rotate((float)(rotationFreq * time), 0.0f, 1.0f, 0.0f);
-  t.scale(r);  // scale to the relative size of this body
-  cout << t << '\n';
+  trans.rotate((rotationFreq * t), 0.0f, 1.0f, 0.0f);
+  trans.scale(r);  // scale to the relative size of this body
+
+  cout << trans << '\n';
 }
 
 // TODO; Implement polar coordinates???
@@ -107,12 +112,13 @@ class SolarSystem : public Animated {
 
     MultiShape3D* earth = c->addLayer(new MultiShape3D(
         c, cam, "textures/earth.jpg", &tEarth, "models/sphere.obj"));
-    MultiShape3D* sun = c->addLayer(new MultiShape3D(
+		MultiShape3D* sun = c->addLayer(new MultiShape3D(
         c, cam, "textures/sun.jpg", &tSun, "models/sphere.obj"));
     MultiShape3D* moon = c->addLayer(new MultiShape3D(
         c, cam, "textures/moon.jpg", &tMoon, "models/sphere.obj"));
     MultiShape3D* jupiter = c->addLayer(new MultiShape3D(
         c, cam, "textures/jupiter.jpg", &tJupiter, "models/sphere.obj"));
+
 #if 0
     bodies.add(Body(c, s, cam, "Earth", "textures/earth.jpg", 5, 3, 365.2425,
                     0.996, 23.5));
@@ -123,6 +129,12 @@ class SolarSystem : public Animated {
     bodies.add(Body(c, s, cam, "Jupiter", "textures/jupiter.jpg", 1.5, 0,
                     12 * 365.2425, 0.48, 0));
 #endif
+		double startTime = 0; //tab->startTime();
+    bodies.add(Body(c, s, cam, "Sun", "textures/sun.jpg", 1.5, 0, 1,
+										30, 0, startTime));
+											
+		// bodies.add(Body(c, s, cam, "Mars", "textures/mars.jpg", .3, 9.5, 687, 1.14, 0, startTime));
+
     update();
   }
 
@@ -161,6 +173,8 @@ class SolarSystem : public Animated {
     tJupiter.rotate(-jupiterOrbitFreq * t, 0, 1, 0);
     tJupiter.rotate((float)(jupiterRotationFreq * t), 0.0f, 1.0f, 0.0f);
     tJupiter.scale(1.5);
+		for (int i = 0; i < bodies.size(); i++)
+			bodies[i].update(t);
   }
   void defineBindings();
 };
@@ -178,27 +192,6 @@ void SolarSystem::defineBindings() {
 }
 
 void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+	w->setTitle("Solar System");
   defaultTab->addAnimated(new SolarSystem(defaultTab));
-}
-
-// TODO: replace with Main.cc once serverside is stable
-int main(int argc, char* argv[]) {
-  try {
-    GLWin w(1024, 800, 0xFFFFFFFF, 0x000000FF, "Grail Window");
-    Tab* tab = w.currentTab();
-    grailmain(argc, argv, &w, tab);
-    w.mainLoop();
-    // g->t = thread(crun, g);
-    // TODO: move this to GLWin::cleanup or destructor?  FontFace::emptyFaces();
-    return 0;
-  } catch (const Ex& e) {
-    cerr << e << '\n';
-  } catch (const char* msg) {
-    cerr << msg << endl;
-  } catch (const std::exception& e) {
-    cerr << e.what() << endl;
-  } catch (...) {
-    cerr << "uncaught exception! (ouch)\n";
-  }
-  return 1;  // if exception caught return error
 }
