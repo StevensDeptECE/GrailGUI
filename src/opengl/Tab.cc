@@ -120,6 +120,8 @@ void Tab::resetTimeDilation() { dt = defaultDt; }
 
 void Tab::tick() { t += dt; }
 
+double Tab::getTime() const { return glfwGetTime(); }
+
 /*
   actions for a 2d environment
 */

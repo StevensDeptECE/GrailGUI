@@ -52,6 +52,7 @@ class Tab : public CallbackHandler {
   void setTime(float t);     // set t to any desired value
   void resetAnim();          // set t=0
   void tick();               // move t forward
+  double getTime() const;    // Get GLFW's time
   void setEndTime(float t);  // define the end time. When end is reached restart
 
   /**

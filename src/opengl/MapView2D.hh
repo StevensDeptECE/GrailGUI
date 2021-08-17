@@ -19,10 +19,11 @@ class MapView2D : public Shape {
   uint32_t numIndicesToDraw;
 
  public:
+  // TODO: Check if this should be setRender or setUpdate
   void setProjection() {
     transform = glm::ortho(centerX - scaleX, centerX + scaleX, centerY - scaleY,
                            centerY + scaleY);
-    getWin()->setDirty();
+    getWin()->setRender();
   }
   void translate(float percentX, float percentY) {
     centerX += percentX * scaleX;

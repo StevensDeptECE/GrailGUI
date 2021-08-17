@@ -19,7 +19,7 @@ class TestVideoPlayer : public Animated {
 
     // playing a link from youtube (and maybe other places idk) requires you to
     // have youtube-dl installed
-    v->loadFile("");
+    v->loadFile("/home/alice/grail.mkv");
     v->cropVideo(0, 0, 65, 65);
     v->setVolume(50);
     v->setPlaying();

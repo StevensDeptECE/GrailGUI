@@ -63,7 +63,7 @@ class GLWin {
   bool dragMode;
   int winXPos, winYPos;    // location of the top-left of the window in pixels
   uint32_t width, height;  // width and height of the window in pixels
-  bool dirty, needsRender;
+  bool needsUpdate, needsRender;
   bool focused;
   uint32_t exitAfter;  // if not zero, will terminate
 
@@ -158,7 +158,8 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
 
 */
   void mainLoop();
-  void setDirty() { dirty = true; }
+  void setUpdate() { needsUpdate = true; }
+  void setRender() { needsRender = true; }
   const Style* getDefaultStyle() const { return defaultStyle; }
   const Style* getGuiStyle() const { return guiStyle; }
   const Style* getGuiTextStyle() const { return guiTextStyle; }

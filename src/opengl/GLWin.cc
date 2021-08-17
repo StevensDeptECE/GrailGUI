@@ -358,11 +358,11 @@ void GLWin::mainLoop() {
     }
     currentTab()->tick();  // update time in current tab for any models using
                            // simulation time
-    dirty = false;
+    needsUpdate = false;
     glfwPollEvents();  // Check and call events
     // note: any events needing a refresh should set dirty = true
-    if (currentTab()->checkUpdate()) setDirty();
-    if (dirty) {
+    if (currentTab()->checkUpdate()) setUpdate();
+    if (needsUpdate) {
       update();
       needsRender = true;
     }
@@ -389,7 +389,7 @@ void GLWin::quit() {
   exit(0);  // TODO: check for cleanup first?
 }
 
-void GLWin::refresh() { setDirty(); }
+void GLWin::refresh() { setUpdate(); }
 
 void GLWin::saveFrame() {
   if (saveBuffer != nullptr && saveW != width || saveH != height) {
