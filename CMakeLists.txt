@@ -86,6 +86,21 @@ if(NOT glm_POPULATED)
     FetchContent_Populate(glm)
 endif()
 
+
+# stats.hh
+
+FetchContent_Declare(
+    stats
+    GIT_REPOSITORY https://gitlab.com/Silent__Ninja346/stats
+    GIT_TAG        origin/main
+    SOURCE_DIR     ${PROJECT_SOURCE_DIR}/external/stats
+)
+FetchContent_GetProperties(stats)
+if(NOT stats_POPULATED)
+    FetchContent_Populate(stats)
+endif()
+
+
 # Shapelib
 # Currently manually compiled due to compiler warnings
 ## Output is not shown, so errors may occur without notice
@@ -106,6 +121,7 @@ add_subdirectory(src)
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/external/glm)
+target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/external/stats)
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/external)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")

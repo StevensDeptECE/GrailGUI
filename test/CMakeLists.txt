@@ -25,7 +25,6 @@ add_grail_executable(SRC testText3.cc LIBS grail)
 add_grail_executable(SRC testWidgets.cc LIBS grail)
 add_grail_executable(SRC ../src/csp/GenericXDLClient.cc LIBS grail)
 add_grail_executable(SRC testPopupMenu.cc LIBS grail)
-add_grail_executable(SRC testStats.cc LIBS grail)
 #add_grail_executable(BINNAME testSolar SRC DrawNASAEphemerisSolarSystem2d.cc LIBS grail)
 
 if(${MPV_FOUND})
