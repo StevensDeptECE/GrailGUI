@@ -28,6 +28,9 @@ Tab::Tab(GLWin *parent)
       mainCanvas(this) {}
 
 void Tab::init() {
+  for (int i = 0; i < animatedMembers.size(); ++i) {
+    animatedMembers[i]->init();
+  }
   for (int i = 0; i < canvases.size(); ++i) {
     canvases[i]->init();
   }
@@ -56,9 +59,11 @@ void Tab::update() {
   for (int i = 0; i < animatedMembers.size(); ++i) {
     animatedMembers[i]->update();
   }
+
   for (int i = 0; i < canvases.size(); ++i) {
     canvases[i]->update();
   }
+
   mainCanvas.update();
 }
 
@@ -76,9 +81,14 @@ void Tab::cleanup() {
 }
 
 void Tab::render() {
+  for (int i = 0; i < animatedMembers.size(); i++) {
+    animatedMembers[i]->render();
+  }
+
   for (int i = 0; i < canvases.size(); ++i) {
     canvases[i]->render();
   }
+
   mainCanvas.render();
 }
 
@@ -106,7 +116,7 @@ void Tab::gotoStartTime() { t = startTime; }
 void Tab::gotoEndTime() { t = endTime; }
 void Tab::speedTime() { dt *= 2; }
 void Tab::slowTime() { dt *= 0.5; }
-void Tab::resetTimeDilation() { dt = 1; }
+void Tab::resetTimeDilation() { dt = defaultDt; }
 
 void Tab::tick() { t += dt; }
 

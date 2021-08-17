@@ -36,5 +36,5 @@ add_grail_executable(SRC loadESRIShapefile.cc LIBS grail)
 
 if(${MPV_FOUND})
   #add_grail_executable(SRC testAudio.cc LIBS grail)
-  #add_grail_executable(SRC testVideo.cc LIBS grail)
+  add_grail_executable(SRC testVideo.cc LIBS grail)
 endif()

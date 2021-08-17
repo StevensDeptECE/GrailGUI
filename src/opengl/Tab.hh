@@ -26,6 +26,7 @@ class Tab : public CallbackHandler {
   double startTime;  // physical start time for simulations (zero by default)
   double t;          // master time variable for animations
   double dt;         // delta time advanced every frame
+  double defaultDt;  // original delta time for each frame
   double endTime;    // end time for simulations,
 
   double lastUpdateTime;  // last time this tab drew a new animation
@@ -58,6 +59,8 @@ class Tab : public CallbackHandler {
    *
    */
   void setDt(double delta) { dt = delta; }
+
+  void setDefaultDt(double delta) { defaultDt = delta; }
 
   void setFrameRate(double framerate) {
     updateTime = (framerate == 0) ? 0 : (1.0 / framerate);

@@ -60,7 +60,7 @@ class CallbackHandler {
   // bind an input event to an action Name. looks up offsets into arrays
   void bind(uint32_t input, const char actionName[]);
   void bind(const char inputCmd[], const char actionName[]);
-  #define quote(a) #a
+#define quote(a) #a
 
   template <typename T, typename U>
   void registerAction(Security security, CallbackFunc<T> func, U* ptr) {
@@ -94,6 +94,7 @@ class CallbackHandler {
     DOWNARROW = 264,
     PAGEUP = 266,
     PAGEDOWN = 267,
+    HOME = 268,
     F1 = 290,
     F2 = 291,
     F3 = 292,
