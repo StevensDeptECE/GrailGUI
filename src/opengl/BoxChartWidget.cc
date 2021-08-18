@@ -36,6 +36,10 @@ void BoxChartWidget::setNames(const ::vector<std::string>& names) {
   this->names = names;
 }
 
+void BoxChartWidget::setStyle(const GraphStyle* s) {
+	setCommonStyles(s);
+	setWhiskerStyle(&s->whiskerStyle);
+}
 void BoxChartWidget::init() {
   xAxis->setTickLabels(names);
   if (data.size() < pointsPerBox) {
