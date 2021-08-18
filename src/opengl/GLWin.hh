@@ -53,7 +53,7 @@ class GLWin {
   double lastRenderTime;  // Stores last time of render
   char frameName[32];
   DynArray<Tab*> tabs;  // list of web pages, ie tabs
-  Tab* current;         // current (active) tab
+  uint32_t current;     // current (active) tab
   void checkUpdate();
 
  public:
@@ -123,7 +123,7 @@ class GLWin {
   }
   MainCanvas* getMainCanvas();
 
-  Tab* currentTab() { return current; }
+  Tab* currentTab() { return tabs[current]; }
 
   void setSize(uint32_t w, uint32_t h) {
     width = w;
@@ -183,46 +183,9 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   void refresh();
   void saveFrame();
   void resetCamera();
-
-  void gotoStartTime();
-  void gotoEndTime();
-  void speedTime();
-  void slowTime();
-  void resetTimeDilation();
-
-  void clearSelected(GLWin* w);
-
-  void resetProjection3D();
-  void zoomOut3D();
-  void zoomIn3D();
-  void panRight3D();
-  void panLeft3D();
-  void panUp3D();
-  void panDown3D();
-  void selectObject3D();
-  void addSelectObject3D();
-  void toggleSelectObject3D();
-
-  void resetProjection2D();
-  void zoomOut2D();
-  void zoomIn2D();
-  void panRight2D();
-  void panLeft2D();
-  void panUp2D();
-  void panDown2D();
-
-  void gotoTop();
-  void gotoBottom();
-  void scrollUp();
-  void scrollDown();
-  void pageUp();
-  void pageDown();
-  void sectionUp();
-  void sectionDown();
-
-  static void pressOnWidget(GLWin* w);
-  static void releaseWidget(GLWin* w);
-
-  static void clickOnWidget(GLWin* w);
-  static void helloWorld(GLWin* w);
+  void nextTab();
+  void prevTab();
+  void addTab();
+  void removeTab();
+  void goToLink(const char ipaddr[], uint16_t port, uint32_t requestID);
 };

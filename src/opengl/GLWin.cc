@@ -20,7 +20,8 @@
 // GLFW
 #include <GLFW/glfw3.h>
 
-#include "csp/Socket.hh"
+#include "csp/IPV4Socket.hh"
+#include "csp/csp.hh"
 #include "util/Prefs.hh"
 
 #ifdef _WIN32
@@ -32,6 +33,7 @@
 #include "opengl/Style.hh"
 #include "opengl/Tab.hh"
 #include "stb/stb_image_write.h"
+#include "xdl/XDLCompiler.hh"
 #include "xdl/std.hh"
 using namespace std;
 string GLWin::baseDir;
@@ -234,16 +236,16 @@ void GLWin::startWindow() {
   guiFont = bigFont;
   menuFont = bigFont;
 
-  defaultStyle = new Style(defaultFont, 0.5, 0.5, 0.5, 0, 0, 0,
-													 1, COMMON_SHADER); // added default line width
+  defaultStyle = new Style(defaultFont, 0.5, 0.5, 0.5, 0, 0, 0, 1,
+                           COMMON_SHADER);  // added default line width
   defaultStyle->setLineWidth(1);
   //  defaultStyle->setShaderIndex(COMMON_SHADER);
   guiStyle = new Style(guiFont, 0.5f, 0.5f, 0.5f, 0, 0, 0, 1, COMMON_SHADER);
   guiTextStyle = new Style(guiFont, 0.5, 0.5, 0.5, 0, 0, 0, 1, COMMON_SHADER);
   menuStyle = new Style(menuFont, 0.5, 0.5, 0.5, 0, 0, 0, 1, COMMON_SHADER);
   menuTextStyle = new Style(menuFont, 0.5, 0.5, 0.5, 0, 0, 0, 1, COMMON_SHADER);
-  current = new Tab(this);
-  tabs.add(current);
+  tabs.add(new Tab(this));
+  current = 0;
   hasBeenInitialized = true;
 }
 void GLWin::baseInit() {
@@ -453,39 +455,36 @@ void GLWin::saveFrame() {
   statements checking for specific keys.
 */
 
-/*
-  actions for selecting objects in a scene
-*/
-void GLWin::clearSelected(GLWin *w) {
-  // TODO: clear the list of selected objects
+void GLWin::nextTab() {
+  if (current < tabs.size() - 1)
+    current++;
+  else
+    current = 0;
 }
 
-/*
-  actions for a 3d environment
-*/
-void GLWin::resetProjection3D() {
-  // TODO: call resetCamera on every canvas to reset to initial state (we have
-  // to write that)
+void GLWin::prevTab() {
+  if (current > 0)
+    current--;
+  else
+    current = tabs.size() - 1;
 }
 
-// TODO: implement 3d uniform zoom/pan controls
-void GLWin::zoomIn3D() {}
-void GLWin::zoomOut3D() {}
-void GLWin::panRight3D() {}
-void GLWin::panLeft3D() {}
-void GLWin::panUp3D() {}
-void GLWin::panDown3D() {}
+void GLWin::addTab() {
+  tabs.add(new Tab(this));
+  current = tabs.size() - 1;
+}
 
-void GLWin::selectObject3D() {
-  // TODO: fire a ray at w->mouseX, w->mouseY and find the object selected
-  // set the selected list to that object.
-}
-void GLWin::addSelectObject3D() {
-  // TODO: fire a ray at w->mouseX, w->mouseY and find the object selected
-  // add object to the selected list
-}
-void GLWin::toggleSelectObject3D() {
-  // TODO: fire a ray at w->mouseX, w->mouseY and find the object selected
-  // if object is not in  the selected list put it there. if it is there, remove
-  // it
+// TODO: write this, also consider writing a remove function for DynArray
+void GLWin::removeTab() {}
+
+void GLWin::goToLink(const char ipaddr[], uint16_t port, uint32_t requestID) {
+  IPV4Socket s(ipaddr, port);
+  s.send(requestID);
+  Buffer &in = s.getIn();
+  XDLCompiler compiler("");
+  SymbolTable *st = new SymbolTable(&compiler);
+  const XDLType *metadata = XDLType::readMeta(&compiler, in);
+  Buffer out("client.txt", 32768);
+
+  metadata->display(in, out);
 }

@@ -171,6 +171,16 @@ void Tab::pageUp() {}
 void Tab::pageDown() {}
 void Tab::sectionUp() {}
 void Tab::sectionDown() {}
+void Tab::zoomOut3D() {}
+void Tab::zoomIn3D() {}
+void Tab::panRight3D() {}
+void Tab::panLeft3D() {}
+void Tab::panUp3D() {}
+void Tab::panDown3D() {}
+void Tab::selectObject3D() {}
+void Tab::addSelectObject3D() {}
+void Tab::toggleSelectObject3D() {}
+void Tab::resetProjection3D() {}
 
 void Tab::loadBindings() {
   using namespace std::placeholders;
@@ -186,16 +196,16 @@ void Tab::loadBindings() {
   registerAction(CBSec::SAFE, &Tab::slowTime, this);
   registerAction(CBSec::SAFE, &Tab::resetTimeDilation, this);
 
-  registerAction(CBSec::SAFE, &GLWin::resetProjection3D, parent);
-  registerAction(CBSec::SAFE, &GLWin::zoomOut3D, parent);
-  registerAction(CBSec::SAFE, &GLWin::zoomIn3D, parent);
-  registerAction(CBSec::SAFE, &GLWin::panRight3D, parent);
-  registerAction(CBSec::SAFE, &GLWin::panLeft3D, parent);
-  registerAction(CBSec::SAFE, &GLWin::panUp3D, parent);
-  registerAction(CBSec::SAFE, &GLWin::panDown3D, parent);
-  registerAction(CBSec::SAFE, &GLWin::selectObject3D, parent);
-  registerAction(CBSec::SAFE, &GLWin::addSelectObject3D, parent);
-  registerAction(CBSec::SAFE, &GLWin::toggleSelectObject3D, parent);
+  registerAction(CBSec::SAFE, &Tab::resetProjection3D, this);
+  registerAction(CBSec::SAFE, &Tab::zoomOut3D, this);
+  registerAction(CBSec::SAFE, &Tab::zoomIn3D, this);
+  registerAction(CBSec::SAFE, &Tab::panRight3D, this);
+  registerAction(CBSec::SAFE, &Tab::panLeft3D, this);
+  registerAction(CBSec::SAFE, &Tab::panUp3D, this);
+  registerAction(CBSec::SAFE, &Tab::panDown3D, this);
+  registerAction(CBSec::SAFE, &Tab::selectObject3D, this);
+  registerAction(CBSec::SAFE, &Tab::addSelectObject3D, this);
+  registerAction(CBSec::SAFE, &Tab::toggleSelectObject3D, this);
 
   registerAction(CBSec::SAFE, &Tab::resetProjection2D, this);
   registerAction(CBSec::SAFE, &Tab::zoomOut2D, this);

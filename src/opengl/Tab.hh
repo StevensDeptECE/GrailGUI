@@ -119,4 +119,17 @@ class Tab : public CallbackHandler {
   void pageDown();
   void sectionUp();
   void sectionDown();
+
+  void clearSelected();
+
+  void resetProjection3D();
+  void zoomOut3D();
+  void zoomIn3D();
+  void panRight3D();
+  void panLeft3D();
+  void panUp3D();
+  void panDown3D();
+  void selectObject3D();
+  void addSelectObject3D();
+  void toggleSelectObject3D();
 };
