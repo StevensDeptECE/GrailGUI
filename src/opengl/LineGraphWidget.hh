@@ -16,8 +16,8 @@ class LineGraphWidget : public GraphWidget {
       marker_pointer_table;
 
  public:
-  LineGraphWidget(Canvas* c, double x, double y, double w, double h)
-      : GraphWidget(c, x, y, w, h, FUNCTIONS_PERMITTED, FUNCTIONS_PERMITTED),
+  LineGraphWidget(Canvas* c, double x, double y, double w, double h, AxisType xAxisType, AxisType yAxisType, const GraphStyle* s)
+      : GraphWidget(c, x, y, w, h, FUNCTIONS_PERMITTED, FUNCTIONS_PERMITTED, xAxisType, yAxisType, s),
         dataStyle(nullptr),
         xPoints(),
         yPoints(),

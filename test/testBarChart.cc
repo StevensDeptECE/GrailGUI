@@ -20,53 +20,37 @@ public:
 
     vector<glm::vec4> outline{grail::green, grail::blue, grail::purple};
 
-    BarChartWidget bcw(c, 200, 200, 400, 400);
+    BarChartWidget bcw(c, 200, 200, 400, 400, GraphWidget::AxisType::TEXT, GraphWidget::AxisType::LINEAR, this);
+
+    // create x axis (categories)
+    bcw.setNames(names);
+    //    bcw.createXAxis(GraphWidget::AxisType::TEXT);
+    bcw.xAxis->setTitle("Colors");
+
+    // y axis stuff
+    //bcw.createYAxis(GraphWidget::AxisType::LINEAR);
+    bcw.setValues(values);
 
     // setting general things for the graph
     // the axis text styles must be set before
     // creating the axes
     bcw.setGraphTitle("Test Title");
-		bcw.setStyle(this);
+		//bcw.setStyle(this);
 
     // bar chart widget specific bits
-    bcw.setBarColors(colors);
-    bcw.setBarOutlineColors(outline);
-
-    // create x axis (categories)
-    bcw.setNames(names);
-    bcw.createXAxis(GraphWidget::AxisType::TEXT);
-
-    // set releavant x axis parameters
-    // if you try to set something not applicable to a text axis (as that's what
-    // the x axis always will be), the compiler will yell at you
-    bcw.xAxis->setTitle("Colors");
-    //bcw.xAxis->setTickDrawSize(7);
-    //bcw.xAxis->setAxisColor(grail::green);
-    //bcw.xAxis->setTickColor(grail::darkgreen);
-
-    // y axis stuff
-    bcw.createYAxis(GraphWidget::AxisType::LINEAR);
-    bcw.setValues(values);
-    // bcw.createYAxis(GraphWidget::AxisType::LOGARITHMIC);
-    // bcw.setValues(logValues);
-
-    // set y axis parameters
-    //bcw.yAxis->setIsVert(true);
-
+    //bcw.setBarColors(colors);
+    //bcw.setBarOutlineColors(outline);
     // linear
     bcw.yAxis->setBounds(0, 60);
     bcw.yAxis->setTickInterval(2);
+    bcw.yAxis->setTitle("y axis");
 
     // logarithmic
+    // bcw.createYAxis(GraphWidget::AxisType::LOGARITHMIC);
     // bcw.yAxis->setBounds(1, 256);
     // bcw.yAxis->setTickInterval(2);
     // bcw.yAxis->setTickFormat(4, 1);
-
-    //bcw.yAxis->setTickDrawSize(8);
-    //bcw.yAxis->setShowTicks(true);
-    bcw.yAxis->setTitle("y axis");
-    //bcw.yAxis->setAxisColor(grail::yellow);
-    //bcw.yAxis->setTickColor(grail::red);
+    // bcw.setValues(logValues);
 
     bcw.init();
   }

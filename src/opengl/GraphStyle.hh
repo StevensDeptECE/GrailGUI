@@ -8,7 +8,7 @@ using namespace grail;
 
 class GraphStyle : public Animated {
  public:
-  Style baseGraphStyle;
+  Style baseStyle;
 	Style titleStyle;
   Style xAxisStyle;
   Style xAxisTextStyle;
@@ -21,6 +21,8 @@ class GraphStyle : public Animated {
 	vector<glm::vec4> boxColors;
 	vector<glm::vec4> whiskerColors;
 	vector<glm::vec4> outlineColors;
+	vector<glm::vec4> barColors;			//TODO: eliminate redundant colors, use style instead?
+	vector<glm::vec4> barOutlineColors;
 	float boxWidth; // width of boxes for candlestick
 	float xTickDrawSize;
 	float yTickDrawSize;
@@ -28,7 +30,7 @@ class GraphStyle : public Animated {
   GraphStyle(Tab* tab, const char faceName[], uint32_t titleSize, uint32_t axisSize)
 		: Animated(tab),
 			// two lines and the overall title
-			baseGraphStyle(faceName, axisSize, 1, 0, 0, 0, 0, 0, 0, 5),
+			baseStyle(faceName, axisSize, 1, 0, 0, 0, 0, 0, 0, 5),
 			titleStyle(faceName, titleSize, 1, 0, 0, 0, 0, 0, 0, 5),
 			// will control how thick lines for x axis are drawn
 			xAxisStyle(faceName, axisSize, 1, 0, 0, 0, 0, 1, 0, 4),
@@ -52,6 +54,41 @@ class GraphStyle : public Animated {
 		outlineColors = {grail::darkblue, grail::darkgreen};
 	}
 
+  /**
+   * @brief Summary
+   * @details Description
+   * @param[in] s Description
+   */
+  void setBaseStyle(const Style* s) {}
+
+
+  /**
+   * @brief Summary
+   * @details Description
+   * @param[in] xAxisTextStyle Description
+   */
+  void setXAxisTextStyle(const Style* xAxisTextStyle) {}
+
+  /**
+   * @brief Summary
+   * @details Description
+   * @param[in] yAxisTextStyle Description
+   */
+  void setYAxisTextStyle(const Style* yAxisTextStyle) {}
+
+  /**
+   * @brief Summary
+   * @details Description
+   * @param[in] xAxisStyle Description
+   */
+  void setXAxisStyle(const Style* xAxisStyle) {}
+
+  /**
+   * @brief Summary
+   * @details Description
+   * @param[in] yAxisStyle Description
+   */
+  void setYAxisStyle(const Style* yAxisStyle) {}
 
 	//	GraphStyle(const char faceName[], uint32_t titleSize, uint32_t axisSize)
 	
