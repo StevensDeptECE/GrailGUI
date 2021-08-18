@@ -261,8 +261,11 @@ void GLWin::baseInit() {
                "common.frag");  // Texture for images
   Shader::load("multiText.bin", "MultiTexture.vert",
                "MultiTexture.frag");  // MultiTexture for shapes
-                                      //  glEnable(GL_DEBUG_OUTPUT);
-  //  glDebugMessageCallback(messageCallback, 0);
+#if 0
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(messageCallback, 0);
+#endif
+
   for (int i = 0; i < tabs.size(); ++i) {
     tabs[i]->init();
   }
