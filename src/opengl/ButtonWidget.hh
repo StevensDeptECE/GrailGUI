@@ -1,4 +1,5 @@
 #include <functional>
+#include <optional>
 #include <string>
 
 #include "opengl/InteractiveWidget2D.hh"
@@ -6,7 +7,7 @@
 class ButtonWidget : public InteractiveWidget2D {
  private:
   std::string text;
-  std::function<void(void)> func;
+  std::optional<std::function<void(void)>> func;
 
  public:
   void click(float mouseX, float mouseY) override;
