@@ -17,62 +17,39 @@ class TestBoxChart : public GraphStyle {
                            49,  247, 325, 114, 89};
 
     vector<string> names = {"red", "orange", "yellow", "green", "blue"};
-    vector<glm::vec4> boxColors = {grail::red, grail::green, grail::blue};
-    vector<glm::vec4> whiskerColors = {grail::cyan, grail::purple};
-    vector<glm::vec4> outlineColors = {grail::darkblue, grail::darkgreen};
 
-    BoxChartWidget bcw(c, 300, 300, 400, 200);
+    BoxChartWidget bcw(c, 300, 300, 400, 200, GraphWidget::AxisType::TEXT, GraphWidget::AxisType::LINEAR, this);
 
     // setting general things for the graph
     // the axis text styles must be set before
     // creating the axes
     bcw.setGraphTitle("Test Title");
-		bcw.setStyle(this);
-#if 0
-    bcw.setBaseStyle(baseGraphStyle);
-    bcw.setXAxisStyle(xAxisStyle);
-    bcw.setYAxisStyle(yAxisStyle);
-    bcw.setXAxisTextStyle(xAxisTextStyle);
-    bcw.setYAxisTextStyle(yAxisTextStyle);
-    bcw.setWhiskerStyle(whiskerStyle);
-    bcw.setBoxStyle(boxStyle);
-#endif
-    // bar chart widget specific bits
-    bcw.setBoxWidth(45);
-    bcw.setPointsPerBox(5);
-    bcw.setBoxColors(boxColors);
-    bcw.setWhiskerColors(whiskerColors);
-    bcw.setOutlineColors(outlineColors);
 
     // create x axis (categories)
     bcw.setNames(names);
-    bcw.createXAxis(GraphWidget::AxisType::TEXT);
 
     // set releavant x axis parameters
     // if you try to set something not applicable to a text axis (as that's what
     // the x axis always will be), the compiler will yell at you
     bcw.xAxis->setTitle("Colors");
-    bcw.xAxis->setTickDrawSize(7);
-    bcw.xAxis->setAxisColor(grail::green);
-    bcw.xAxis->setTickColor(grail::purple);
 
     // y axis stuff
-    bcw.createYAxis(GraphWidget::AxisType::LINEAR);
     bcw.setData(data);
-
-    // set y axis parameters
-    bcw.yAxis->setIsVert(true);
-
+    bcw.yAxis->setTitle("y axis");
     // linear
     bcw.yAxis->setBounds(0, 500);
     bcw.yAxis->setTickInterval(75);
+    
+    // set y axis parameters
 
-    bcw.yAxis->setTickDrawSize(8);
-    bcw.yAxis->setShowTicks(true);
-    bcw.yAxis->setTitle("y axis");
-    bcw.yAxis->setAxisColor(grail::yellow);
-    bcw.yAxis->setTickColor(grail::red);
+    // bar chart widget specific bits
+    bcw.setBoxWidth(45);
+    bcw.setPointsPerBox(5);
+    //bcw.setBoxColors(boxColors);
+    //bcw.setWhiskerColors(whiskerColors);
+    //bcw.setOutlineColors(outlineColors);
 
+    
     bcw.init();
   }
 };
