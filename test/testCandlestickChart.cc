@@ -5,7 +5,7 @@
 using namespace std;
 using namespace grail;
 
-class TestCandlestickChart : GraphStyle {
+class TestCandlestickChart : public GraphStyle {
  public:
   TestCandlestickChart(Tab* tab) : GraphStyle(tab, "TIMES", 20, 12) {
     MainCanvas *c = tab->getMainCanvas();
@@ -74,5 +74,5 @@ class TestCandlestickChart : GraphStyle {
 };
 
 void grailmain(int argc, char *argv[], GLWin* w, Tab* tab) {
-  tab->addAnimated(new TestBoxChart(), 1000, 1000);
+  tab->addAnimated(new TestCandlestickChart(tab));
 }
