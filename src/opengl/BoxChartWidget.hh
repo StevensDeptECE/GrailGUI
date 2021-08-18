@@ -32,6 +32,7 @@ class BoxChartWidget : public GraphWidget {
         boxWidth(20),
         pointsPerBox(3) {}
 
+	void setStyle(const GraphStyle* s);
   void setWhiskerStyle(const Style* s);
   void setBoxStyle(const Style* s);
   void setBoxWidth(double width);

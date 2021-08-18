@@ -123,3 +123,19 @@ void GraphWidget::setXAxisStyle(const Style* xAxisStyle) {
 void GraphWidget::setYAxisStyle(const Style* yAxisStyle) {
   this->yAxisStyle = yAxisStyle;
 }
+
+void GraphWidget::setCommonStyles(const GraphStyle* s) {
+	setBaseStyle(&s->baseGraphStyle);
+	setXAxisStyle(&s->xAxisStyle);
+	setYAxisStyle(&s->yAxisStyle);
+  setXAxisTextStyle(&s->xAxisTextStyle);
+	setYAxisTextStyle(&s->yAxisTextStyle);
+	xAxis->setTickDrawSize(s->xTickDrawSize);
+	yAxis->setTickDrawSize(s->yTickDrawSize);
+	xAxis->setAxisColor(grail::green);
+	xAxis->setTickColor(grail::purple);
+	yAxis->setIsVert(true);
+	yAxis->setShowTicks(true);
+	yAxis->setAxisColor(grail::yellow);
+  yAxis->setTickColor(grail::red);
+}

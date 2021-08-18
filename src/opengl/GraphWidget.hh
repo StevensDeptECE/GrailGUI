@@ -2,8 +2,7 @@
 
 #include "opengl/AxisWidget.hh"
 #include "opengl/SuperWidget2D.hh"
-
-class Style;
+#include "opengl/GraphStyle.hh"
 
 class GraphWidget : public SuperWidget2D {
  public:
@@ -106,5 +105,8 @@ class GraphWidget : public SuperWidget2D {
    * @param[in] yAxisStyle Description
    */
   void setYAxisStyle(const Style* yAxisStyle);
+
+	void setCommonStyles(const GraphStyle* s);
+	virtual void setStyle(const GraphStyle* s) = 0;
   virtual void init() = 0;
 };

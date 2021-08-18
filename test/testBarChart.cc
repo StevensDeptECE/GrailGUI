@@ -1,56 +1,15 @@
+#include "opengl/GraphStyle.hh"
 #include "opengl/BarChartWidget.hh"
 #include "opengl/GrailGUI.hh"
 
 using namespace std;
 using namespace grail;
 
-class TestBarChart : public GLWin {
- private:
-  Style *baseGraphStyle;
-  Style *xAxisStyle;
-  Style *xAxisTextStyle;
-  Style *yAxisStyle;
-  Style *yAxisTextStyle;
-  Style *barStyle;
-
- public:
-  TestBarChart() : GLWin(0x000000, 0xCCCCCC, "TestBarChart") {}
-  ~TestBarChart() {
-    delete baseGraphStyle;
-    delete xAxisStyle;
-    delete xAxisTextStyle;
-    delete yAxisStyle;
-    delete yAxisTextStyle;
-    delete barStyle;
-  }
-
-  void init() {
-    // two lines and the overall title
-    baseGraphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
-    baseGraphStyle->setLineWidth(5);
-
-    // will control how thick lines for x axis are drawn
-    xAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 1, 0);
-    xAxisStyle->setLineWidth(4);
-
-    // controls the font, size, and color of x axis text
-    xAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 0);
-    xAxisTextStyle->setLineWidth(3);
-
-    // will control how thick lines for y axis are drawn
-    yAxisStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 1);
-    yAxisStyle->setLineWidth(2);
-
-    // controls the font, size, and color of y axis text
-    yAxisTextStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1);
-    yAxisTextStyle->setLineWidth(1);
-
-    // controls the thickness of bar outlines
-    barStyle = new Style("TIMES", 12, 1, 0, 0, 0, 1, 0, 1);
-    barStyle->setLineWidth(3);
-
-    MainCanvas *c = currentTab()->getMainCanvas();
-
+class TestBarChart : public GraphStyle {
+public:
+	constexpr static const char faceName[] = "TIMES";
+	TestBarChart(Tab* tab) : GraphStyle(tab) {
+    MainCanvas *c = tab->getMainCanvas();
     vector<double> values = {4, 6, 8, 10, 12, 14};
     vector<double> logValues = {4, 8, 16, 32, 64, 128};
 
@@ -68,12 +27,7 @@ class TestBarChart : public GLWin {
     // the axis text styles must be set before
     // creating the axes
     bcw.setGraphTitle("Test Title");
-    bcw.setBaseStyle(baseGraphStyle);
-    bcw.setXAxisStyle(xAxisStyle);
-    bcw.setYAxisStyle(yAxisStyle);
-    bcw.setXAxisTextStyle(xAxisTextStyle);
-    bcw.setYAxisTextStyle(yAxisTextStyle);
-    bcw.setBarStyle(barStyle);
+		bcw.setStyle(this);
 
     // bar chart widget specific bits
     bcw.setBarColors(colors);
@@ -89,7 +43,7 @@ class TestBarChart : public GLWin {
     bcw.xAxis->setTitle("Colors");
     bcw.xAxis->setTickDrawSize(7);
     bcw.xAxis->setAxisColor(grail::green);
-    bcw.xAxis->setTickColor(grail::purple);
+    bcw.xAxis->setTickColor(grail::darkgreen);
 
     // y axis stuff
     bcw.createYAxis(GraphWidget::AxisType::LINEAR);
@@ -119,6 +73,7 @@ class TestBarChart : public GLWin {
   }
 };
 
-int main(int argc, char *argv[]) {
-  return GLWin::init(new TestBarChart(), 1000, 1000);
+void grailmain(int argc, char *argv[], GLWin* w, Tab* tab) {
+	w->setTitle("Test Bar Chart");
+  tab->addAnimated(new TestBarChart(tab));
 }

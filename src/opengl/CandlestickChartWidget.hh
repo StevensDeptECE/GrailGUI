@@ -22,7 +22,7 @@ class CandlestickChartWidget : public GraphWidget {
         boxColors({grail::blue}),
         outlineColors({grail::black}),
         boxWidth(3) {}
-
+	void setStyle(const GraphStyle* s);
   void setLineStyle(const Style* s);
   void setBoxStyle(const Style* s);
   void setBoxWidth(double width);

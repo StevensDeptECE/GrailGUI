@@ -234,13 +234,14 @@ void GLWin::startWindow() {
   guiFont = bigFont;
   menuFont = bigFont;
 
-  defaultStyle = new Style(defaultFont, 0.5, 0.5, 0.5, 0, 0, 0, COMMON_SHADER);
+  defaultStyle = new Style(defaultFont, 0.5, 0.5, 0.5, 0, 0, 0,
+													 1, COMMON_SHADER); // added default line width
   defaultStyle->setLineWidth(1);
   //  defaultStyle->setShaderIndex(COMMON_SHADER);
-  guiStyle = new Style(guiFont, 0.5, 0.5, 0.5, 0, 0, 0, COMMON_SHADER);
-  guiTextStyle = new Style(guiFont, 0.5, 0.5, 0.5, 0, 0, 0, COMMON_SHADER);
-  menuStyle = new Style(menuFont, 0.5, 0.5, 0.5, 0, 0, 0, COMMON_SHADER);
-  menuTextStyle = new Style(menuFont, 0.5, 0.5, 0.5, 0, 0, 0, COMMON_SHADER);
+  guiStyle = new Style(guiFont, 0.5f, 0.5f, 0.5f, 0, 0, 0, 1, COMMON_SHADER);
+  guiTextStyle = new Style(guiFont, 0.5, 0.5, 0.5, 0, 0, 0, 1, COMMON_SHADER);
+  menuStyle = new Style(menuFont, 0.5, 0.5, 0.5, 0, 0, 0, 1, COMMON_SHADER);
+  menuTextStyle = new Style(menuFont, 0.5, 0.5, 0.5, 0, 0, 0, 1, COMMON_SHADER);
   current = new Tab(this);
   tabs.add(current);
   hasBeenInitialized = true;

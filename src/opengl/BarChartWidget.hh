@@ -21,6 +21,7 @@ class BarChartWidget : public GraphWidget {
         barOutlineColors({grail::blue}),
         barWidth(20) {}
 
+	void setStyle(const GraphStyle* gs);
   void setBarStyle(const Style *s);
   void setBarWidth(double width);
   void setBarColors(const std::vector<glm::vec4> &colors);

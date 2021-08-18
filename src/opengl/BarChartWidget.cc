@@ -11,6 +11,11 @@
 
 using namespace std;
 
+void BarChartWidget::setStyle(const GraphStyle* gs) {
+	setCommonStyles(gs);
+	setBarStyle(&gs->barStyle);							
+}
+
 void BarChartWidget::setBarStyle(const Style* s) { barStyle = s; }
 
 void BarChartWidget::setBarWidth(double width) { barWidth = width; }
