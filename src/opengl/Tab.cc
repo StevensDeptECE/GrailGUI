@@ -81,7 +81,7 @@ void Tab::cleanup() {
 }
 
 void Tab::render() {
-  for (int i = 0; i < animatedMembers.size(); i++) {
+  for (int i = 0; i < animatedMembers.size(); ++i) {
     animatedMembers[i]->render();
   }
 
