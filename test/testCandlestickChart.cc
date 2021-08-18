@@ -7,7 +7,7 @@ using namespace grail;
 
 class TestCandlestickChart : GraphStyle {
  public:
-  TestCandlestickChart(Tab* tab) : GraphStyle(tab) {
+  TestCandlestickChart(Tab* tab) : GraphStyle(tab, "TIMES", 20, 12) {
     MainCanvas *c = tab->getMainCanvas();
 
     vector<double> data = {

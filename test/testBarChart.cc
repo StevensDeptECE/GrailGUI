@@ -7,8 +7,7 @@ using namespace grail;
 
 class TestBarChart : public GraphStyle {
 public:
-	constexpr static const char faceName[] = "TIMES";
-	TestBarChart(Tab* tab) : GraphStyle(tab) {
+	TestBarChart(Tab* tab) : GraphStyle(tab, "TIMES", 20, 12) {
     MainCanvas *c = tab->getMainCanvas();
     vector<double> values = {4, 6, 8, 10, 12, 14};
     vector<double> logValues = {4, 8, 16, 32, 64, 128};
@@ -41,9 +40,9 @@ public:
     // if you try to set something not applicable to a text axis (as that's what
     // the x axis always will be), the compiler will yell at you
     bcw.xAxis->setTitle("Colors");
-    bcw.xAxis->setTickDrawSize(7);
-    bcw.xAxis->setAxisColor(grail::green);
-    bcw.xAxis->setTickColor(grail::darkgreen);
+    //bcw.xAxis->setTickDrawSize(7);
+    //bcw.xAxis->setAxisColor(grail::green);
+    //bcw.xAxis->setTickColor(grail::darkgreen);
 
     // y axis stuff
     bcw.createYAxis(GraphWidget::AxisType::LINEAR);
@@ -52,7 +51,7 @@ public:
     // bcw.setValues(logValues);
 
     // set y axis parameters
-    bcw.yAxis->setIsVert(true);
+    //bcw.yAxis->setIsVert(true);
 
     // linear
     bcw.yAxis->setBounds(0, 60);
@@ -63,11 +62,11 @@ public:
     // bcw.yAxis->setTickInterval(2);
     // bcw.yAxis->setTickFormat(4, 1);
 
-    bcw.yAxis->setTickDrawSize(8);
-    bcw.yAxis->setShowTicks(true);
+    //bcw.yAxis->setTickDrawSize(8);
+    //bcw.yAxis->setShowTicks(true);
     bcw.yAxis->setTitle("y axis");
-    bcw.yAxis->setAxisColor(grail::yellow);
-    bcw.yAxis->setTickColor(grail::red);
+    //bcw.yAxis->setAxisColor(grail::yellow);
+    //bcw.yAxis->setTickColor(grail::red);
 
     bcw.init();
   }

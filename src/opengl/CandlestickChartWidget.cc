@@ -8,10 +8,9 @@
 using namespace std;
 
 void CandlestickChartWidget::setStyle(const GraphStyle* s) {
-	setCommonStyle(s);
+	setCommonStyles(s);
 	setLineStyle(&s->lineStyle);
 	setBoxWidth(s->boxWidth);
-
 }
 
 void CandlestickChartWidget::setLineStyle(const Style* s) { lineStyle = s; }

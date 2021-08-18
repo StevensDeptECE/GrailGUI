@@ -22,7 +22,8 @@ class GraphStyle : public Animated {
 	vector<glm::vec4> whiskerColors;
 	vector<glm::vec4> outlineColors;
 	float boxWidth; // width of boxes for candlestick
-	float
+	float xTickDrawSize;
+	float yTickDrawSize;
  public:
   GraphStyle(Tab* tab, const char faceName[], uint32_t titleSize, uint32_t axisSize)
 		: Animated(tab),
@@ -39,15 +40,18 @@ class GraphStyle : public Animated {
 			yAxisTextStyle(faceName, axisSize, 1, 0, 0, 0, 0.5, 0.5, 0.5, 1),
 			// controls the thickness of whisker lines drawn
 			whiskerStyle(faceName, axisSize, 1, 0, 0, 0, 0.5, 0.5, 0.5, 3),
-			lineStyle(faceName, axisSize, 1, 0, 0, 0, 1, 0, 1, 2);
+			lineStyle(faceName, axisSize, 1, 0, 0, 0, 1, 0, 1, 2),
 			// controls the thickness of box outlines
 			boxStyle(faceName, 12, 1, 0, 0, 0, 1, 0, 1, 3),
-			barStyle(faceName, 12, 1, 0, 0, 0, 1, 0, 1, 3)
+			barStyle(faceName, 12, 1, 0, 0, 0, 1, 0, 1, 3),
+			xTickDrawSize(7),
+			yTickDrawSize(10)
 	{
 		boxColors = {grail::red, grail::green, grail::blue};
 		whiskerColors = {grail::cyan, grail::purple};
 		outlineColors = {grail::darkblue, grail::darkgreen};
 	}
+
 
 	//	GraphStyle(const char faceName[], uint32_t titleSize, uint32_t axisSize)
 	
