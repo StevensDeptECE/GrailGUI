@@ -7,6 +7,7 @@
 Animated::Animated(Tab* tab) : tab(tab), c(tab->getMainCanvas()) {
   tab->setFrameRate(60);
   tab->setDt(0.0001);
+  tab->setDefaultDt(0.0001);
 }
 
 void Animated::init() {}
