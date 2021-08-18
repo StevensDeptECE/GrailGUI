@@ -43,8 +43,8 @@ class Style {
         shaderIndex(shaderIndex),
         lineWidth(lineWidth) {}
 	
-  Style(const Font* font, const glm::vec4& bgColor, const glm::vec4& fgColor)
-      : f(font), bg(bgColor), fg(fgColor), lineWidth(1) {}
+  Style(const Font* font, const glm::vec4& bgColor, const glm::vec4& fgColor, int lineWidth = 1)
+      : f(font), bg(bgColor), fg(fgColor), lineWidth(lineWidth) {}
 
   const Font* lookup(const char* fontFamily, const float size,
                      const float weight) {

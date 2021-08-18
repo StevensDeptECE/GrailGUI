@@ -27,13 +27,12 @@ class TestCandlestickChart : public GraphStyle {
         174.51, 173.29, 174.18, 174.03, 175.61, 173.71, 175.61, 174.48, 175.46,
         172.52, 175.25, 175.11, 175.38, 174.27, 174.67};
     vector<string> names = {"one", "two", "seven", "three"};
-    CandlestickChartWidget ccw(c, 100, 100, 400, 400);
+    CandlestickChartWidget ccw(c, 100, 100, 850, 400, GraphWidget::AxisType::LINEAR, GraphWidget::AxisType::LINEAR, this);
 
     // setting general things for the graph
     // the axis text styles must be set before
     // creating the axes
     ccw.setGraphTitle("Test Title");
-		ccw.setStyle(this);
 
     // bar chart widget specific bits
     // ccw.setBoxWidth(5);
@@ -41,19 +40,17 @@ class TestCandlestickChart : public GraphStyle {
     // ccw.setBoxOutlineColors(outlineColors);
 
     // create x axis (categories)
-    ccw.setNames(names);
-    ccw.createXAxis(GraphWidget::AxisType::TEXT);
+    //ccw.setNames(names);
 
     // set relevant x axis parameters
     // if you try to set something not applicable to a text axis (as that's what
     // the x axis always will be), the compiler will yell at you
-    ccw.xAxis->setTitle("Colors");
+    ccw.xAxis->setTitle("Date");
 		//    ccw.xAxis->setTickDrawSize(7);
     //ccw.xAxis->setAxisColor(grail::green);
     //ccw.xAxis->setTickColor(grail::purple);
 
     // y axis stuff
-    ccw.createYAxis(GraphWidget::AxisType::LINEAR);
     ccw.setData(data);
 
     // set y axis parameters
@@ -65,7 +62,7 @@ class TestCandlestickChart : public GraphStyle {
 
     //ccw.yAxis->setTickDrawSize(10);
     //ccw.yAxis->setShowTicks(true);
-    ccw.yAxis->setTitle("y axis");
+    ccw.yAxis->setTitle("Price");
     //ccw.yAxis->setAxisColor(grail::yellow);
     //ccw.yAxis->setTickColor(grail::red);
 
