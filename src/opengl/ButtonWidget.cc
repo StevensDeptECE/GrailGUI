@@ -14,6 +14,7 @@ void ButtonWidget::click(float mouseX, float mouseY) {
   isPressed = !isPressed;
   if (isPressed) {
     fmt::print("Button clicked {} at ({}, {})\n", text, mouseX, mouseY);
+    func();
   }
 }
 

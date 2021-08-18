@@ -9,7 +9,7 @@ AudioPlayer::~AudioPlayer() {
     mpv_terminate_destroy(context.handle);
   }
 
-  printf("audio has terminated succesfully\n");
+  printf("audio has terminated successfully\n");
 }
 
 void AudioPlayer::newContext(string name) {
