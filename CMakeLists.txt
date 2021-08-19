@@ -92,7 +92,8 @@ endif()
 FetchContent_Declare(
     stats
     GIT_REPOSITORY https://gitlab.com/Silent__Ninja346/stats
-    GIT_TAG        origin/main
+    # tag is normally set to origin/main for this, but is currently pinned
+    GIT_TAG        645889f70891c53b9300c5f7d655f5d6ea337c0f 
     SOURCE_DIR     ${PROJECT_SOURCE_DIR}/external/stats
 )
 FetchContent_GetProperties(stats)
