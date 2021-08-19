@@ -39,6 +39,8 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
+# BUG: This will more than likely not behave how we want it to with
+# multi-configuration generators https://stackoverflow.com/a/24470998
 message(STATUS "Build mode: ${CMAKE_BUILD_TYPE}")
 if(build_type_lower MATCHES "debug")
     message(STATUS "Building shared libs")
