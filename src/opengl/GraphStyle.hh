@@ -18,19 +18,24 @@ class GraphStyle : public Animated {
 	Style lineStyle;
 	Style barStyle;
   Style boxStyle;
+  Style dataStyle;
 	vector<glm::vec4> boxColors;
 	vector<glm::vec4> whiskerColors;
 	vector<glm::vec4> outlineColors;
 	vector<glm::vec4> barColors;			//TODO: eliminate redundant colors, use style instead?
 	vector<glm::vec4> barOutlineColors;
+	glm::vec4 lineColor;
+	glm::vec4 pointColor;
+	
 	float boxWidth; // width of boxes for candlestick
 	float xTickDrawSize;
 	float yTickDrawSize;
+	float pointSize;
  public:
   GraphStyle(Tab* tab, const char faceName[], uint32_t titleSize, uint32_t axisSize)
 		: Animated(tab),
 			// two lines and the overall title
-			baseStyle(faceName, axisSize, 1, 0, 0, 0, 0, 0, 0, 5),
+			baseStyle(faceName, axisSize, 1, 0, 0, 0, 0.3, 0.3, 0.3, 5),
 			titleStyle(faceName, titleSize, 1, 0, 0, 0, 0, 0, 0, 5),
 			// will control how thick lines for x axis are drawn
 			xAxisStyle(faceName, axisSize, 1, 0, 0, 0, 0, 1, 0, 4),
@@ -46,12 +51,19 @@ class GraphStyle : public Animated {
 			// controls the thickness of box outlines
 			boxStyle(faceName, 12, 1, 0, 0, 0, 1, 0, 1, 3),
 			barStyle(faceName, 12, 1, 0, 0, 0, 1, 0, 1, 3),
+			dataStyle(faceName, 12, 1, 0, 0, 0, 1, 0, 1, 3),
 			xTickDrawSize(7),
-			yTickDrawSize(10)
+			yTickDrawSize(10),
+			pointSize(4)
 	{
 		boxColors = {grail::red, grail::green, grail::blue};
 		whiskerColors = {grail::cyan, grail::purple};
 		outlineColors = {grail::darkblue, grail::darkgreen};
+		pointColor = grail::blue;
+		lineColor = grail::black;
+		barColors = {grail::blue, grail::green, grail::red,
+			grail::darkblue, grail::darkgreen, grail::darkred };
+		barOutlineColors = {grail::gray, grail::black, grail::yellow};
 	}
 
   /**

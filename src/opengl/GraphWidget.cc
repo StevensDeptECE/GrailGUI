@@ -88,6 +88,7 @@ void GraphWidget::createYAxis(AxisType typ) {
   delete yAxis;
   yAxis = createAxis(allowedYAxis, typ, &s->yAxisStyle, &s->yAxisTextStyle, true,
                      yAxisType);
+	yAxis->setIsVert(true);
 }
 
 void GraphWidget::commonRender() {
@@ -99,8 +100,8 @@ void GraphWidget::commonRender() {
     t->addCentered(x + w / 2, y - titleFont->getHeight(),
                    titleFont, graphTitle.c_str(), graphTitle.size());
 
-  m->drawLine(x, y, x + w, y, grail::black);
-  m->drawLine(x + w, y, x + w, y + h, grail::black);
+  m->drawLine(x, y, x + w, y, s->baseStyle.fg);
+  m->drawLine(x + w, y, x + w, y + h, s->baseStyle.fg);
   xAxis->init();
   yAxis->init();
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "opengl/Animated.hh"
 #include "opengl/Canvas.hh"
 #include "opengl/GLMath.hh"
 #include "opengl/GLWin.hh"

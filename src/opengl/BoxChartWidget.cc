@@ -1,9 +1,8 @@
-#define _USE_MATH_DEFINES
 #include "opengl/BoxChartWidget.hh"
 
 #include <algorithm>
 #include <cmath>
-//#include <numbers> For C++ 20 constants
+#include <numbers> //For C++20 constants
 
 #include "util/Ex.hh"
 #include "xp/Stats.hh"

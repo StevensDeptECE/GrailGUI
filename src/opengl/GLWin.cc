@@ -368,6 +368,7 @@ void GLWin::mainLoop() {
     glfwPollEvents();  // Check and call events
     // note: any events needing a refresh should set dirty = true
     if (currentTab()->checkUpdate()) setUpdate();
+		cerr << "needsupdate=" << needsUpdate << '\n';
     if (needsUpdate) {
       update();
       needsRender = true;
