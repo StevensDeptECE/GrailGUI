@@ -18,7 +18,9 @@ class TestBoxChart : public GraphStyle {
 
     vector<string> names = {"red", "orange", "yellow", "green", "blue"};
 
-    BoxChartWidget bcw(c, 300, 300, 400, 200, GraphWidget::AxisType::TEXT, GraphWidget::AxisType::LINEAR, this);
+    BoxChartWidget bcw(c, 100, 300, 850, 200,
+											 GraphWidget::AxisType::TEXT,
+											 GraphWidget::AxisType::LINEAR, this);
 
     // setting general things for the graph
     // the axis text styles must be set before

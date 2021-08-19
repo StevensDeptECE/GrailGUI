@@ -20,7 +20,7 @@ public:
 
     vector<glm::vec4> outline{grail::green, grail::blue, grail::purple};
 
-    BarChartWidget bcw(c, 200, 200, 400, 400, GraphWidget::AxisType::TEXT, GraphWidget::AxisType::LINEAR, this);
+    BarChartWidget bcw(c, 100, 100, 850, 400, GraphWidget::AxisType::TEXT, GraphWidget::AxisType::LINEAR, this);
 
     // create x axis (categories)
     bcw.setNames(names);

@@ -17,9 +17,7 @@ class AxisWidget : public Widget2D {
   bool showTicks;         // whether or not to show the ticks
   bool isVert;            // whether the axis will be drawn vertically
   std::string axisTitle;  // axis title
-  glm::vec4 axisColor;    // color to draw the axis line
-  glm::vec4 tickColor;    // color to draw the ticks
-
+	const GraphStyle* s,    // all graphical styles (color, linethickness, etc)
   double bottomOffset;
   void addAxisTitle();
 
@@ -28,9 +26,9 @@ class AxisWidget : public Widget2D {
              double h, double minBound = 0, double maxBound = 0,
              double tickInterval = 1, double tickDrawSize = 5,
              bool showTicks = true, bool isVert = false,
-             std::string axisTitle = "",
-             const glm::vec4& axisColor = grail::black,
-             const glm::vec4& tickColor = grail::black, int tickFormatWidth = 2,
+             const std::string& axisTitle = "",
+						 const GraphStyle* s,
+						 int tickFormatWidth = 2,
              int tickFormatPrecision = 2, double bottomOffset = 0);
 
   virtual ~AxisWidget();
@@ -65,7 +63,7 @@ class LinearAxisWidget : public AxisWidget {
 
  public:
   LinearAxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y,
-                   double w, double h);
+                   double w, double h, const Graph);
   void setBounds(double minBound, double maxBound) override;
   void setTickInterval(double tickInterval) override;
   void init() override;

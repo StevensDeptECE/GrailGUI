@@ -133,12 +133,12 @@ class StyledMultiShape2D : public MultiShape2D {
 
   // Markers for graphs
   // TODO: add hollow and filled variants of shapes
-  void drawCircleMarker(float x, float y, float size, glm::vec4 &color);
-  void drawTriangleMarker(float x, float y, float size, glm::vec4 &color);
-  void drawSquareMarker(float x, float y, float size, glm::vec4 &color);
-  void drawPentagonMarker(float x, float y, float size, glm::vec4 &color);
-  void drawHexagonMarker(float x, float y, float size, glm::vec4 &color);
-  void drawCrossMarker(float x, float y, float size, glm::vec4 &color);
+  void drawCircleMarker(float x, float y, float size, const glm::vec4 &color);
+  void drawTriangleMarker(float x, float y, float size, const glm::vec4 &color);
+  void drawSquareMarker(float x, float y, float size, const glm::vec4 &color);
+  void drawPentagonMarker(float x, float y, float size, const glm::vec4 &color);
+  void drawHexagonMarker(float x, float y, float size, const glm::vec4 &color);
+  void drawCrossMarker(float x, float y, float size, const glm::vec4 &color);
 
   // Point Primitives
   void rectanglePoints(float x, float y, float w, float h, const glm::vec4& c);
