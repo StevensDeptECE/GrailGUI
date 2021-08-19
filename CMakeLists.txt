@@ -18,6 +18,8 @@ option(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 option(CMAKE_LINK_WHAT_YOU_USE ON)
 option(GRAIL_EXPERIMENTAL ON)
+option(GRAIL_EXTRA_DEBUG_WARNINGS OFF)
+option(GRAIL_WERROR OFF)
 set(CMAKE_DEBUG_POSTFIX d)
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_lower)
@@ -55,6 +57,24 @@ else()
     endif()
 endif()
 
+if(GRAIL_EXTRA_DEBUG_WARNINGS)
+    if (MSVC)
+        # warning level 4
+        add_compile_options(/W4)
+    else()
+        # lots of warnings
+        add_compile_options(-Wall -Wextra)
+    endif()
+endif()
+
+if(GRAIL_WERROR)
+    # all warnings are errors
+    if (MSVC)
+        add_compile_options(/WX)
+    else()
+        add_compile_options(-Werror)
+    endif()
+endif()
 
 include(FetchContent)
 include(GrailFunctions)
