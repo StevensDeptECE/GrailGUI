@@ -115,7 +115,7 @@ FetchContent_Declare(
     stats
     GIT_REPOSITORY https://gitlab.com/Silent__Ninja346/stats
     # tag is normally set to origin/main for this, but is currently pinned
-    GIT_TAG        645889f70891c53b9300c5f7d655f5d6ea337c0f 
+    GIT_TAG        888e8291099fc869e89b2520b25880bfe8acebf0
     SOURCE_DIR     ${PROJECT_SOURCE_DIR}/external/stats
 )
 FetchContent_GetProperties(stats)
