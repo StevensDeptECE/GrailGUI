@@ -1,4 +1,4 @@
-#add_subdirectory(data)
+add_subdirectory(data)
 
 # add_grail_executable([BINNAME <binary name>] SRC <src path> LIBS <libs>)
 #add_grail_executable(SRC ESRIMapDemo.cc LIBS grail)
@@ -32,7 +32,7 @@ add_grail_executable(SRC ../src/csp/SimpleXDLServer.cc LIBS grail)
 add_grail_executable(SRC testfmt.cc LIBS grail)
 #add_grail_executable(SRC testStats.cc LIBS grail)
 #add_grail_executable(BINNAME testSolar SRC DrawNASAEphemerisSolarSystem2d.cc LIBS grail)
-add_grail_executable(SRC loadESRIShapefile.cc LIBS grail)
+#add_grail_executable(SRC loadESRIShapefile.cc LIBS grail)
 add_grail_executable(SRC testXDLButton.cc LIBS grail)
 
 if(${MPV_FOUND})
