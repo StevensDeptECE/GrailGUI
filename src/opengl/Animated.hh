@@ -13,7 +13,7 @@ class Animated {
   MainCanvas* c;
 
  public:
-  Animated(Tab* tab);
+  Animated(Tab* tab, double frameRate = -1, double dt = .0001);
 
   // Allow members to override init, render, and update
   // Tabs iterate through each of these manually

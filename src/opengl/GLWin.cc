@@ -162,7 +162,10 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const string &title,
       title(title),
       exitAfter(exitAfter),
       tabs(4),
-      faces(16) {
+      faces(16),
+      dragMode(false),
+      mousePressX(0),
+      mousePressY(0) {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -372,6 +375,8 @@ void GLWin::mainLoop() {
     if (needsUpdate) {
       update();
       needsRender = true;
+    } else {
+      usleep(10);
     }
   }
   cleanup();
