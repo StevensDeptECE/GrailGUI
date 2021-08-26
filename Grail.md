@@ -38,10 +38,10 @@ at equivalent experience for a user of a transactional website, while providing 
 1. Provide access to full OpenGL control of video performance, but create optimal drawing wrapper objects for common cases like 2d drawings on a web page that do not require knowledge of the OpenGL layer.
 1. Create a document object that supports uniform, multiple kinds of media at scale, rendering instantly.
 1. Create an editor capable of editing large-scale (1 Gb+) documents with instant response.
-1. Add video and audio capability so that Grail programs can display movies and implement video chat systems.
+1. Add video, camera, and audio capability so that Grail programs can display movies and implement video chat systems.
 1. Create a security engine that automatically generates public/private keys and manages logins to websites so that passwords are not used to log in to web sites. 
 1. Maintain a repository of passwords encrypted on the client that can be securely synchronized with other clients and backed up to the cloud.
-1. Create a uniform method of multiple user inputs via the netowork so that any grail can invite other grail users to use keyboard and mouse and type collaboratively.
+1. Create a uniform method of multiple user inputs via the network so that any Grail session can invite other Grail users to use keyboard and mouse and type collaboratively.
 1. Create a set of user interface widgets to implement buttons, scrollbars, menus, and web links that are portable in OpenGL.
 1. Create an efficient rendering engine for multibyte characters (Chinese, Japanese, Korean).
 1. Create a text rendering engine supporting equations.
@@ -68,11 +68,10 @@ The following list is not comprehensive. It contains the major contributors to G
    bindings call direct to arbitrary objects not just the main window. Cleaned up Multishape hierarchy.
    Implemented continuous integration in github automatically testing Grail on Linux and windows in the cloud.
 1. Luisa Bonfim - Student 2021. Implemented multiple graph widgets including SparkLine, BarChart, Candlestick, GapMinderGraph.
-   Built GapMinder database blockloader supporting hundreds of variables to graph. Implementing StyledMultiShape2.5 dimensions.
+   Built GapMinder database blockloader supporting hundreds of variables to graph. Implementing StyledMultiShape2.5D to support layered 2D shapes, and creating and testing a BlockLoader (GapMinderLoader) to rapidly load
+data from the GapMinder project to graph.
 1. David Krauthamer - Student 2021. Implemented LineGraph, axes, Video and audio player. Implementing registration for input events directly to objects.
 1. Kamen Kresnitzki - Student 2021. Co-authored some of the above with David.
-writing StyledMultiShape2.5D to support layered 2D shapes, and creating and testing a BlockLoader (GapMinderLoader) to rapidly load
-data from the GapMinder project to graph.
 1. Nikola Ciric - Student 2021. Implementing solarsystem animated display.
 1. Quentin Jimenez - Student 2021. Button widget and demo.
 1. Claudia Macrae - Student 2021. Implemented scrollbar.
@@ -107,3 +106,7 @@ Each of the following links will display source code and a screen shot of that d
 
 In 2021, students took workshops in C++/OpenGL and in C++ and cryptography basics using OpenSSL. 
 The following descriptions show what they learned and how it was applied in the Grail project this summer.
+
+## 2021 Milestone Updates
+
+## Future Goals
