@@ -43,6 +43,7 @@ Body::Body(Canvas* c, const Style* s, Camera* cam, const std::string& name,
       orbitalRadius(orbitalRadius),
       orbitalFreq(1.0 / orbitalPeriod),
       rotationFreq(1.0 / rotationalPeriod),
+      axialTilt(axialTilt * DEG2RAD<double>),
       orbits(orbits) {
   trans = new Transformation();
   MultiShape3D* body =
@@ -53,7 +54,7 @@ Body::Body(Canvas* c, const Style* s, Camera* cam, const std::string& name,
 
 void Body::update(double t) {
   trans->ident();  // set to the identity transformation
-  cout << "name= " << name << " orbitalFreq=" << orbitalFreq * t << '\n';
+  // cout << "name= " << name << " orbitalFreq=" << orbitalFreq * t << '\n';
   if (orbits != nullptr) {
     trans->rotate(orbits->orbitalFreq * t, 0, 1, 0);
     trans->translate(orbits->orbitalRadius, 0, 0);
@@ -63,12 +64,11 @@ void Body::update(double t) {
   trans->rotate(orbitalFreq * t, 0, 1, 0);
   trans->translate(orbitalRadius, 0, 0);
   trans->rotate(-orbitalFreq * t, 0, 1, 0);
-  trans->rotate((float)(axialTilt * DEG2RAD<double>), 0.0f, 0.0f,
-                1.0f);  // TODO: fix general axial tilt
+  trans->rotate(axialTilt, 0.0f, 0.0f, 1.0f);  // TODO: fix general axial tilt
   trans->rotate((rotationFreq * t), 0.0f, 1.0f, 0.0f);
   trans->scale(r);  // scale to the relative size of this body
 
-  cout << *trans << '\n';
+  // cout << *trans << '\n';
 }
 
 // TODO; Implement polar coordinates???
@@ -86,7 +86,7 @@ class SolarSystem : public Member {
   constexpr static double SIDEREAL_DAY =
       0.9972;  // number of 24-hour "days" it takes earth to rotate once
  public:
-  SolarSystem(Tab* tab) : Member(tab), bodies(10) {
+  SolarSystem(Tab* tab) : Member(tab, 0, .0125), bodies(10) {
     cam = c->setLookAtProjection(2, 3, 40, 0, 0, 0, 0, 0, 1);
     GLWin* w = tab->getParentWin();
     const Style* s = w->getDefaultStyle();

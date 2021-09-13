@@ -13,7 +13,7 @@ class Member {
   MainCanvas* c;
 
  public:
-  Member(Tab* tab);
+  Member(Tab* tab, double frameRate = -1, double dt = 0.0001);
 
   void setFrameRate(double frameRate);
   void setModelDt(double dt, double defaultDt);
