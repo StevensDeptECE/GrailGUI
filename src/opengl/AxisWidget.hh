@@ -8,26 +8,31 @@ class AxisWidget : public Widget2D {
     int width;
     int precision;
   };
-
+  bool isVert;            // whether the axis will be drawn vertically
   double minBound;        // minimum axis value
   double maxBound;        // maximum axis value
   double tickInterval;    // interval between ticks
-  double tickDrawSize;    // vertical height of tick marks
+  double tickDrawSize;    // length of tick marks in screen coordinates
+	//TODO: tickFormat is hardcoded to floating point, what about dates and others?
   Format tickFormat;      // how to format float values on screen
   bool showTicks;         // whether or not to show the ticks
-  bool isVert;            // whether the axis will be drawn vertically
+	const Style* axisStyle;
+	const Style* axisTextStyle;
   std::string axisTitle;  // axis title
 	glm::vec4 axisColor;
   glm::vec4 tickColor;
   double bottomOffset;
+	double axisSize;
   void addAxisTitle();
 
  public:
   AxisWidget(StyledMultiShape2D* m, MultiText* t,
+						 const Style* axisStyle, const Style* axisTextStyle,
 						 double x, double y, double w, double h,
+						 bool isVert,
 						 double minBound = 0, double maxBound = 0,
              double tickInterval = 1, double tickDrawSize = 5,
-             bool showTicks = true, bool isVert = false,
+             bool showTicks = true, 
              const std::string& axisTitle = "",
 						 int tickFormatWidth = 2,
              int tickFormatPrecision = 2, double bottomOffset = 0);
@@ -51,6 +56,7 @@ class AxisWidget : public Widget2D {
   virtual void setBounds(double minBound, double maxBound) = 0;
   virtual void setTickInterval(double tickInterval) = 0;
   virtual void setTickLabels(std::vector<std::string> tickLabels) = 0;
+	virtual float transform(double v) const = 0;
 };
 
 class LinearAxisWidget : public AxisWidget {
@@ -60,28 +66,33 @@ class LinearAxisWidget : public AxisWidget {
   // this somehow gets past the compiler then its an empty definition so no
   // damage can be done
   using AxisWidget::setTickLabels;
-  void setTickLabels(std::vector<std::string>) override{};
-
+  void setTickLabels(std::vector<std::string>) override {}
+	double scale, shift; // used for transforming coordinates using this axis
  public:
-  LinearAxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y,
-                   double w, double h);
+  LinearAxisWidget(StyledMultiShape2D* m, MultiText* t,
+									 const Style* axisStyle, const Style* axisTextStyle,
+									 double x, double y, double w, double h, bool isVert);
   void setBounds(double minBound, double maxBound) override;
   void setTickInterval(double tickInterval) override;
   void init() override;
+	float transform(double v) const override;
 };
 
 class LogAxisWidget : public AxisWidget {
  private:
   int base, power;
+	double scale, shift; // used for transforming coordinates
   using AxisWidget::setTickLabels;
-  void setTickLabels(std::vector<std::string>) override{};
+  void setTickLabels(std::vector<std::string>) override {}
 
  public:
-  LogAxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y,
-                double w, double h);
+  LogAxisWidget(StyledMultiShape2D* m, MultiText* t,
+								const Style* axisStyle, const Style* axisTextStyle,
+								double x, double y, double w, double h, bool isVert);
   void setBounds(double minBound, double maxBound) override;
   void setTickInterval(double tickInterval) override;
   void init() override;
+	float transform(double v) const override;
 };
 
 class TextAxisWidget : public AxisWidget {
@@ -93,8 +104,10 @@ class TextAxisWidget : public AxisWidget {
   std::vector<std::string> tickLabels;
 
  public:
-  TextAxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y,
-                 double w, double h);
+  TextAxisWidget(StyledMultiShape2D* m, MultiText* t,
+								 const Style* axisStyle, const Style* axisTextStyle,
+								 double x, double y, double w, double h, bool isVert);
   void setTickLabels(std::vector<std::string> tickLabels) override;
   void init() override;
+	float transform(double v) const override;
 };

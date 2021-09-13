@@ -1,13 +1,12 @@
-#include "opengl/GraphStyle.hh"
 #include "opengl/CandlestickChartWidget.hh"
 #include "opengl/GrailGUI.hh"
 
 using namespace std;
 using namespace grail;
 
-class TestCandlestickChart : public GraphStyle {
+class TestCandlestickChart : public Animated {
  public:
-  TestCandlestickChart(Tab* tab) : GraphStyle(tab, "TIMES", 20, 12) {
+  TestCandlestickChart(Tab* tab, const GraphStyle* gs) : Animated(tab) {
     MainCanvas *c = tab->getMainCanvas();
 
     vector<double> data = {
@@ -26,21 +25,18 @@ class TestCandlestickChart : public GraphStyle {
         173.38, 173.64, 170.51, 171.88, 171.75, 174.36, 171.1,  173.63, 173.29,
         174.51, 173.29, 174.18, 174.03, 175.61, 173.71, 175.61, 174.48, 175.46,
         172.52, 175.25, 175.11, 175.38, 174.27, 174.67};
-    vector<string> names = {"one", "two", "seven", "three"};
-    CandlestickChartWidget ccw(c, 100, 100, 850, 400, GraphWidget::AxisType::LINEAR, GraphWidget::AxisType::LINEAR, this);
+    CandlestickChartWidget ccw(c, 100, 100, 850, 400,
+															 GraphWidget::AxisType::LINEAR, GraphWidget::AxisType::LINEAR, gs);
 
     // setting general things for the graph
     // the axis text styles must be set before
     // creating the axes
-    ccw.setGraphTitle("Test Title");
+    ccw.setTitle("Test Title");
 
     // bar chart widget specific bits
     // ccw.setBoxWidth(5);
     // ccw.setBoxColors(boxColors);
     // ccw.setBoxOutlineColors(outlineColors);
-
-    // create x axis (categories)
-    //ccw.setNames(names);
 
     // set relevant x axis parameters
     // if you try to set something not applicable to a text axis (as that's what
@@ -71,5 +67,5 @@ class TestCandlestickChart : public GraphStyle {
 };
 
 void grailmain(int argc, char *argv[], GLWin* w, Tab* tab) {
-  tab->addAnimated(new TestCandlestickChart(tab));
+  new TestCandlestickChart(tab, GraphStyle::steelblue);
 }

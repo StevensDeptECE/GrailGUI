@@ -15,7 +15,8 @@ set(grail-opengl
     GapMinderWidget.cc
     GraphWidget.cc
     GLWin.cc
-    GLWinFonts.cc 
+    GLWinFonts.cc
+    GraphStyle.cc
     Image.cc
     LineGraphWidget.cc
     MapView2D.cc

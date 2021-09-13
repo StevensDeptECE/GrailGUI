@@ -5,9 +5,9 @@
 using namespace std;
 using namespace grail;
 
-class TestBoxChart : public GraphStyle {
+class TestBoxChart : public Animated {
  public:
-  TestBoxChart(Tab* tab) : GraphStyle(tab, "TIMES", 20, 12) {
+  TestBoxChart(Tab* tab, const GraphStyle* gs) : Animated(tab) {
     MainCanvas *c = tab->getMainCanvas();
 
     vector<double> data = {150, 350, 222, 100, 300,  //
@@ -20,12 +20,12 @@ class TestBoxChart : public GraphStyle {
 
     BoxChartWidget bcw(c, 100, 300, 850, 200,
 											 GraphWidget::AxisType::TEXT,
-											 GraphWidget::AxisType::LINEAR, this);
+											 GraphWidget::AxisType::LINEAR, gs);
 
     // setting general things for the graph
     // the axis text styles must be set before
     // creating the axes
-    bcw.setGraphTitle("Test Title");
+    bcw.setTitle("Test Title");
 
     // create x axis (categories)
     bcw.setNames(names);
@@ -50,13 +50,11 @@ class TestBoxChart : public GraphStyle {
     //bcw.setBoxColors(boxColors);
     //bcw.setWhiskerColors(whiskerColors);
     //bcw.setOutlineColors(outlineColors);
-
     
     bcw.init();
   }
 };
 
 void grailmain(int argc, char *argv[], GLWin* w, Tab* tab) {
-	w->setTitle("Test Bar Chart");
-  tab->addAnimated(new TestBoxChart(tab));
+  new TestBoxChart(tab, GraphStyle::steelblue);
 }

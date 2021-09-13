@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "util/Ex.hh"
+#include "opengl/GraphStyle.hh"
 
 // glad seems "unhappy" if you include it after glfw. Why?
 #include <glad/glad.h>
@@ -144,6 +145,16 @@ void GLWin::classInit() {
   Socket::classInit();
 }
 
+void GLWin::graphicsInit() {
+	*(string *)&baseDir = getenv("GRAIL");
+	FontFace::initAll();
+	GraphStyle::classInit();
+}
+
+void GLWin::graphicsCleanup() {
+	GraphStyle::classCleanup();
+}
+
 // Static cleanup for libraries
 void GLWin::classCleanup() {
   Socket::classCleanup();
@@ -155,17 +166,19 @@ inline glm::vec4 uint2vec4(uint32_t color) {
                    ((color >> 8) & 0xFF) / 255.0f, (color & 0xFF) / 255.0f);
 }
 
-GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const string &title,
+GLWin::GLWin(uint32_t w, uint32_t h, uint32_t bgColor, uint32_t fgColor, const string &title,
              uint32_t exitAfter)
-    : bgColor(uint2vec4(bgColor)),
-      fgColor(uint2vec4(fgColor)),
-      title(title),
-      exitAfter(exitAfter),
-      tabs(4),
-      faces(16),
-      dragMode(false),
-      mousePressX(0),
-      mousePressY(0) {
+	: width(w),
+		height(h),
+		bgColor(uint2vec4(bgColor)),
+		fgColor(uint2vec4(fgColor)),
+		title(title),
+		exitAfter(exitAfter),
+		tabs(4),
+		faces(16),
+		dragMode(false),
+		mousePressX(0),
+		mousePressY(0) {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -178,14 +191,19 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const string &title,
 #endif
   // all static library initializations go here
   if (!ranStaticInits) GLWin::classInit();
+	startWindow();
 }
 bool GLWin::ranStaticInits = false;
 bool GLWin::hasBeenInitialized = false;
-GLWin::GLWin(uint32_t w, uint32_t h, uint32_t bgColor, uint32_t fgColor,
+GLWin::GLWin(uint32_t bgColor, uint32_t fgColor,
              const string &title, uint32_t exitAfter)
-    : GLWin(bgColor, fgColor, title, exitAfter) {
-  setSize(w, h);
-  startWindow();
+	: GLWin(1024, 800, bgColor, fgColor, title, exitAfter) {
+}
+
+void GLWin::setSize(uint32_t w, uint32_t h) {
+	width = w;
+	height = h;
+	glfwSetWindowSize(win, w, h);
 }
 
 void GLWin::setTitle(const std::string &title) {}
@@ -230,8 +248,7 @@ void GLWin::startWindow() {
   // singleton initialization here
   // TODO: is there any more elegant way?
   if (!hasBeenInitialized) {
-    *(string *)&baseDir = getenv("GRAIL");
-    FontFace::initAll();
+		graphicsInit();
   }
   defaultFont = (Font *)FontFace::get("TIMES", 40, FontFace::BOLD);
   Font *bigFont = (Font *)FontFace::get("TIMES", 20, FontFace::BOLD);

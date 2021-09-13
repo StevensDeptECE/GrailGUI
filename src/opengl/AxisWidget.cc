@@ -1,14 +1,20 @@
 #include "opengl/AxisWidget.hh"
+#include <cmath>
 
 using namespace std;
 
-AxisWidget::AxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y,
-                       double w, double h, double minBound, double maxBound,
+AxisWidget::AxisWidget(StyledMultiShape2D* m, MultiText* t,
+											 const Style* axisStyle, const Style* axisTextStyle,
+											 double x, double y, double w, double h, // screen coords
+											 bool isVert, // true if the axis is vertical, false is horizontal
+											 double minBound, double maxBound, // range in model coordinates
                        double tickInterval, double tickDrawSize, bool showTicks,
-                       bool isVert, const std::string& axisTitle,
+											 const std::string& axisTitle,
                        int tickFormatWidth, int tickFormatPrecision,
                        double bottomOffset)
     : Widget2D(m, t, x, y, w, h),
+			axisStyle(axisStyle),
+			axisTextStyle(axisTextStyle),
       minBound(minBound),
       maxBound(maxBound),
       tickInterval(tickInterval),
@@ -16,8 +22,11 @@ AxisWidget::AxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y,
       showTicks(showTicks),
       isVert(isVert),
       axisTitle(axisTitle),
+			tickColor(axisStyle->fg),
 			tickFormat({.width = tickFormatWidth, .precision = tickFormatPrecision}),
-      bottomOffset(bottomOffset) {}
+      bottomOffset(bottomOffset) {
+	axisSize = isVert ? w : h;
+   }
 
 AxisWidget::~AxisWidget() {}
 
@@ -48,24 +57,26 @@ void AxisWidget::addAxisTitle() {
     if (isVert) {
       t->addCentered(x - 1.5 * m->getStyle()->f->getWidth(axisTitle.c_str(),
                                                           axisTitle.size()),
-                     y + w / 2, m->getStyle()->f, axisTitle.c_str(),
-                     axisTitle.size());
+                     y + w / 2, m->getStyle()->f, axisTitle);
     } else {
       t->addCentered(
           x + w / 2,
           y + h + (bottomOffset += 10 + m->getStyle()->f->getHeight()),
-          m->getStyle()->f, axisTitle.c_str(), axisTitle.size());
+          m->getStyle()->f, axisTitle);
     }
   }
 }
 
 LinearAxisWidget::LinearAxisWidget(StyledMultiShape2D* m, MultiText* t,
-                                   double x, double y, double w, double h)
-    : AxisWidget(m, t, x, y, w, h) {}
+																	 const Style* axisStyle, const Style* axisTextStyle,
+                                   double x, double y, double w, double h, bool isVert)
+	: AxisWidget(m, t, axisStyle, axisTextStyle, x, y, w, h, isVert) {}
 
 void LinearAxisWidget::setBounds(double minBound, double maxBound) {
   this->minBound = minBound;
   this->maxBound = maxBound;
+	scale = axisSize / (maxBound - minBound);
+  this->shift = scale*(-minBound)+shift;
 }
 
 void LinearAxisWidget::setTickInterval(double tickInterval) {
@@ -73,6 +84,7 @@ void LinearAxisWidget::setTickInterval(double tickInterval) {
 }
 
 void LinearAxisWidget::init() {
+	//TODO: scale only computed for horizontal? Seems like a bug
   double scale = w / abs(maxBound - minBound);
   bottomOffset = tickDrawSize + m->getStyle()->f->getHeight() * 1.25;
   m->drawLine(x, y + h, x + w, y + h, axisColor);
@@ -118,13 +130,18 @@ void LinearAxisWidget::init() {
   addAxisTitle();
 }
 
-LogAxisWidget::LogAxisWidget(StyledMultiShape2D* m, MultiText* t, double x,
-                             double y, double w, double h)
-    : AxisWidget(m, t, x, y, w, h) {}
+LogAxisWidget::LogAxisWidget(StyledMultiShape2D* m, MultiText* t,
+														 const Style* axisStyle, const Style* axisTextStyle,
+                             double x, double y, double w, double h, bool isVert)
+	: AxisWidget(m, t, axisStyle, axisTextStyle, x, y, w, h, isVert) {}
 
 void LogAxisWidget::setBounds(double minBound, double maxBound) {
   this->minBound = minBound;
   this->maxBound = maxBound;
+  double base = 1 / log(tickInterval);
+  scale = w / abs(log(maxBound) * base - log(minBound) * base);
+	shift = scale*(-minBound)+shift + (isVert ? y : x);
+	scale *= base;
 }
 
 void LogAxisWidget::setTickInterval(double tickInterval) {
@@ -132,16 +149,18 @@ void LogAxisWidget::setTickInterval(double tickInterval) {
 }
 
 void LogAxisWidget::init() {
-  double base = 1 / log(tickInterval);
-  double scale = w / abs(log(maxBound) * base - log(minBound) * base);
-  bottomOffset = tickDrawSize + m->getStyle()->f->getHeight() * 1.25;
+	//  double base = 1 / log(tickInterval);
+	//  double scale = w / abs(log(maxBound) * base - log(minBound) * base);
+	const Font* f = m->getStyle()->f;
+  bottomOffset = tickDrawSize + f->getHeight() * 1.25;
   m->drawLine(x, y + h, x + w, y + h, axisColor);
 
   if (isVert) {
     double counter = 1;
     for (double tick = maxBound; tick >= minBound;
          tick /= tickInterval, counter *= tickInterval) {
-      double draw = y + scale * log(counter) * base;
+			//      double draw = y + scale * log(counter) * base;
+			double draw = y + scale * log(counter); // scale has now been scaled by base
 
       if (showTicks)
         m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
@@ -153,21 +172,22 @@ void LogAxisWidget::init() {
       char thing[50];
       sprintf(thing, fmt, tick);
 
-      t->add(x - 20 - m->getStyle()->f->getWidth(thing, strlen(thing)),
-             draw + m->getStyle()->f->getHeight() / 2, m->getStyle()->f, tick,
+      t->add(x - 20 - f->getWidth(thing, strlen(thing)),
+             draw + f->getHeight() / 2, f, tick,
              tickFormat.width, tickFormat.precision);
     }
   } else {
     double counter = 1;
     for (double tick = minBound; tick <= maxBound;
          tick *= tickInterval, counter *= tickInterval) {
-      double draw = x + scale * log(counter) * base;
+			//      double draw = x + scale * log(counter) * base;
+      double draw = x + scale * log(counter);
 
       if (showTicks)
         m->drawLine(draw, y + h + tickDrawSize, draw, y + h - tickDrawSize,
                     tickColor);
 
-      t->addCentered(draw, y + h + bottomOffset, m->getStyle()->f, tick,
+      t->addCentered(draw, y + h + bottomOffset, f, tick,
                      tickFormat.width, tickFormat.precision);
     }
   }
@@ -175,9 +195,10 @@ void LogAxisWidget::init() {
   addAxisTitle();
 }
 
-TextAxisWidget::TextAxisWidget(StyledMultiShape2D* m, MultiText* t, double x,
-                               double y, double w, double h)
-    : AxisWidget(m, t, x, y, w, h), tickLabels(vector<string>()) {}
+TextAxisWidget::TextAxisWidget(StyledMultiShape2D* m, MultiText* t,
+															 const Style* axisStyle, const Style* axisTextStyle,
+															 double x, double y, double w, double h, bool isVert)
+	: AxisWidget(m, t, axisStyle, axisTextStyle, x, y, w, h, isVert), tickLabels(vector<string>()) {}
 
 void TextAxisWidget::setTickLabels(vector<string> tickLabels) {
   this->tickLabels = tickLabels;
@@ -187,7 +208,8 @@ void TextAxisWidget::init() {
   minBound = 0;
   maxBound = tickLabels.size() * (tickLabels.size() + 1);
   tickInterval = tickLabels.size();
-  bottomOffset = tickDrawSize + m->getStyle()->f->getHeight() * 1.25;
+	const Font* f = m->getStyle()->f;
+  bottomOffset = tickDrawSize + f->getHeight() * 1.25;
   float scale = w / abs(maxBound - minBound);
   int index = 0;
 
@@ -203,8 +225,7 @@ void TextAxisWidget::init() {
                     tickColor);
 
       string current = tickLabels[index];
-      t->add(x, draw, m->getStyle()->f, current.c_str(),
-             strlen(current.c_str()));
+      t->add(x, draw, f, current);
 
       index++;
     }
@@ -218,12 +239,21 @@ void TextAxisWidget::init() {
                     tickColor);
 
       string current = tickLabels[index];
-      t->addCentered(draw, y + h + bottomOffset, m->getStyle()->f,
-                     current.c_str(), strlen(current.c_str()));
-
+      t->addCentered(draw, float(y + h + bottomOffset), f, current);
       index++;
     }
   }
-
   addAxisTitle();
+}
+
+float LinearAxisWidget::transform(double v) const {
+	return v * scale + shift;
+}
+
+float LogAxisWidget::transform(double v) const {
+	return log(v) * scale + shift;
+}
+
+float TextAxisWidget::transform(double v) const {
+	return v; //TODO: ???
 }

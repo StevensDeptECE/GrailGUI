@@ -5,9 +5,9 @@
 using namespace std;
 using namespace grail;
 
-class TestLineGraph : public GraphStyle {
+class TestLineGraph : public Animated {
  public:
-  TestLineGraph(Tab* tab) : GraphStyle(tab, "TIMES", 24, 12) {
+  TestLineGraph(Tab* tab, const GraphStyle* gs) : Animated(tab) {
     MainCanvas *c = tab->getMainCanvas();
 
     vector<double> times = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -16,10 +16,10 @@ class TestLineGraph : public GraphStyle {
 
     LineGraphWidget lgw(c, 200, 200, 500, 300,
 												GraphWidget::AxisType::LINEAR,
-												GraphWidget::AxisType::LOGARITHMIC, this);
+												GraphWidget::AxisType::LOGARITHMIC, gs);
 
     // Graph Superclass settings
-    lgw.setGraphTitle("Test Title");
+    lgw.setTitle("Test Title");
 
     // LineGraphWidget specific settings
     lgw.setPointFormat('t', 5, grail::red);
@@ -67,5 +67,5 @@ class TestLineGraph : public GraphStyle {
 };
 
 void grailmain(int argc, char *argv[], GLWin* w, Tab* tab) {
-  tab->addAnimated(new TestLineGraph(tab));
+  new TestLineGraph(tab, GraphStyle::forest);
 }

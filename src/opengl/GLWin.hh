@@ -125,10 +125,7 @@ class GLWin {
 
   Tab* currentTab() { return tabs[current]; }
 
-  void setSize(uint32_t w, uint32_t h) {
-    width = w;
-    height = h;
-  }
+  void setSize(uint32_t w, uint32_t h);
 
   uint32_t getWidth() const { return width; }
   uint32_t getHeight() const { return height; }
@@ -174,7 +171,9 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
 
   static void classInit();
   static void classCleanup();
-
+	static void graphicsInit();
+	static void graphicsCleanup();
+	
   void bind2DOrtho();
   void bind3D();
 

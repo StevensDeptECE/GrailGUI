@@ -24,6 +24,7 @@ class Body {
   double rotationFreq;  // inverse of rotation Period
   double axialTilt;     // TODO: this should be a full vector, and if you want
                         // accuracy, precession...
+	double inclination;   // angle the orbit makes with the plane of the ecliptic
   double phase;
   Transformation* trans;
 
@@ -31,6 +32,7 @@ class Body {
   Body(Canvas* c, const Style* s, Camera* cam, const std::string& name,
        const char textureFile[], double r, double orbitalRadius,
        double orbitalPeriod, double rotationalPeriod, double axialTilt,
+			 double inclination,
        double startTime, Body* orbits = nullptr);
   void update(double time);
 };
@@ -38,6 +40,7 @@ class Body {
 Body::Body(Canvas* c, const Style* s, Camera* cam, const std::string& name,
            const char textureFile[], double r, double orbitalRadius,
            double orbitalPeriod, double rotationalPeriod, double axialTilt,
+					 double inclination,
            double startTime, Body* orbits)
     : name(name),
       r(r),
@@ -45,6 +48,7 @@ Body::Body(Canvas* c, const Style* s, Camera* cam, const std::string& name,
       orbitalFreq(1.0 / orbitalPeriod),
       rotationFreq(1.0 / rotationalPeriod),
       axialTilt(axialTilt * DEG2RAD<double>),
+			inclination(inclination*DEG2RAD<double>),
       orbits(orbits) {
   trans = new Transformation();
   MultiShape3D* body =
@@ -62,6 +66,7 @@ void Body::update(double t) {
     trans->rotate(-orbits->orbitalFreq * t, 0, 1, 0);
   }
 
+	trans->rotate(inclination, 0,0,1); // tilt the orbit out of alignment with the ecliptic
   trans->rotate(orbitalFreq * t, 0, 1, 0);
   trans->translate(orbitalRadius, 0, 0);
   trans->rotate(-orbitalFreq * t, 0, 1, 0);
@@ -87,7 +92,7 @@ class SolarSystem : public Animated {
   constexpr static double SIDEREAL_DAY =
       0.9972;  // number of 24-hour "days" it takes earth to rotate once
  public:
-  SolarSystem(Tab* tab) : Animated(tab, 0, .0125), bodies(10) {
+  SolarSystem(Tab* tab) : Animated(tab, "Solar System", 1000, 800, 0, .0125), bodies(10) {
     cam = c->setLookAtProjection(2, 3, 40, 0, 0, 0, 0, 0, 1);
     GLWin* w = tab->getParentWin();
     const Style* s = w->getDefaultStyle();
@@ -102,27 +107,37 @@ class SolarSystem : public Animated {
     Body* earth;
 
     bodies.add(earth = new Body(c, s, cam, "Earth", "textures/earth.jpg", 0.4,
-                                8, YEAR, SIDEREAL_DAY, 23.5, startTime));
+                                8, YEAR, SIDEREAL_DAY, 23.5,
+																0.0, // earth orbit is by definition the ecliptic plane
+																startTime));
     constexpr double LUNAR_MONTH = 28.5;
     bodies.add(new Body(c, s, cam, "Moon", "textures/moon.jpg", 0.15, 2,
-                        LUNAR_MONTH, LUNAR_MONTH, 6, startTime, earth));
+                        LUNAR_MONTH, LUNAR_MONTH, 6, 5.145,
+												startTime, earth));
     constexpr double MARS_YEAR = 687;
     constexpr double MARS_DAY = 1.14;  // scaled in earth days
 
-    bodies.add(new Body(c, s, cam, "Mars", "textures/mars.jpg", 0.2, 11,
-                        MARS_YEAR, MARS_DAY, 0, startTime));
+    bodies.add(new Body(c, s, cam, "Mars", "textures/mars.jpg", 0.23, 11,
+                        MARS_YEAR, MARS_DAY, 0,
+												1.851,
+												startTime));
     constexpr double JUPITER_YEAR = 12 * YEAR;
     constexpr double JUPITER_DAY = 0.48;  // scaled in earth days
     Body* jupiter;
     bodies.add(jupiter =
-                   new Body(c, s, cam, "Jupiter", "textures/jupiter.jpg", 1.5,
-                            14, JUPITER_YEAR, JUPITER_DAY, 0, startTime));
-
+                   new Body(c, s, cam, "Jupiter", "textures/jupiter.jpg", 1.3,
+                            16, JUPITER_YEAR, JUPITER_DAY, 0,
+														1.3,
+														startTime));
+		bodies.add(new Body(c, s, cam, "Ganymede",  "textures/Ganymede.jpg",
+												.2, 4, 172.0/24, 172.0/24, 0,
+												2.214,
+												startTime, jupiter));
     // TODO: Add some moons of Jupiter
     constexpr double SOLAR_ROTATION =
         30;  // takes about 30 days for the sun to rotate?
     bodies.add(new Body(c, s, cam, "Sun", "textures/sun.jpg", 2, 0, 1,
-                        SOLAR_ROTATION, 0, startTime));
+                        SOLAR_ROTATION, 0, 0.0, startTime));
 
     update();
   }
@@ -154,7 +169,6 @@ void SolarSystem::defineBindings() {
   tab->bindEvent(Tab::Inputs::HOME, &Tab::gotoStartTime, tab);
 }
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
-  w->setTitle("Solar System");
-  defaultTab->addAnimated(new SolarSystem(defaultTab));
+void grailmain(int argc, char* argv[], GLWin* w, Tab* tab) {
+  new SolarSystem(tab);
 }

@@ -97,6 +97,9 @@ class StyledMultiShape2D : public MultiShape2D {
   void fillPolyline(const float xy[], uint32_t n, const glm::vec4& c);
   void drawPolygon(const float xy[], uint32_t n, const glm::vec4& c);
   void fillPolygon(const float xy[], uint32_t n, const glm::vec4& c);
+  void drawPolyline(const float x[], const float y[], uint32_t n, const glm::vec4& c);
+	void drawPolyline(const double x[], const double y[], uint32_t n, const glm::vec4& c);
+
   // drawBezier, end bezier,grid
   void bezierSegment(const Bezier* b);
   void bezierSegmentByPoints(float p1x, float p1y, float p2x, float p2y,

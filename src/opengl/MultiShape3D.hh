@@ -26,8 +26,8 @@ class MultiShape3D : public MultiShape {
  private:
   const uint32_t fastRectDistinctVertices = 14;
   const uint32_t rectDistinctVertices = 24;
-  Shader* shader = NULL;
-  TextureArray* texture = NULL;
+  Shader* shader = nullptr;
+  TextureArray* texture = nullptr;
   objl::Loader Loader;
 
   void addFace(float x1, float y1, float z1, float x2, float y2, float z2,

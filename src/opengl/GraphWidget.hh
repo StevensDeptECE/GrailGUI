@@ -20,25 +20,26 @@ class GraphWidget : public SuperWidget2D {
   constexpr static uint32_t FUNCTIONS_PERMITTED = 0xFF;
   constexpr static uint32_t DISCRETE_PERMITTED = 0xFF00;
 
-  std::string graphTitle;
+  std::string title;
   const GraphStyle *s;        // all look and feel for graphs encapsulated here
   uint32_t allowedXAxis;
   uint32_t allowedYAxis;
   AxisType xAxisType;
   AxisType yAxisType;
-
+	StyledMultiShape2D* m; // shared 2d drawing for all subclasses
+	MultiText* t;          // shared text for all subclasses
   void commonRender();
 
   AxisWidget* createAxis(uint32_t allowed, AxisType typ, const Style* axisStyle,
-                         const Style* axisTextStyle, bool isVert,
-                         AxisType& out);
+                         const Style* axisTextStyle, bool isVert, AxisType& out);
 
  public:
   AxisWidget* xAxis;
   AxisWidget* yAxis;
 
   GraphWidget(Canvas* c, double x, double y, double w, double h,
-              uint32_t allowedXAxis, uint32_t allowedYAxis, AxisType xAxisType, AxisType yAxisType, const GraphStyle* s);
+              uint32_t allowedXAxis, uint32_t allowedYAxis,
+							AxisType xAxisType, AxisType yAxisType, const GraphStyle* s);
   ~GraphWidget();
   GraphWidget(const GraphWidget&) = delete;
   GraphWidget& operator=(const GraphWidget&) = delete;
@@ -62,7 +63,7 @@ class GraphWidget : public SuperWidget2D {
    * @details Description
    * @param[in] text Description
    */
-  void setGraphTitle(const std::string& text);
+  void setTitle(const std::string& text);
 
 	virtual void setStyle(const GraphStyle* s);
   virtual void init() = 0;

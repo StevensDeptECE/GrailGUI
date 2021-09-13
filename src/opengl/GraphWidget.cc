@@ -1,7 +1,6 @@
 #include "opengl/GraphWidget.hh"
 
 #include <numbers>
-
 #include "util/Ex.hh"
 
 using namespace std;
@@ -27,60 +26,52 @@ GraphWidget::~GraphWidget() {
   delete yAxis;
 }
 
-AxisWidget* GraphWidget::createAxis(uint32_t allowed, AxisType typ,
+AxisWidget* GraphWidget::createAxis(uint32_t allowed, AxisType axisType,
                                     const Style* axisStyle,
                                     const Style* axisTextStyle, bool isVert,
-                                    AxisType& out) {
-  if (!(typ & allowed)) throw Ex1(Errcode::BAD_ARGUMENT);
+																		AxisType& out) {
+  if (!(axisType & allowed)) throw Ex1(Errcode::BAD_ARGUMENT);
 
   StyledMultiShape2D* mnew;
-  MultiText* tnew;
   double axisX, axisY, axisW, axisH;
 
   if (isVert) {
-    mnew = new StyledMultiShape2D(c, &s->yAxisStyle, numbers::pi / 2, x - w, y + h);
-    tnew = new MultiText(c, &s->yAxisTextStyle, 0, x, y);
+    mnew = new StyledMultiShape2D(c, axisStyle, numbers::pi / 2, x - w, y + h);
     axisX = 0;
     axisY = 0;
     axisW = h;
     axisH = w;
-
   } else {
     mnew = new StyledMultiShape2D(c, axisStyle);
-    tnew = new MultiText(c, axisTextStyle);
     axisX = x;
     axisY = y;
     axisW = w;
     axisH = h;
   }
-
+  MultiText* tnew = new MultiText(c, axisTextStyle, 0, x, y);
   c->addLayer(mnew);
   c->addLayer(tnew);
 
-  out = typ;
+  out = axisType;
 
-  switch (typ) {
-    case LINEAR: {
-      return new LinearAxisWidget(mnew, tnew, axisX, axisY, axisW, axisH);
-    }; break;
+  switch (axisType) {
+    case LINEAR:
+      return new LinearAxisWidget(mnew, tnew, axisStyle, axisTextStyle, axisX, axisY, axisW, axisH, isVert);
+    case LOGARITHMIC:
+      return new LogAxisWidget(mnew, tnew, axisStyle, axisTextStyle, axisX, axisY, axisW, axisH, isVert);
+    case TEXT:
+      return new TextAxisWidget(mnew, tnew, axisStyle, axisTextStyle, axisX, axisY, axisW, axisH, isVert);
 
-    case LOGARITHMIC: {
-      return new LogAxisWidget(mnew, tnew, axisX, axisY, axisW, axisH);
-    }; break;
-
-    case TEXT: {
-      return new TextAxisWidget(mnew, tnew, axisX, axisY, axisW, axisH);
-    }; break;
-
-    default: {
-      return nullptr;
-    }; break;
+			//TODO: eventually support axis type where each value gets the same space, and clustered
+			// where somehow groups of different values are scaled to fit
+    default:
+			throw Ex1(Errcode::BAD_ARGUMENT); // unsupported axis type
   }
 }
 
-void GraphWidget::createXAxis(AxisType typ) {
+void GraphWidget::createXAxis(AxisType axisType) {
   delete xAxis;
-  xAxis = createAxis(allowedXAxis, typ, &s->xAxisStyle, &s->xAxisTextStyle, false,
+  xAxis = createAxis(allowedXAxis, axisType, &s->xAxisStyle, &s->xAxisTextStyle, false,
                      xAxisType);
 }
 
@@ -92,29 +83,30 @@ void GraphWidget::createYAxis(AxisType typ) {
 }
 
 void GraphWidget::commonRender() {
-  StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(c, &s->baseStyle));
+  m = c->addLayer(new StyledMultiShape2D(c, &s->borderStyle));
+  t = c->addLayer(new MultiText(c, &s->borderStyle));
+	const Font* titleFont = s->titleStyle.f;
+  if (title.size())
+    t->addCentered(x + w / 2, y - titleFont->getHeight(), titleFont, title);
 
-  MultiText* t = c->addLayer(new MultiText(c, &s->baseStyle));
-  const Font* titleFont = s->titleStyle.f;
-  if (graphTitle.size())
-    t->addCentered(x + w / 2, y - titleFont->getHeight(),
-                   titleFont, graphTitle.c_str(), graphTitle.size());
-
-  m->drawLine(x, y, x + w, y, s->baseStyle.fg);
-  m->drawLine(x + w, y, x + w, y + h, s->baseStyle.fg);
-  xAxis->init();
-  yAxis->init();
+	if (s->drawBorder) {
+		m->drawRectangle(x, y, w, h, s->borderStyle.fg);
+	}
+	if (s->drawAxes) {
+		xAxis->init();
+		yAxis->init();
+	}
 }
 
-void GraphWidget::setGraphTitle(const std::string& text) { graphTitle = text; }
+void GraphWidget::setTitle(const std::string& text) { title = text; }
 
 void GraphWidget::setStyle(const GraphStyle* s) {
-	xAxis->setTickDrawSize(s->xTickDrawSize);
-	yAxis->setTickDrawSize(s->yTickDrawSize);
-	xAxis->setAxisColor(grail::green);
-	xAxis->setTickColor(grail::purple);
+	xAxis->setTickDrawSize(s->xTickSize);
+	yAxis->setTickDrawSize(s->yTickSize);
+	xAxis->setAxisColor(s->xAxisTextStyle.fg);
+	xAxis->setTickColor(s->xAxisStyle.fg);
 	yAxis->setIsVert(true);
-	yAxis->setShowTicks(true);
-	yAxis->setAxisColor(grail::yellow);
-  yAxis->setTickColor(grail::red);
+	yAxis->setShowTicks(s->drawTicks);
+	yAxis->setAxisColor(s->yAxisTextStyle.fg);
+  yAxis->setTickColor(s->yAxisStyle.fg);
 }

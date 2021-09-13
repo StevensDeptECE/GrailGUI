@@ -5,9 +5,9 @@
 using namespace std;
 using namespace grail;
 
-class TestBarChart : public GraphStyle {
+class TestBarChart : public Animated {
 public:
-	TestBarChart(Tab* tab) : GraphStyle(tab, "TIMES", 20, 12) {
+	TestBarChart(Tab* tab, const GraphStyle* gs) : Animated(tab) {
     MainCanvas *c = tab->getMainCanvas();
     vector<double> values = {4, 6, 8, 10, 12, 14};
     vector<double> logValues = {4, 8, 16, 32, 64, 128};
@@ -20,7 +20,7 @@ public:
 
     vector<glm::vec4> outline{grail::green, grail::blue, grail::purple};
 
-    BarChartWidget bcw(c, 100, 100, 850, 400, GraphWidget::AxisType::TEXT, GraphWidget::AxisType::LINEAR, this);
+    BarChartWidget bcw(c, 100, 100, 850, 400, GraphWidget::AxisType::TEXT, GraphWidget::AxisType::LINEAR, gs);
 
     // create x axis (categories)
     bcw.setNames(names);
@@ -34,7 +34,7 @@ public:
     // setting general things for the graph
     // the axis text styles must be set before
     // creating the axes
-    bcw.setGraphTitle("Test Title");
+    bcw.setTitle("Test Title");
 		//bcw.setStyle(this);
 
     // bar chart widget specific bits
@@ -57,6 +57,5 @@ public:
 };
 
 void grailmain(int argc, char *argv[], GLWin* w, Tab* tab) {
-	w->setTitle("Test Bar Chart");
-  tab->addAnimated(new TestBarChart(tab));
+  new TestBarChart(tab, GraphStyle::steelblue);
 }

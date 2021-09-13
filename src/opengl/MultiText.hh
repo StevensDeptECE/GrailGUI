@@ -152,6 +152,15 @@ class MultiText : public Shape {
                        len);
   }
 
+	  template <typename T>
+  float addCentered(float x, float y, const Font* f, T printVal) {
+    char buf[32];
+    uint32_t len = format(buf, printVal);
+    float textWidth = f->getWidth(buf + (sizeof(buf) - len), len);
+    return internalAdd(x - textWidth / 2, y, f, buf + sizeof(buf) - len,
+                       len);
+  }
+
   template <typename T>
   float addRight(float x, float y, float w, const Font* f, T printVal) {
     char buf[32];
@@ -194,9 +203,13 @@ class MultiText : public Shape {
   float add(float x, float y, const Font* f, double v, int fieldWidth,
             int precision);
   float add(float x, float y, const Font* f, const std::string& s);
-  void addCentered(float x, float, const Font* f, double v, int fieldWidth,
-                   int precision);
-  void addCentered(float x, float y, float w, const Font* f, const char s[],
+	void addCentered(float x, float, const Font* f, double v, int fieldWidth,
+									 int precision);
+  void addCentered(float x, float y, const Font* f, const char s[], uint32_t len);
+  void addCentered(float x, float y, const Font* f, const std::string& s);
+
+	// centered horizontally and vertically
+	void addCentered(float x, float y, float w, const Font* f, const char s[],
                    uint32_t len);
   void addCentered(float x, float y, float w, const Font* f,
                    const std::string& s);
@@ -204,8 +217,6 @@ class MultiText : public Shape {
                    const char s[], uint32_t len);
   void addCentered(float x, float y, float w, float h, const Font* f,
                    const std::string& s);
-  void addCentered(float x, float y, const Font* f, const char s[],
-                   uint32_t len);
 
   void addBox(float x, float y, float w, float h, const Font* f, const char s[],
               uint32_t len) {

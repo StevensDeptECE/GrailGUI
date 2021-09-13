@@ -437,6 +437,28 @@ void StyledMultiShape2D::drawPolyline(const float xy[], uint32_t n,
   }
 }
 
+void StyledMultiShape2D::drawPolyline(const float x[], const float y[], uint32_t n,
+                                      const glm::vec4& c) {
+  uint32_t ind = getPointIndex();
+  uint32_t j = 0;
+  for (uint32_t i = n; i > 0; i--, j ++) addStyledPoint(x[j], y[j], c);
+  for (uint32_t i = n; i > 1; i--) {
+    lineIndices.push_back(ind++);
+    lineIndices.push_back(ind);
+  }
+}
+
+void StyledMultiShape2D::drawPolyline(const double x[], const double y[], uint32_t n,
+                                      const glm::vec4& c) {
+  uint32_t ind = getPointIndex();
+  uint32_t j = 0;
+  for (uint32_t i = n; i > 0; i--, j ++) addStyledPoint(x[j], y[j], c);
+  for (uint32_t i = n; i > 1; i--) {
+    lineIndices.push_back(ind++);
+    lineIndices.push_back(ind);
+  }
+}
+
 void StyledMultiShape2D::fillPolygon(const float xy[], uint32_t n,
                                      const glm::vec4& c) {
   uint32_t ind = getPointIndex();

@@ -10,12 +10,12 @@
 using namespace std;
 using namespace grail;
 
-class TestMultiShape : public GLWin {
+class QuentinDemo : public Animated {
  public:
-  TestMultiShape() : GLWin(0x000000, 0xCCCCCC, "Test StyledMultiShape") {}
+  QuentinDemo(Tab* tab) : Animated(tab, "QuentinDemo") {}
 
   void init() {
-    MainCanvas* c = currentTab()->getMainCanvas();
+    MainCanvas* c = tab->getMainCanvas();
     StyledMultiShape2D* gui = c->getGui();
 
     const float boxSize = 75;
@@ -132,6 +132,6 @@ class TestMultiShape : public GLWin {
   }
 };
 
-int main(int argc, char* argv[]) {
-  return GLWin::init(new TestMultiShape());
+void grailmain(int argc, char* argv[], GLWin* w, Tab* tab) {
+  new QuentinDemo(tab);
 }

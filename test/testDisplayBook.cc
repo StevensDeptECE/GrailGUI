@@ -1,4 +1,3 @@
-#include "opengl/Animated.hh"
 #include "opengl/DocView.hh"
 #include "opengl/Document.hh"
 #include "opengl/GrailGUI.hh"
@@ -10,23 +9,28 @@ class BookViewer : public Animated {
   Document *doc;
   DocView *docView;
   const char *filename;
-  void init();
-
  public:
-	BookViewer(const char filename[]);
+	BookViewer(Tab* tab, const char filename[]);
 
-  void advance() { docView->advance(); }
-  void back() { docView->back(); }
-  void advance10() { docView->advance10(); }
-  void top() { docView->top(); }
-  void bottom() { docView->bottom(); }
+  void advance();
+  void back();
+  void advance10();
+  void top();
+  void bottom();
 };
 
-BookViewer::BookViewer(Tab* tab, const char filename[]) : filename(filename) {
-  bindEvent(264, &BookViewer::bottom, this);
-  bindEvent(265, &BookViewer::top, this);
-  bindEvent(262, &BookViewer::advance, this);
-  bindEvent(263, &BookViewer::back, this);
+void BookViewer::advance() { docView->advance(); }
+void BookViewer::back() { docView->back(); }
+void BookViewer::advance10() { docView->advance10(); }
+void BookViewer::top() { docView->top(); }
+void BookViewer::bottom() { docView->bottom(); }
+
+BookViewer::BookViewer(Tab* tab, const char filename[])
+	: Animated(tab, "Book Viewer", 1300, 900, -1, 0), filename(filename) {
+  tab->bindEvent(264, &BookViewer::bottom, this);
+  tab->bindEvent(265, &BookViewer::top, this);
+  tab->bindEvent(262, &BookViewer::advance, this);
+  tab->bindEvent(263, &BookViewer::back, this);
 
   //  Font *font = getDefaultFont();
   const Font *font = FontFace::get("TIMES", 30, 0);
@@ -36,7 +40,7 @@ BookViewer::BookViewer(Tab* tab, const char filename[]) : filename(filename) {
   StyledMultiShape2D *m = new StyledMultiShape2D(c, s);
   m->fillTriangle(350, 5, 380, 0, 360, 30, green);
   m->fillRoundRect(400, 5, 950, 40, 10, 10, lightblue);
-  m->fillRoundRect(405, 7, 940, 36, 10, 10, lightgrey);
+  m->fillRoundRect(405, 7, 940, 36, 10, 10, lightgray);
   c->addLayer(m);
 
   PageLayout layout(10, 70, 1350, 1100, 1360, 40, 10, 40, font, 1500);
@@ -48,7 +52,7 @@ BookViewer::BookViewer(Tab* tab, const char filename[]) : filename(filename) {
   // c->addLayer(new Image(400, 400, 400, 400, "res/trumpmelania.png", s));
 }
 
-void grailmain(int argc, char *argv[], GLWin* w, Tab* defaultTab) {
+void grailmain(int argc, char *argv[], GLWin* w, Tab* tab) {
   const char *filename = argc < 2 ? "res/Annatest.txt" : argv[1];	
-	tab->addAnimated(new BookViewer(defaultTab, filename));
+	new BookViewer(tab, filename);
 }

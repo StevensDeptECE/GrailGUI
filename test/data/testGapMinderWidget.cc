@@ -10,12 +10,12 @@ using namespace std;
 using namespace grail;
 
 
-class TestGapMinderWidget : public GraphStyle {
+class TestGapMinderWidget : public Animated {
  private:
   GapMinderWidget* chart;
  public:
   
-  TestGapMinderWidget(Tab* tab) : GraphStyle(tab, "TIMES", 24, 12) {
+  TestGapMinderWidget(Tab* tab, const GraphStyle* gs) : Animated(tab, "Test GapMinder Graph", 1000, 600) {
     MainCanvas *c = tab->getMainCanvas();
     const Style *s = new Style("TIMES", 24, 1, 0, 0, 0,  // black background (unused)
                   0, 0, 0);                 // black foreground text
@@ -27,7 +27,9 @@ class TestGapMinderWidget : public GraphStyle {
 
     vector <float> x2 = {65000};
     vector <float> y2 = {14};
-    chart = new GapMinderWidget(gui, guiText, 75, 50, 900, 450, x2, y2);
+    chart = new GapMinderWidget(c, 75, 50, 900, 450,
+																GraphWidget::AxisType::LINEAR, GraphWidget::AxisType::LINEAR,
+																GraphWidget::AxisType::LINEAR, gs);
     chart->loadData(yData, xData, sData, 2000, 2010);
 
     chart->setTitle("GDP per Capita vs. Poisonings per 100k");
@@ -39,11 +41,10 @@ class TestGapMinderWidget : public GraphStyle {
   TestGapMinderWidget& operator =(const TestGapMinderWidget& orig) = delete;
 
   void update(){
-    chart->animate(10000, 2);
+		chart->update();
   }
 };
 
 void grailmain(int argc, char *argv[], GLWin* w, Tab* tab) {
-  w->setTitle("Test Gap Minder Widget");
-  tab->addAnimated(new TestGapMinderWidget(tab));
+  new TestGapMinderWidget(tab, GraphStyle::steelblue);
 }

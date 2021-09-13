@@ -24,6 +24,15 @@ class Style {
         shaderIndex(shaderIndex)
         {}
 
+	Style(const char fontFamily[], float fontSize, float fontWeight,
+				const glm::vec4& bg, const glm::vec4& fg,
+        int lineWidth = 1, int shaderIndex = 0)
+      : f(lookup(fontFamily, fontSize, fontWeight)),
+        bg(bg), fg(fg),
+				lineWidth(lineWidth),
+        shaderIndex(shaderIndex)
+	{}
+
   Style(const char* fontFamily, float fontSize, float fontWeight, float bgRed,
         float bgGreen, float bgBlue, float bgAlpha, float fgRed, float fgGreen,
         float fgBlue, float fgAlpha, int lineWidth = 1, int shaderIndex = 0)
@@ -44,7 +53,7 @@ class Style {
         lineWidth(lineWidth) {}
 	
   Style(const Font* font, const glm::vec4& bgColor, const glm::vec4& fgColor, int lineWidth = 1)
-      : f(font), bg(bgColor), fg(fgColor), lineWidth(lineWidth) {}
+		: f(font), bg(bgColor), fg(fgColor), lineWidth(lineWidth) {}
 
   const Font* lookup(const char* fontFamily, const float size,
                      const float weight) {

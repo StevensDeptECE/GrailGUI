@@ -12,9 +12,9 @@ class LineGraphWidget : public GraphWidget {
 	typedef void (StyledMultiShape2D::*MarkerFunction)(float, float, float, const glm::vec4&);
   MarkerFunction                         markerFunction;
   std::unordered_map<char, MarkerFunction> marker_pointer_table;
-
  public:
-  LineGraphWidget(Canvas* c, double x, double y, double w, double h, AxisType xAxisType, AxisType yAxisType, const GraphStyle* s)
+  LineGraphWidget(Canvas* c, float x, float y, float w, float h,
+									AxisType xAxisType, AxisType yAxisType, const GraphStyle* s)
       : GraphWidget(c, x, y, w, h, FUNCTIONS_PERMITTED, FUNCTIONS_PERMITTED, xAxisType, yAxisType, s),
         xPoints(),
         yPoints(),

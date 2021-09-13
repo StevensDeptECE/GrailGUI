@@ -1,7 +1,7 @@
 #include "opengl/LineGraphWidget.hh"
 
 #include <algorithm>
-#include <numbers> // C++20 constants
+#include <numbers>
 
 #include "util/Ex.hh"
 
@@ -30,9 +30,9 @@ void LineGraphWidget::init() {
     cerr << "x and y vectors must be the same length";
     throw(Ex1(Errcode::VECTOR_MISMATCHED_LENGTHS));
   }
-
-  StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(c, &s->dataStyle));
-
+  commonRender(); // builds the common StyledMultiShape and MultiText, draws axes, bounding box, etc.
+	
+	//  StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(c, &s->dataStyle));
   double xMin = xAxis->getMinBound();
   double xMax = xAxis->getMaxBound();
   double yMin = yAxis->getMinBound();
@@ -66,21 +66,13 @@ void LineGraphWidget::init() {
               [=, this](double d) -> double { return y + h + scale * d; });
   }
 
-  double xPoint1 = xPoints[0];
-  double yPoint1 = yPoints[0];
+	if (s->drawLines) {
+		m->drawPolyline(&xPoints[0], &yPoints[0], xPoints.size(), s->lineColor);
+	}
 
-  (m->*markerFunction)(xPoint1, yPoint1, pointSize, s->pointColor);
-
-  for (int i = 1; i < xPoints.size(); i++) {
-    double xPoint2 = xPoints[i];
-    double yPoint2 = yPoints[i];
-
-    m->drawLine(xPoint1, yPoint1, xPoint2, yPoint2, s->lineColor);
-    (m->*markerFunction)(xPoint2, yPoint2, pointSize, s->pointColor);
-
-    xPoint1 = xPoint2;
-    yPoint1 = yPoint2;
-  }
-
-  commonRender();
+	if (s->drawMarkers) {
+		for (int i = 0; i < xPoints.size(); i++) {
+			(m->*markerFunction)(xPoints[i], yPoints[i], pointSize, s->pointColor);
+		}
+	}
 }
