@@ -1,13 +1,12 @@
-#include "opengl/Animated.hh"
 #include "opengl/GrailGUI.hh"
 #include "video/VideoPlayer.hh"
 
 using namespace std;
 using namespace grail;
 
-class TestVideoPlayer : public Animated {
+class TestVideoPlayer : public Member {
  public:
-  TestVideoPlayer(Tab* tab) : Animated(tab) {
+  TestVideoPlayer(Tab* tab) : Member(tab) {
     VideoPlayer* v = c->addLayer(new VideoPlayer(c, 100, 100, 500, 500));
 
     // playing a link from youtube (and maybe other places idk) requires you to
@@ -20,5 +19,5 @@ class TestVideoPlayer : public Animated {
 };
 
 void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
-  defaultTab->addAnimated(new TestVideoPlayer(defaultTab));
+  defaultTab->addMember(new TestVideoPlayer(defaultTab));
 }

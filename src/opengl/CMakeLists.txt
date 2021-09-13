@@ -1,5 +1,4 @@
 set(grail-opengl
-    Animated.cc    
     AxisWidget.cc
     BarChartWidget.cc 
     BoxChartWidget.cc
@@ -19,6 +18,7 @@ set(grail-opengl
     Image.cc
     LineGraphWidget.cc
     MapView2D.cc
+    Member.cc    
     MultiShape.cc 
     MultiShape2D.cc
     MultiShape3D.cc

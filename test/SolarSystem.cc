@@ -2,7 +2,6 @@
 #include <numbers>
 #include <string>
 
-#include "opengl/Animated.hh"
 #include "opengl/Errcode.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/MultiShape3D.hh"
@@ -76,7 +75,7 @@ void Body::update(double t) {
 // TODO: Implement panUp/Down for 2D-like views
 // TODO: Follow planets
 
-class SolarSystem : public Animated {
+class SolarSystem : public Member {
  private:
   Camera* cam;
   Transformation tSky;
@@ -87,7 +86,7 @@ class SolarSystem : public Animated {
   constexpr static double SIDEREAL_DAY =
       0.9972;  // number of 24-hour "days" it takes earth to rotate once
  public:
-  SolarSystem(Tab* tab) : Animated(tab), bodies(10) {
+  SolarSystem(Tab* tab) : Member(tab), bodies(10) {
     cam = c->setLookAtProjection(2, 3, 40, 0, 0, 0, 0, 0, 1);
     GLWin* w = tab->getParentWin();
     const Style* s = w->getDefaultStyle();
@@ -156,5 +155,6 @@ void SolarSystem::defineBindings() {
 
 void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
   w->setTitle("Solar System");
-  defaultTab->addAnimated(new SolarSystem(defaultTab));
+  defaultTab->setFrameRate(60);
+  defaultTab->addMember(new SolarSystem(defaultTab));
 }

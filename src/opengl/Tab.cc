@@ -3,8 +3,8 @@
 #include <cstring>
 #include <iostream>
 
-#include "opengl/Animated.hh"
 #include "opengl/GLWin.hh"
+#include "opengl/Member.hh"
 #include "opengl/MultiText.hh"
 #include "opengl/Style.hh"
 #include "opengl/StyledMultiShape2D.hh"
@@ -24,12 +24,12 @@ Tab::Tab(GLWin *parent)
       parent(parent),
       canvases(16),
       styles(16),
-      animatedMembers(4),
+      members(4),
       mainCanvas(this) {}
 
 void Tab::init() {
-  for (int i = 0; i < animatedMembers.size(); ++i) {
-    animatedMembers[i]->init();
+  for (int i = 0; i < members.size(); ++i) {
+    members[i]->init();
   }
   for (int i = 0; i < canvases.size(); ++i) {
     canvases[i]->init();
@@ -56,8 +56,8 @@ bool Tab::checkUpdate() {
 }
 
 void Tab::update() {
-  for (int i = 0; i < animatedMembers.size(); ++i) {
-    animatedMembers[i]->update();
+  for (int i = 0; i < members.size(); ++i) {
+    members[i]->update();
   }
 
   for (int i = 0; i < canvases.size(); ++i) {
@@ -81,8 +81,8 @@ void Tab::cleanup() {
 }
 
 void Tab::render() {
-  for (int i = 0; i < animatedMembers.size(); ++i) {
-    animatedMembers[i]->render();
+  for (int i = 0; i < members.size(); ++i) {
+    members[i]->render();
   }
 
   for (int i = 0; i < canvases.size(); ++i) {

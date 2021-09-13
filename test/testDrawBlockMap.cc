@@ -1,4 +1,3 @@
-#include "opengl/Animated.hh"
 #include "data/BlockMapLoader.hh"
 #include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
@@ -7,21 +6,21 @@
 using namespace std;
 using namespace grail;
 
-class TestDrawBlockMap : public Animated {
+class TestDrawBlockMap : public Member {
  private:
   const char* filename;
   MapView2D* mv;
 
  public:
   TestDrawBlockMap(Tab* tab, const char filename[])
-		: Animated(tab), //GLWin(0x000000, 0xCCCCCC, "Block Loader: Map Demo"),
-			filename(filename),
-			mv(nullptr) {
+      : Member(tab),  // GLWin(0x000000, 0xCCCCCC, "Block Loader: Map Demo"),
+        filename(filename),
+        mv(nullptr) {
     MainCanvas* c = tab->getMainCanvas();
-		//    const Style* s = tab->getDefaultStyle();
+    //    const Style* s = tab->getDefaultStyle();
     Style* s2 = new Style(tab->getDefaultFont(), grail::white, grail::black);
-		//    c->addClickableWidget(
-		//new ButtonWidget(c, 0, 0, 200, 100, "Click Me!", "mapZoomIn"));
+    //    c->addClickableWidget(
+    // new ButtonWidget(c, 0, 0, 200, 100, "Click Me!", "mapZoomIn"));
     mv = c->addLayer(new MapView2D(c, s2, new BlockMapLoader(filename)));
 
     bindEvent(Tab::Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);
@@ -33,7 +32,6 @@ class TestDrawBlockMap : public Animated {
     update();
   }
 
-			
   int countyStart;
   int numCounties;
   int displayNumCounties;
@@ -98,5 +96,5 @@ class TestDrawBlockMap : public Animated {
 };
 
 void grailmain(int argc, char* argv[], GLWin* w, Tab* tab) {
-	tab->addAnimated(new TestDrawBlockMap("res/maps/uscounties.bml"));
+  tab->addMember(new TestDrawBlockMap("res/maps/uscounties.bml"));
 }

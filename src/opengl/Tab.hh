@@ -17,10 +17,10 @@ Predefine an array of images so they can be referred at runtime with an int
 class GLWin;
 class StyledMultiShape2D;
 class MultiText;
-class Animated;
+class Member;
 class Tab : public CallbackHandler {
  private:
-  DynArray<Animated*> animatedMembers;
+  DynArray<Member*> members;
   DynArray<Canvas*> canvases;
   DynArray<Style*> styles;
   double startTime;  // physical start time for simulations (zero by default)
@@ -83,7 +83,7 @@ class Tab : public CallbackHandler {
 
   Canvas* getCanvas(uint32_t i) { return canvases[i]; }
 
-  void addAnimated(Animated* anim) { animatedMembers.add(anim); }
+  void addMember(Member* mem) { members.add(mem); }
 
   MainCanvas* getMainCanvas() { return &mainCanvas; }
 

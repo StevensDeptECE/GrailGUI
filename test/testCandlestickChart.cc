@@ -1,6 +1,6 @@
-#include "opengl/GraphStyle.hh"
 #include "opengl/CandlestickChartWidget.hh"
 #include "opengl/GrailGUI.hh"
+#include "opengl/GraphStyle.hh"
 
 using namespace std;
 using namespace grail;
@@ -8,7 +8,7 @@ using namespace grail;
 class TestCandlestickChart : public GraphStyle {
  public:
   TestCandlestickChart(Tab* tab) : GraphStyle(tab, "TIMES", 20, 12) {
-    MainCanvas *c = tab->getMainCanvas();
+    MainCanvas* c = tab->getMainCanvas();
 
     vector<double> data = {
         153.25, 154.16, 152.99, 153.68, 153.34, 153.73, 152.15, 152.73, 152.66,
@@ -27,7 +27,9 @@ class TestCandlestickChart : public GraphStyle {
         174.51, 173.29, 174.18, 174.03, 175.61, 173.71, 175.61, 174.48, 175.46,
         172.52, 175.25, 175.11, 175.38, 174.27, 174.67};
     vector<string> names = {"one", "two", "seven", "three"};
-    CandlestickChartWidget ccw(c, 100, 100, 850, 400, GraphWidget::AxisType::LINEAR, GraphWidget::AxisType::LINEAR, this);
+    CandlestickChartWidget ccw(c, 100, 100, 850, 400,
+                               GraphWidget::AxisType::LINEAR,
+                               GraphWidget::AxisType::LINEAR, this);
 
     // setting general things for the graph
     // the axis text styles must be set before
@@ -40,36 +42,36 @@ class TestCandlestickChart : public GraphStyle {
     // ccw.setBoxOutlineColors(outlineColors);
 
     // create x axis (categories)
-    //ccw.setNames(names);
+    // ccw.setNames(names);
 
     // set relevant x axis parameters
     // if you try to set something not applicable to a text axis (as that's what
     // the x axis always will be), the compiler will yell at you
     ccw.xAxis->setTitle("Date");
-		//    ccw.xAxis->setTickDrawSize(7);
-    //ccw.xAxis->setAxisColor(grail::green);
-    //ccw.xAxis->setTickColor(grail::purple);
+    //    ccw.xAxis->setTickDrawSize(7);
+    // ccw.xAxis->setAxisColor(grail::green);
+    // ccw.xAxis->setTickColor(grail::purple);
 
     // y axis stuff
     ccw.setData(data);
 
     // set y axis parameters
-    //ccw.yAxis->setIsVert(true);
+    // ccw.yAxis->setIsVert(true);
 
     // linear
     ccw.yAxis->setBounds(140, 180);
     ccw.yAxis->setTickInterval(2);
 
-    //ccw.yAxis->setTickDrawSize(10);
-    //ccw.yAxis->setShowTicks(true);
+    // ccw.yAxis->setTickDrawSize(10);
+    // ccw.yAxis->setShowTicks(true);
     ccw.yAxis->setTitle("Price");
-    //ccw.yAxis->setAxisColor(grail::yellow);
-    //ccw.yAxis->setTickColor(grail::red);
+    // ccw.yAxis->setAxisColor(grail::yellow);
+    // ccw.yAxis->setTickColor(grail::red);
 
     ccw.init();
   }
 };
 
-void grailmain(int argc, char *argv[], GLWin* w, Tab* tab) {
-  tab->addAnimated(new TestCandlestickChart(tab));
+void grailmain(int argc, char* argv[], GLWin* w, Tab* tab) {
+  tab->addMember(new TestCandlestickChart(tab));
 }

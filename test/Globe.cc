@@ -1,4 +1,3 @@
-#include "opengl/Animated.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/MultiShape3D.hh"
 #include "opengl/util/Transformation.hh"
@@ -6,13 +5,13 @@
 
 using namespace std;
 
-class Globe : public Animated {
+class Globe : public Member {
  private:
   Transformation tEarth;
   float earthRotationAngle;
 
  public:
-  Globe(Tab* tab) : Animated(tab) {
+  Globe(Tab* tab) : Member(tab) {
     earthRotationAngle = .01;
     Canvas* c = tab->getMainCanvas();
     Camera* cam = c->setLookAtProjection(2, 3, 40, 0, 0, 0, 0, 0, 1);
@@ -32,7 +31,7 @@ void grailmain(int argc, char* argv[], GLWin* w, Tab* tab) {
   Canvas* c = tab->getMainCanvas();
   tab->setFrameRate(60);
   tab->setDt(0.0001);
-  tab->addAnimated(new Globe(tab));
+  tab->addMember(new Globe(tab));
 }
 
 // TODO: replace with Main.cc once serverside is stable

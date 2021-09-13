@@ -1,11 +1,10 @@
-#include "opengl/Animated.hh"
 #include "opengl/DocView.hh"
 #include "opengl/Document.hh"
 #include "opengl/GrailGUI.hh"
 
 using namespace std;
 using namespace grail;
-class BookViewer : public Animated {
+class BookViewer : public Member {
  private:
   Document *doc;
   DocView *docView;
@@ -13,7 +12,7 @@ class BookViewer : public Animated {
   void init();
 
  public:
-	BookViewer(const char filename[]);
+  BookViewer(const char filename[]);
 
   void advance() { docView->advance(); }
   void back() { docView->back(); }
@@ -22,7 +21,7 @@ class BookViewer : public Animated {
   void bottom() { docView->bottom(); }
 };
 
-BookViewer::BookViewer(Tab* tab, const char filename[]) : filename(filename) {
+BookViewer::BookViewer(Tab *tab, const char filename[]) : filename(filename) {
   bindEvent(264, &BookViewer::bottom, this);
   bindEvent(265, &BookViewer::top, this);
   bindEvent(262, &BookViewer::advance, this);
@@ -48,7 +47,7 @@ BookViewer::BookViewer(Tab* tab, const char filename[]) : filename(filename) {
   // c->addLayer(new Image(400, 400, 400, 400, "res/trumpmelania.png", s));
 }
 
-void grailmain(int argc, char *argv[], GLWin* w, Tab* defaultTab) {
-  const char *filename = argc < 2 ? "res/Annatest.txt" : argv[1];	
-	tab->addAnimated(new BookViewer(defaultTab, filename));
+void grailmain(int argc, char *argv[], GLWin *w, Tab *defaultTab) {
+  const char *filename = argc < 2 ? "res/Annatest.txt" : argv[1];
+  tab->addMember(new BookViewer(defaultTab, filename));
 }
