@@ -10,6 +10,7 @@ Member::Member(Tab* tab, double frameRate, double dt)
   tab->setFrameRate(frameRate);
   tab->setDt(dt);
   tab->setDefaultDt(0.0001);
+  tab->addMember(this);
 }
 
 void Member::setFrameRate(double frameRate) { tab->setFrameRate(frameRate); }

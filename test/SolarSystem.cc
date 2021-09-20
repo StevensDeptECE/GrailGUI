@@ -155,6 +155,5 @@ void SolarSystem::defineBindings() {
 
 void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
   w->setTitle("Solar System");
-  defaultTab->setFrameRate(60);
-  defaultTab->addMember(new SolarSystem(defaultTab));
+  new SolarSystem(defaultTab);
 }

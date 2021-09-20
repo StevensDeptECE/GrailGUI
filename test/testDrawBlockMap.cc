@@ -23,12 +23,12 @@ class TestDrawBlockMap : public Member {
     // new ButtonWidget(c, 0, 0, 200, 100, "Click Me!", "mapZoomIn"));
     mv = c->addLayer(new MapView2D(c, s2, new BlockMapLoader(filename)));
 
-    bindEvent(Tab::Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);
-    bindEvent(Tab::Inputs::WHEELDOWN, &TestDrawBlockMap::mapZoomOut, this);
-    bindEvent(Tab::Inputs::RARROW, &TestDrawBlockMap::mapPanRight, this);
-    bindEvent(Tab::Inputs::LARROW, &TestDrawBlockMap::mapPanLeft, this);
-    bindEvent(Tab::Inputs::UPARROW, &TestDrawBlockMap::mapPanUp, this);
-    bindEvent(Tab::Inputs::DOWNARROW, &TestDrawBlockMap::mapPanDown, this);
+    tab->bindEvent(Tab::Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);
+    tab->bindEvent(Tab::Inputs::WHEELDOWN, &TestDrawBlockMap::mapZoomOut, this);
+    tab->bindEvent(Tab::Inputs::RARROW, &TestDrawBlockMap::mapPanRight, this);
+    tab->bindEvent(Tab::Inputs::LARROW, &TestDrawBlockMap::mapPanLeft, this);
+    tab->bindEvent(Tab::Inputs::UPARROW, &TestDrawBlockMap::mapPanUp, this);
+    tab->bindEvent(Tab::Inputs::DOWNARROW, &TestDrawBlockMap::mapPanDown, this);
     update();
   }
 
@@ -95,6 +95,6 @@ class TestDrawBlockMap : public Member {
   }
 };
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* tab) {
-  tab->addMember(new TestDrawBlockMap("res/maps/uscounties.bml"));
+void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+  new TestDrawBlockMap(defaultTab, "res/maps/uscounties.bml");
 }

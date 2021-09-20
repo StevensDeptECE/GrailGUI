@@ -9,23 +9,44 @@ class BookViewer : public Member {
   Document *doc;
   DocView *docView;
   const char *filename;
-  void init();
 
  public:
-  BookViewer(const char filename[]);
+  BookViewer(Tab *tab, const char filename[]);
 
-  void advance() { docView->advance(); }
-  void back() { docView->back(); }
-  void advance10() { docView->advance10(); }
-  void top() { docView->top(); }
-  void bottom() { docView->bottom(); }
+  void advance();
+  void back();
+  void advance10();
+  void top();
+  void bottom();
 };
 
-BookViewer::BookViewer(Tab *tab, const char filename[]) : filename(filename) {
-  bindEvent(264, &BookViewer::bottom, this);
-  bindEvent(265, &BookViewer::top, this);
-  bindEvent(262, &BookViewer::advance, this);
-  bindEvent(263, &BookViewer::back, this);
+void BookViewer::advance() {
+  docView->advance();
+  tab->setRender();
+}
+void BookViewer::back() {
+  docView->back();
+  tab->setRender();
+}
+void BookViewer::advance10() {
+  docView->advance10();
+  tab->setRender();
+}
+void BookViewer::top() {
+  docView->top();
+  tab->setRender();
+}
+void BookViewer::bottom() {
+  docView->bottom();
+  tab->setRender();
+}
+
+BookViewer::BookViewer(Tab *tab, const char filename[])
+    : Member(tab), filename(filename) {
+  tab->bindEvent(264, &BookViewer::bottom, this);
+  tab->bindEvent(265, &BookViewer::top, this);
+  tab->bindEvent(262, &BookViewer::advance, this);
+  tab->bindEvent(263, &BookViewer::back, this);
 
   //  Font *font = getDefaultFont();
   const Font *font = FontFace::get("TIMES", 30, 0);
@@ -49,5 +70,5 @@ BookViewer::BookViewer(Tab *tab, const char filename[]) : filename(filename) {
 
 void grailmain(int argc, char *argv[], GLWin *w, Tab *defaultTab) {
   const char *filename = argc < 2 ? "res/Annatest.txt" : argv[1];
-  tab->addMember(new BookViewer(defaultTab, filename));
+  new BookViewer(defaultTab, filename);
 }

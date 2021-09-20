@@ -39,13 +39,17 @@ void Tab::init() {
 
 /**
  * Frames can set animation rates. If set to -1, never animates (static)
- * 0 means draw as fast as possible, no delay (set dirty=true which will force
- * update()) positive number waits this much time. So for two second delay
+ * 0 means draw as fast as possible, no delay (set needsUpdate=true which will
+ * force update()) positive number waits this much time. So for two second delay
  * should be 2.0 This is setusing setFrameRate() which sets the inverse, ie
  * setFrameRate(60) for 60 fps.
  *
  * @return true if update is needed
  */
+// BUG: If framerate is set to 0 when instantiating a Member, then the resulting
+// animation is much slower than when framerate is set to 60. This may be due to
+// Member, Tab, GLWin, or something else, so the bug is getting put here for
+// now.
 bool Tab::checkUpdate() {
   if (updateTime == 0 ||
       (updateTime > 0 && glfwGetTime() > lastUpdateTime + updateTime)) {
