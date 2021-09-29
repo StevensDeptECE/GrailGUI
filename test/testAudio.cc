@@ -136,5 +136,5 @@ class TestAudioPlayer : public Member {
 };
 
 void grailmain(int argc, char *argv[], GLWin *w, Tab *defaultTab) {
-  defaultTab->addMember(new TestAudioPlayer(defaultTab));
+  new TestAudioPlayer(defaultTab);
 }

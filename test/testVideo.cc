@@ -20,5 +20,5 @@ class TestVideoPlayer : public Member {
 };
 
 void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
-  defaultTab->addMember(new TestVideoPlayer(defaultTab));
+  new TestVideoPlayer(defaultTab);
 }
