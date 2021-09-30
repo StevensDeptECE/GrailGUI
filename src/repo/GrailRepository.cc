@@ -1,58 +1,82 @@
-class GrailRepository {
-  private:
-    SymmetricKey key; // 2nd key to unlock this file
-    // note: this example implementation shows only how to create one file,not the alternate versions in feature 4  
-    struct Range { // specifies a section of the file for encryption
-      uint32_t startOffset;
-      uint32_t size;
-    };
-    HashMap<Range region> regions;
-    std::vector<uint8_t> bytes; // the raw bytes of the repository
-  public:
-    GrailRepository(uint32_t size); // set up empty repo with size bytes of storage
-    ~GrailRepository();
-    GrailRepository(const GrailRepository& orig) = delete;
-    GrailRepository& operator =(const GrailRepository& orig) = delete;
+#include <openssl/ssl.h>
+#include <iostream>
+#include <vector>
+
+std::vector<std::pair<std::string, RSA *>> siteKeys;
+
+void generateKey(const std::string& siteName)
+{
+    int ret = 0;
+    RSA *r = NULL;
+    BIGNUM *bne = NULL;
+    BIO *bp_public = NULL, *bp_private = NULL;
+    int bits = 2048;
+	unsigned long e = RSA_F4;
+
+    bne = BN_new();
+	ret = BN_set_word(bne, e);
+	if (ret != 1)
+        std::cerr << "Error: Creating bignum failed." << std::endl;
+
+	r = RSA_new();
+	ret = RSA_generate_key_ex(r, bits, bne, NULL);
+	if (ret != 1)
+        std::cerr << "Error: Generating key pair failed." << std::endl;
+
+    // XXX: Should we save keys to disk?
+	bp_public = BIO_new_file("public.pem", "w+");
+	ret = PEM_write_bio_RSAPublicKey(bp_public, r);
+	if (ret != 1)
+        std::cerr << "Error: Writing public key failed." << std::endl;
+
+	bp_private = BIO_new_file("private.pem", "w+");
+	ret = PEM_write_bio_RSAPrivateKey(bp_private, r, NULL, NULL, 0, NULL, NULL);
+	if (ret != 1)
+        std::cerr << "Error: Writing private key failed." << std::endl;
+
+    // Couple each site with its keypair.
+    siteKeys.push_back(std::make_pair(siteName, r));
+}
+
+void deleteKey(const std::string& siteName)
+{
+    for (int i = 0; i < siteKeys.size(); ++i)
+        if (siteKeys[i].first == siteName) {
+            siteKeys.erase(siteKeys.begin() + i);
+            return;
+        }
+
+    std::cerr << "Error: Site: " << siteName << " not in site list."
+        << std::endl;
+}
+
+void backupToCloud(const std::string& service_name, const std::string& userid,
+        const std::string& passwd, uint32_t offset, uint32_t stride,
+        uint32_t bits);
+
+void restoryFromCloud(const std::string& service_name,
+        const std::string& userid, const std::string& passwd, uint32_t offset,
+        uint32_t stride, uint32_t bits);
+
+void unlock(const std::string& password, const Factor2& factor,
+        const std::string& area); 
+
+void scramble(const std::string& area);
   
-    void generateKey(const std::string& siteName); // generate a new key for the specified website
-    void deleteKey(const std::string& siteName); // unregister for site?
+void destroy();
   
-    void backupToCloud(const std::string& service name,
-      const std::string& userid, const std::string& passwd,
-      uint32_t offset, uint32_t stride, uint32_t bits);
-  
-    void restoryFromCloud(const std::string& service name,
-      const std::string& userid, const std::string& passwd,
-      uint32_t offset, uint32_t stride, uint32_t bits);
-  
-  // using a password and possible 2nd factor authentication, unlock the named area decrypting a range of bytes
-    void unlock(const std::string& password, const Factor2& factor, const std::string& area); 
-  
-   // overwrite the array in RAM with random numbers to get rid of data in the clear
-    void scramble(const std::String& area);
+PubKey getPublicKey(const std::string& password, const Factor2& factor,
+        const std::string& area);
   
   
-  // scramble array with random values and write back to disk, destroying this repository.
-    void destroy();
+KeyPair getPublicKey(const std::string& password, const Factor2& factor,
+        const std::string& area);
+
+uint64_t proveIdentity(const std::string& password, uint64_t nonce,
+        const std::string& area);
   
-  // extract public key
-    PubKey getPublicKey(const std::string& password, const Factor2& factor, const std::string& area);
+void getUserid(const std::string& area, const std::string& name,
+        std::string& userid, std::string& passwd);
   
-  
-  // extract key pair so it can be used
-    KeyPair getPublicKey(const std::string& password, const Factor2& factor, const std::string& area);
-  
-  
-  
-  
-  // Given digital authentication challenge, take the given nonce, decrypt it, and send it back.
-  // note that this could perhaps be used in an attack, so perhaps rather than giving anyone an answer to their challenge, send the answer back encrypted so that only the site claiming to be sending it can 
-    uint64_t proveIdentity(const std::string& password, uint64_t nonce, const std::string& area);
-  
-  // in area “main” get website “gmail.com” get userid and password
-    void getUserid(const std::string& area, const std::string& name, std::string& userid, std::string& passwd);
-  
-    // The hard, research optional area. How do we recover if a 2nd factor authentication is lost?
-    // how do we prevent attackers from erroneously claiming 2nd factor is lost to bypass it?
-    void recover2ndFactor();
-};
+// TODO: Require hardware authentication (à la YubiKey)?
+void recover2ndFactor();
