@@ -61,7 +61,7 @@ void AxisWidget::addAxisTitle() {
     } else {
       t->addCentered(
           x + w / 2,
-          y + h + (bottomOffset += 10 + m->getStyle()->f->getHeight()),
+          y + h + bottomOffset + m->getStyle()->f->getHeight() / 2,
           m->getStyle()->f, axisTitle);
     }
   }
