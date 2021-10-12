@@ -477,9 +477,11 @@ void GLWin::prevTab() {
     current = tabs.size() - 1;
 }
 
-void GLWin::addTab() {
-  tabs.add(new Tab(this));
+Tab *GLWin::addTab() {
+  Tab *newTab = new Tab(this);
+  tabs.add(newTab);
   current = tabs.size() - 1;
+  return newTab;
 }
 
 // TODO: write this, also consider writing a remove function for DynArray

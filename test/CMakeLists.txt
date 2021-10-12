@@ -34,6 +34,7 @@ add_grail_executable(SRC testfmt.cc LIBS grail)
 #add_grail_executable(BINNAME testSolar SRC DrawNASAEphemerisSolarSystem2d.cc LIBS grail)
 #add_grail_executable(SRC loadESRIShapefile.cc LIBS grail)
 add_grail_executable(SRC testXDLButton.cc LIBS grail)
+add_grail_executable(SRC testMultiTab.cc LIBS grail)
 
 if(${MPV_FOUND})
   add_grail_executable(SRC testSingleAudio.cc LIBS grail)

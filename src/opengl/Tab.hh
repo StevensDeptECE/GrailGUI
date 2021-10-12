@@ -93,6 +93,7 @@ class Tab : public CallbackHandler {
   const Font* getMenuFont() const { return parent->getMenuFont(); }
 
   void setRender() const { parent->setRender(); }
+  void setUpdate() const { parent->setUpdate(); }
 
   void loadBindings();
 
