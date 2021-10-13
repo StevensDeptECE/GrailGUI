@@ -1,7 +1,6 @@
 #include "opengl/GrailGUI.hh"
 #include "opengl/MultiShape3D.hh"
 #include "opengl/util/Transformation.hh"
-#include "util/Ex.hh"
 
 using namespace std;
 
@@ -11,7 +10,7 @@ class Globe : public Member {
   float earthRotationAngle;
 
  public:
-  Globe(Tab* tab) : Member(tab, 60, 0.1) {
+  Globe(Tab* tab) : Member(tab, 0, 0.1) {
     earthRotationAngle = .01;
     Canvas* c = tab->getMainCanvas();
     Camera* cam = c->setLookAtProjection(2, 3, 40, 0, 0, 0, 0, 0, 1);
