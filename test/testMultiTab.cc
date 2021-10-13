@@ -2,6 +2,7 @@
 
 #include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
+#include "opengl/NavigationBar.hh"
 
 using namespace std;
 
@@ -34,5 +35,6 @@ MultiTab::MultiTab(Tab* tab)
 }
 
 void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
-  defaultTab->addMember(new MultiTab(defaultTab));
+  new MultiTab(defaultTab);
+  new NavigationBar(defaultTab, 0, 500, 600, 50, 2);
 }

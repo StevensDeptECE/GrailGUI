@@ -1,19 +1,32 @@
+#pragma once
+
 #include <unordered_set>
 
 #include "opengl/ButtonWidget.hh"
 
-class NavigationBar {
+class NavigationBar : public Member {
  private:
   std::vector<ButtonWidget> buttons;
   std::unordered_set<MainCanvas*> canvases;
+  GLWin* parentWin;
+  MainCanvas* currentCanvas;
   StyledMultiShape2D m;
   MultiText t;
 
- public:
+  bool isVertical;
+  float defaultButtonWidth;
+  float defaultButtonHeight;
+  float defaultEdgeWidth;
+
+  Style* buttonStyle;
+  float xPos, yPos, barWidth, barHeight, axisPadding;
+  bool isVertical;
+
   /**
-   * @brief Create a new (horizontal or vertical) navigation bar
+   * @brief Convenience constructor so getMainCanvas isn't called so often
    *
    * @param initialCanvas The initial canvas to draw on
+   * @param initialStyle The default style from the canvas
    * @param x x-coordinate of top-left corner
    * @param y y-coordinate of top-left corner
    * @param width width of navigation bar
@@ -21,8 +34,24 @@ class NavigationBar {
    * @param axisPadding distance between the edges of two buttons
    * @param isVertical allow vertical navigation bars (e.x. Ubuntu's task bar)
    */
-  NavigationBar(MainCanvas* initialCanvas, float x, float y, float width,
-                float height, float axisPadding, bool isVertical = false);
+  NavigationBar(MainCanvas* initialCanvas, const Style* initialStyle, float x,
+                float y, float width, float height, float axisPadding,
+                bool isVertical);
+
+ public:
+  /**
+   * @brief Create a new (horizontal or vertical) navigation bar
+   *
+   * @param initialTab The initial tab to draw on
+   * @param x x-coordinate of top-left corner
+   * @param y y-coordinate of top-left corner
+   * @param width width of navigation bar
+   * @param height height of navigation bar
+   * @param axisPadding distance between the edges of two buttons
+   * @param isVertical allow vertical navigation bars (e.x. Ubuntu's task bar)
+   */
+  NavigationBar(Tab* initialTab, float x, float y, float width, float height,
+                float axisPadding, bool isVertical = false);
 
   /**
    * @brief Create a new button and return a reference to it
@@ -30,9 +59,12 @@ class NavigationBar {
    * @param width width of the new button
    * @param height height of the new button
    * @param axisOffset offset relative to the previous button
+   * @param label the text to be shown on the button
+   * @param action a description of the button's action
    * @return ButtonWidget& a reference to the new button
    */
-  ButtonWidget& addButton(float width, float height, float axisOffset);
+  ButtonWidget& addButton(float width, float height, float axisOffset,
+                          string label, string action);
 
   /**
    * @brief Balance n buttons on the nav bar
@@ -56,4 +88,10 @@ class NavigationBar {
    * @param c
    */
   void reparentButtons(MainCanvas* c);
+
+  /**
+   * @brief Adds a new tab to the window and adds the navigation bar to the tab
+   *
+   */
+  void addTab();
 };
