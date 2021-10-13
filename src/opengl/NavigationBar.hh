@@ -13,7 +13,6 @@ class NavigationBar : public Member {
   StyledMultiShape2D m;
   MultiText t;
 
-  bool isVertical;
   float defaultButtonWidth;
   float defaultButtonHeight;
   float defaultEdgeWidth;
@@ -64,7 +63,7 @@ class NavigationBar : public Member {
    * @return ButtonWidget& a reference to the new button
    */
   ButtonWidget& addButton(float width, float height, float axisOffset,
-                          string label, string action);
+                          std::string label, const char action[]);
 
   /**
    * @brief Balance n buttons on the nav bar

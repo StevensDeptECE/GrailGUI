@@ -85,3 +85,17 @@ constexpr double operator"" _f64(long double t) {
 
   return t;
 }
+
+double operator"" _f128(const char* s) { return atof(s); }
+
+constexpr long double operator"" _f128(long double t) {
+  if (t > numeric_limits<long double>::max() ||
+      t < numeric_limits<long double>::min()) {
+    fmt::print(stderr,
+               "{} is  out of bounds for a long double-precision float (may be "
+               "128 bits or 64 bits).\n",
+               t);
+  }
+
+  return t;
+}

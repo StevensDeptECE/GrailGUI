@@ -51,8 +51,9 @@ NavigationBar::NavigationBar(Tab* initialTab, float x, float y, float width,
 
 ButtonWidget& NavigationBar::addButton(float width, float height,
                                        float axisOffset, string label,
-                                       string action) {
+                                       const char action[]) {
   buttons.emplace_back(currentCanvas, xPos, yPos, width, height, label, action);
+  return buttons.back();
 }
 
 void NavigationBar::addTab() {
@@ -61,3 +62,6 @@ void NavigationBar::addTab() {
   reparentButtons(t->getMainCanvas());
   t->setUpdate();
 }
+
+void NavigationBar::reparentButtons(MainCanvas* c) {}
+void NavigationBar::balanceButtons(int numButtons) {}
