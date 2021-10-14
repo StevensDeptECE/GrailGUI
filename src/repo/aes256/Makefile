@@ -11,3 +11,6 @@ aes_encrypt_file:
 # the plan is to pipe the keys to a file or the encryption program 
 aes_key_IV:
 	gcc $(CFLAGS) aes256_key_IV aes256_key_IV.cc $(LIBS)
+
+clean:
+	rm -f aes_encrypt_file aes256_key_IV
