@@ -59,4 +59,13 @@ class DynArray {
     for (int i = 0; i < d.size_; i++) s << d.data[i] << ' ';
     return s;
   }
+
+  constexpr bool find(T& t) {
+    for (T& item : data) {
+      if (item == t) {
+        return true;
+      }
+    }
+    return false;
+  }
 };

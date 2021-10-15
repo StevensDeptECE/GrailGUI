@@ -53,6 +53,9 @@ ButtonWidget& NavigationBar::addButton(float width, float height,
                                        float axisOffset, string label,
                                        const char action[]) {
   buttons.emplace_back(currentCanvas, xPos, yPos, width, height, label, action);
+  buttons.back().setStyledMultiShape(&m);
+  buttons.back().setMultiText(&t);
+  buttons.back().redraw();
   return buttons.back();
 }
 
@@ -61,7 +64,18 @@ void NavigationBar::addTab() {
   t->addMember(this);
   reparentButtons(t->getMainCanvas());
   t->setUpdate();
+  t->setRender();
 }
 
-void NavigationBar::reparentButtons(MainCanvas* c) {}
+void NavigationBar::reparentButtons(MainCanvas* c) {
+  if (canvases.find(c) == canvases.end()) {
+    c->addLayer(&m);
+    c->addLayer(&t);
+    canvases.insert(c);
+  }
+  for (ButtonWidget& b : buttons) {
+    c->addClickableWidget(&b);
+  }
+}
+
 void NavigationBar::balanceButtons(int numButtons) {}

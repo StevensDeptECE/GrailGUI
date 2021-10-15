@@ -2,6 +2,8 @@
 
 //#include <cstring>
 
+#include <set>
+
 #include "opengl/GLWin.hh"
 #include "opengl/Shape.hh"
 #include "util/DynArray.hh"
@@ -114,7 +116,7 @@ class MainCanvas : public Canvas {
   MultiText* guiText;
   StyledMultiShape2D* menu;
   MultiText* menuText;
-  DynArray<InteractiveWidget2D*> widgets;
+  std::set<InteractiveWidget2D*> widgets;
 
  public:
   MainCanvas(Tab* tab);
@@ -132,7 +134,7 @@ class MainCanvas : public Canvas {
 
   void click();
 
-  void addClickableWidget(InteractiveWidget2D* w) { widgets.add(w); }
+  void addClickableWidget(InteractiveWidget2D* w) { widgets.insert(w); }
   void addButton(const char text[], float x, float y, float w, float h);
   void addLabel(const char text[], float x, float y, float w, float h);
   void addMenu(const std::string menu[], uint32_t numStrings, float x, float y);

@@ -14,6 +14,8 @@ class ButtonWidget : public InteractiveWidget2D {
  public:
   ButtonWidget(MainCanvas* c, float x, float y, float w, float h,
                const std::string& text, const char action[]);
+  ButtonWidget(StyledMultiShape2D* m, MultiText* t, float x, float y, float w,
+               float h, const std::string& text, const char action[]);
   void click(float mouseX, float mouseY) override;
   void init() override;
 
