@@ -1,2 +1,2 @@
 all:
-	g++ GrailRepository.cc -lssl -lcrypto
+	g++ keygen.cc -lssl -lcrypto
