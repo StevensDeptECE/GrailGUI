@@ -29,7 +29,8 @@ int main() {
         return -1;
     }
 
-    fprintf(stdout, "KEY: %s\nIV: %s\n", keypair.key, keypair.iv);
+    // pass key and iv to aes encrypt
+    fprintf(stdout, "%s\n%s\n", keypair.key, keypair.iv);
 
     return 0;
 }

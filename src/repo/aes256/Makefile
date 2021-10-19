@@ -10,7 +10,7 @@ aes_encrypt_file:
 # generates an AES-256 key and IV with openssl/rand.h function, puts both to be sent to stdout
 # the plan is to pipe the keys to a file or the encryption program 
 aes_key_IV:
-	gcc $(CFLAGS) aes256_key_IV aes256_key_IV.cc $(LIBS)
+	g++ $(CFLAGS) aes256_key_IV aes256_key_IV.cc $(LIBS)
 
 clean:
 	rm -f aes_encrypt_file aes256_key_IV
