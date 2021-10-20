@@ -1,16 +1,12 @@
 LIBS 	= -lssl -lcrypto
 CFLAGS	= -g -o	
 
-all: aes_encrypt_file
+all: clean aes_enc_dec
 
-# encrypts a file given an AES-256 key and IV
-aes_encrypt_file: 
-	g++ $(CFLAGS) aes_encrypt_file aes256_encrypt_file.cc $(LIBS)    
-
-# generates an AES-256 key and IV with openssl/rand.h function, puts both to be sent to stdout
-# the plan is to pipe the keys to a file or the encryption program 
-aes_key_IV:
-	g++ $(CFLAGS) aes256_key_IV aes256_key_IV.cc $(LIBS)
+# encrypts a file with AES256|
+# uses EVP API for black-box approach to AES256 - encryption scheme can be easily swapped
+aes_enc_dec: 
+	g++ $(CFLAGS) aes_enc_dec aes_enc_dec.cc $(LIBS)    
 
 clean:
-	rm -f aes_encrypt_file aes256_key_IV
+	rm -f aes_enc_dec
