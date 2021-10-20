@@ -1,24 +1,25 @@
+#pragma once
 #include "opengl/GrailGUI.hh"
 #include "opengl/util/Transformation.hh"
+#include "CAD/Vec3d.hh"
 
-
+/**
+Represent -- 
+**/
 class Curve {
   protected:
-    typedef std::array<double,3> Vector;
-    uint32_t used;
-    uint32_t size;
-    std::vector<Vector> points;
+    std::vector<Vec3D> points;
   
   public:
     Curve() {
-      used = 0;
-      size = 2;
+      points.reserve(2);
     }
 
-  void add(Vector p);
+  void add(const Vec3D& p);
   void resize();
-  uint32_t size();
-  virtual Vector getPoint(double step);
-  virtual Vector getTangent(double step); //virtual replaces "abstract" from java
-  Transformation getMatrix(double step); //implement Transformation/import for now but function/constructor is different
+  uint32_t size() const {return points.size();}
+  virtual Vec3D getPoint(double step) = 0;
+  virtual Vec3D getTangent(double step) = 0; //virtual replaces "abstract" from java
+  //TODO: Transformation getMatrix(double step); //implement Transformation/import for now but function/constructor is different
 };
+

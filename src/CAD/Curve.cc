@@ -2,23 +2,12 @@
 
 using namespace std;
 
-void Curve::add(Vector p){
-  if (used == size) {
-    resize();
-  }
-  points[used++] = p;
+void Curve::add(const Vec3D& p){
+  points.push_back(p);
 }
 
-void Curve::resize() {
-  size *= 2;
-  points.reserve(size);
-}
-
-void Curve::size(){
-  return used;
-}
-
-void Curve::getMatric(double step){
+#if 0
+void Curve::getMatrix(double step) const {
   Vector point = getPoint(step);
   if (point == Vector<0,0,0>){ //if point[0]=0 && point[1]=0 && point[2]=0
     point = new Vector(-0.01, 0.01, 0);
@@ -37,7 +26,6 @@ void Curve::getMatric(double step){
     yaxis = point.cross(zaxis);
     yaxis = yaxis.normalized();
   }
-
   if (zaxis == Vector(0,0,1)){
     Vector xaxis(1,0,0);
   }
@@ -50,3 +38,5 @@ void Curve::getMatric(double step){
   }
   return new Transformation(xaxis, yaxis, zaxis, point);
 }
+
+#endif
