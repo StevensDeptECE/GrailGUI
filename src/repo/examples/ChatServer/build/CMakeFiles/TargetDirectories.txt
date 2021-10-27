@@ -1,3 +1,0 @@
-/mnt/c/ubuntu_work/grail/examples/chatserver/build/CMakeFiles/rebuild_cache.dir
-/mnt/c/ubuntu_work/grail/examples/chatserver/build/CMakeFiles/edit_cache.dir
-/mnt/c/ubuntu_work/grail/examples/chatserver/build/CMakeFiles/chatserver.dir
