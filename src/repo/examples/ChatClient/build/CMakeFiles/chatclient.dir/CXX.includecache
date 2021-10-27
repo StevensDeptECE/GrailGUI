@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/c/ubuntu_work/grail/examples/ChatClient/chatclient.cpp
+errno.h
+-
+stdio.h
+-
+unistd.h
+-
+malloc.h
+-
+string.h
+-
+sys/socket.h
+-
+resolv.h
+-
+netdb.h
+-
+openssl/ssl.h
+-
+openssl/err.h
+-
+unistd.h
+-
+
