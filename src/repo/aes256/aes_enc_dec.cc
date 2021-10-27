@@ -78,15 +78,16 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
 
 // todo: pad key provided in argument
 int main(int argc, char **argv) {
-    unsigned char *key = argc > 1 ? 
-        (unsigned char*) argv[1] 
-        : (unsigned char*) "01234567890123456789012345678901";
+
+    unsigned char *plaintext = argc > 1 ? 
+        (unsigned char *) argv[1]
+        : (unsigned char*) "Secret message!";
+
+    unsigned char *key = (unsigned char*) "01234567890123456789012345678901";
 
     unsigned char iv[16];
     if (!RAND_bytes(iv, sizeof(iv)))
         handleErrors();
-
-    unsigned char *plaintext = (unsigned char*) "Secrets";
 
     unsigned char cipher[128];
     unsigned char decryp[128];

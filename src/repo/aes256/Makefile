@@ -8,5 +8,11 @@ all: clean aes_enc_dec
 aes_enc_dec: 
 	g++ $(CFLAGS) aes_enc_dec aes_enc_dec.cc $(LIBS)    
 
+aes_enc_file: 
+	g++ $(CFLAGS) aes_enc_file aes_enc_file.cc $(LIBS)
+
+openfile:
+	g++ $(CFLAGS) openfile openfile.cc $(LIBS)
+
 clean:
-	rm -f aes_enc_dec
+	rm -f openfile aes_enc_dec aes_enc_file
