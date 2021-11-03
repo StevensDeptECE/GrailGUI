@@ -1,16 +1,16 @@
 #include <openssl/ssl.h>
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 std::vector<std::pair<std::string, RSA *>> siteKeys;
 
 void generateKey(const std::string& siteName)
 {
     int bits = 2048;
-    unsigned long e = RSA_F4;
 
     BIGNUM *bne = BN_new();
-    int ret = BN_set_word(bne, e);
+    int ret = BN_set_word(bne, RSA_F4);
     if (ret != 1)
         std::cerr << "Error: Creating bignum failed." << std::endl;
 
@@ -20,13 +20,12 @@ void generateKey(const std::string& siteName)
         std::cerr << "Error: Generating key pair failed." << std::endl;
 
     // XXX: Should we save keys to disk?
-    BIO *bp_public = NULL, *bp_private = NULL;
-    bp_public = BIO_new_file("public.pem", "w+");
+    BIO *bp_public = BIO_new_file("public.pem", "w+");
     ret = PEM_write_bio_RSAPublicKey(bp_public, r);
     if (ret != 1)
         std::cerr << "Error: Writing public key failed." << std::endl;
 
-    bp_private = BIO_new_file("private.pem", "w+");
+    BIO *bp_private = BIO_new_file("private.pem", "w+");
     ret = PEM_write_bio_RSAPrivateKey(bp_private, r, NULL, NULL, 0, NULL, NULL);
     if (ret != 1)
         std::cerr << "Error: Writing private key failed." << std::endl;
@@ -80,5 +79,8 @@ int main()
     generateKey("google.com");
     for (auto i : siteKeys)
         std::cout << i.first << " " << i.second << std::endl;
+    std::ofstream sitekeysfile("sitekeys.bin");
+    sitekeysfile << siteKeys;
+    sitekeysfile.close();
     return 0;
 }

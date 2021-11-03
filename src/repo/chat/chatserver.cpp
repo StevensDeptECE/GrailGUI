@@ -1,60 +1,50 @@
-#include <unistd.h> /*FOR USING FORK for at a time send and receive messages*/ 
-#include <errno.h>   /*USING THE ERROR LIBRARY FOR FINDING ERRORS*/
-#include <malloc.h>  /*FOR MEMORY ALLOCATION */
+#include <unistd.h> /*FOR USING FORK for at a time send and receive messages*/
 #include <string.h>  /*using fgets funtions for geting input from user*/
-#include <arpa/inet.h>  /*for using ascii to network bit*/ 
-#include <sys/socket.h>  /*for creating sockets*/
-#include <sys/types.h>  /*for using sockets*/
-#include <netinet/in.h>        /* network to asii bit */
-#include <resolv.h>  /*server to find out the runner's IP address*/ 
+#include <arpa/inet.h>  /*for using ascii to network bit*/
 #include "openssl/ssl.h" /*using openssl function's and certificates and configuring them*/
 #include "openssl/err.h" /* helps in finding out openssl errors*/
-#include <stdio.h>   /*standard i/o*/
-#define FAIL    -1  /*for error output == -1 */
 #define BUFFER 1024  /*buffer for reading messages*/
 
 // code from: https://github.com/ElectronSz/Encrypted-Chat-Server-Using-C-Programming-and-OpenSSL-AES-DES
 
-int OpenListener(int port)   {   
-	int sd;
+int OpenListener(int port)
+{
 	struct sockaddr_in addr;   /*creating the sockets*/
-	sd = socket(PF_INET, SOCK_STREAM, 0);
+	int sd = socket(PF_INET, SOCK_STREAM, 0);
 	bzero(&addr, sizeof(addr));    /*free output the garbage space in memory*/
 	addr.sin_family = AF_INET;    /*getting ip address form machine */
 	addr.sin_port = htons(port);   /* converting host bit to n/w bit */
 	addr.sin_addr.s_addr = INADDR_ANY;
-	
-	if ( bind(sd, (struct sockaddr*)&addr, sizeof(addr)) != 0 ) /* assiging the ip address and port*/ {
+
+	if (bind(sd, (struct sockaddr*)&addr, sizeof(addr))) /* assiging the ip address and port*/ {
 		perror("can't bind port");    /* reporting error using errno.h library */
 		abort();      /*if error will be there then abort the process */
 	}
 
-	if ( listen(sd, 10) != 0 )     /*for listening to max of 10 clients in the queue*/ {
+	if (listen(sd, 10))     /*for listening to max of 10 clients in the queue*/ {
 		perror("Can't configure listening port");  /* reporting error using errno.h library */
 		abort();      /*if erroor will be there then abort the process */
 	}
 	return sd;
 }
 
-	
-
 //int isRoot()        /*for checking if the root user is executing the server*/ {
 	//if (getuid() != 0)    {
 		//return 0;
 	//} else {
-		//return 1;       /* if root user is not executing report must be user */  
+		//return 1;       /* if root user is not executing report must be user */
 	//}
 //}
 
-SSL_CTX* InitServerCTX(void)      /*creating and setting up ssl context structure*/ {   
-	const SSL_METHOD *method;
-	SSL_CTX *ctx;       
+// creating and setting up ssl context structure
+SSL_CTX* InitServerCTX()
+{
 	OpenSSL_add_all_algorithms();       /* load & register all cryptos, etc. */
 	SSL_load_error_strings();        /* load all error messages */
-	method = TLS_server_method();       /* create new server-method instance */
-	ctx = SSL_CTX_new(method);        /* create new context from method */
+	const SSL_METHOD *method = TLS_server_method();       /* create new server-method instance */
+	SSL_CTX *ctx = SSL_CTX_new(method);        /* create new context from method */
 
-	if ( ctx == NULL ) {
+	if (!ctx) {
 		ERR_print_errors_fp(stderr);
 		abort();
 	}
@@ -67,7 +57,7 @@ void LoadCertificates(SSL_CTX* ctx, char* CertFile, char* KeyFile)   /* to load 
 		ERR_print_errors_fp(stderr);
 		abort();
 	}
-	
+
 	/* set the private key from KeyFile (may be the same as CertFile) */
 	if ( SSL_CTX_use_PrivateKey_file(ctx, KeyFile, SSL_FILETYPE_PEM) <= 0 ) {
 		ERR_print_errors_fp(stderr);
@@ -81,16 +71,16 @@ void LoadCertificates(SSL_CTX* ctx, char* CertFile, char* KeyFile)   /* to load 
 	}
 }
 
-	
-
-void ShowCerts(SSL* ssl)     /*show the ceritficates to client and match them*/ {   
+// show the ceritficates to client and match them
+void ShowCerts(SSL* ssl)
+{
 	X509 *cert;
 	char *line;
 	cert = SSL_get_peer_certificate(ssl); /* Get certificates (if available) */
 
 	if ( cert != NULL ) {
 		printf("Server certificates:\n");
-		line = X509_NAME_oneline(X509_get_subject_name(cert), 0, 0);  
+		line = X509_NAME_oneline(X509_get_subject_name(cert), 0, 0);
 		printf("Server: %s\n", line);     /*server certifcates*/
 		free(line);
 		line = X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
@@ -102,35 +92,34 @@ void ShowCerts(SSL* ssl)     /*show the ceritficates to client and match them*/ 
 	}
 }
 
-void Servlet(SSL* ssl) /* Serve the connection -- threadable */ {   
+void Servlet(SSL* ssl) /* Serve the connection -- threadable */ {
 	char buf[1024];
 	int sd, bytes;
-	char input[BUFFER];  
-	pid_t cpid; 
-	if ( SSL_accept(ssl) == FAIL )     /* do SSL-protocol accept */ {
+	char input[BUFFER];
+	if (SSL_accept(ssl) == -1)     /* do SSL-protocol accept */ {
 		ERR_print_errors_fp(stderr);
-	} else { 
+	} else {
 		ShowCerts(ssl);        /* get any certificates */
 	}
-	
+
 	/*Fork system call is used to create a new process*/
-	cpid=fork();
-	if(cpid==0) { 
+	pid_t cpid;
+	if(!(cpid = fork())) {
 		while(1) {
 			bytes = SSL_read(ssl, buf, sizeof(buf)); /* get request and read message from server*/
-			if ( bytes > 0 ) { 
+			if (bytes > 0) {
 				buf[bytes] = 0;
 				printf("\nMESSAGE FROM SERVER:%s\n", buf);
 			} else {
 				ERR_print_errors_fp(stderr);
 			}
-		} 
+		}
 	} else {
 		while(1) {
 			printf("\nMESSAGE TO CLIENT:");
 			fgets(input, BUFFER, stdin);  /* get request and reply to client*/
-			SSL_write(ssl, input, strlen(input)); 
-		}  
+			SSL_write(ssl, input, strlen(input));
+		}
 	}
 
 	sd = SSL_get_fd(ssl);       /* get socket connection */
@@ -138,9 +127,8 @@ void Servlet(SSL* ssl) /* Serve the connection -- threadable */ {
 	close(sd);          /* close connection */
 }
 
-	
-
-int main(int count, char *strings[])   /* getting port as a argument*/ {   
+int main(int count, char *strings[])
+{
 	SSL_CTX *ctx;
 	int server;
 	char *portnum;
@@ -149,7 +137,7 @@ int main(int count, char *strings[])   /* getting port as a argument*/ {
 		//exit(0);
 	//}
 
-	if ( count != 2 ) {
+	if (count != 2) {
 		printf("Usage: %s <portnum> \n", strings[0]);   /*send the usage guide if syntax of setting port is different*/
 		exit(0);
 	}
