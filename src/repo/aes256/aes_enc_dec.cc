@@ -17,7 +17,7 @@ int decrypt_file(const char *path, const char* out, unsigned char *key, unsigned
 // TODO: figure out correct error reporting
 void handleErrors();
 
-// usage: ./aes_enc_file <filename> <key> <mode> <output>
+// usage: ./aes_enc_dec <filename> <key> <mode> <output>
 int main(int argc, char *argv[]) {
 
     // set input filename
@@ -35,12 +35,10 @@ int main(int argc, char *argv[]) {
 
     // generate the key
     if (!(EVP_BytesToKey(EVP_aes_256_cbc(), EVP_md5(), NULL,
-        keybase, KEYLEN, ITER_COUNT, key, iv))) {
+        keybase, strlen((const char *) keybase), ITER_COUNT, key, iv))) {
             fprintf(stderr, "Invalid key.\n");
             return -1;
         }
-
-    printf("New key: %s\n", (char *) key);
 
     // mode 'e' vs 'd'; encrypt vs decrypt
     char mode = argc > 3 ? argv[3][0] : 'd';
