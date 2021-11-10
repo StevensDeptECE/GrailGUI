@@ -1,5 +1,7 @@
 set(grail-CAD
-    Curve.cc
+    Triangle.cc
+    Rectangle.cc
+    Circle2D.cc
 )
 
 list(TRANSFORM grail-CAD PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)

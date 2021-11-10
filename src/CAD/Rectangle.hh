@@ -4,30 +4,10 @@
 
 class Rectangle : public Shape2D{
 private:
-  float width,height;
+  float x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, x6, y6;
 public:
-  Rectangle(Canvas* c, float x, float y, float width,float height, Style* s) :
-   Shape2D(c, x,y,s) {
-    addPoint(x,y);
-    addPoint(x,y-height);
-    addPoint(x+width,y-height);
-    addPoint(x+width,y);
-
-    for(int i = 0;i<vertices.size();i++){
-      lineIndices.push_back(i);
-      pointIndices.push_back(i);
-    }
-
-    solidIndices.push_back(0);
-    solidIndices.push_back(1);
-    solidIndices.push_back(2);
-
-    solidIndices.push_back(3);
-    solidIndices.push_back(0);
-    solidIndices.push_back(2);
-  }
-
-  void initIndices();
+  Rectangle(Canvas* c, float x1, float y1, float width, float height, const Style* s);
+  void init();
   void render();
-  float getArea();
+  //float getArea();
 };
