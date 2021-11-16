@@ -40,6 +40,8 @@ upload()
         -d grant_type=refresh_token \
         https://accounts.google.com/o/oauth2/token | head -2 | cut -d'"' -f4 | tail -1)
 
+    # TODO: If file already exists, use a PUT to overwrite it instead of
+    # creating 2 copies.
     UPLOAD_ID=$(curl -X POST -L \
         -H "Authorization: Bearer $ACCESS_TOKEN" \
         -F "metadata={name :'$FILENAME'};type=application/json;charset=UTF-8" \
@@ -50,8 +52,34 @@ upload()
     echo "https://drive.google.com/file/d/$UPLOAD_ID"
 }
 
-if [ ! "$1" ] || [ ! -f "$1" ]; then
+download()
+{
+    # Name of file we want to download (In our case, the website key/sitename pair file)
+    FILENAME="$1"
+    # Refresh the access token each upload so you never get locked out.
+    ACCESS_TOKEN=$(curl -d client_id="$GOOGLE_CLIENT_ID" \
+        -d client_secret="$GOOGLE_CLIENT_SECRET" \
+        -d refresh_token="$GOOGLE_REFRESH_TOKEN" \
+        -d grant_type=refresh_token \
+        https://accounts.google.com/o/oauth2/token | head -2 | cut -d'"' -f4 | tail -1)
+
+    return 1
+    # XXX: Does Google even support downloading files from drive over HTTP?
+    curl -X POST -L \
+        -H "Authorization: Bearer $ACCESS_TOKEN" \
+        -F "metadata={name :'$FILENAME'};type=application/json;charset=UTF-8" \
+        -F "file=@$FILENAME;type=$(file --mime-type -b "$FILENAME")" \
+        "https://www.googleapis.com/upload/drive/v3/files?"
+}
+
+if [ ! "$1" ]; then
     setup
-else
-    upload "$1"
+elif [ "$1" = "upload" ]; then
+    if [ -f "$2" ]; then
+        upload "$2"
+    else
+        echo "$2 is not a valid file to upload"
+    fi
+elif [ "$1" = "download" ]; then
+    download "$2"
 fi
