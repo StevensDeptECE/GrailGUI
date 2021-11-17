@@ -1,6 +1,9 @@
 *.bin
 repo/aes256/*.txt
+<<<<<<< Updated upstream
 .vscode/
+=======
+>>>>>>> Stashed changes
 repo/aes256/*.enc
 repo/aes256/*.dec
 repo/aes256/test_AES
