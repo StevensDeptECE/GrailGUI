@@ -6,55 +6,45 @@
 
 class SteganographicImage {
 private:
-    int w, h, c = 3;
-    unsigned char *rgb;
+    int w = 0, h = 0, c = 0;
     char *filename;
     uint32_t start = 0; // start of the data (x=10,y=13) 13*w+h
     uint32_t stride = 2; // how many to skip =2
-    uint32_t bits_per_red; // 2
-    uint32_t bits_per_green; // 2
-    uint32_t bits_per_blue; // 2
+    // uint32_t bits_per_color = 1;
+    uint8_t *data;
+    uint32_t len;
 
 public:
-    SteganographicImage(char *filename)
-        : filename(filename) {
-            this->filename = filename;
-            rgb = new uint8_t[w * h * 3];
-    }
+    unsigned char *rgb;
+    SteganographicImage(char *filename, uint8_t *data, uint32_t len) :
+        filename(filename), data(data), len(len) {
+            rgb = stbi_load(filename, &w, &h, &c, 0);
+        }
 
-    ~SteganographicImage(){
+    ~SteganographicImage() {
         stbi_image_free(rgb);
     }
 
-    void hide(const uint8_t data[], uint32_t len) {
-        // for (int i = start; i < h; i += stride) {
-        //     for (int j = start; j < w; j += stride) {
-        //         for (int k = 0; k < 3; ++k) {
-        //             auto pixc = rgb[i][j];
-        //             rgb[i][j][k] = pixc;
-        //         }
-        //     }
-        // }
-        for (int i = 0; i < len; ++i)
-            if (!data[i])
-                rgb[i] &= data[i] + 0b11111110;
+    void hide() {
+        for (uint32_t i = start; i < len * stride; i += stride) {
+            auto id = (start + i) / stride;
+            if (!data[id])
+                rgb[i] &= data[id] + 0b11111110;
             else
-                rgb[i] |= data[i] + 0b00000000;
+                rgb[i] |= data[id];
+        }
     }
 
-    void recover(uint8_t data[], uint32_t len) {
-        for (int i = 0; i < len; ++i)
-            data[i] = rgb[i] & 1;
+    uint32_t* recover() {
+        uint32_t *recovered = new uint32_t[len];
+        for (int i = start; i < len * stride; i += stride)
+            recovered[(start + i) / stride] = rgb[i] & 1;
+        return recovered;
     }
 
     void write() {
         stbi_write_jpg(filename, w, h, c, rgb, w * c);
         std::cout << "File written to " << filename << std::endl;
-    }
-
-    int read() {
-        rgb = stbi_load(filename, &w, &h, &c, 0);
-        return (bool)rgb;
     }
 
 };
@@ -66,13 +56,30 @@ int main(int argc, char **argv)
         return 1;
     }
     char *filename = argv[1];
-    SteganographicImage test = SteganographicImage(filename);
-    if (!test.read()) {
+    // Data to hide in message and length of message.
+    // Test 1: Binary string.
+    uint8_t data[] = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
+    int n = 10;
+
+    // Test 2: ASCII text.
+    // char *msg = (char *)"hello";
+    // int n = strlen(msg);
+    // uint8_t *data = new uint8_t[n];
+    // for (int i = 0; i < n; ++i)
+    //     data[i] = (int) msg[i];
+
+    SteganographicImage steg = SteganographicImage(filename, data, n);
+    if (!steg.rgb) {
         std::cerr << "Error: " << filename << " does not exist." << std::endl;
         return 1;
     }
-    uint8_t d[] = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
-    test.hide(d, 10);
-    test.write();
+    steg.hide();
+    // Write a new image storing the secret message.
+    steg.write();
+    // Recover the secret message from the picture and print it out.
+    auto *recovered = steg.recover();
+    for (int i = 0; i < n; ++i)
+        std::cout << recovered[i] << " ";
+    std::cout << std::endl;
     return 0;
 }
