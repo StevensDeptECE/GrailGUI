@@ -190,7 +190,3 @@ int decrypt_file(const char *path, const char* out, unsigned char* key, unsigned
      
 }
 
-void handleErrors() {
-    ERR_print_errors_fp(stderr);
-    abort();
-}
