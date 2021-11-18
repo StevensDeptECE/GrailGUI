@@ -11,7 +11,7 @@ int main (void) {
     const char* test_file_path = "test.txt";
     // open test file for writing, clearing it
     std::ofstream test_file;
-    test_file.open(test_file_path, std::ios::out | std::ios::trunc);
+    test_file.open(test_file_path, std::ios::trunc);
 
     // put a test string into the file
     const char *test_string = "This is our test string!";
@@ -25,20 +25,20 @@ int main (void) {
     
     // decrypt the file 
     long int dec_result = cipher.decrypt_file("test.enc", "test.dec");
-    printf("Decrypted %ld bytes.\n", dec_result);
-
+    std::cout << "Decrypted " << dec_result 
+        << " byte" << (dec_result > 1 ? "s" : "") << std::endl;
     // check output contents
     std::ifstream result;
-    result.open("test.dec", std::ios::in | std::ios::binary);
+    result.open("test.dec", std::ios::binary);
     char *in = new char[test_len + 1];
     result.read(in, test_len);
     in[test_len] = '\0';
-    printf("Plaintext: %s\n"
-        "Decrypted plaintext: %s\n", test_string, in);
+    std::cout << "Plaintext: " << test_string << std::endl 
+        << "Decrypted plaintext: " << in << std::endl;
     
     // report results
     int diff;
     if ((diff = strcmp(test_string, in)) != 0)
-        printf("Test failed: difference %d\n", diff);
-    else printf("Test passed.\n");
+        std::cout << "Test failed: difference " << diff << std::endl;
+    else std::cout << "Test passed" << std::endl;
 }
