@@ -35,7 +35,7 @@ AESEncDec::AESEncDec(unsigned char* keybase) {
     // set key from keybase
     if (!(EVP_BytesToKey(EVP_aes_256_cbc(), EVP_md5(), NULL,
         keybase, strlen((const char *) keybase), ITER_COUNT, key, iv))) {
-        fprintf(stderr, "Invalid key base.\n");
+        std::cerr <<  "Invalid key base";
     }
 }
 
@@ -48,7 +48,7 @@ int AESEncDec::encrypt_file(const char* path, const char* out) {
 
     // ensure file is open, exit otherwise
     if (!plaintext_file.is_open()) {
-        fprintf(stderr, "Failed to open plaintext.\n");
+        std::cerr <<  "Failed to open plaintext";
         return -1;
     }
 
@@ -63,7 +63,7 @@ int AESEncDec::encrypt_file(const char* path, const char* out) {
 
     // reinitialize iv to avoid reuse
     if (!RAND_bytes(iv, BLOCKSIZE)) {
-        fprintf(stderr, "Failed to initialize IV");
+        std::cerr <<  "Failed to initialize IV";
         return -1;
     }
 
@@ -114,7 +114,7 @@ int AESEncDec::decrypt_file(const char* path,
 
     // if opening failed, exit
     if (!ciphertext_file.is_open() || !plaintext_file.is_open()) {
-        fprintf(stderr, "One of the files is already open.\n");
+        std::cerr <<  "One of the files is already open";
         return -1;
     }
     
@@ -125,7 +125,7 @@ int AESEncDec::decrypt_file(const char* path,
 
     // reinitialize iv to avoid reuse
     // if (!RAND_bytes(iv, BLOCKSIZE)) {
-    //     fprintf(stderr, "Failed to initialize IV");
+    //     std::cerr <<  "Failed to initialize IV");
     //     return -1;
     // }
 
