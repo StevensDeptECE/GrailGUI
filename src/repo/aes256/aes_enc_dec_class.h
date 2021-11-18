@@ -124,10 +124,10 @@ int AESEncDec::decrypt_file(const char* path,
         handleErrors();
 
     // reinitialize iv to avoid reuse
-    if (!RAND_bytes(iv, BLOCKSIZE)) {
-        fprintf(stderr, "Failed to initialize IV");
-        return -1;
-    }
+    // if (!RAND_bytes(iv, BLOCKSIZE)) {
+    //     fprintf(stderr, "Failed to initialize IV");
+    //     return -1;
+    // }
 
     // initialize decryption 
     if (1 != EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv))
