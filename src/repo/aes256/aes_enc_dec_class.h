@@ -34,7 +34,7 @@ class AESEncDec {
 AESEncDec::AESEncDec(unsigned char* keybase) {
     // set key from keybase
     if (!(EVP_BytesToKey(EVP_aes_256_cbc(), EVP_md5(), NULL,
-        keybase, strlen((const char *) keybase), ITER_COUNT, key, iv))) {
+        keybase, (int) strlen((const char *) keybase), ITER_COUNT, key, iv))) {
         std::cerr <<  "Invalid key base";
     }
 }
@@ -74,13 +74,13 @@ long int AESEncDec::encrypt_file(const char* path, const char* out) {
     // for keeping track of result length
     int len;
     long int cipherlen = 0;
-    int bytes_read;
+    std::streamsize bytes_read;
 
     // read and encrypt a block at a time, write to file
     while (1) {
         plaintext_file.read((char *) plaintext, BLOCKSIZE);
         bytes_read = plaintext_file.gcount();
-        if (1 != EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, bytes_read))
+        if (1 != EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, (int) bytes_read))
             handleErrors();
         
         ciphertext_file.write((char *) ciphertext, len);
@@ -123,12 +123,6 @@ long int AESEncDec::decrypt_file(const char* path,
     if (!(ctx = EVP_CIPHER_CTX_new()))
         handleErrors();
 
-    // reinitialize iv to avoid reuse
-    // if (!RAND_bytes(iv, BLOCKSIZE)) {
-    //     std::cerr <<  "Failed to initialize IV");
-    //     return -1;
-    // }
-
     // initialize decryption 
     if (1 != EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv))
         handleErrors();
@@ -140,7 +134,7 @@ long int AESEncDec::decrypt_file(const char* path,
     // initialize cipher/plaintext buffers
     unsigned char plaintext[BLOCKSIZE+BLOCKSIZE], ciphertext[BLOCKSIZE];    
 
-    int bytes_read;
+    std::streamsize bytes_read;
 
     // go through the file one block at a time
     while (1) {
@@ -148,7 +142,7 @@ long int AESEncDec::decrypt_file(const char* path,
         bytes_read = ciphertext_file.gcount();
 
         // decrypt block
-        if (1 != EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, bytes_read))
+        if (1 != EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, (int) bytes_read))
             handleErrors();
         plaintext_len += len;
         plaintext_file.write((char *) plaintext, len);
