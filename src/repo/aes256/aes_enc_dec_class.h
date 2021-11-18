@@ -18,9 +18,9 @@ void handleErrors() {
  * files can be encrypted or decrypted as desired.
  */
 class AESEncDec {
-        static const int KEYLEN = 32;
-        static const int BLOCKSIZE = 16;
-        static const int ITER_COUNT = 10000;
+        static constexpr int KEYLEN = 32;
+        static constexpr int BLOCKSIZE = 16;
+        static constexpr int ITER_COUNT = 10000;
         unsigned char key[KEYLEN];
         unsigned char iv[BLOCKSIZE];
     public:
