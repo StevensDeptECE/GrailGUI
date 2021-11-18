@@ -1,5 +1,4 @@
 # rewritten according to https://codereview.stackexchange.com/a/270140/251828
-
 all: test_aes_enc_dec
 
 CXX = g++
@@ -15,6 +14,6 @@ LDLIBS += $(shell pkg-config --libs openssl)
 test_aes_enc_dec.o: aes_enc_dec_class.h
 
 clean:
-        $(RM) test_aes_enc_dec *.o test.*
+	$(RM) test_aes_enc_dec *.o test.*
 
 .PHONY: clean

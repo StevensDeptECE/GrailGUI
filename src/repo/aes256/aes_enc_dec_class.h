@@ -25,9 +25,9 @@ class AESEncDec {
         unsigned char iv[BLOCKSIZE];
     public:
         AESEncDec(unsigned char* keybase);
-        int encrypt_file(const char* path, 
+        long int encrypt_file(const char* path, 
             const char* out);
-        int decrypt_file(const char* path,
+        long int decrypt_file(const char* path,
             const char* out);
 };
 
@@ -39,7 +39,7 @@ AESEncDec::AESEncDec(unsigned char* keybase) {
     }
 }
 
-int AESEncDec::encrypt_file(const char* path, const char* out) {
+long int AESEncDec::encrypt_file(const char* path, const char* out) {
     // initialize/open file streams
     std::ifstream plaintext_file;
     std::ofstream ciphertext_file;
@@ -73,7 +73,7 @@ int AESEncDec::encrypt_file(const char* path, const char* out) {
 
     // for keeping track of result length
     int len;
-    int cipherlen = 0;
+    long int cipherlen = 0;
     int bytes_read;
 
     // read and encrypt a block at a time, write to file
@@ -103,7 +103,7 @@ int AESEncDec::encrypt_file(const char* path, const char* out) {
     return cipherlen;
 } 
 
-int AESEncDec::decrypt_file(const char* path, 
+long int AESEncDec::decrypt_file(const char* path, 
     const char* out) {
     
     // open files for reading and writing
@@ -135,7 +135,7 @@ int AESEncDec::decrypt_file(const char* path,
     
     // keeping track of length of result
     int len;
-    int plaintext_len = 0;
+    long int plaintext_len = 0;
 
     // initialize cipher/plaintext buffers
     unsigned char plaintext[BLOCKSIZE+BLOCKSIZE], ciphertext[BLOCKSIZE];    
