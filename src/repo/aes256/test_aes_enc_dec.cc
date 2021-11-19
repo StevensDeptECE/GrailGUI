@@ -4,7 +4,7 @@
 #include <string>
 #include <fstream>
 
-int main (void) {
+int main () {
     unsigned char *key = (unsigned char *) "HardcodedKey!";
     AESEncDec cipher(key);
 
@@ -41,4 +41,6 @@ int main (void) {
     if ((diff = strcmp(test_string, in)) != 0)
         std::cout << "Test failed: difference " << diff << std::endl;
     else std::cout << "Test passed" << std::endl;
+
+    return 0;
 }

@@ -43,8 +43,8 @@ long int AESEncDec::encrypt_file(const char* path, const char* out) {
     // initialize/open file streams
     std::ifstream plaintext_file;
     std::ofstream ciphertext_file;
-    plaintext_file.open(path, std::ios::in | std::ios::binary);
-    ciphertext_file.open(out, std::ios::out | std::ios::binary | std::ios::trunc);
+    plaintext_file.open(path, std::ios::binary);
+    ciphertext_file.open(out, std::ios::binary | std::ios::trunc);
 
     // ensure file is open, exit otherwise
     if (!plaintext_file.is_open()) {
@@ -88,6 +88,9 @@ long int AESEncDec::encrypt_file(const char* path, const char* out) {
         if (bytes_read < BLOCKSIZE) break;
     }
 
+    if (!plaintext_file.eof())
+        std::cerr << "Failed to reach EOF";
+
     // finalize encryption
     if (1 != EVP_EncryptFinal_ex(ctx, ciphertext, &len))
         handleErrors();
@@ -109,8 +112,8 @@ long int AESEncDec::decrypt_file(const char* path,
     // open files for reading and writing
     std::ifstream ciphertext_file;
     std::ofstream plaintext_file;
-    ciphertext_file.open(path, std::ios::in | std::ios::binary);
-    plaintext_file.open(out, std::ios::out | std::ios::binary | std::ios::trunc);
+    ciphertext_file.open(path, std::ios::binary);
+    plaintext_file.open(out, std::ios::binary | std::ios::trunc);
 
     // if opening failed, exit
     if (!ciphertext_file.is_open() || !plaintext_file.is_open()) {
@@ -146,7 +149,9 @@ long int AESEncDec::decrypt_file(const char* path,
             handleErrors();
         plaintext_len += len;
         plaintext_file.write((char *) plaintext, len);
-        if (bytes_read < BLOCKSIZE) break;        
+        if (!plaintext_file.good())
+            std::cerr << "Writing to plaintext failed";
+        if (bytes_read < BLOCKSIZE) break;
     } 
 
     if (1 != EVP_DecryptFinal_ex(ctx, plaintext + len, &len))
