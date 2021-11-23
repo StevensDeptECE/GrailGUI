@@ -8,7 +8,7 @@ add_subdirectory(data)
 # add_grail_executable(SRC Globe.cc LIBS grail)
 # add_grail_executable(SRC ../src/xp/decompressBlockLoader.cc LIBS grail lzma)
 # add_grail_executable(SRC simpleDemo.cc LIBS grail)
-# add_grail_executable(SRC SolarSystem.cc LIBS grail)
+add_grail_executable(SRC SolarSystem.cc LIBS grail)
 # add_grail_executable(SRC testAxis.cc LIBS grail)
 # add_grail_executable(SRC testBarChart.cc LIBS grail)
 # add_grail_executable(SRC testBoxChart.cc LIBS grail)
@@ -29,7 +29,7 @@ add_subdirectory(data)
 #add_grail_executable(BINNAME testSolar SRC DrawNASAEphemerisSolarSystem2d.cc LIBS grail)
 add_grail_executable(SRC testTriangle.cc LIBS grail)
 add_grail_executable(SRC testRectangle.cc LIBS grail)
-add_grail_executable(SRC testCircle2D.cc LIBS grail)
+add_grail_executable(SRC testCircle.cc LIBS grail)
 
 
 
