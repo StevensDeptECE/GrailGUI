@@ -1,7 +1,10 @@
 #include "audio/AudioPlayer.hh"
 
 using namespace std;
-AudioPlayer::AudioPlayer() { newContext("default"); }
+AudioPlayer::AudioPlayer() {
+  newContext("default");
+  setCurrentContext("default");
+}
 
 AudioPlayer::~AudioPlayer() {
   // fun little c++ 17 feature
