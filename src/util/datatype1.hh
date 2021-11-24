@@ -75,6 +75,14 @@ enum class DataType {
   BLOB32,
   BLOB64,
   BIGINT,
+  OK,
+  ERR,
+  SOME,
+  NONE,
+  OPTIONAL,
+  RESULT,
+  TYPEDEF,
+  UNIMPL,
   ENUM_SIZE,
 };
 
