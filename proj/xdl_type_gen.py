@@ -53,8 +53,8 @@ const char* DataTypeNames[] = {\n"""
         )
 
         for type_name, name in type_dict.items():
-            types.write(f"  {type_name},\n")
-            names.write(f'    "{name["name"]}",  //{name["comment"]}\n')
+            types.write(f"  {type_name},  //{name['comment']}\n")
+            names.write(f'    "{name["name"]}",\n')
 
         types.write("};\n")
         names.write("};\n")

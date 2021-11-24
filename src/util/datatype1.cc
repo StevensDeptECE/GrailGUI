@@ -12,78 +12,78 @@
 using namespace std;
 
 const char* DataTypeNames[] = {
-    "u8",  //unsigned int 0..255
-    "u16",  //unsigned int 0..65535
-    "u24",  //unsigned int 0..16*1024*1024
-    "u32",  //unsigned int 0..(2^32)-1
-    "u64",  //unsigned int 0..(2^64)-1
-    "u128",  //unsigned int 0..(2^128)-1
-    "u256",  //unsigned int 0..(2^256)-1
-    "i8",  //signed int -128..127
-    "i16",  //signed int -32768..32767
-    "i24",  //signed int -8388608..8388607
-    "i32",  //signed int -(2^31)..(2^31)-1
-    "i64",  //signed int -(2^63)..(2^63)-1
-    "i128",  //signed int -(2^127)..(2^127)-1
-    "i256",  //signed int -(2^255)..(2^255)-1
-    "f32",  //single-precision floating point 1.175e-38..3.403e+38
-    "f64",  //double-precision floating point 2.225e-308..1.798e+308
-    "bool",  //true/false, normally 1 byte but arrays should use 1 bit
-    "date",  //32 bit date relative to J2000 (integer)
-    "juldate",  //scientific date relative to J2000 (double)
-    "timestamp",  //typical unix timestamp
-    "string8",  //string of 1 byte length, each char is 1 byte
-    "string16",  //string of 2 byte length, each char is 1 byte
-    "string32",  //string of 4 byte length, each char is 1 byte
-    "string64",  //string of 8 byte length, each char is 1 byte
-    "utf8_8",  //international string of 1 byte length, each char is 1 or 2 bytes
-    "utf8_16",  //international string of 2 byte length, each char is 1 or 2 bytes
-    "utf8_32",  //international string of 4 byte length, each char is 1 or 2 bytes
-    "utf8_64",  //international string of 8 byte length, each char is 1 or 2 bytes
-    "utf16_8",  //international string of 1 byte length, each char is 2 bytes
-    "utf16_16",  //international string of 2 byte length, each char is 2 bytes
-    "utf16_32",  //international string of 4 byte length, each char is 2 bytes
-    "utf16_64",  //international string of 8 byte length, each char is 2 bytes
-    "regex",  //string representing a regular expression
-    "list8",  //list with 1 byte length
-    "list16",  //list with 2 byte length
-    "list32",  //list with 4 byte length
-    "list64",  //list with 8 byte length
-    "struct8",  //struct with 1 byte length of records
-    "struct16",  //struct with 2 byte length of records
-    "struct32",  //struct with 4 byte length of records
-    "dynamiclist8",  //list from dynamic sources (e.x. server). Provides a length at transmission time (at most 1 byte length)
-    "dynamiclist16",  //list from dynamic sources (e.x. server). Provices a length at transmissoin time (at most 2 byte length)
-    "func8",  //function with up to 1 byte length of instructions
-    "func16",  //function with up to 2 byte length of instructions
-    "funcparam8",  //function with up to 1 byte length of parameters and 1 byte length of instructions
-    "funcparam16",  //function with up to 2 byte length of parameters and 2 byte length of instructions
-    "loop1",  //repeat up to 1 byte length times
-    "loop2",  //repeat up to 2 byte length times
-    "loop4",  //repeat up to 4 byte length times
-    "bitvec8",  //bit vector of 1 byte length
-    "bitvec16",  //bit vector of 2 byte length
-    "bitvec32",  //bit vector of 4 byte length
-    "bitvec64",  //bit vector of 8 byte length
-    "bitvec32_int",  //32 bits stored in a 4 byte integer
-    "bitvec64_int",  //64 bits stored in a 8 byte integer
-    "bitfields",  //4 byte size, 1 byte bit size (for storing small numbers packed bitfields)
-    "arithmetic",  //arithmetic encoding of numbers specify range and size (4 bytes each)
-    "jpeg",  //Allows embedding of jpegs into stream
-    "jpeglist",  //4 byte number of jpegs, then a single header, then multiple files of the same size
-    "blob16",  //block of binary data of 2 byte length
-    "blob32",  //block of binary data of 4 byte length
-    "blob64",  //block of binary data of 8 byte length
-    "bigint",  //container for big integers
-    "ok",  //Success value for result types
-    "error",  //Wrapper for error propogation
-    "some",  //Wrapper for optional or result values
-    "none",  //Empty container (null without the pointers)
-    "optional<T>",  //Contains either Some(T) or None
-    "result<T,E>",  //Contains either Ok(T) or Err(E)
-    "typedef",  //allows aliasing of XDL types
-    "unimplemented",  //allows error handling for unimplemented types or functionality
-    "enum_size does not really exist",  //sentinel for running over the enum length
+    "u8",
+    "u16",
+    "u24",
+    "u32",
+    "u64",
+    "u128",
+    "u256",
+    "i8",
+    "i16",
+    "i24",
+    "i32",
+    "i64",
+    "i128",
+    "i256",
+    "f32",
+    "f64",
+    "bool",
+    "date",
+    "juldate",
+    "timestamp",
+    "string8",
+    "string16",
+    "string32",
+    "string64",
+    "utf8_8",
+    "utf8_16",
+    "utf8_32",
+    "utf8_64",
+    "utf16_8",
+    "utf16_16",
+    "utf16_32",
+    "utf16_64",
+    "regex",
+    "list8",
+    "list16",
+    "list32",
+    "list64",
+    "struct8",
+    "struct16",
+    "struct32",
+    "dynamiclist8",
+    "dynamiclist16",
+    "func8",
+    "func16",
+    "funcparam8",
+    "funcparam16",
+    "loop1",
+    "loop2",
+    "loop4",
+    "bitvec8",
+    "bitvec16",
+    "bitvec32",
+    "bitvec64",
+    "bitvec32_int",
+    "bitvec64_int",
+    "bitfields",
+    "arithmetic",
+    "jpeg",
+    "jpeglist",
+    "blob16",
+    "blob32",
+    "blob64",
+    "bigint",
+    "ok",
+    "error",
+    "some",
+    "none",
+    "optional<T>",
+    "result<T,E>",
+    "typedef",
+    "unimplemented",
+    "enum_size does not really exist",
 };
 
 
