@@ -184,22 +184,19 @@ void BlockMapLoader::deltaUnEncode() {
 void BlockMapLoader::dumpSegment(uint32_t seg) {
   uint32_t numSegments = blockMapHeader->numSegments;
   if (seg >= numSegments) return;
-  const float* xPoints = points;
-  const float* yPoints = points + blockMapHeader->numPoints;
+  const float* xy = points;
 
   uint32_t pointIndex = 0;
   for (uint32_t i = 0; i < seg; i++) {
     pointIndex += segments[i].numPoints;
   }
+  pointIndex *= 2;  // xy points together, so double the number
   const uint32_t numPoints = segments[seg].numPoints;
-  for (uint32_t j = 0; j < numPoints; j++, pointIndex++) {
-    printf("%14.7lf%14.7lf\n", xPoints[pointIndex], yPoints[pointIndex]);
+  for (uint32_t j = 0; j < numPoints; j++, pointIndex += 2) {
+    printf("%14.7lf%14.7lf\n", xy[pointIndex], xy[pointIndex + 1]);
   }
 }
 
-inline bool approxeq(double a, double b) {
-  return abs(b - a) < abs(a * 1e-7);  // TODO: is this good?
-}
 void BlockMapLoader::diff(const BlockMapLoader& a, const BlockMapLoader& b) {
   const BlockMapHeader* ahead = a.getBlockMapHeader();
   const BlockMapHeader* bhead = b.getBlockMapHeader();

@@ -1,21 +1,37 @@
-
 #include "data/BlockMapLoader.hh"
+#include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/MapView2D.hh"
 
 using namespace std;
 using namespace grail;
 
-class TestDrawBlockMap : public GLWin {
+class TestDrawBlockMap : public Member {
  private:
   const char* filename;
   MapView2D* mv;
 
  public:
-  TestDrawBlockMap(const char filename[])
-      : GLWin(0x000000, 0xCCCCCC, "Block Loader: Map Demo"),
+  TestDrawBlockMap(Tab* tab, const char filename[])
+      : Member(tab),  // GLWin(0x000000, 0xCCCCCC, "Block Loader: Map Demo"),
         filename(filename),
-        mv(nullptr) {}
+        mv(nullptr) {
+    MainCanvas* c = tab->getMainCanvas();
+    //    const Style* s = tab->getDefaultStyle();
+    Style* s2 = new Style(tab->getDefaultFont(), grail::white, grail::black);
+    //    c->addClickableWidget(
+    // new ButtonWidget(c, 0, 0, 200, 100, "Click Me!", "mapZoomIn"));
+    mv = c->addLayer(new MapView2D(c, s2, new BlockMapLoader(filename)));
+
+    tab->bindEvent(Tab::Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);
+    tab->bindEvent(Tab::Inputs::WHEELDOWN, &TestDrawBlockMap::mapZoomOut, this);
+    tab->bindEvent(Tab::Inputs::RARROW, &TestDrawBlockMap::mapPanRight, this);
+    tab->bindEvent(Tab::Inputs::LARROW, &TestDrawBlockMap::mapPanLeft, this);
+    tab->bindEvent(Tab::Inputs::UPARROW, &TestDrawBlockMap::mapPanUp, this);
+    tab->bindEvent(Tab::Inputs::DOWNARROW, &TestDrawBlockMap::mapPanDown, this);
+    update();
+  }
+
   int countyStart;
   int numCounties;
   int displayNumCounties;
@@ -26,21 +42,13 @@ class TestDrawBlockMap : public GLWin {
 
   constexpr static float zoomVal = 1.2;
   void mapZoomIn() {
-    //    glm::mat4& t = mv->getTransform();
     mv->uniformZoom(1 / 1.2f);
     mv->setProjection();
-    //    t = glm::translate(t, glm::vec3(-74, +40, 0));
-    // t = glm::scale(t, glm::vec3(1.2f));
-    // t = glm::translate(t, glm::vec3(+74, -40, 0) / 1.2f);
   }
 
   void mapZoomOut() {
     mv->uniformZoom(1.2f);
     mv->setProjection();
-    //    glm::mat4& t = map->mv->getTransform();
-    // t = glm::translate(t, glm::vec3(-74, +40, 0));
-    // t = glm::scale(t, glm::vec3(1 / 1.2f));
-    // t = glm::translate(t, glm::vec3(+74, -40, 0) * 1.2f);
   }
 
   void mapPanRight() {
@@ -85,32 +93,8 @@ class TestDrawBlockMap : public GLWin {
   void increaseCounties() {
     if (displayNumCounties < numCounties) displayNumCounties++;
   }
-
-  // void transform(ESRIPoint& pt, double shiftX, double shiftY, double scaleX,
-  // double scaleY) {
-  // pt.x = pt.x * scaleX + shiftX;
-  // pt.y = pt.y * scaleY + shiftY;
-  //}
-
-  void init() {
-    MainCanvas* c = currentTab()->getMainCanvas();
-    const Style* s = getDefaultStyle();
-    Style* s2 = new Style(getDefaultFont(), grail::white, grail::black);
-    mv = c->addLayer(new MapView2D(c, s2, new BlockMapLoader(filename)));
-
-    bindEvent(Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);
-    bindEvent(Inputs::WHEELDOWN, &TestDrawBlockMap::mapZoomOut, this);
-    bindEvent(Inputs::RARROW, &TestDrawBlockMap::mapPanRight, this);
-    bindEvent(Inputs::LARROW, &TestDrawBlockMap::mapPanLeft, this);
-    bindEvent(Inputs::UPARROW, &TestDrawBlockMap::mapPanUp, this);
-    bindEvent(Inputs::DOWNARROW, &TestDrawBlockMap::mapPanDown, this);
-    update();
-  }
-
-  void update() {}
 };
 
-int main(int argc, char* argv[]) {
-  return GLWin::init(new TestDrawBlockMap("res/maps/uscounties.bml"), 2000,
-                     2000);
+void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+  new TestDrawBlockMap(defaultTab, "res/maps/uscounties.bml");
 }

@@ -1,7 +1,8 @@
 #include "opengl/BoxChartWidget.hh"
 
 #include <algorithm>
-#include <numbers>
+#include <cmath>
+#include <numbers> //For C++20 constants
 
 #include "stats/stats.hh"
 #include "util/Ex.hh"
@@ -9,23 +10,7 @@
 using namespace std;
 using namespace stats::aliases;
 
-void BoxChartWidget::setWhiskerStyle(const Style* s) { whiskerStyle = s; }
-
-void BoxChartWidget::setBoxStyle(const Style* s) { boxStyle = s; }
-
 void BoxChartWidget::setBoxWidth(double width) { boxWidth = width; }
-
-void BoxChartWidget::setBoxColors(vector<glm::vec4>& colors) {
-  boxColors = colors;
-}
-
-void BoxChartWidget::setWhiskerColors(vector<glm::vec4>& colors) {
-  whiskerColors = colors;
-}
-
-void BoxChartWidget::setOutlineColors(vector<glm::vec4>& colors) {
-  outlineColors = colors;
-}
 
 void BoxChartWidget::setPointsPerBox(int n) { pointsPerBox = n; }
 
@@ -34,6 +19,7 @@ void BoxChartWidget::setData(const vector<double>& data) { this->data = data; }
 void BoxChartWidget::setNames(const ::vector<std::string>& names) {
   this->names = names;
 }
+
 
 void BoxChartWidget::init() {
   xAxis->setTickLabels(names);
@@ -55,8 +41,8 @@ void BoxChartWidget::init() {
   }
 
   StyledMultiShape2D* whiskers =
-      c->addLayer(new StyledMultiShape2D(c, whiskerStyle));
-  StyledMultiShape2D* boxes = c->addLayer(new StyledMultiShape2D(c, boxStyle));
+      c->addLayer(new StyledMultiShape2D(c, &s->whiskerStyle));
+  StyledMultiShape2D* boxes = c->addLayer(new StyledMultiShape2D(c, &s->boxStyle));
 
   double min = yAxis->getMinBound();
   double max = yAxis->getMaxBound();
@@ -67,9 +53,9 @@ void BoxChartWidget::init() {
   double barCorrection = -yscale * min;
   double halfBoxWidth = boxWidth / 2;
 
-  auto currentBoxColor = boxColors.begin();
-  auto currentWhiskerColor = whiskerColors.begin();
-  auto currentOutlineColor = outlineColors.begin();
+  auto currentBoxColor = s->boxColors.begin();
+  auto currentWhiskerColor = s->whiskerColors.begin();
+  auto currentOutlineColor = s->outlineColors.begin();
 
   for (int i = 0, counter = 1; i < data.size(); i += pointsPerBox, counter++) {
     auto first = data.begin() + i;
@@ -117,11 +103,11 @@ void BoxChartWidget::init() {
     currentWhiskerColor++;
     currentOutlineColor++;
 
-    if (currentBoxColor == boxColors.end()) currentBoxColor = boxColors.begin();
-    if (currentWhiskerColor == whiskerColors.end())
-      currentWhiskerColor = whiskerColors.begin();
-    if (currentOutlineColor == outlineColors.end())
-      currentOutlineColor = outlineColors.begin();
+    if (currentBoxColor == s->boxColors.end()) currentBoxColor = s->boxColors.begin();
+    if (currentWhiskerColor == s->whiskerColors.end())
+      currentWhiskerColor = s->whiskerColors.begin();
+    if (currentOutlineColor == s->outlineColors.end())
+      currentOutlineColor = s->outlineColors.begin();
   }
 
   commonRender();

@@ -57,24 +57,25 @@ BlockMapLoader::BlockMapLoader(
   // last, points are a block of floating point numbers
   points =
       (float*)((char*)segments + blockMapHeader->numSegments * sizeof(Segment));
+  uint32_t numDups = 0;
   uint32_t segCount = 0;
   //  float* xPoints = points;  // all x points are together in a single block
   //  float* yPoints = points + numPoints;  // same for y
   uint32_t pointOffset = 0;  // track current point
+  uint32_t exactMatch = 0;
   for (uint32_t i = 0; i < shapes.size(); i++) {
     int* start = shapes[i]->panPartStart;
     if (start == nullptr && shapes[i]->nParts != 0) {
-      cerr
-          << "error null list of offsets for parts panpartstart\n";  // TODO:
-                                                                     // use
-                                                                     // exception
+      std::cerr << "error null list of offsets for parts panpartstart\n";
+      // TODO: use exception
       return;
     }
     // regions[i].numPoints =
-    regions[i].bounds.xMin = shapes[i]->dfXMin;
-    regions[i].bounds.xMax = shapes[i]->dfXMax;
-    regions[i].bounds.yMin = shapes[i]->dfYMin;
-    regions[i].bounds.yMax = shapes[i]->dfYMax;
+    BoundRect& bounds = regions[i].bounds;
+    bounds.xMin = shapes[i]->dfXMin;
+    bounds.xMax = shapes[i]->dfXMax;
+    bounds.yMin = shapes[i]->dfYMin;
+    bounds.yMax = shapes[i]->dfYMax;
     regions[i].baseX = shapes[i]->padfX[0];
     regions[i].baseY = shapes[i]->padfY[0];
     for (uint32_t j = 0; j < shapes[i]->nParts; j++, segCount++) {
@@ -85,14 +86,31 @@ BlockMapLoader::BlockMapLoader(
       else
         numPoints = start[j + 1] - start[j];
       segments[segCount].numPoints = numPoints;
+      uint32_t startOffset = pointOffset;
       for (uint32_t k = 0; k < numPoints; k++) {
         points[pointOffset++] = shapes[i]->padfX[start[j] + k];
         points[pointOffset++] = shapes[i]->padfY[start[j] + k];
       }
+      if (approxeqpt(points[startOffset], points[startOffset + 1],
+                     points[pointOffset - 2], points[pointOffset - 1])) {
+        if (points[startOffset] == points[pointOffset - 2] &&
+            points[startOffset + 1] == points[pointOffset - 1])
+          exactMatch++;
+        pointOffset -= 2;  // remove last point, it's the same
+        // cerr << "Removing final point of polygon, same as first point\n";
+        numDups++;
+        segments[segCount].numPoints--;
+      }
     }
   }
+
+  cerr << "Removed " << numDups << " final points of polygons\n";
+  blockMapHeader->numPoints -= numDups;
+  size -= numDups * 2 * sizeof(float);
   for (auto shape : shapes) SHPDestroyObject(shape);
   SHPClose(shapeHandle);
+
+  cerr << "Exact matches found:" << exactMatch << '\n';
 }
 
 void BlockMapLoader::filterX(double xMin, double xMax) {

@@ -1,12 +1,8 @@
 #pragma once
 #include "BlockLoader.hh"
-
+#include "data/BoundRect.hh"
 class BlockMapLoader : public BlockLoader {
  public:
-  struct BoundRect {
-    float xMin, xMax, yMin, yMax;
-  };
-
   struct BlockMapHeader {
     uint32_t numNamedEntities;
     uint32_t numRegionContainers;
@@ -74,6 +70,13 @@ class BlockMapLoader : public BlockLoader {
   static constexpr uint16_t version = 0x0401;  // 0.4.0.1
   typedef void (BlockMapLoader::*Method)();
   const static Method methods[];
+  constexpr static float eps = 1e-6;
+  static bool approxeq(double a, double b) {
+    return std::abs(b - a) < eps;  // TODO: is this good?
+  }
+  static bool approxeqpt(float x1, float y1, float x2, float y2) {
+    return std::abs(x2 - x1) < eps && std::abs(y2 - y1) < eps;
+  }
 
  public:
   void init(const uint64_t* mem, uint64_t size);

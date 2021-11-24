@@ -2,8 +2,7 @@
 
 #include "opengl/AxisWidget.hh"
 #include "opengl/SuperWidget2D.hh"
-
-class Style;
+#include "opengl/GraphStyle.hh"
 
 class GraphWidget : public SuperWidget2D {
  public:
@@ -22,11 +21,7 @@ class GraphWidget : public SuperWidget2D {
   constexpr static uint32_t DISCRETE_PERMITTED = 0xFF00;
 
   std::string graphTitle;
-  const Style* baseStyle;
-  const Style* xAxisStyle;
-  const Style* xAxisTextStyle;
-  const Style* yAxisStyle;
-  const Style* yAxisTextStyle;
+  const GraphStyle *s;        // all look and feel for graphs encapsulated here
   uint32_t allowedXAxis;
   uint32_t allowedYAxis;
   AxisType xAxisType;
@@ -43,10 +38,7 @@ class GraphWidget : public SuperWidget2D {
   AxisWidget* yAxis;
 
   GraphWidget(Canvas* c, double x, double y, double w, double h,
-              uint32_t allowedXAxis, uint32_t allowedYAxis,
-              Style* baseStyle = nullptr, Style* xAxisStyle = nullptr,
-              Style* xAxisTextStyle = nullptr, Style* yAxisStyle = nullptr,
-              Style* yAxisTextStyle = nullptr);
+              uint32_t allowedXAxis, uint32_t allowedYAxis, AxisType xAxisType, AxisType yAxisType, const GraphStyle* s);
   ~GraphWidget();
   GraphWidget(const GraphWidget&) = delete;
   GraphWidget& operator=(const GraphWidget&) = delete;
@@ -68,43 +60,10 @@ class GraphWidget : public SuperWidget2D {
   /**
    * @brief Summary
    * @details Description
-   * @param[in] s Description
-   */
-  void setBaseStyle(const Style* s);
-
-  /**
-   * @brief Summary
-   * @details Description
    * @param[in] text Description
    */
-  void setGraphTitle(std::string text);
+  void setGraphTitle(const std::string& text);
 
-  /**
-   * @brief Summary
-   * @details Description
-   * @param[in] xAxisTextStyle Description
-   */
-  void setXAxisTextStyle(const Style* xAxisTextStyle);
-
-  /**
-   * @brief Summary
-   * @details Description
-   * @param[in] yAxisTextStyle Description
-   */
-  void setYAxisTextStyle(const Style* yAxisTextStyle);
-
-  /**
-   * @brief Summary
-   * @details Description
-   * @param[in] xAxisStyle Description
-   */
-  void setXAxisStyle(const Style* xAxisStyle);
-
-  /**
-   * @brief Summary
-   * @details Description
-   * @param[in] yAxisStyle Description
-   */
-  void setYAxisStyle(const Style* yAxisStyle);
+	virtual void setStyle(const GraphStyle* s);
   virtual void init() = 0;
 };

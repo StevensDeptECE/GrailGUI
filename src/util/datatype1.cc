@@ -73,6 +73,14 @@ const char* DataTypeNames[] = {
     "blob32",
     "blob64",
     "bigint",
+    "ok",
+    "error",
+    "some",
+    "none",
+    "optional<T>",
+    "result<T,E>",
+    "typedef",
+    "unimplemented",
     "enum_size does not really exist",
 };
 

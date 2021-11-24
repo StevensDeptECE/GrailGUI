@@ -137,7 +137,7 @@ void VideoPlayer::init() {}
 
 void VideoPlayer::update() {
   uint64_t flags = mpv_render_context_update(mpv_gl);
-  if (flags & MPV_RENDER_UPDATE_FRAME) parentCanvas->getWin()->setDirty();
+  if (flags & MPV_RENDER_UPDATE_FRAME) parentCanvas->getWin()->setRender();
 }
 
 void VideoPlayer::render() {

@@ -46,7 +46,7 @@ const GapMinderLoader::Dataset* GapMinderLoader::getDataset(
 // constexpr under Clang. As such, I replaced it with a quiet NaN from numeric
 // limits. This should be functionally equivalent if we want to just skip NaN.
 // If you're looking to crash on NaN, replace quiet NaN with signaling NaN from
-// numeric limits. 
+// numeric limits.
 //     - ahuston-0
 constexpr float NaN = numeric_limits<float>::quiet_NaN();
 float GapMinderLoader::getData(uint32_t countryIndex, uint32_t year,
