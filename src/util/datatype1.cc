@@ -6,8 +6,6 @@
 
  /*
    The list of XDL types specific to this application.
-   Note: When a comment says 'n byte length' it means that the type
-         has 2^(8*n) elements
  */
 using namespace std;
 
