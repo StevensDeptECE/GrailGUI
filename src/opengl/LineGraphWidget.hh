@@ -4,7 +4,6 @@
 
 class LineGraphWidget : public GraphWidget {
  private:
-  const Style* dataStyle;
   std::vector<double> xPoints;
   std::vector<double> yPoints;
   double pointSize;

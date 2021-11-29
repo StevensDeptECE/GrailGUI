@@ -1,7 +1,7 @@
 #include "data/GapMinderExtra.hh"
 #include <fstream>
 #include <sstream>
-#include "data/BlockLoader.hh"
+#include "data/BlockLoader2.hh"
 #include <string>
 #include <cstring>
 #include <dirent.h>

@@ -24,20 +24,6 @@ void BlockLoader::init(uint64_t bytes, Type t, uint32_t version) {
       (SecurityHeaderV0*)((uint64_t*)mem + sizeof(GeneralHeader) / 8);
 }
 
-BlockLoader::BlockLoader(const char filename[]) {
-  int fh = open(filename, O_RDONLY);
-  if (fh < 0) throw "Can't open file";  // TODO: Use Ex.hh to report location
-  struct stat s;
-  fstat(fh, &s);
-  size = s.st_size;
-
-  mem = new uint64_t[(size + 7) / 8];
-  int bytesRead = read(fh, (char*)mem, size);
-  if (bytesRead != size)
-    throw "Could not read entire file";  // TODO: Use Ex.hh to report location
-  init(mem, size);
-  close(fh);
-}
 
 void BlockLoader::init(uint64_t* mem, uint64_t size) {
   this->mem = mem;

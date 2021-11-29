@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <cstring>
-#include "data/BlockLoader.hh"
+#include "data/BlockLoader2.hh"
 
 
 constexpr float NaN = 0xffffffff;

@@ -38,7 +38,7 @@ Buffer::Buffer(const char filename[], size_t initialSize)
 */
 Buffer::Buffer(const char filename[], size_t initialSize, const char*)
     : Buffer(initialSize, false) {
-  fd = open(filename, readBinFlags);
+  fd = open(filename, O_RDONLY | O_BINARY);
   if (fd < 0) throw Ex1(Errcode::PERMISSION_DENIED);
   readNext();
   writing = false;

@@ -2,7 +2,6 @@
 
 #include <memory>
 
-#include "csp/csp.hh"
 #include "opengl/Shapefile.hh"
 
 class BlockLoader {
@@ -51,7 +50,7 @@ class BlockMapLoader : public BlockLoader, public ESRIShape {
 
     // load in all points from ESRI
 
-    int fh = open("uscounties.bml", writeBinFlags);
+    int fh = open("uscounties.bml", O_WRONLY | O_BINARY);
     write(fh, (char*)mem, size);
     close(fh);
     // byte-endian-ness matters! You cannot write this in on an Intel and read in on Sparc
@@ -62,7 +61,7 @@ class BlockMapLoader : public BlockLoader, public ESRIShape {
   }
 
   BlockMapLoader(const char filename[]) {
-    int fh = open("uscounties.bml", writeBinFlags);
+    int fh = open("uscounties.bml", O_WRONLY | O_BINARY);
     st_stat s;
     stat(fh, &s);
     mem = new uint64_t[s.st_size / 8];

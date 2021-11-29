@@ -9,7 +9,7 @@
 #include <sstream>
 #include <string>
 
-#include "data/BlockLoader.hh"
+#include "data/BlockLoader2.hh"
 
 using namespace std;
 

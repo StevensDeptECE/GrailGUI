@@ -1,4 +1,4 @@
-#include "data/BlockMapLoader.hh"
+#include "data/BlockMapLoader2.hh"
 #include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/MapView2D.hh"

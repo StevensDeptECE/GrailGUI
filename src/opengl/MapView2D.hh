@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include "data/BlockMapLoader.hh"
+#include "data/BlockMapLoader2.hh"
 #include "opengl/Canvas.hh"
 #include "opengl/MultiShape2D.hh"
 

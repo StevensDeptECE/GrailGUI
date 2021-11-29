@@ -1,7 +1,7 @@
 #include "data/GapMinderBinaryDB.hh"
 #include <fstream>
 #include <sstream>
-#include "data/BlockLoader.hh"
+#include "data/BlockLoader2.hh"
 #include <string>
 #include <cstring>
 #include <dirent.h>
@@ -76,6 +76,7 @@ void GapMinderBinaryDB::loadDir(const char dirName[]){
   saveBinary("GapMinderDBFile");
 }
 
+// TODO: Commented out regions are using security header from the old BlockLoader
 void GapMinderBinaryDB::loadOneFile(const char filename[]){
 
   Dataset d(countryCodes.size(), filename);
@@ -205,7 +206,7 @@ void GapMinderBinaryDB::saveBinary(const char binaryData[]) {
     ofstream f(binaryData, ios::binary);
 
     BlockLoader::GeneralHeader h(BlockLoader::Type::gapminder, 0x0000);
-    BlockLoader::SecurityHeaderV0 sec = {0};
+    //BlockLoader::SecurityHeaderV0 sec = {0};
   
 
     Header header;
@@ -214,11 +215,11 @@ void GapMinderBinaryDB::saveBinary(const char binaryData[]) {
     header.numDatasets = this->index.size();
 
     f.write((char*)&h, sizeof(BlockLoader::GeneralHeader));
-    f.write((char*)&sec, sizeof(BlockLoader::SecurityHeaderV0));
+    //f.write((char*)&sec, sizeof(BlockLoader::SecurityHeaderV0));
     f.write((char*)&header, sizeof(Header));
 
-    fill(f, (sizeof(BlockLoader::GeneralHeader)+sizeof(BlockLoader::SecurityHeaderV0)+
-        sizeof(Header)));
+//    fill(f, (sizeof(BlockLoader::GeneralHeader)+sizeof(BlockLoader::SecurityHeaderV0)+
+  //      sizeof(Header)));
 
     for (int i = 0; i < countryCodes.size(); i++){
       f.write(countryCodes[i].c_str(), 3);
