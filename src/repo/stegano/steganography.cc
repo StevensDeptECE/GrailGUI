@@ -8,7 +8,7 @@ class SteganographicImage {
 private:
     int w, h, c;
     Magick::Image img;
-    Magick::PixelPacket *pix;
+    Magick::Quantum *pix;
     char *filename;
     uint32_t start = 0; // start of the data (x=10,y=13) 13*w+h
     uint32_t stride = 5; // how many to skip
@@ -23,21 +23,21 @@ public:
             h = img.rows(),
             w = img.columns();
             c = img.channels();
-            pix = img.getPixels(0, 0, h, w);
+            pix = img.getPixels(0, 0, w, h);
         }
 
     ~SteganographicImage() { }
 
     void hide() {
-        for (uint32_t i = 0; i < h; ++i)
-            for (uint32_t j = 0; j < w; ++j)
-                for (uint32_t k = 0; k < len; ++k) {
-                    uint32_t pos = start + k * stride;
-                    uint64_t v = data[k]; // v is what you put into your image
-                    pix[pos] &= 0b111111101111111011111110; // wipe out the low bit of each r,g,b
-                    pix[pos] |= v & 1; // get each rightmost bit and put 1 bit into low part of blue
-                    pix[pos] |= ((v >> 1) & 1) << 8; // or in the low green bit
-                    pix[pos] |= ((v >> 2) & 1) << 16;
+        for (uint32_t y = 0; y < h; ++y)
+            for (uint32_t x = 0; x < w; ++x)
+                for (uint32_t i = 0; i < len; ++i) {
+                    uint32_t pos = start + i * stride;
+                    uint64_t v = data[i]; // v is what you put into your image
+                    pix[pos] = (int) pix[pos] & 0b111111101111111011111110; // wipe out the low bit of each r,g,b
+                    pix[pos] = (int) pix[pos] | (v & 1); // get each rightmost bit and put 1 bit into low part of blue
+                    pix[pos] = (int) pix[pos] | (((v >> 1) & 1) << 8); // or in the low green bit
+                    pix[pos] = (int) pix[pos] | (((v >> 2) & 1) << 16);
                 }
         img.syncPixels();
     }
@@ -46,7 +46,7 @@ public:
         uint32_t *recovered = new uint32_t[len];
         for (uint32_t i = 0; i < len; ++i) {
             uint32_t pos = start + i * stride;
-            recovered[i] = pix[i] & 1;
+            recovered[i] = (int) pix[i] & 1;
         }
         return recovered;
     }
