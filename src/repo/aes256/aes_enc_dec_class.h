@@ -8,11 +8,6 @@
 #include <openssl/rand.h>
 #include <sstream>
 
-void handleErrors() {
-    ERR_print_errors_fp(stderr);
-    abort();
-}
-
 void (std::ifstream *in, std::ofstream *out) {
     in->close();
     out->close();
