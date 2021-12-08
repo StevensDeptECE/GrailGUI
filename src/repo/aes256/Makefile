@@ -1,20 +1,18 @@
-LIBS 	= -lssl -lcrypto
-CFLAGS	= -g -o	
+all: test_aes_enc_dec
 
-all: clean aes_enc_dec
+CXX = g++
+CXXFLAGS += -std=c++20
+CXXFLAGS += -g
+CXXFLAGS += -Wall -Wextra -Wwrite-strings -Weffc++
+CXXFLAGS += -Wpedantic -Warray-bounds -Wconversion
+CXXFLAGS += -Wno-parentheses
+CXXFLAGS += $(shell pkg-config --cflags openssl)
+LINK.o = $(LINK.cc)
+LDLIBS += $(shell pkg-config --libs openssl)
 
-# 	TODO:
-#  Publish for code review
-#  Implement Triple-AES
-#  Implement better key generation method
-#  Convert into a class  
-
-# encrypts/decrypts a file with AES256
-# usage: 
-# ./aes_enc_dec <input filename> <key> <mode (e/d)> <output filename> 
-aes_enc_dec: 
-	g++ $(CFLAGS) aes_enc_dec aes_enc_dec.cc $(LIBS)    
+test_aes_enc_dec.o: aes_enc_dec_class.h
 
 clean:
-	rm -f openfile aes_enc_dec 
+        $(RM) test_aes_enc_dec *.o test.*
 
+.PHONY: clean
