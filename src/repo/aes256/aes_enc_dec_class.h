@@ -33,9 +33,11 @@ class AESEncDec {
 
 AESEncDec::AESEncDec(unsigned char* keybase) {
     // set key from keybase
-    if (!(EVP_BytesToKey(EVP_aes_256_cbc(), EVP_md5(), NULL,
+    // TODO: convert to PKBDF key generation
+    if (!(EVP_BytesToKey(EVP_aes_256_cbc(), EVP_md5(), nullptr,
         keybase, strlen((const char *) keybase), ITER_COUNT, key, iv))) {
-        fprintf(stderr, "Invalid key base.\n");
+        std::cerr << "Invalid key base";
+        throw std::invalid_argument("key base");
     }
 }
 
@@ -43,12 +45,12 @@ int AESEncDec::encrypt_file(const char* path, const char* out) {
     // initialize/open file streams
     std::ifstream plaintext_file;
     std::ofstream ciphertext_file;
-    plaintext_file.open(path, std::ios::in | std::ios::binary);
-    ciphertext_file.open(out, std::ios::out | std::ios::binary | std::ios::trunc);
+    plaintext_file.open(path,std::ios::binary);
+    ciphertext_file.open(out,std::ios::binary | std::ios::trunc);
 
     // ensure file is open, exit otherwise
     if (!plaintext_file.is_open()) {
-        fprintf(stderr, "Failed to open plaintext.\n");
+        std::cerr << "Failed to open plaintext.";
         return -1;
     }
 
@@ -68,7 +70,7 @@ int AESEncDec::encrypt_file(const char* path, const char* out) {
     }
 
     // set cipher/key/iv
-    if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv))     
+    if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), nullptr, key, iv))     
         handleErrors();
 
     // for keeping track of result length
@@ -109,8 +111,8 @@ int AESEncDec::decrypt_file(const char* path,
     // open files for reading and writing
     std::ifstream ciphertext_file;
     std::ofstream plaintext_file;
-    ciphertext_file.open(path, std::ios::in | std::ios::binary);
-    plaintext_file.open(out, std::ios::out | std::ios::binary | std::ios::trunc);
+    ciphertext_file.open(path, std::ios::binary);
+    plaintext_file.open(out, std::ios::binary | std::ios::trunc);
 
     // if opening failed, exit
     if (!ciphertext_file.is_open() || !plaintext_file.is_open()) {
@@ -123,14 +125,9 @@ int AESEncDec::decrypt_file(const char* path,
     if (!(ctx = EVP_CIPHER_CTX_new()))
         handleErrors();
 
-    // reinitialize iv to avoid reuse
-    if (!RAND_bytes(iv, BLOCKSIZE)) {
-        fprintf(stderr, "Failed to initialize IV");
-        return -1;
-    }
+    // TODO:: Attach IV to the file 
 
-    // initialize decryption 
-    if (1 != EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv))
+    if (1 != EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), nullptr, key, iv))
         handleErrors();
     
     // keeping track of length of result
