@@ -1,15 +1,8 @@
 *.bin
 repo/aes256/*.txt
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-.vscode/
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 repo/aes256/*.enc
 repo/aes256/*.dec
-repo/aes256/test_AES
+repo/aes256/test_aes_enc_dec
 */.vscode/
 repo/yubikey_auth/validateOtp
 repo/yubikey_auth/key.txt
