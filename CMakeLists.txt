@@ -87,7 +87,7 @@ endif()
 
 if(GRAIL_TIDY)
   message(STATUS "clang-tidy modern checks enabled")
-  set(CMAKE_CXX_CLANG_TIDY clang-tidy -checks=-modern* -extra-arg=-std=c++20)
+  set(CMAKE_CXX_CLANG_TIDY clang-tidy -extra-arg=-std=c++20)
 endif()
 
 include(FetchContent)
