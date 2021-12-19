@@ -200,7 +200,7 @@ constexpr uint32_t _formatgrl(char destBuf[33], int printVal) {
 }
 
 constexpr inline char DECIMAL_POINT = '.';
-constexpr void _insertdec(char destBuf[33], uint32_t& i, uint32_t decimalLoc,
+void _insertdec(char destBuf[33], uint32_t& i, uint32_t decimalLoc,
                           uint32_t digit4) {
   // load the right 4 digits from the table 0000 to 9999
   uint32_t digits = ((uint32_t*)dig4)[digit4];
@@ -252,7 +252,7 @@ constexpr void _insertdec(char destBuf[33], uint32_t& i, uint32_t decimalLoc,
 }
 
 // R to L, 4 at a time
-constexpr uint32_t _formatgrlfloat(char destBuf[33], uint64_t printVal,
+uint32_t _formatgrlfloat(char destBuf[33], uint64_t printVal,
                                    uint32_t precision, uint32_t decimalLoc) {
   uint32_t len;
   uint32_t i;
@@ -284,7 +284,7 @@ constexpr uint32_t _formatgrl5(char destBuf[33], T data) {
   // 1234.567
   // 12.34567
   frexp(data, &ex);
-  constexpr double invLog2_10 = 1 / log2(10.0);
+  double invLog2_10 = 1 / log2(10.0);
   double powOf10 = ceil(ex * invLog2_10);
   T scale = pow(10, powOf10 - precision);
   T scaled = data / scale;
@@ -298,7 +298,7 @@ constexpr uint32_t _formatgrl5(char destBuf[33], T data) {
 }
 
 template <typename T>
-constexpr void testboth(T data) {
+void testboth(T data) {
   print(fg(color::steel_blue) | emphasis::bold, "Currently processing: {}\n",
         data);
   char dest[33];
@@ -312,7 +312,7 @@ constexpr void testboth(T data) {
 }
 
 template <typename T>
-constexpr void testAll(T data) {
+void testAll(T data) {
   print(fg(color::steel_blue) | emphasis::bold, "Currently processing: {}\n",
         data);
   char dest[33];
