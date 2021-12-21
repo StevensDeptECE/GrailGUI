@@ -60,6 +60,14 @@ class DynArray {
     return s;
   }
 
+  template <class... Args>
+  T& emplace_back(Args&&... args) {
+    checkGrow();
+    return *construct_at(data + size_++, std::forward<Args>(args)...);
+  }
+
+  void push_back(T&& elem) { emplace_back(std::move(elem)); }
+
   constexpr bool find(T& t) {
     for (T& item : data) {
       if (item == t) {
@@ -67,5 +75,12 @@ class DynArray {
       }
     }
     return false;
+  }
+
+  // Roughly equivalent of std::construct_at. Used to reduce class footprint
+  template <class... Args>
+  constexpr T* construct_at(T* p, Args&&... args) {
+    return ::new (const_cast<void*>(static_cast<const volatile void*>(p)))
+        T(std::forward<Args>(args)...);
   }
 };
