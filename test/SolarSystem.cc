@@ -1,13 +1,10 @@
 #include <cmath>
-#include <numbers>
 #include <string>
 
-#include "opengl/Errcode.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/MultiShape3D.hh"
 #include "opengl/util/Transformation.hh"
 #include "util/DynArray.hh"
-#include "util/Ex.hh"
 
 using namespace std;
 
@@ -27,18 +24,18 @@ class Body {
   Transformation* trans;
 
  public:
-  Body(Canvas* c, const Style* s, Camera* cam, const std::string& name,
+  Body(Canvas* c, const Style* s, Camera* cam, std::string name,
        const char textureFile[], double r, double orbitalRadius,
        double orbitalPeriod, double rotationalPeriod, double axialTilt,
        double startTime, Body* orbits = nullptr);
   void update(double time);
 };
 
-Body::Body(Canvas* c, const Style* s, Camera* cam, const std::string& name,
+Body::Body(Canvas* c, const Style* s, Camera* cam, std::string name,
            const char textureFile[], double r, double orbitalRadius,
            double orbitalPeriod, double rotationalPeriod, double axialTilt,
            double startTime, Body* orbits)
-    : name(name),
+    : name(move(name)),
       r(r),
       orbitalRadius(orbitalRadius),
       orbitalFreq(1.0 / orbitalPeriod),
@@ -86,7 +83,7 @@ class SolarSystem : public Member {
   constexpr static double SIDEREAL_DAY =
       0.9972;  // number of 24-hour "days" it takes earth to rotate once
  public:
-  SolarSystem(Tab* tab) : Member(tab, 0, .0125), bodies(10) {
+  explicit SolarSystem(Tab* tab) : Member(tab, 0, .0125), bodies(10) {
     cam = c->setLookAtProjection(2, 3, 40, 0, 0, 0, 0, 0, 1);
     GLWin* w = tab->getParentWin();
     const Style* s = w->getDefaultStyle();
@@ -131,7 +128,7 @@ class SolarSystem : public Member {
   void panRight();
   void panLeft();
 
-  void update() {
+  void update() override {
     double t = tab->time();
     for (int i = 0; i < bodies.size(); i++) bodies[i]->update(t);
   }
