@@ -29,21 +29,21 @@ class CallbackHandler {
   */
   inline static std::array<std::function<void(void)>, 4096> actionMap;
   static HashMap<uint32_t> actionNameMap;
-  uint32_t lookupAction(const char actionName[]);
+  static uint32_t lookupAction(const char actionName[]);
   //	static GLWin* w;
-  void setEvent(uint32_t e, uint32_t a) { inputMap[e] = a; }
+  static void setEvent(uint32_t e, uint32_t a) { inputMap.at(e) = a; }
 
-  void setEvent(uint32_t key, uint32_t mod, uint32_t a) {
+  static void setEvent(uint32_t key, uint32_t mod, uint32_t a) {
     setEvent((mod << 9) | key, a);
   }
 
-  void setAction(uint32_t a, std::function<void()> action) {
-    actionMap[a] = action;
+  static void setAction(uint32_t a, std::function<void()> action) {
+    actionMap[a] = move(action);
   }
   enum class Security {
     SAFE,        // safe for a remote server to trigger this function
     RESTRICTED,  // only the local user can execute this function
-    ASK  // a remote user or server may request this but it will trigger a popup
+    ASK  // a remote user or server may request this, but it will trigger a popup
          // asking local user to approve
   };
   std::array<uint32_t, 3> numActions;  // keep track of how many of each kind of
@@ -58,7 +58,7 @@ class CallbackHandler {
   }
   // registerAction("myFunc", Security::RESTRICTED, myFunc)
   // bind an input event to an action Name. looks up offsets into arrays
-  void bind(uint32_t input, const char actionName[]);
+  static void bind(uint32_t input, const char actionName[]);
   void bind(const char inputCmd[], const char actionName[]);
 #define quote(a) #a
 
@@ -80,7 +80,7 @@ class CallbackHandler {
     registerCallback(inp, quote(func), Security::SAFE, func, ptr);
   }
 
-  void doit(uint32_t input);
+  static doit(uint32_t input);
 
   void bind2DOrtho();
   void bind3D();
