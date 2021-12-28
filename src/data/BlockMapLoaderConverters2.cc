@@ -101,7 +101,6 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
         bml.segments[segCount].numPoints--;
       }
     }
-    return bml;
   }
 
   cerr << "Removed " << numDups << " final points of polygons\n";

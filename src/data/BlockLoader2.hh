@@ -96,7 +96,7 @@ class BlockLoader {
   // Fast load a blockfile
   void readBlockFile(const char filename[]);
   uint32_t getHeaderSize() const { return sizeof(GeneralHeader); }
-  void* getSpecificHeader() const { return mem + sizeof(GeneralHeader) + generalHeader->header_size; } //TODO: do we need header_size at all? variable sized headers?
+  void* getSpecificHeader() const { return (char*)mem + sizeof(GeneralHeader) + generalHeader->header_size; } //TODO: do we need header_size at all? variable sized headers?
 
   void registerDocument(uint64_t author_id) const;  
   // register this document with a server under author's id
