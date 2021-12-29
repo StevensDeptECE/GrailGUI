@@ -40,3 +40,8 @@ void Curve::getMatrix(double step) const {
 }
 
 #endif
+
+int main(){
+        cout << "in curve.cc" << endl;
+
+}
