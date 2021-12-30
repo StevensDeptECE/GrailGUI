@@ -27,7 +27,6 @@ int main() {
   c1.compute();
   for(double i=0; i<=1; i+=0.2){
       cout<< c1.getPoint(i) << endl;
-
   }
   cout << "in circle1.cc, radius: " << c1.getRadius() << endl;
 }

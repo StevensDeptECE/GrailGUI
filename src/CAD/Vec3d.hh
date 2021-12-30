@@ -61,6 +61,15 @@ Vec3D cross(const Vec3D& a, const Vec3D& b) {
   double cz = (a.x * b.y) - (a.y * b.x);
   return Vec3D(cx, cy, cz);
 }
+
+double distance(const Vec3D& a, const Vec3D& b) {
+  return sqrt(pow(b.x-a.x, 2) + pow(b.y-a.y, 2) + pow(b.z-a.z, 2));
+}
+
+Vec3D midpoint(const Vec3D& a, const Vec3D& b) {
+  return Vec3D(((a.x+b.x)/2), ((a.y+b.y)/2), ((a.z+b.z)/2));
+}
+
 // Overload the << operator
 std::ostream& operator<< (std::ostream& s, const Vec3D& v){
 return s << "(" << v.x <<"," << v.y << "," << v.z <<")";
