@@ -23,6 +23,10 @@ friend Vec3D operator- (const Vec3D& a, const Vec3D& b){
 friend Vec3D operator* (const Vec3D& a, double s){
   return Vec3D(a.x * s, a.y * s, a.z * s);
 }
+friend Vec3D operator/ (const Vec3D& a, double s){
+  return Vec3D(a.x / s, a.y / s, a.z / s);
+}
+
 
 Vec3D operator- () const {
   return Vec3D(-x, -y, -z);
@@ -34,6 +38,14 @@ double mag() const {
 double magsq() const {
   return x*x+y*y+z*z;
 }
+Vec3D normalize(const Vec3D& a){
+  if (a.mag() == 0){
+    return Vec3D(0,0,0);
+  }
+  else{
+    return a/a.mag();
+  }
+}
 
 double dot(const Vec3D& b) const {
 return x * b.x + y * b.y + z * b.z;
@@ -42,6 +54,12 @@ return x * b.x + y * b.y + z * b.z;
 // compute the dot product as a function
 double dot(const Vec3D& a, const Vec3D& b){
 return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+Vec3D cross(const Vec3D& a, const Vec3D& b) {
+  double cx = (a.y * b.z) - (a.z * b.y);
+  double cy = (a.z * b.x) - (a.x * b.z);
+  double cz = (a.x * b.y) - (a.y * b.x);
+  return Vec3D(cx, cy, cz);
 }
 // Overload the << operator
 std::ostream& operator<< (std::ostream& s, const Vec3D& v){
