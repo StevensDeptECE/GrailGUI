@@ -1,4 +1,4 @@
-#include "CAD/Circle1.hh"
+#include "CAD/Circle.hh"
 #include <cmath>
 
 using namespace std;

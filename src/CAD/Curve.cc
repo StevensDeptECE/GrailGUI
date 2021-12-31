@@ -70,6 +70,4 @@ int main(){
   Curve c1(a, b);
   c1.getPoints();
   cout << "points: " << c1 << endl;
-  cout << "in curve.cc" << endl;
-
 }

@@ -1,6 +1,6 @@
 #pragma once
 //#include "opengl/GrailGUI.hh"
-#include "CAD/Curve.hh"
+//#include "CAD/Curve.hh"
 #include "CAD/Vec3d.hh"
 #include <vector>
 
@@ -9,7 +9,7 @@
 /**
 Represent -- 
 **/
-class Circle : public Curve {
+class Circle : public Vec3D {
   protected:
     double radius;
      Vec3D center;
