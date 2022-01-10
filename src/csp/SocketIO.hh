@@ -28,12 +28,12 @@ using socket_t = decltype(socket(0, 0, 0));
 namespace SocketIO {
 namespace {
 #ifdef __linux__
-constexpr static int err_code = -1;
+constexpr int err_code = -1;
 #elif _WIN32
-constexpr static int err_code = SOCKET_ERROR;
+constexpr int err_code = SOCKET_ERROR;
 #endif
 }  // anonymous namespace for errors
 
-int send(socket_t sckt, const char *buf, int size, int flags);
-int recv(socket_t sckt, const char *buf, int size, int flags);
+ssize_t send(socket_t sckt, const char *buf, int size, int flags);
+ssize_t recv(socket_t sckt, char *buf, int size, int flags);
 };  // namespace SocketIO
