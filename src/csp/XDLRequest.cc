@@ -6,7 +6,6 @@
 
 #include <csp/csp.hh>
 #include <cstdint>
-#include <fstream>
 #include <iostream>
 
 //#include "util/TypeAlias.hh"
@@ -19,7 +18,7 @@
 using namespace std;
 
 // base case
-void buildData(Buffer& out, char meta[]) {}
+// void buildData(Buffer& out, char meta[]) {}
 
 // template <typename T, typename... Args>
 // void buildData(Buffer& out, Buffer& meta, T first, const Args&... args) {
@@ -43,10 +42,10 @@ void buildData2(ArrayOfBytes* a, const T& arg) {
 }
 
 template <typename... Args>
-void buildData(DynArray<const XDLType*> a, const Args&... args) {
+void buildData(DynArray<const XDLType*> data, const Args&... args) {
   ArrayOfBytes* bytes = new ArrayOfBytes();
   (buildData2(bytes, args), ...);
-  a.add(bytes);
+  data.add(bytes);
 }
 #if 0
 template <std::size_t datasize, std::size_t metasize, typename... Args>

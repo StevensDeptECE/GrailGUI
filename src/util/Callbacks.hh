@@ -80,7 +80,7 @@ class CallbackHandler {
     registerCallback(inp, quote(func), Security::SAFE, func, ptr);
   }
 
-  static doit(uint32_t input);
+  static void doit(uint32_t input);
 
   void bind2DOrtho();
   void bind3D();
