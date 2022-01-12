@@ -10,9 +10,9 @@
 
 using namespace std::numbers;
 
-Cylinder::Cylinder(uint32_t height, uint32_t r1, uint32_t r2, uint32_t res) : height(height), r1(r1), r2(r2), res(res){
-}
-Cylinder::Cylinder(uint32_t height, float x, float y,float radius, uint32_t segments, const Style* s) : height(height), radius(radius), res(res), x(x), y(y), segments(segments){
+// Cylinder::Cylinder(uint32_t height, uint32_t r1, uint32_t r2, uint32_t res) : height(height), r1(r1), r2(r2), res(res){
+// }
+Cylinder::Cylinder(uint32_t height, uint32_t x, uint32_t y, uint32_t radius, uint32_t segments, const Style* s) : height(height), radius(radius), x(x), y(y), segments(segments){
 }
 Cylinder::~Cylinder(){
 }
@@ -39,16 +39,16 @@ void Cylinder::init(){
 
   for(int i=0; i < vertices/2; i++){
     ind.push_back(i);
-    ind.push_back(vertices + i);
     ind.push_back(i+1);
-    ind.push_back(i);
+    ind.push_back(vertices + i);
+    ind.push_back(vertices + i);
     ind.push_back(i+1);
     ind.push_back(vertices + i + 1);
   }
 
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, vertices * sizeof(float), &allVerts, GL_DYNAMIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, vertices * sizeof(float), &vert, GL_DYNAMIC_DRAW);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
   glGenBuffers(1, &ibo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -63,7 +63,7 @@ void Cylinder::render(){
   glBindVertexArray(vao);
   glEnableVertexAttributeArray(0);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
   glLineWidth(style->getLineWidth());
 
