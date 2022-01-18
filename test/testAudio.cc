@@ -1,11 +1,10 @@
 #include "audio/AudioPlayer.hh"
-#include "opengl/Animated.hh"
 #include "opengl/GrailGUI.hh"
 
 using namespace std;
 using namespace grail;
 
-class TestAudioPlayer : public Animated {
+class TestAudioPlayer : public Member {
  private:
   double startTime;
   double time;
@@ -23,8 +22,7 @@ class TestAudioPlayer : public Animated {
   }
 
  public:
-  TestAudioPlayer(Tab *tab)
-      : Animated(tab), startTime(0), a(nullptr), step(0) {}
+  TestAudioPlayer(Tab *tab) : Member(tab, 0), startTime(0), a(nullptr), step(0) {}
 
   // required to ensure that the memory of the audio player is freed
   ~TestAudioPlayer() { delete a; }
@@ -57,7 +55,7 @@ class TestAudioPlayer : public Animated {
       a->printCurrentTime();
 
       // this should fail, chicken not valid lmao
-      a->seekLocation("66", "chicken");
+      //a->seekLocation("66", "chicken");
     });
 
     helper(7, 3, "revert skip", [](AudioPlayer *a) {
@@ -138,5 +136,5 @@ class TestAudioPlayer : public Animated {
 };
 
 void grailmain(int argc, char *argv[], GLWin *w, Tab *defaultTab) {
-  defaultTab->addAnimated(new TestAudioPlayer(defaultTab));
+  new TestAudioPlayer(defaultTab);
 }

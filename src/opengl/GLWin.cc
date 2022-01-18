@@ -162,7 +162,10 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const string &title,
       title(title),
       exitAfter(exitAfter),
       tabs(4),
-      faces(16) {
+      faces(16),
+      dragMode(false),
+      mousePressX(0),
+      mousePressY(0) {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -227,7 +230,7 @@ void GLWin::startWindow() {
   // singleton initialization here
   // TODO: is there any more elegant way?
   if (!hasBeenInitialized) {
-    *(string *)&baseDir = getenv("GRAIL");
+    baseDir = prefs.getBaseDir();
     FontFace::initAll();
   }
   defaultFont = (Font *)FontFace::get("TIMES", 40, FontFace::BOLD);
@@ -368,10 +371,11 @@ void GLWin::mainLoop() {
     glfwPollEvents();  // Check and call events
     // note: any events needing a refresh should set dirty = true
     if (currentTab()->checkUpdate()) setUpdate();
-		//		cerr << "needsupdate=" << needsUpdate << '\n';
     if (needsUpdate) {
       update();
       needsRender = true;
+    } else {
+      usleep(10);
     }
   }
   cleanup();
@@ -473,9 +477,11 @@ void GLWin::prevTab() {
     current = tabs.size() - 1;
 }
 
-void GLWin::addTab() {
-  tabs.add(new Tab(this));
+Tab *GLWin::addTab() {
+  Tab *newTab = new Tab(this);
+  tabs.add(newTab);
   current = tabs.size() - 1;
+  return newTab;
 }
 
 // TODO: write this, also consider writing a remove function for DynArray

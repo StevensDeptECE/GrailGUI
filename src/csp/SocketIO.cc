@@ -6,22 +6,26 @@
 
 // TODO: Look into logging WSAGetLastError and strerror(errno)
 // Using the logging object in csp.hh?
-int SocketIO::send(socket_t sckt, const char *buf, int size, int flags) {
-  uint32_t bytesSent;
-  if ((bytesSent = ::send(sckt, (char *)buf, size, 0)) == err_code) {
-    if (errno != EBADF)
+namespace SocketIO {
+ssize_t send(socket_t sckt, const char *buf, int size, int flags) {
+  ssize_t bytesSent = 0;
+  if ((bytesSent = ::send(sckt, buf, size, flags)) == err_code) {
+    if (errno != EBADF) {
       throw Ex1(Errcode::SOCKET_SEND);
+    }
     perror("Warning on send(): ");
   }
   return bytesSent;
 }
 
-int SocketIO::recv(socket_t sckt, const char *buf, int size, int flags) {
-  uint32_t bytesRecv;
-  if ((bytesRecv = ::recv(sckt, (char *)buf, size, 0)) == err_code) {
-    if (errno != EBADF)
+ssize_t recv(socket_t sckt, char *buf, int size, int flags) {
+  ssize_t bytesRecv = 0;
+  if ((bytesRecv = ::recv(sckt, buf, size, flags)) == err_code) {
+    if (errno != EBADF) {
       throw Ex1(Errcode::SOCKET_SEND);
+    }
     perror("Warning on recv()");
   }
   return bytesRecv;
 }
+}  // namespace SocketIO

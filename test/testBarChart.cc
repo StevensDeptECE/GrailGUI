@@ -1,14 +1,14 @@
-#include "opengl/GraphStyle.hh"
 #include "opengl/BarChartWidget.hh"
 #include "opengl/GrailGUI.hh"
+#include "opengl/GraphStyle.hh"
 
 using namespace std;
 using namespace grail;
 
 class TestBarChart : public GraphStyle {
-public:
-	TestBarChart(Tab* tab) : GraphStyle(tab, "TIMES", 20, 12) {
-    MainCanvas *c = tab->getMainCanvas();
+ public:
+  TestBarChart(Tab* tab) : GraphStyle(tab, "TIMES", 20, 12) {
+    MainCanvas* c = tab->getMainCanvas();
     vector<double> values = {4, 6, 8, 10, 12, 14};
     vector<double> logValues = {4, 8, 16, 32, 64, 128};
 
@@ -20,7 +20,8 @@ public:
 
     vector<glm::vec4> outline{grail::green, grail::blue, grail::purple};
 
-    BarChartWidget bcw(c, 100, 100, 850, 400, GraphWidget::AxisType::TEXT, GraphWidget::AxisType::LINEAR, this);
+    BarChartWidget bcw(c, 100, 100, 850, 400, GraphWidget::AxisType::TEXT,
+                       GraphWidget::AxisType::LINEAR, this);
 
     // create x axis (categories)
     bcw.setNames(names);
@@ -28,18 +29,18 @@ public:
     bcw.xAxis->setTitle("Colors");
 
     // y axis stuff
-    //bcw.createYAxis(GraphWidget::AxisType::LINEAR);
+    // bcw.createYAxis(GraphWidget::AxisType::LINEAR);
     bcw.setValues(values);
 
     // setting general things for the graph
     // the axis text styles must be set before
     // creating the axes
     bcw.setGraphTitle("Test Title");
-		//bcw.setStyle(this);
+    // bcw.setStyle(this);
 
     // bar chart widget specific bits
-    //bcw.setBarColors(colors);
-    //bcw.setBarOutlineColors(outline);
+    // bcw.setBarColors(colors);
+    // bcw.setBarOutlineColors(outline);
     // linear
     bcw.yAxis->setBounds(0, 60);
     bcw.yAxis->setTickInterval(2);
@@ -56,7 +57,7 @@ public:
   }
 };
 
-void grailmain(int argc, char *argv[], GLWin* w, Tab* tab) {
-	w->setTitle("Test Bar Chart");
-  tab->addAnimated(new TestBarChart(tab));
+void grailmain(int argc, char* argv[], GLWin* w, Tab* tab) {
+  w->setTitle("Test Bar Chart");
+  tab->addMember(new TestBarChart(tab));
 }

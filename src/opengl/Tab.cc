@@ -3,8 +3,8 @@
 #include <cstring>
 #include <iostream>
 
-#include "opengl/Animated.hh"
 #include "opengl/GLWin.hh"
+#include "opengl/Member.hh"
 #include "opengl/MultiText.hh"
 #include "opengl/Style.hh"
 #include "opengl/StyledMultiShape2D.hh"
@@ -24,12 +24,12 @@ Tab::Tab(GLWin *parent)
       parent(parent),
       canvases(16),
       styles(16),
-      animatedMembers(4),
+      members(4),
       mainCanvas(this) {}
 
 void Tab::init() {
-  for (int i = 0; i < animatedMembers.size(); ++i) {
-    animatedMembers[i]->init();
+  for (int i = 0; i < members.size(); ++i) {
+    members[i]->init();
   }
   for (int i = 0; i < canvases.size(); ++i) {
     canvases[i]->init();
@@ -39,13 +39,17 @@ void Tab::init() {
 
 /**
  * Frames can set animation rates. If set to -1, never animates (static)
- * 0 means draw as fast as possible, no delay (set dirty=true which will force
- * update()) positive number waits this much time. So for two second delay
+ * 0 means draw as fast as possible, no delay (set needsUpdate=true which will
+ * force update()) positive number waits this much time. So for two second delay
  * should be 2.0 This is setusing setFrameRate() which sets the inverse, ie
  * setFrameRate(60) for 60 fps.
  *
  * @return true if update is needed
  */
+// BUG: If framerate is set to 0 when instantiating a Member, then the resulting
+// animation is much slower than when framerate is set to 60. This may be due to
+// Member, Tab, GLWin, or something else, so the bug is getting put here for
+// now.
 bool Tab::checkUpdate() {
   if (updateTime == 0 ||
       (updateTime > 0 && glfwGetTime() > lastUpdateTime + updateTime)) {
@@ -56,8 +60,8 @@ bool Tab::checkUpdate() {
 }
 
 void Tab::update() {
-  for (int i = 0; i < animatedMembers.size(); ++i) {
-    animatedMembers[i]->update();
+  for (int i = 0; i < members.size(); ++i) {
+    members[i]->update();
   }
 
   for (int i = 0; i < canvases.size(); ++i) {
@@ -81,8 +85,8 @@ void Tab::cleanup() {
 }
 
 void Tab::render() {
-  for (int i = 0; i < animatedMembers.size(); ++i) {
-    animatedMembers[i]->render();
+  for (int i = 0; i < members.size(); ++i) {
+    members[i]->render();
   }
 
   for (int i = 0; i < canvases.size(); ++i) {

@@ -1,11 +1,10 @@
 #include "audio/AudioPlayer.hh"
-#include "opengl/Animated.hh"
 #include "opengl/GrailGUI.hh"
 
-class TestSingleAudio : public Animated {
+class TestSingleAudio : public Member {
  public:
   AudioPlayer *a;
-  TestSingleAudio(Tab *tab) : Animated(tab) {
+  TestSingleAudio(Tab *tab) : Member(tab) {
     a = new AudioPlayer();
 
     a->setCurrentContext("default");
@@ -16,5 +15,5 @@ class TestSingleAudio : public Animated {
 };
 
 void grailmain(int argc, char *argv[], GLWin *w, Tab *defaultTab) {
-  defaultTab->addAnimated(new TestSingleAudio(defaultTab));
+  defaultTab->addMember(new TestSingleAudio(defaultTab));
 }

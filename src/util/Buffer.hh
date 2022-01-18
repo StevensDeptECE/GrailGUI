@@ -28,7 +28,9 @@ class Buffer {
   Buffer(const char filename[], size_t initialSize, const char*);
   Buffer(const Buffer& c) = delete;
   ~Buffer() {
-    if (writing) flush();
+    if (writing && !isSockBuf) {
+      flush();
+    }
     delete[] preBuffer;
   }
   void operator=(const Buffer& orig) = delete;

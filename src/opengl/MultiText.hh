@@ -221,6 +221,9 @@ class MultiText : public Shape {
                 float endMargin, float rowSize, float startOverMargin);
   uint32_t findFirstOverMargin(float x, const Font* f, const char s[],
                                uint32_t len, float rightMargin);
+
+  // BUG: testDisplayBook should clear on the last page of Annatest, but instead
+  // the bottom half of the page doesnt clear.
   void clear() { vert.clear(); }
   void init() override;
 

@@ -14,7 +14,7 @@
 #pragma comment(lib, "Mswsock.lib")
 #pragma comment(lib, "AdvApi32.lib")
 
-//Compiler is not a fan of this define
+// Compiler is not a fan of this define
 //#define errno WSAGetLastError()
 #else  // linux
 
@@ -25,14 +25,15 @@
 
 using socket_t = decltype(socket(0, 0, 0));
 
-class SocketIO {
- private:
+namespace SocketIO {
+namespace {
 #ifdef __linux__
-  const static int err_code = -1;
+constexpr int err_code = -1;
 #elif _WIN32
-  const static int err_code = SOCKET_ERROR;
+constexpr int err_code = SOCKET_ERROR;
 #endif
- public:
-  static int send(socket_t sckt, const char *buf, int size, int flags);
-  static int recv(socket_t sckt, const char *buf, int size, int flags);
-};
+}  // anonymous namespace for errors
+
+ssize_t send(socket_t sckt, const char *buf, int size, int flags);
+ssize_t recv(socket_t sckt, char *buf, int size, int flags);
+};  // namespace SocketIO

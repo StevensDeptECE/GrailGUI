@@ -88,7 +88,7 @@ Font* Font::getDefault() {
 // TODO: can be made a private method of font
 static uint32_t hashGlyph(const uint8_t glyphBuffer[], uint32_t len) {
   uint32_t hash = len;
-  for (int i = 0; i < len; i++)
+  for (uint32_t i = 0; i < len; i++)
     hash = ((hash << 17) | (hash >> 13)) ^ ((hash << 5) | (hash >> 27)) ^
            glyphBuffer[i];
   return hash;
@@ -236,10 +236,6 @@ void FontFace::emptyFaces() {
   faces.clear();
 }
 
-string getBaseDir() {
-  string baseDir = getenv("GRAIL");
-  return baseDir + "/";
-}
 unordered_map<string, string> FontFace::pathByName;
 
 void FontFace::setTexture(const uint8_t bitmap[], uint32_t w, uint32_t h) {
@@ -371,7 +367,7 @@ Font::Font(istream& fastfont) {
   uint32_t numGlyphs = glyphs.size();
   fastfont.read((char*)&numGlyphs, sizeof(uint32_t));
   glyphs.reserve(numGlyphs);
-  for (int i = 0; i < numGlyphs; i++) {
+  for (uint32_t i = 0; i < numGlyphs; i++) {
     Glyph g;
     fastfont.read((char*)&g, sizeof(Glyph));
     glyphs.push_back(g);
@@ -410,7 +406,7 @@ void FontFace::saveFonts(const uint8_t* combinedBitmap,
                          uint32_t totalWidthAllFaces,
                          uint32_t maxHeightAllFaces) {
   ofstream fastfont(
-      getBaseDir() + "fast.glfont",
+      GLWin::baseDir + "fast.glfont",
       ios::binary);  // save a binary file for rapid loading next time
   FastFontHeader header;
   header.magic = 0x544E4644;
@@ -474,14 +470,14 @@ void FontFace::initAll() {
   // if (hasBeenInitialized) return;
   // hasBeenInitialized = true;
   // TODO: load from config file
-  std::string fontPath = GLWin::baseDir + "/conf/fonts/";
+  std::string fontPath = GLWin::baseDir + "conf/fonts/";
   cout << "FONT PATH = " << fontPath << endl;
 
   if (FT_Init_FreeType(&FontFace::ftLib))
     throw Ex1(Errcode::INITIALIZE_FREETYPE);
   // Create a hashmap with the name and filepath of all fonts specified in
   // dirPaths
-  string baseDir = getBaseDir();
+  string baseDir = GLWin::baseDir;
   string fontBase = baseDir + "conf/fonts/";
   ifstream fontConf(baseDir + "conf/fonts.conf");
   string faceName, facePath;
@@ -519,25 +515,25 @@ void FontFace::initAll() {
                    maxFontSize, bitmap, sizeX, sizeY, currX, currY, rowSize);
     }
   }
-  for (int i = 1400; i < sizeY; i++) {
+  for (uint32_t i = 1400; i < sizeY; i++) {
     int r = i * sizeX;
-    for (int j = 0; j < sizeX / 4; j += 2) {
+    for (uint32_t j = 0; j < sizeX / 4; j += 2) {
       bitmap[r + j] = 255;
       bitmap[r + j + 1] = 0;
     }
-    for (int j = sizeX / 4; j < sizeX / 2; j += 4) {
+    for (uint32_t j = sizeX / 4; j < sizeX / 2; j += 4) {
       bitmap[r + j] = 255;
       bitmap[r + j + 1] = 255;
       bitmap[r + j + 2] = 255;
       bitmap[r + j + 3] = 255;
     }
-    for (int j = sizeX / 2; j < sizeX * 3 / 4; j += 8) {
+    for (uint32_t j = sizeX / 2; j < sizeX * 3 / 4; j += 8) {
       bitmap[r + j] = 255;
       bitmap[r + j + 1] = 0;
       bitmap[r + j + 2] = 0;
       bitmap[r + j + 3] = 0;
     }
-    for (int j = sizeX * 3 / 4; j < sizeX; j++) {
+    for (uint32_t j = sizeX * 3 / 4; j < sizeX; j++) {
       bitmap[r + j] = 255;
     }
   }

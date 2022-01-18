@@ -107,7 +107,7 @@ class CBenchmark {
  public:
   CBenchmark(const std::string& msg) : msg(msg) { reset(); }
 
-  void reset() { elapsedTime = 0; }
+  constexpr void reset() { elapsedTime = 0; }
 
   void start() {
     t0 = time_point_cast<std::chrono::nanoseconds>(
@@ -115,13 +115,12 @@ class CBenchmark {
   }
 
   void end() {
-    std::chrono::time_point<std::chrono::steady_clock, std::chrono::nanoseconds>
-        t1 = time_point_cast<std::chrono::nanoseconds>(
-            std::chrono::steady_clock::now());
+    auto t1 = time_point_cast<std::chrono::nanoseconds>(
+        std::chrono::steady_clock::now());
     elapsedTime += (t1 - t0).count();
   }
 
-  constexpr double elapsed() { return elapsedTime; }
+  constexpr double elapsed() const { return elapsedTime; }
   void display() const {
     fmt::print("{} elapsed time: {}\n", msg, elapsedTime);
   }
@@ -130,7 +129,7 @@ class CBenchmark {
   }
 
   template <typename Func>
-  constexpr static void benchmark(const std::string& msg,
+  static void benchmark(const std::string& msg,
                                   uint64_t numIterations, Func func) {
     uint64_t iter = numIterations;
     CBenchmark b(msg);

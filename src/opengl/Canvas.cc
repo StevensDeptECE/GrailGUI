@@ -18,8 +18,7 @@ Canvas::Canvas(Tab* tab) : Canvas(tab->getParentWin(), tab) {}
 Canvas::~Canvas() { cleanup(); }
 
 void Canvas::cleanup() {
-  for (uint32_t i = 0; i < layers.size(); i++)
-    delete layers[i];
+  for (uint32_t i = 0; i < layers.size(); i++) delete layers[i];
   layers.clear();
   if (!cam) {
     delete cam;
@@ -32,8 +31,7 @@ void Canvas::render() {
   Shader::useShader(style->getShaderIndex())->setMat4("projection", projection);
   glViewport(vpX, w->height - vpH - vpY, vpW, vpH);
 
-  for (uint32_t i = 0; i < layers.size(); i++)
-    layers[i]->render();
+  for (uint32_t i = 0; i < layers.size(); i++) layers[i]->render();
 }
 
 Camera* Canvas::setLookAtProjection(float eyeX, float eyeY, float eyeZ,
@@ -45,7 +43,7 @@ Camera* Canvas::setLookAtProjection(float eyeX, float eyeY, float eyeZ,
   return cam;
 }
 
-MainCanvas::MainCanvas(Tab* tab) : Canvas(tab), widgets(10) {
+MainCanvas::MainCanvas(Tab* tab) : Canvas(tab) {
   gui = new StyledMultiShape2D(this, w->getGuiStyle());
   guiText = new MultiText(this, w->getGuiTextStyle(), 16384);
   menu = new StyledMultiShape2D(this, w->getMenuStyle());
@@ -58,6 +56,7 @@ MainCanvas::~MainCanvas() {
   delete menu;
   delete menuText;
 }
+
 void MainCanvas::addButton(const char text[], float x, float y, float w,
                            float h) {
   gui->drawRectangle(x, y, w, h, style->fg);
@@ -85,12 +84,10 @@ void MainCanvas::init() {
   guiText->init();
   menu->init();
   menuText->init();
-  tab->registerCallback(Tab::Inputs::MOUSE0_PRESS,
-                             "Widget Callback- Press", Tab::Security::SAFE,
-                             bind(&MainCanvas::click, this));
-  tab->registerCallback(Tab::Inputs::MOUSE0_RELEASE,
-                             "Widget Callback- Release", Tab::Security::SAFE,
-                             bind(&MainCanvas::click, this));
+  tab->registerCallback(Tab::Inputs::MOUSE0_PRESS, "Widget Callback- Press",
+                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
+  tab->registerCallback(Tab::Inputs::MOUSE0_RELEASE, "Widget Callback- Release",
+                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
 }
 
 void MainCanvas::render() {
@@ -121,7 +118,7 @@ void MainCanvas::click() {
   float mouseX = win->mouseX;
   float mouseY = win->mouseY;
 
-  for (int i = widgets.size() - 1; i >= 0; i--) {
-    if (widgets[i]->checkClick(mouseX, mouseY)) return;
+  for (InteractiveWidget2D* widget : widgets) {
+    if (widget->checkClick(mouseX, mouseY)) return;
   }
 }

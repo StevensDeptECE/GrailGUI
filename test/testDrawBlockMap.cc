@@ -1,4 +1,3 @@
-#include "opengl/Animated.hh"
 #include "data/BlockMapLoader.hh"
 #include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
@@ -7,33 +6,32 @@
 using namespace std;
 using namespace grail;
 
-class TestDrawBlockMap : public Animated {
+class TestDrawBlockMap : public Member {
  private:
   const char* filename;
   MapView2D* mv;
 
  public:
   TestDrawBlockMap(Tab* tab, const char filename[])
-		: Animated(tab), //GLWin(0x000000, 0xCCCCCC, "Block Loader: Map Demo"),
-			filename(filename),
-			mv(nullptr) {
+      : Member(tab),  // GLWin(0x000000, 0xCCCCCC, "Block Loader: Map Demo"),
+        filename(filename),
+        mv(nullptr) {
     MainCanvas* c = tab->getMainCanvas();
-		//    const Style* s = tab->getDefaultStyle();
+    //    const Style* s = tab->getDefaultStyle();
     Style* s2 = new Style(tab->getDefaultFont(), grail::white, grail::black);
-		//    c->addClickableWidget(
-		//new ButtonWidget(c, 0, 0, 200, 100, "Click Me!", "mapZoomIn"));
+    //    c->addClickableWidget(
+    // new ButtonWidget(c, 0, 0, 200, 100, "Click Me!", "mapZoomIn"));
     mv = c->addLayer(new MapView2D(c, s2, new BlockMapLoader(filename)));
 
-    bindEvent(Tab::Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);
-    bindEvent(Tab::Inputs::WHEELDOWN, &TestDrawBlockMap::mapZoomOut, this);
-    bindEvent(Tab::Inputs::RARROW, &TestDrawBlockMap::mapPanRight, this);
-    bindEvent(Tab::Inputs::LARROW, &TestDrawBlockMap::mapPanLeft, this);
-    bindEvent(Tab::Inputs::UPARROW, &TestDrawBlockMap::mapPanUp, this);
-    bindEvent(Tab::Inputs::DOWNARROW, &TestDrawBlockMap::mapPanDown, this);
+    tab->bindEvent(Tab::Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);
+    tab->bindEvent(Tab::Inputs::WHEELDOWN, &TestDrawBlockMap::mapZoomOut, this);
+    tab->bindEvent(Tab::Inputs::RARROW, &TestDrawBlockMap::mapPanRight, this);
+    tab->bindEvent(Tab::Inputs::LARROW, &TestDrawBlockMap::mapPanLeft, this);
+    tab->bindEvent(Tab::Inputs::UPARROW, &TestDrawBlockMap::mapPanUp, this);
+    tab->bindEvent(Tab::Inputs::DOWNARROW, &TestDrawBlockMap::mapPanDown, this);
     update();
   }
 
-			
   int countyStart;
   int numCounties;
   int displayNumCounties;
@@ -41,6 +39,19 @@ class TestDrawBlockMap : public Animated {
   ~TestDrawBlockMap() { delete mv; }
   TestDrawBlockMap(const TestDrawBlockMap& orig) = delete;
   TestDrawBlockMap& operator=(const TestDrawBlockMap& orig) = delete;
+  TestDrawBlockMap(TestDrawBlockMap&& orig)
+      : Member(orig), filename(orig.filename), mv(orig.mv) {
+    orig.mv = nullptr;  // TODO: should filename be set to nullptr?
+  }
+  TestDrawBlockMap& operator=(const TestDrawBlockMap&& orig) {
+    if (this != &orig) {
+      delete mv;  // TODO: Not deleting filename as its usually passed on the
+                  // stack
+      mv = orig.mv;
+      filename = orig.filename;
+    }
+    return *this;
+  }
 
   constexpr static float zoomVal = 1.2;
   void mapZoomIn() {
@@ -97,6 +108,6 @@ class TestDrawBlockMap : public Animated {
   }
 };
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* tab) {
-	tab->addAnimated(new TestDrawBlockMap("res/maps/uscounties.bml"));
+void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+  new TestDrawBlockMap(defaultTab, "res/maps/uscounties.bml");
 }

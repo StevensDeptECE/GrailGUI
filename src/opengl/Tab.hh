@@ -17,12 +17,14 @@ Predefine an array of images so they can be referred at runtime with an int
 class GLWin;
 class StyledMultiShape2D;
 class MultiText;
-class Animated;
+class Member;
 class Tab : public CallbackHandler {
  private:
-  DynArray<Animated*> animatedMembers;
+  DynArray<Member*> members;
   DynArray<Canvas*> canvases;
   DynArray<Style*> styles;
+
+ public:
   double startTime;  // physical start time for simulations (zero by default)
   double t;          // master time variable for animations
   double dt;         // delta time advanced every frame
@@ -33,7 +35,6 @@ class Tab : public CallbackHandler {
   // TODO: every time you switch tabs, reset this number so user gets to see
   // animation for full time period without skipping
   double updateTime;  // how much time for each frame
-
   GLWin* parent;
   MainCanvas mainCanvas;  // special canvas for drawing GUI and menus
   // For anything custom, you should use your own objects, not use these
@@ -83,9 +84,16 @@ class Tab : public CallbackHandler {
 
   Canvas* getCanvas(uint32_t i) { return canvases[i]; }
 
-  void addAnimated(Animated* anim) { animatedMembers.add(anim); }
+  void addMember(Member* mem) { members.add(mem); }
 
   MainCanvas* getMainCanvas() { return &mainCanvas; }
+
+  const Font* getDefaultFont() const { return parent->getDefaultFont(); }
+  const Font* getGuiFont() const { return parent->getGuiFont(); }
+  const Font* getMenuFont() const { return parent->getMenuFont(); }
+
+  void setRender() const { parent->setRender(); }
+  void setUpdate() const { parent->setUpdate(); }
 
   void loadBindings();
 

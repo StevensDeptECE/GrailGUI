@@ -3,12 +3,20 @@
 #include <memory.h>
 
 #include <iostream>
+
+// The following disables clang-tidy from warning about pointer arithmetic
+// Since this is a container implementation, it is unavoidable that pointer 
+// arithmetic is used
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+
 template <typename T>
 class DynArray {
  private:
   uint32_t capacity;
   uint32_t size_;
   T* data;
+
+  // TODO: What is the point of this? We do nothing with either parameter.
   void* operator new(size_t sz, T* place) { return place; }
   // TODO: Objects containing pointers may be unable to move
   // DynArray of Strings seems to break after 2 Strings are added
@@ -25,11 +33,11 @@ class DynArray {
   DynArray(uint32_t capacity)
       : capacity(capacity), size_(0), data((T*)malloc(capacity * sizeof(T))) {}
   ~DynArray() {
-    for (int i = 0; i < size_; i++) data[i].~T();
+    for (uint32_t i = 0; i < size_; i++) data[i].~T();
     free((void*)data);
   }
   void clear() {
-    for (int i = 0; i < size_; i++) data[i].~T();
+    for (uint32_t i = 0; i < size_; i++) data[i].~T();
     size_ = 0;
   }
   DynArray(const DynArray& orig)
@@ -56,7 +64,7 @@ class DynArray {
   uint32_t size() const { return size_; }
   const T& last() const { return data[size_ - 1]; }
   friend std::ostream& operator<<(std::ostream& s, const DynArray& d) {
-    for (int i = 0; i < d.size_; i++) s << d.data[i] << ' ';
+    for (uint32_t i = 0; i < d.size_; i++) s << d.data[i] << ' ';
     return s;
   }
 
@@ -69,5 +77,30 @@ class DynArray {
     if (index == size_ - 1) data[index].~T();
     --size_;
     return temp;
+}
+    template <class... Args>
+  T& emplace_back(Args&&... args) {
+    checkGrow();
+    return *construct_at(data + size_++, std::forward<Args>(args)...);
+  }
+
+  void push_back(T&& elem) { emplace_back(std::move(elem)); }
+
+  constexpr bool find(T& t) const {
+    for (const T& item : data) {
+      if (item == t) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Roughly equivalent of std::construct_at. Used to reduce class footprint
+  template <class... Args>
+  constexpr T* construct_at(T* p, Args&&... args) {
+    return ::new (const_cast<void*>(static_cast<const volatile void*>(p)))
+        T(std::forward<Args>(args)...);
   }
 };
+
+// NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic)

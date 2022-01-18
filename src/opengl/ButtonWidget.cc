@@ -23,3 +23,18 @@ void ButtonWidget::click(float mouseX, float mouseY) {
 }
 
 void ButtonWidget::init() {}
+
+ButtonWidget::ButtonWidget(MainCanvas* c, float x, float y, float w, float h,
+                           const std::string& text, const char action[])
+    : InteractiveWidget2D(c, x, y, w, h), text(text) {
+  redraw();
+}
+
+void ButtonWidget::redraw() {
+  int borderSize = 2;
+
+  m->fillRectangle(x - borderSize, y - borderSize, w + (borderSize * 2),
+                   h + (borderSize * 2), grail::black);
+  m->fillRectangle(x, y, w, h, grail::red);
+  t->addCentered(x, y, w, h, c->getStyle()->f, text);
+}

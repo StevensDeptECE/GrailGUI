@@ -185,7 +185,7 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   void resetCamera();
   void nextTab();
   void prevTab();
-  void addTab();
+  Tab* addTab();
   void removeTab();
   void goToLink(const char ipaddr[], uint16_t port, uint32_t requestID);
 };
