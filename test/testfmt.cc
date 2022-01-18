@@ -18,27 +18,27 @@ constexpr uint32_t test_format(C destBuf, T fmt_val) {
   return destBuf.size();  // size of the formatted data
 }
 
-constexpr uint32_t formatspf(char data[33], float f) {
+uint32_t formatspf(char data[33], float f) {
   return sprintf(data, "%f", f);
 }
 
-constexpr int32_t formatspf(char data[33], double f) {
+int32_t formatspf(char data[33], double f) {
   return sprintf(data, "%lf", f);
 }
 
-constexpr uint32_t formatspf(char data[33], int f) {
+uint32_t formatspf(char data[33], int f) {
   return sprintf(data, "%d", f);
 }
 
-constexpr uint32_t formatspf(char data[33], uint32_t f) {
+uint32_t formatspf(char data[33], uint32_t f) {
   return sprintf(data, "%u", f);
 }
 
-constexpr uint32_t formatspf(char data[33], uint64_t f) {
+uint32_t formatspf(char data[33], uint64_t f) {
   return sprintf(data, "%lu", f);
 }
 
-constexpr uint32_t formatspf(char data[33], const char* f) {
+uint32_t formatspf(char data[33], const char* f) {
   return sprintf(data, "%s", f);
 }
 
