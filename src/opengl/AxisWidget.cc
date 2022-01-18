@@ -1,5 +1,7 @@
 #include "opengl/AxisWidget.hh"
 
+#include <cstring>
+
 using namespace std;
 
 AxisWidget::AxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y,
@@ -16,7 +18,7 @@ AxisWidget::AxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y,
       showTicks(showTicks),
       isVert(isVert),
       axisTitle(axisTitle),
-			tickFormat({.width = tickFormatWidth, .precision = tickFormatPrecision}),
+      tickFormat({.width = tickFormatWidth, .precision = tickFormatPrecision}),
       bottomOffset(bottomOffset) {}
 
 AxisWidget::~AxisWidget() {}

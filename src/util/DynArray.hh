@@ -59,4 +59,15 @@ class DynArray {
     for (int i = 0; i < d.size_; i++) s << d.data[i] << ' ';
     return s;
   }
+
+  constexpr T removeAt(uint32_t index) {
+    T temp = data[index];
+
+    for (int i = index; i < size_ - 1; ++i) {
+      data[i] = data[i + 1];
+    }
+    if (index == size_ - 1) data[index].~T();
+    --size_;
+    return temp;
+  }
 };
