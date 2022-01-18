@@ -2,7 +2,7 @@ name: CMake
 
 on:
   push:
-    branches: [ main, tabbed-windows ]
+    branches: [ main, tabbed_windows ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
