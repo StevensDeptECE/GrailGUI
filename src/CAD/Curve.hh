@@ -4,27 +4,32 @@
 //#include "opengl/MultiShape3D.hh"
 #include "./Vec3d.hh"
 #include <vector>
+#include "opengl/Shape2D.hh"
 
 
 /**
 Represent -- 
 **/
-class Curve : public Vec3D {
+class Curve : public Vec3D, public Shape2D {
   protected:
     std::vector<Vec3D> points;
     double radius;
     Vec3D point;
     Vec3D center; 
     Vec3D p, u, v;
-   
+    std::vector<float> drawingPoints;
   
   public:
-    Curve(Vec3D p1, Vec3D p2) {
+    Curve(Vec3D p1, Vec3D p2, Canvas* c, Style* s) 
+      :Shape2D(c, p1.x, p1.y, s){
       this->point=p1;
       this->center=midpoint(p1,p2);
       this->radius=distance(p1,p2)/2;
+      this->getPoints();
     }
 
+  void init();
+  void render();
   void add(const Vec3D& p);
   void resize() {return points.reserve(points.size()*2);} //.size or .capacity()
   uint32_t size() const {return points.size();} //size = number of itmes

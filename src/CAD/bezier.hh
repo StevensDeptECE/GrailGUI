@@ -7,7 +7,7 @@
 //#include "src/CAD/line.hh"
 
 
-class Bezier : public Curve {
+class Bezier : public Vec3D {
  protected:
     //std::vector<Curve> segments;
     std::vector<Vec3D> point;
@@ -32,8 +32,8 @@ class Bezier : public Curve {
 
   
 
-  Vec3D getPoint(double step) override {return Vec3D(0,0,0);}
-  Vec3D getTangent(double step) override {return Vec3D(0,0,0);}
+  //Vec3D getPoint(double step) override {return Vec3D(0,0,0);}
+  //Vec3D getTangent(double step) override {return Vec3D(0,0,0);}
   //Matrix3D getMatrix(double step);
 
 };

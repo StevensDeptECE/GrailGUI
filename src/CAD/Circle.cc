@@ -19,14 +19,14 @@ Vec3D Circle::getPoint(double step){
   return center + (u*(radius*cos(t))) + (v*(radius*sin(t)));
 }
 
-int main() {
-  Vec3D a(1,1,1);
-  Vec3D b(2,3,4);
+// int main() {
+//   Vec3D a(1,1,1);
+//   Vec3D b(2,3,4);
 
-  Circle c1(1, a, b);
-  c1.compute();
-  for(double i=0; i<=1; i+=0.2){
-      cout<< c1.getPoint(i) << endl;
-  }
-  cout << "in circle1.cc, radius: " << c1.getRadius() << endl;
-}
+//   Circle c1(1, a, b);
+//   c1.compute();
+//   for(double i=0; i<=1; i+=0.2){
+//       cout<< c1.getPoint(i) << endl;
+//   }
+//   cout << "in circle1.cc, radius: " << c1.getRadius() << endl;
+// }

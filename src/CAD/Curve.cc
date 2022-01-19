@@ -1,4 +1,10 @@
+#define _USE_MATH_DEFINES
 #include "CAD/Curve.hh"
+#include "glad/glad.h"
+#include "opengl/Shader.hh"
+#include "opengl/GLWin.hh"
+#include "opengl/Canvas.hh"
+#include <cmath>
 
 using namespace std;
 
@@ -26,6 +32,52 @@ void Curve::getPoints(){
      // cout<< this->getPoint(i) << endl;
       points.push_back(this->getPoint(i));
   }
+}
+//unwrap points to be a 1d array for drawing
+std::vector<float> unwrap(std::vector<Vec3D> x){
+  std::vector<float> temp;
+  temp.reserve(x.size()*3);
+  for (int i=0; i<x.size(); i++){
+    temp.push_back(x[i].x);
+    temp.push_back(x[i].y);
+    temp.push_back(x[i].z);
+  }
+  return temp;
+}
+
+void Curve::init(){
+  //create VAO to hold shapes
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
+  
+  //create VBO to hold vertex points
+  drawingPoints = unwrap(points);
+  glGenBuffers(1, &vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float), &drawingPoints[0], GL_STATIC_DRAW);
+
+  //describe in shaders
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 18 * sizeof(float), (void*)0);
+}
+
+void Curve::render(){
+  for(int i=0; i<drawingPoints.size(); i++){
+    cout << drawingPoints[i] << " " ;
+  }
+  cout << endl ;
+
+  Shader * shader = Shader::useShader(GLWin::COMMON_SHADER);
+  shader->setMat4("projection",*(parentCanvas->getProjection()));
+	shader->setVec4("solidColor",style->getFgColor());
+  glBindVertexArray(vao);
+  glEnableVertexAttribArray(0);
+
+  glLineWidth(style->getLineWidth());
+  glDrawArrays(GL_LINES, 0, 6);
+
+  glDisableVertexAttribArray(0);
+  glBindVertexArray(0);
+
 }
 
 // #if 0
@@ -63,11 +115,11 @@ void Curve::getPoints(){
 
 // #endif
 
-int main(){
-  Vec3D a(1,1,1);
-  Vec3D b(2,3,4);
+// int main(){
+//   Vec3D a(1,1,1);
+//   Vec3D b(2,3,4);
 
-  Curve c1(a, b);
-  c1.getPoints();
-  cout << "points: " << c1 << endl;
-}
+//   Curve c1(a, b);
+//   c1.getPoints();
+//   cout << "points: " << c1 << endl;
+// }

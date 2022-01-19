@@ -1,4 +1,4 @@
-#include "CAD/bezier.hh"
+#include "CAD/Bezier.hh"
 #include "CAD/Vec3d.hh"
 //#include "CAD/Matrix3d.hh"
 
@@ -41,31 +41,31 @@ float Bezier::z(float t) const{
   return ((t*az + bz) * t + cz) * t + dz;
 }
 
-int main(){
-  // Vec3D a(1,2,3);
-  // Vec3D b(4,5,6);
-  // Vec3D c(7,8,9);
-  // Vec3D d(10,11,12);
-  Vec3D a(-2,2,3);
-  Vec3D b(6,2,3);
-  Vec3D c(6,8,3);
-  Vec3D d(10,8,3);
+// int main(){
+//   // Vec3D a(1,2,3);
+//   // Vec3D b(4,5,6);
+//   // Vec3D c(7,8,9);
+//   // Vec3D d(10,11,12);
+//   Vec3D a(2,2,3);
+//   Vec3D b(6,2,3);
+//   Vec3D c(6,8,3);
+//   Vec3D d(10,8,3);
 
-  Bezier b1(a,b,c,d);
-  b1.getEquationX(a,b,c,d);
-  b1.getEquationY(a,b,c,d);
-  b1.getEquationZ(a,b,c,d);
-
-
-  for(double i=0; i<=1; i+=0.2){
-     // cout <<i << endl;
-      cout << b1.x(i) << ", " << b1.y(i) << ", " << b1.z(i) << endl;
-  }
-  //cout << b1.x(1) << b1.y(1) << b1.z(1) << endl;
+//   Bezier b1(a,b,c,d);
+//   b1.getEquationX(a,b,c,d);
+//   b1.getEquationY(a,b,c,d);
+//   b1.getEquationZ(a,b,c,d);
 
 
-  //cout << b1 << endl;
-}
+//   for(double i=0; i<=1; i+=0.2){
+//      // cout <<i << endl;
+//       cout << b1.x(i) << ", " << b1.y(i) << ", " << b1.z(i) << endl;
+//   }
+//   //cout << b1.x(1) << b1.y(1) << b1.z(1) << endl;
+
+
+//   //cout << b1 << endl;
+// }
 // void Bezier::getPoint(double step){
 //   int number = super.size();
 //   if (number < 2){
