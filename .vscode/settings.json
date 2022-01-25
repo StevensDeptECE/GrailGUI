@@ -2,7 +2,8 @@
   "editor.tabSize": 2,
   "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 0}",
   "files.associations": {
-    "ranges": "cpp"
+    "ranges": "cpp",
+    "vector": "cpp"
   },
 
 }
