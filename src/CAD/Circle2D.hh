@@ -7,7 +7,7 @@ private:
   float x, y, radius;
   uint32_t numOfTriangles;
   uint32_t numOfverticies = numOfTriangles + 2;
-  float *circleVerts = new float;
+  float circleVerts[724];
   
 public:
   Circle2D(Canvas* c, float x,float y, float rad, uint32_t numOfTriangles, const Style* s); 

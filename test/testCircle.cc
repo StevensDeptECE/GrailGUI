@@ -9,8 +9,7 @@ class TestCircle : public GLWin {
   void init() {
     MainCanvas* c = currentTab()->getMainCanvas();
     const Style* s = getDefaultStyle();
-    Circle2D* circ = c->addLayer(new Circle2D(c, 10, 10, 10, 60, s));    
-    //Triangle* trr = c->addLayer(new Triangle(c, 1, 1, 500, 500, 700,456, s));   
+    Circle2D* circ = c->addLayer(new Circle2D(c, 678, 500, 100, 360, s));    
   }
 };
 
