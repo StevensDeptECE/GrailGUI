@@ -12,7 +12,7 @@ using namespace std::numbers;
 
 // Cylinder::Cylinder(uint32_t height, uint32_t r1, uint32_t r2, uint32_t res) : height(height), r1(r1), r2(r2), res(res){
 // }
-Cylinder::Cylinder(uint32_t height, uint32_t x, uint32_t y, uint32_t radius, uint32_t segments, const Style* s) : height(height), radius(radius), x(x), y(y), z(z), segments(segments){
+Cylinder::Cylinder(uint32_t height, uint32_t x, uint32_t y, uint32_t z, uint32_t radius, uint32_t segments, const Style* s) : height(height), radius(radius), x(x), y(y), z(z), segments(segments){
 }
 Cylinder::~Cylinder(){
 }
@@ -56,16 +56,16 @@ void Cylinder::init(){
 }
 
 void Cylinder::render(){
-  Shader * shader = Shader::useShader(GLWin::COMMON_SHADER);
-  shader->setMat4("projection",*(parentCanvas->getProjection()));
-	shader->setVec4("solidColor",style->getFgColor());
+  // Shader * shader = Shader::useShader(GLWin::COMMON_SHADER);
+  // shader->setMat4("projection",*(parentCanvas->getProjection()));
+	// shader->setVec4("solidColor",style->getFgColor());
 
   glBindVertexArray(vao);
   glEnableVertexAttributeArray(0);
 
   // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
-  glLineWidth(style->getLineWidth());
+  // glLineWidth(style->getLineWidth());
 
   glDrawArrays(GL_TRIANGLE_FAN, 0, segments + 2);
   glDrawElements(GL_TRIANGLES, ind.size(), GL_UNSIGNED_INT, (void*)0);
