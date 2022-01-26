@@ -12,7 +12,7 @@ using namespace std::numbers;
 
 // Cylinder::Cylinder(uint32_t height, uint32_t r1, uint32_t r2, uint32_t res) : height(height), r1(r1), r2(r2), res(res){
 // }
-Cylinder::Cylinder(uint32_t height, uint32_t x, uint32_t y, uint32_t radius, uint32_t segments, const Style* s) : height(height), radius(radius), x(x), y(y), segments(segments){
+Cylinder::Cylinder(uint32_t height, uint32_t x, uint32_t y, uint32_t radius, uint32_t segments, const Style* s) : height(height), radius(radius), x(x), y(y), z(z), segments(segments){
 }
 Cylinder::~Cylinder(){
 }
@@ -28,12 +28,12 @@ void Cylinder::init(){
   for(int i=0; i < vertices; i++){
     vert.push_back(x +  (radius * cos( i * (2 * pi / segments))));
     vert.push_back(y +  (radius * sin( i * (2 * pi / segments))));
-    vert.push_back(0); //z=0
+    vert.push_back(z); //z=0
   }
   for(int i=0; i < vertices; i++){
     vert.push_back(x +  (radius * cos( i * (2 * pi / segments))));
     vert.push_back(y + (radius * sin( i * (2 * pi / segments))));
-    vert.push_back(height); //z=height
+    vert.push_back(z + height); //z=height
   }
 
 

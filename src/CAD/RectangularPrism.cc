@@ -5,7 +5,7 @@
 #include "opengl/GLWin.hh"
 #include "opengl/Canvas.hh"
 
-RectangularPrism::RectangularPrism(uint32_t length, uint32_t width, uint32_t height) : length(length), width(width), height(height){
+RectangularPrism::RectangularPrism(uint32_t length, uint32_t width, uint32_t height, uint32_t x, uint32_t y, uint32_t z) : length(length), width(width), height(height), x(x), y(y), z(z){
 }
 RectangularPrism::~RectangularPrism(){
 }
@@ -17,14 +17,16 @@ inline void RectangularPrism::addRect(uint32_t i1, uint32_t i2, uint32_t i3, uin
 
 void RectangularPrism::init(){
   //set vertex values
-  vert.push_back(0); vert.push_back(0); vert.push_back(0); //0
-  vert.push_back(0); vert.push_back(width); vert.push_back(0); //1
-  vert.push_back(length); vert.push_back(width); vert.push_back(0); //2
-  vert.push_back(length); vert.push_back(0); vert.push_back(0); //3
-  vert.push_back(0); vert.push_back(0); vert.push_back(height); //4
-  vert.push_back(0); vert.push_back(width); vert.push_back(height); //5
-  vert.push_back(length); vert.push_back(width); vert.push_back(height); //6
-  vert.push_back(length); vert.push_back(0); vert.push_back(height); //7
+  uint32_t length_half = length / 2;
+  uint32_t width_half = width / 2;
+  vert.push_back(x + length_half); vert.push_back(y - width_half); vert.push_back(z); //0
+  vert.push_back(x - length_half); vert.push_back(y - width_half); vert.push_back(z); //1
+  vert.push_back(x - length_half); vert.push_back(y + width_half); vert.push_back(z); //2
+  vert.push_back(x + length_half); vert.push_back(y + width_half); vert.push_back(z); //3
+  vert.push_back(x + length_half); vert.push_back(y - width_half); vert.push_back(z + height); //4
+  vert.push_back(x - length_half); vert.push_back(y - width_half); vert.push_back(z + height); //5
+  vert.push_back(x - length_half); vert.push_back(y + width_half); vert.push_back(z + height); //6
+  vert.push_back(x + length_half); vert.push_back(y + width_half); vert.push_back(z + height); //7
 
   //bottom face
   ind.push_back(1); ind.push_back(0); ind.push_back(2);
@@ -45,6 +47,7 @@ void RectangularPrism::init(){
   //side faces
   ind.push_back(0); ind.push_back(3); ind.push_back(4);
   ind.push_back(4); ind.push_back(3); ind.push_back(7);
+
   ind.push_back(2); ind.push_back(1); ind.push_back(6);
   ind.push_back(6); ind.push_back(1); ind.push_back(5);
 
