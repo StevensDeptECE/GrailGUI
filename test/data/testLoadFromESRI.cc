@@ -41,5 +41,5 @@ int main(int argc, char **argv) {
 
   
   CBenchmark::benchmark("BML load", 1e2, std::bind(loadFromESRITest, shapefile.c_str()));
-  CBenchmark::benchmark("BML mean", 1e2, std::bind(ESRILoadMeanTest, shapefile.c_str()));
+  //CBenchmark::benchmark("BML mean", 1e2, std::bind(ESRILoadMeanTest, shapefile.c_str()));
 }

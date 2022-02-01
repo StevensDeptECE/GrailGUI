@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
-
+#include <functional>
+#include "util/Benchmark.hh"
 #include "libshape/shapefil.h"
 
 using namespace std;
@@ -103,9 +104,10 @@ int main() {
   string dir = getenv("GRAIL");
   dir += "/test/res/maps/";
   cout << "dir: " << dir << '\n';
-  loadESRIShapefile((dir + "USA_Counties.shp").c_str());
-  loadESRIDBF((dir + "USA_Counties.dbf").c_str());
+  CBenchmark::benchmark("Load from ESRI", 1e2, std::bind(loadESRIShapefile, (dir + "USA_Counties.shp").c_str()));
+
+ // loadESRIDBF((dir + "USA_Counties.dbf").c_str());
   //string data = buildString(getenv("GRAILDATA"), "/maps/c_10nv20.dbf");
-  string data = getenv("GRAILDATA");
-  displayESRIDBFContents((data + "/maps/c_nv20.dbf").c_str());
+ //TODO: figure out a better way! string data = getenv("GRAILDATA");
+  //displayESRIDBFContents((data + "/maps/c_nv20.dbf").c_str());
 }

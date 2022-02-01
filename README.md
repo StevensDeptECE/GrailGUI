@@ -179,6 +179,20 @@ audio and video).
   cmake --build build
   ```
 
+
+For building performance-tuned with optimization with debug:
+  ```shell
+  cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=relwithdebinfo
+  cmake --build build
+  ```
+
+For building performance-tuned with optimization without debugging information:
+  ```shell
+  cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=release
+  cmake --build build
+  ```
+
+
 ## Running
 
 1. Update `test/CMakeLists.txt` to compile the file you want to compile and link

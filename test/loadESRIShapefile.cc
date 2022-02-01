@@ -158,12 +158,13 @@ int main() {
   CBenchmark::benchmark("stats", 1,
                         bind(statsESRI, counties_shp.c_str(), &info));
   const string counties_dbf = dir + "/test/res/maps/USA_Counties.dbf";
-  // CBenchmark::benchmark("names", 10, bind(loadESRIDBF, counties_dbf, &info));
+  CBenchmark::benchmark("names", 10, bind(loadESRIDBF, counties_dbf, &info));
   string countyNameInfo;
+#if 0
   CBenchmark::benchmark(
       "extract names", 1,
       bind(extractESRIDBF, counties_dbf.c_str(), &countyNameInfo));
-
+#endif
   cout << "county name info:" << countyNameInfo << "\n\n";
 
   // //    string data = buildString(getenv("GRAILDATA"), "/maps/c_10nv20.dbf");

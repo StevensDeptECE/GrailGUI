@@ -137,7 +137,8 @@ class CBenchmark {
     CBenchmark b(msg);
     b.start();
     for (; numIterations > 0; numIterations--) {func();
-    fmt::print("{}\n", numIterations);}
+      //fmt::print("{}\n", numIterations);
+    }
     b.end();
     b.displayavg(iter);
   }
