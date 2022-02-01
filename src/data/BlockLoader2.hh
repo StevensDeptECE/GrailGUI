@@ -81,7 +81,7 @@ class BlockLoader {
  public:
   BlockLoader(const char filename[]);
   ~BlockLoader() { 
-    std::cerr << "destroying: " << mem << std::endl;
+    //std::cerr << "destroying: " << mem << std::endl;
     delete[] mem;
   }
   BlockLoader(const BlockLoader& orig) = delete;
