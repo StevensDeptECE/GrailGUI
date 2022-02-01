@@ -32,6 +32,7 @@ add_grail_executable(SRC testfmt.cc LIBS grail)
 # testSolar SRC DrawNASAEphemerisSolarSystem2d.cc LIBS grail)
 # add_grail_executable(SRC loadESRIShapefile.cc LIBS grail)
 add_grail_executable(SRC testXDLButton.cc LIBS grail)
+add_grail_executable(SRC testDynArray.cc LIBS grail)
 add_grail_executable(SRC testMultiTab.cc LIBS grail)
 add_grail_executable(SRC testDynArrayPerf.cc LIBS grail)
 

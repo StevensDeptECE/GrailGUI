@@ -68,7 +68,17 @@ class DynArray {
     return s;
   }
 
-  template <class... Args>
+  constexpr T removeAt(uint32_t index) {
+    T temp = data[index];
+
+    for (int i = index; i < size_ - 1; ++i) {
+      data[i] = data[i + 1];
+    }
+    if (index == size_ - 1) data[index].~T();
+    --size_;
+    return temp;
+}
+    template <class... Args>
   T& emplace_back(Args&&... args) {
     checkGrow();
     return *construct_at(data + size_++, std::forward<Args>(args)...);
