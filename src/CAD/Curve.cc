@@ -57,7 +57,7 @@ void Curve::init(){
   glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float), &drawingPoints[0], GL_STATIC_DRAW);
 
   //describe in shaders
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 18 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 }
 
 void Curve::render(){
@@ -73,7 +73,7 @@ void Curve::render(){
   glEnableVertexAttribArray(0);
 
   glLineWidth(style->getLineWidth());
-  glDrawArrays(GL_LINES, 0, 6);
+  glDrawArrays(GL_LINE_STRIP, 0, 6);
 
   glDisableVertexAttribArray(0);
   glBindVertexArray(0);

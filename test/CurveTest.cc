@@ -1,4 +1,6 @@
 #include "CAD/Curve.cc"
+#include "CAD/Helix.cc"
+
 #include "iostream"
 #include "CAD/Vec3d.hh"
 #include "opengl/GrailGUI.hh"
@@ -21,9 +23,13 @@ class CurveTest : public GLWin {
     Vec3D b(200,300,400);
 
     Curve* c1 = new Curve(a, b, c, baseGraphStyle);
-    c->addLayer(c1);
-    cout << "points: " << *c1 << endl;
+    //c->addLayer(c1);
+    //cout << "points: " << *c1 << endl;
 
+    //helix test
+    Vec3D start(100,100,0);
+    Helix* test = new Helix(start, 100, 50, c, baseGraphStyle);
+    c->addLayer(test);
     //c1.init();
   }
 };
