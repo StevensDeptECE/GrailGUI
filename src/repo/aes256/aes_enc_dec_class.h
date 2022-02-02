@@ -38,17 +38,11 @@ AESEncDec::AESEncDec(unsigned char* keybase) {
 
     if (!(PKCS5_PBKDF2_HMAC_SHA1((const char *) keybase,
       strlen((const char* ) keybase),
+      // (nullptr, 0) = (salt, saltlen); consider adding salts later
       nullptr, 0, ITER_COUNT, KEYLEN, key))) {
         std::cerr << "Invalid key base";
         throw std::invalid_argument("key base");
     }
-
-
-    // if (!(EVP_BytesToKey(EVP_aes_256_cbc(), EVP_md5(), nullptr,
-    //     keybase, strlen((const char *) keybase), ITER_COUNT, key, iv))) {
-    //     std::cerr << "Invalid key base";
-    //     throw std::invalid_argument("key base");
-    // }
 }
 
 long int AESEncDec::encrypt_file(const char* path, const char* out) {
@@ -101,6 +95,14 @@ long int AESEncDec::encrypt_file(const char* path, const char* out) {
     int len;
     long int cipherlen = 0;
     std::streamsize bytes_read;
+
+    // put iv into encrypted file
+    ciphertext_file.write((char *) iv, BLOCKSIZE);
+    if (!ciphertext_file.good()) {
+      std::cerr << "Failed to retrieve IV";
+      close_files(&plaintext_file, &ciphertext_file);
+      return -1;
+    }
 
     // read and encrypt a block at a time, write to file
     while (1) {
@@ -185,7 +187,13 @@ long int AESEncDec::decrypt_file(const char* path,
         return -1;
     }
 
-    // TODO:: Attach IV to the file 
+    // RETRIEVE IV
+    ciphertext_file.read( (char *) iv, BLOCKSIZE);
+    if (ciphertext_file.gcount() == 0) {
+      std::cerr << "Failed to retrieve IV";
+      close_files(&ciphertext_file, &plaintext_file);
+      return -1;
+    }
 
     if (1 != EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), nullptr, key, iv)) {
         std::cerr << "Failed to initialize decrypt";
