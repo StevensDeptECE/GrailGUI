@@ -24,7 +24,7 @@ class AESEncDec {
         static constexpr size_t ITER_COUNT = 10000;
         unsigned char key[KEYLEN];
         unsigned char iv[BLOCKSIZE];
-        const char* tag = "tagtagtagtag";
+        unsigned char tag[BLOCKSIZE];
     public:
         AESEncDec(unsigned char* keybase);
         long int encrypt_file(const char* path, 
@@ -57,6 +57,8 @@ long int AESEncDec::encrypt_file(const char* path, const char* out) {
     std::ofstream ciphertext_file;
     plaintext_file.open(path, std::ios::binary);
     ciphertext_file.open(out, std::ios::binary | std::ios::trunc);
+
+    EVP_CIPHER_CTX_CTRL(ctx, EVP_CTRL_GCM_SET_IVLEN, BLOCKSIZE, nullptr);
 
     // ensure files areopen, exit otherwise
     if (!plaintext_file.is_open() || !ciphertext_file.is_open()) {
