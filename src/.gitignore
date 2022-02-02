@@ -1,7 +1,12 @@
 *.bin
 repo/aes256/*.txt
+<<<<<<< HEAD
 .vscode/
 repo/aes256/test.*
+=======
+repo/aes256/*.enc
+repo/aes256/*.dec
+>>>>>>> 2d1b5f9d7a788fb8e7d161cf6ab5a1fd59fa6505
 repo/aes256/test_aes_enc_dec
 */.vscode/
 repo/yubikey_auth/validateOtp
