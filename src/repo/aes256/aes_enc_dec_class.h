@@ -19,11 +19,12 @@ void close_files(std::ifstream *in, std::ofstream *out) {
  * files can be encrypted or decrypted as desired.
  */
 class AESEncDec {
-        static constexpr int KEYLEN = 32;
-        static constexpr int BLOCKSIZE = 16;
-        static constexpr int ITER_COUNT = 10000;
+        static constexpr size_t KEYLEN = 32;
+        static constexpr size_t BLOCKSIZE = 16;
+        static constexpr size_t ITER_COUNT = 10000;
         unsigned char key[KEYLEN];
         unsigned char iv[BLOCKSIZE];
+        const char* tag = "tagtagtagtag";
     public:
         AESEncDec(unsigned char* keybase);
         long int encrypt_file(const char* path, 
@@ -83,7 +84,7 @@ long int AESEncDec::encrypt_file(const char* path, const char* out) {
     }
 
     // set cipher/key/iv
-    if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), nullptr, key, iv)) {
+    if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), nullptr, key, iv)) {
         std::cerr << "Failed to initialize encrypt";
         close_files(&plaintext_file, &ciphertext_file);
         return -1;
