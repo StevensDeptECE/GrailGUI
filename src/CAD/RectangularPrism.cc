@@ -1,14 +1,14 @@
 #include "CAD/RectangularPrism.hh"
-#include "opengl/GLMath.hh"
+// #include "opengl/GLMath.hh"
 #include "glad/glad.h"
 #include "opengl/Shader.hh"
 #include "opengl/GLWin.hh"
 #include "opengl/Canvas.hh"
 
-RectangularPrism::RectangularPrism(uint32_t length, uint32_t width, uint32_t height, uint32_t x, uint32_t y, uint32_t z) : length(length), width(width), height(height), x(x), y(y), z(z){
+RectangularPrism::RectangularPrism(Canvas* c, uint32_t length, uint32_t width, uint32_t height, uint32_t x, uint32_t y, uint32_t z) : Shape(c), length(length), width(width), height(height), x(x), y(y), z(z){
 }
-RectangularPrism::~RectangularPrism(){
-}
+// RectangularPrism::~RectangularPrism(){
+// }
 
 inline void RectangularPrism::addRect(uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4) {
   // ind.push_back(i1);  ind.push_back(i2);  ind.push_back(i3);
@@ -68,4 +68,7 @@ void RectangularPrism::render(){
 }
 
 void RectangularPrism::cleanup(){
+}
+
+void RectangularPrism::update(){
 }
