@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "CAD/Cylinder.hh"
 #include "opengl/GLMath.hh"
 #include "CAD/Vec3d.hh"
@@ -12,10 +13,10 @@ using namespace std::numbers;
 
 // Cylinder::Cylinder(uint32_t height, uint32_t r1, uint32_t r2, uint32_t res) : height(height), r1(r1), r2(r2), res(res){
 // }
-Cylinder::Cylinder(uint32_t height, uint32_t x, uint32_t y, uint32_t z, uint32_t radius, uint32_t segments, const Style* s) : height(height), radius(radius), x(x), y(y), z(z), segments(segments){
+Cylinder::Cylinder(Canvas* c, uint32_t height, uint32_t x, uint32_t y, uint32_t z, uint32_t radius, uint32_t segments) : Shape(c), height(height), radius(radius), x(x), y(y), z(z), segments(segments){
 }
-Cylinder::~Cylinder(){
-}
+// Cylinder::~Cylinder(){
+// }
 
 void Cylinder::init(){
   glGenVertexArrays(1, &vao);
@@ -50,8 +51,8 @@ void Cylinder::init(){
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, vertices * sizeof(float), &vert, GL_DYNAMIC_DRAW);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-  glGenBuffers(1, &ibo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glGenBuffers(1, &sbo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sbo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind.size() * sizeof(uint32_t), &ind[0], GL_STATIC_DRAW);
 }
 
@@ -61,7 +62,7 @@ void Cylinder::render(){
 	// shader->setVec4("solidColor",style->getFgColor());
 
   glBindVertexArray(vao);
-  glEnableVertexAttributeArray(0);
+  glEnableVertexAttribArray(0);
 
   // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
@@ -81,4 +82,7 @@ void Cylinder::render(){
 // }
 
 void Cylinder::cleanup(){
+}
+
+void Cylinder::update(){
 }
