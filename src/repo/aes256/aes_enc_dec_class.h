@@ -33,16 +33,14 @@ class AESEncDec {
 };
 
 AESEncDec::AESEncDec(unsigned char* keybase) {
-    // set key from keybase
-    // TODO: convert to PKBDF key generation
 
-    if (!(PKCS5_PBKDF2_HMAC_SHA1((const char *) keybase,
-      strlen((const char* ) keybase),
-      // (nullptr, 0) = (salt, saltlen); consider adding salts later
-      nullptr, 0, ITER_COUNT, KEYLEN, key))) {
-        std::cerr << "Invalid key base";
-        throw std::invalid_argument("key base");
-    }
+  if (!(PKCS5_PBKDF2_HMAC_SHA1((const char *) keybase,
+    strlen((const char* ) keybase),
+    // nullptr, 0 because no salt; consider adding salts later
+    nullptr, 0, ITER_COUNT, KEYLEN, key))) {
+      std::cerr << "Invalid key base";
+      throw std::invalid_argument("key base");
+  }
 }
 
 long int AESEncDec::encrypt_file(const char* path, const char* out) {
