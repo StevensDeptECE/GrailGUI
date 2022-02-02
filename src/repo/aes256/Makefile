@@ -2,7 +2,7 @@
 all: test_aes_enc_dec
 
 CXX = g++
-CXXFLAGS += -std=c++20
+CXXFLAGS += -std=c++2a
 CXXFLAGS += -g
 CXXFLAGS += -Wall -Wextra -Wwrite-strings -Weffc++
 CXXFLAGS += -Wpedantic -Warray-bounds -Wconversion
