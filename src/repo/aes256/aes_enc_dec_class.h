@@ -9,7 +9,7 @@
 #include <sstream>
 #include <cstdio>
 
-void (std::ifstream *in, std::ofstream *out) {
+void close_files(std::ifstream *in, std::ofstream *out) {
     in->close();
     out->close();
 }
@@ -43,12 +43,6 @@ AESEncDec::AESEncDec(unsigned char* keybase) {
 }
 
 long int AESEncDec::encrypt_file(const char* path, const char* out) {
-    // initialize encryption context
-    EVP_CIPHER_CTX *ctx;
-    if (!(ctx = EVP_CIPHER_CTX_new())) {
-        std::cerr << "Failed to initialize cipher context.";
-        return -1;
-    }
 
     // reinitialize iv to avoid reuse
     if (!RAND_bytes(iv, BLOCKSIZE)) {
@@ -159,14 +153,7 @@ long int AESEncDec::encrypt_file(const char* path, const char* out) {
 
 long int AESEncDec::decrypt_file(const char* path, 
     const char* out) {
-    
-    // initialize cipher context
-    EVP_CIPHER_CTX *ctx;
-    if (!(ctx = EVP_CIPHER_CTX_new())) {
-        std::cerr << "Failed to initialize context";
-        ERR_print_errors_fp(stderr);
-        return -1;
-    }
+  
 
     // open files for reading and writing
     std::ifstream ciphertext_file;
