@@ -29,7 +29,7 @@ GapMinderBinaryDB::GapMinderBinaryDB(const char filename[]) : data() {
 
 void GapMinderBinaryDB::loadDir(const char dirName[]){
 
-  chdir(dirName);
+  int status = chdir(dirName);
 
   ifstream c("countryContinent.txt");
 
@@ -59,7 +59,7 @@ void GapMinderBinaryDB::loadDir(const char dirName[]){
   struct dirent *entry;
 
 
-  chdir("allFiles");
+  status = chdir("allFiles");
   if( pDIR=opendir(".")){
     while( (entry = readdir(pDIR)) != nullptr ){
       if( strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0 ){
@@ -71,7 +71,7 @@ void GapMinderBinaryDB::loadDir(const char dirName[]){
       }
     }
   }
-  chdir("..");
+  status = chdir("..");
 
   saveBinary("GapMinderDBFile");
 }
