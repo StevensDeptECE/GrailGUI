@@ -154,17 +154,19 @@ int main(int count, char *strings[])   /* getting port as a argument*/ {
 	sslctx = SSL_CTX_new( TLS_server_method());
 	
 	// check return values vvvv
-	int use_cert = SSL_CTX_use_certificate_file(sslctx, "/cert.pem" , SSL_FILETYPE_PEM);
+	int use_cert = SSL_CTX_use_certificate_file(sslctx, "server.pem" , SSL_FILETYPE_PEM);
 	if (use_cert == 0) {
 		ERR_print_errors_fp(stderr);
 		exit(-1);
 	}
-	int use_prv = SSL_CTX_use_PrivateKey_file(sslctx, "/private-key.pem", SSL_FILETYPE_PEM);
+#if 0
+	//TODO: do we need a private user key for anything?
+	int use_prv = SSL_CTX_use_PrivateKey_file(sslctx, "private-key.pem", SSL_FILETYPE_PEM);
 	if (use_prv == 0) {
 		ERR_print_errors_fp(stderr);
 		exit(-1);
 	}
-	
+#endif
 
 	cSSL = SSL_new(sslctx);
 	SSL_set_fd(cSSL, newsockfd );
