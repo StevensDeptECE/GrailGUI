@@ -21,7 +21,9 @@ class TestDrawBlockMap : public Member {
     Style* s2 = new Style(tab->getDefaultFont(), grail::white, grail::black);
     //    c->addClickableWidget(
     // new ButtonWidget(c, 0, 0, 200, 100, "Click Me!", "mapZoomIn"));
-    mv = c->addLayer(new MapView2D(c, s2, new BlockMapLoader(filename)));
+    BlockMapLoader* bml = new BlockMapLoader(filename);
+    mv = c->addLayer(new MapView2D(c, s2, bml));
+    cout << "num points loaded: " << bml->getNumPoints() << '\n';
 
     tab->bindEvent(Tab::Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);
     tab->bindEvent(Tab::Inputs::WHEELDOWN, &TestDrawBlockMap::mapZoomOut, this);
