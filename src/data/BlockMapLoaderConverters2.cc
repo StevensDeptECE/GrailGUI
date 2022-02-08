@@ -103,13 +103,24 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
     }
   }
 
-  cerr << "Removed " << numDups << " final points of polygons\n";
-  bml.blockMapHeader->numPoints -= numDups;
-  bml.size -= numDups * 2 * sizeof(float);
-  for (auto shape : shapes) SHPDestroyObject(shape);
+  //cerr << "Removed " << numDups << " final points of polygons\n";
+  uint32_t numFloatsRemoved = numDups*2;
+  bml.blockMapHeader->numPoints -= numFloatsRemoved;
+  bml.size -= numFloatsRemoved * sizeof(float);
+  for (const auto& shape : shapes) SHPDestroyObject(shape);
   SHPClose(shapeHandle);
 
-  cerr << "Exact matches found:" << exactMatch << '\n';
+cout << "num points=" << bml.getNumPoints() << '\n';
+  constexpr float small = 5;
+  uint64_t countextremepoints = 0;
+  for (uint32_t i = 0, j = 0; i < bml.getNumPoints(); i++, j += 2) {
+    if (abs(bml.points[j]) < small || abs(bml.points[j+1]) < small) {
+      countextremepoints++;
+//      cout << "found zero " << i << "\n";
+    }
+  }
+  cout << "Found " << countextremepoints << " points outside range\n";
+  //cerr << "Exact matches found:" << exactMatch << '\n';
   return bml;
 }
 

@@ -24,6 +24,7 @@ BlockMapLoader BlockMapLoader::loadCompressed(const char lzmaFile[]) {
   float: b1 b2 b3 b4 uint32_t:   b1 b2 b3 b4   b4 b3 b2 b1 b4 b3 b2 b1
   uint64_t:   b1 b2 b3 b4 b5 b6 b7 b8 --> b8 b7 b6 b5 b4 b3 b2 b1
 */
+// BUG: size is very wrong, we seem to be going way past the end for some reason
 void BlockMapLoader::save(const char filename[]) {
   int fh = open(filename, O_WRONLY | O_TRUNC | O_CREAT | O_BINARY, 0644);
   int bytesWritten = write(fh, (char*)mem, size);
