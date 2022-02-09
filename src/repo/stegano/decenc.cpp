@@ -13,18 +13,18 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  std::ifstream fi(argv[1]);
+  std::ifstream fi(argv[1], std::ios::binary | std::ios::in);
 
   // Get byte size of file and return for reading.
   fi.seekg(0, std::ios::end);
   size_t s = fi.tellg();
-  std::cout << s << std::endl;
+  std::cout << "Number of bytes: " << s << std::endl;
   fi.clear();
   fi.seekg(0);
 
   uint8_t *data = new uint8_t[s];
   fi.read((char *)data, s);
-  for (int i = 0; i < 10; ++i) std::cout << (char)data[i] << " ";
+  for (int i = 0; i < 12; ++i) std::cout << (char)data[i] << " ";
   std::cout << std::endl;
 
   int w, h;
@@ -37,19 +37,19 @@ int main(int argc, char **argv) {
 
   data = WebPDecodeRGB(data, s, &w, &h);
 
-  // char *str = (char *)"hello world";
-  // hideStr(data, str);
+  char *str = (char *)"hello world";
+  hideStr(data, str);
 
   uint8_t *out;
-  s = WebPEncodeLosslessRGB(data, w, h, w * 3, &out);
-
-  std::ofstream fo("new.webp", std::ios::binary);
-  fo.write((char *)out, s);
-  delete[] data;
-  // Note these functions, like the lossy versions, use the library's default
+  // NOTE: these functions, like the lossy versions, use the library's default
   // settings. For lossless this means 'exact' is disabled. RGB values in
   // transparent areas will be modified to improve compression. To avoid this,
   // use WebPEncode() and set WebPConfig::exact to 1.
-  /* WebPEncodeLosslessRGB(rgb, w, h, 0, output); */
+  s = WebPEncodeLosslessRGB(data, w, h, w * 3, &out);
+
+  std::ofstream fo("new_" + std::string(argv[1]), std::ios::binary);
+  fo.write((char *)out, s);
+  WebPFree(data);
+  WebPFree(out);
   return 0;
 }
