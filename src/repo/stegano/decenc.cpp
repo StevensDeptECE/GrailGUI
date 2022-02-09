@@ -19,11 +19,13 @@ int main(int argc, char **argv) {
   fi.seekg(0, std::ios::end);
   size_t s = fi.tellg();
   std::cout << s << std::endl;
-  fi.seekg(std::ios::end, std::ios::beg);
+  fi.clear();
+  fi.seekg(0);
 
   uint8_t *data = new uint8_t[s];
   fi.read((char *)data, s);
-  std::cout << "Image data: " << data << std::endl;
+  for (int i = 0; i < 10; ++i) std::cout << (char)data[i] << " ";
+  std::cout << std::endl;
 
   int w, h;
   WebPGetInfo(data, s, &w, &h);
@@ -36,6 +38,7 @@ int main(int argc, char **argv) {
   hideStr(data, str);
 
   uint8_t *out;
+  // TODO: Fix encoding
   s = WebPEncodeLosslessRGB(data, w, h, w * 3, &out);
   std::ofstream fo("new.webp", std::ios::binary);
   fo.write((char *)out, s);
