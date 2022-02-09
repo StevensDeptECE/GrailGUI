@@ -32,14 +32,15 @@ int main(int argc, char **argv) {
   std::cout << w << std::endl;
   std::cout << h << std::endl;
 
-  WebPDecodeRGB(data, s, &w, &h);
+  data = WebPDecodeRGB(data, s, &w, &h);
 
-  char *str = (char *)"hello world";
-  hideStr(data, str);
+  //char *str = (char *)"hello world";
+  //hideStr(data, str);
 
   uint8_t *out;
   // TODO: Fix encoding
-  s = WebPEncodeLosslessRGB(data, w, h, w * 3, &out);
+  s = WebPEncodeLosslessRGB(data, w, h, w*3, &out);
+
   std::ofstream fo("new.webp", std::ios::binary);
   fo.write((char *)out, s);
   delete[] data;
