@@ -2,23 +2,27 @@
 #include <iostream>
 
 // https://imagemagick.org/Magick++/tutorial/Magick++_tutorial.pdf
-#include <Magick++.h>
+#include <webp/decode.h>
+#include <webp/encode.h>
 
 class SteganographicImage {
  private:
+  uint8_t data;
   int w, h, c;
-  Magick::Image img;
-  Magick::Quantum *pix;
   std::string filename;
   uint32_t start = 0;   // start of the data (x=10,y=13) 13*w+h
   uint32_t stride = 1;  // how many to skip
   // uint32_t bits_per_color = 1;
-  uint64_t *data;
+  size_t s;
   uint32_t len;
+  WebPDecoderConfig config;
+  config.lossless = 1;
+  WebPPicture pic;
 
  public:
   SteganographicImage(std::string filename, uint64_t *data, uint32_t len)
       : filename(filename), data(data), len(len) {
+    WebPGetInfo(data, s, w, h);
     Magick::InitializeMagick("");
     img.read(filename);
     h = img.rows(), w = img.columns();
@@ -26,7 +30,15 @@ class SteganographicImage {
     pix = img.getPixels(0, 0, w, h);
   }
 
-  ~SteganographicImage() {}
+  ~SteganographicImage() {
+    int ok = WebPEncode(&config, &pic);
+    WebPPictureFree(&pic);  // Always free the memory associated with the input.
+    if (!ok) {
+      printf("Encoding error: %d\n", pic.error_code);
+    } else {
+      printf("Output size: %d\n", writer.size);
+    }
+  }
 
   void hide() {
     for (uint32_t i = 0; i < len; ++i) {
@@ -36,8 +48,9 @@ class SteganographicImage {
           (uint32_t)pix[pos] & 0b111111101111111011111110;  // Remove LSBs
       pix[pos] = (uint32_t)pix[pos] |
                  (data[i] & 1);  // Encode data into picture 1 bit at a time.
-      // pix[pos] = (uint32_t) pix[pos] | (((v >> 1) & 1) << 8); // or in the
-      // low green bit pix[pos] = (uint32_t) pix[pos] | (((v >> 2) & 1) << 16);
+      // pix[pos] = (uint32_t) pix[pos] | (((v >> 1) & 1) << 8);
+      // or in the low green bit
+      // pix[pos] = (uint32_t) pix[pos] | (((v >> 2) & 1) << 16);
     }
     img.syncPixels();
   }
@@ -64,11 +77,11 @@ int main(int argc, char **argv) {
   }
   std::string filename = argv[1];
   // Data to hide in message and length of message.
-  char *msg = (char *)"hellohellohellohellohello";
+  char *msg = (char *)"hello hello hello hello hello";
   int n = strlen(msg);
 
   uint64_t *data = new uint64_t[n];
-  for (int i = 0; i < n; ++i) data[i] = (int)msg[i];
+  for (int i = 0; i < n; ++i) data[i] = msg[i];
 
   try {
     SteganographicImage steg = SteganographicImage(filename, data, n);
@@ -77,7 +90,7 @@ int main(int argc, char **argv) {
     steg.write();
     // Recover the secret message from the picture and print it out.
     auto recovered = steg.recover();
-    for (int i = 0; i < n; ++i) std::cout << (char)recovered[i] << " ";
+    for (int i = 0; i < n; ++i) std::cout << recovered[i] << " ";
     std::cout << std::endl;
   } catch (std::exception &e) {
     std::cerr << "Error: " << e.what() << std::endl;
