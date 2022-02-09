@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
 
   std::ifstream fi(argv[1]);
 
-  // Get byte size of file
+  // Get byte size of file and return for reading.
   fi.seekg(0, std::ios::end);
   size_t s = fi.tellg();
   std::cout << s << std::endl;
@@ -28,9 +28,12 @@ int main(int argc, char **argv) {
   std::cout << std::endl;
 
   int w, h;
-  WebPGetInfo(data, s, &w, &h);
-  std::cout << w << std::endl;
-  std::cout << h << std::endl;
+  if (!WebPGetInfo(data, s, &w, &h)) {
+    std::cerr << "Error: Input image is not a valid WebP file." << std::endl;
+    return 1;
+  }
+  std::cout << "width: " << w << std::endl;
+  std::cout << "height: " << h << std::endl;
 
   WebPDecodeRGB(data, s, &w, &h);
 
@@ -38,8 +41,8 @@ int main(int argc, char **argv) {
   hideStr(data, str);
 
   uint8_t *out;
-  // TODO: Fix encoding
-  s = WebPEncodeLosslessRGB(data, w, h, w * 3, &out);
+  // TODO: Find ideal stride.
+  s = WebPEncodeLosslessRGB(data, w, h, 0, &out);
   std::ofstream fo("new.webp", std::ios::binary);
   fo.write((char *)out, s);
   delete[] data;
