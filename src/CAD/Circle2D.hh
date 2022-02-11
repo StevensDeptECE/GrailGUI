@@ -10,7 +10,7 @@ private:
   float circleVerts[724];
   
 public:
-  Circle2D(Canvas* c, float x,float y, float rad, uint32_t numOfTriangles, const Style* s); 
+  Circle2D(Canvas* c, float x, float y, float rad, uint32_t numOfTriangles, const Style* s); 
 
   void init();
   void render();
