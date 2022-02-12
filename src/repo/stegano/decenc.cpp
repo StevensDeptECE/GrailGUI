@@ -12,7 +12,7 @@ uint8_t *hide(uint8_t *data, size_t s, char *str) {
   int bit = 0;
   char c = *str++;
   for (int i = start; i < s && c; i += stride) {
-    data[i] = (c >> (7 - bit)) & 1 ? 1 : 0;
+    data[i] = (c >> (7 - bit)) & 1 ? data[i] | 1 : data[i] & ~1;
     if (++bit == 8) bit = 0, c = *str++;
   }
   return data;
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
 
   data = WebPDecodeRGB(data, s, &w, &h);
 
-  char *str = (char *)"Hello world!";
+  char *str = (char *)"Hello, are you there?!";
   data = hide(data, s, str);
 
   uint8_t *out;
