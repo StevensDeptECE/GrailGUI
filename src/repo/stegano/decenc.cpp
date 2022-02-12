@@ -5,41 +5,32 @@
 #include <fstream>
 #include <iostream>
 
-int WEBP_HEADER_SIZE = 16;
+int start = 0;
+int stride = 1;
 
 uint8_t *hide(uint8_t *data, size_t s, char *str) {
   int bit = 0;
   char c = *str++;
-  for (int i = WEBP_HEADER_SIZE; i < s && str; ++i) {
-    std::cout << (int)c << std::endl;
-    c >>= 7 - bit;
-    data[i] = c & 1 ? data[i] | 1 : data[i] & ~1;
-    ++bit;
-    if (bit == 8) {
-      bit = 0;
-      c = *str++;
-      if (!c) break;
-    }
+  for (int i = start; i < s && c; i += stride) {
+    data[i] = (c >> (7 - bit)) & 1 ? 1 : 0;
+    if (++bit == 8) bit = 0, c = *str++;
   }
   return data;
 }
 
-char *recover(uint8_t *data, size_t s) {
+std::string recover(uint8_t *data, size_t s) {
   int bit = 0;
-  char *str = new char[4096];
-  int n = 0;
+  std::string str;
   char c = 0;
-  for (int i = WEBP_HEADER_SIZE; i < s; ++i) {
+  for (int i = start; i < s; i += stride) {
     if (data[i] & 1) c |= 1;
-    ++bit;
-    if (bit == 8) {
-      if (c == '\0') break;
+    if (++bit == 8) {
+      if (!c) break;
       bit = 0;
-      str[n++] = c;
+      str += c;
     } else
       c <<= 1;
   }
-  str[n] = '\0';
   return str;
 }
 
@@ -60,8 +51,6 @@ int main(int argc, char **argv) {
 
   uint8_t *data = new uint8_t[s];
   fi.read((char *)data, s);
-  // for (int i = 0; i < 36; ++i) std::cout << (char)data[i] << " ";
-  std::cout << std::endl;
 
   int w, h;
   if (!WebPGetInfo(data, s, &w, &h)) {
@@ -73,7 +62,7 @@ int main(int argc, char **argv) {
 
   data = WebPDecodeRGB(data, s, &w, &h);
 
-  char *str = (char *)"hello world";
+  char *str = (char *)"Hello world!";
   data = hide(data, s, str);
 
   uint8_t *out;
@@ -86,9 +75,7 @@ int main(int argc, char **argv) {
   std::ofstream fo("new_" + std::string(argv[1]), std::ios::binary);
   fo.write((char *)out, s);
 
-  char *recov = recover(data, s);
-  printf("%s\n", recov);
-  delete[] recov;
+  std::cout << "Recovered message: " << recover(data, s) << std::endl;
 
   WebPFree(data);
   WebPFree(out);
