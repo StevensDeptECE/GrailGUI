@@ -39,7 +39,7 @@ int OpenConnection(const char *hostname, int port) {
 	return sd;
 }
 
-void LoadKey(SSL_CTX* ctx, char* KeyFile)   /* to load a certificate into an SSL_CTX structure*/ {
+void LoadKey(SSL_CTX* ctx, const char KeyFile[])   /* to load a certificate into an SSL_CTX structure*/ {
 	
 	/* set the private key from KeyFile (may be the same as CertFile) */
 	if ( SSL_CTX_use_PrivateKey_file(ctx, KeyFile, SSL_FILETYPE_PEM) <= 0 ) {
@@ -101,8 +101,8 @@ int main(int count, char *strings[])   /* getting port and ip as an argument*/ {
 	portnum=strings[2];
 	ctx = InitCTX();
 	//SSL_CTX_set_ciphersuites(ctx, OSSL_default_ciphersuites());
-	char certi[] = {'c', 'l', 'i', 'e', 'n', 't', '.', 'p', 'e', 'm', '\0'};
-	LoadKey(ctx, certi); /* load certs */
+	const char key[] = "client.pem";
+	LoadKey(ctx, key); /* load certs */
 	server = OpenConnection(hostname, atoi(portnum));   /*converting ascii port to interger */
 	ssl = SSL_new(ctx);      /* create new SSL connection state */
 	SSL_set_fd(ssl, server);    /* attach the socket descriptor */
