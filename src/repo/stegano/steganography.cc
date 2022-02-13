@@ -9,7 +9,7 @@ class SteganographicImage {
  private:
   std::string filename;
 
-  int start = 100;
+  int start = 0;
   // FIXME: Hiding and recovering doesn't work with stride and terminates before
   // end of string.
   int stride = 1;
@@ -21,18 +21,18 @@ class SteganographicImage {
 
  public:
   SteganographicImage(std::string filename) : filename(filename) {
-    std::ifstream fi(filename, std::ios::binary | std::ios::in);
-    if (!fi) throw "Input file " + filename + " does not exist.";
+    std::ifstream f(filename, std::ios::binary | std::ios::in);
+    if (!f) throw "Input file " + filename + " does not exist.";
 
     // Get byte size of file and return for reading.
-    fi.seekg(0, std::ios::end);
-    s = fi.tellg();
+    f.seekg(0, std::ios::end);
+    s = f.tellg();
     // std::cout << "Number of bytes: " << s << std::endl;
-    fi.clear();
-    fi.seekg(0);
+    f.clear();
+    f.seekg(0);
 
     data = new uint8_t[s];
-    fi.read((char *)data, s);
+    f.read((char *)data, s);
 
     if (!WebPGetInfo(data, s, &w, &h))
       throw "Input image is not a valid WebP file.";
@@ -55,8 +55,8 @@ class SteganographicImage {
     // NOTE: Doesn't work with transparent webps.
     s = WebPEncodeLosslessRGB(data, w, h, w * 3, &out);
 
-    std::ofstream fo("new_" + filename, std::ios::binary);
-    fo.write((char *)out, s);
+    std::ofstream f("new_" + filename, std::ios::binary);
+    f.write((char *)out, s);
   }
 
   std::string recover() {
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
     steg.hide(str);
 
     std::cout << "Recovered message: " << steg.recover() << std::endl;
-  } catch (std::string e) {
+  } catch (char const *e) {
     std::cerr << "Error: " << e << std::endl;
     return 1;
   }
