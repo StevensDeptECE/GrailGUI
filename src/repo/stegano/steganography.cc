@@ -20,14 +20,14 @@ class SteganographicImage {
   uint8_t *out;
 
  public:
-  SteganographicImage(std::string filename) : filename(filename) {
+  SteganographicImage(std::string filename, int start, int stride)
+      : filename(filename), start(start), stride(stride) {
     std::ifstream f(filename, std::ios::binary | std::ios::in);
     if (!f) throw "Input file " + filename + " does not exist.";
 
     // Get byte size of file and return for reading.
     f.seekg(0, std::ios::end);
     s = f.tellg();
-    // std::cout << "Number of bytes: " << s << std::endl;
     f.clear();
     f.seekg(0);
 
@@ -39,10 +39,7 @@ class SteganographicImage {
     data = WebPDecodeRGB(data, s, &w, &h);
   }
 
-  ~SteganographicImage() {
-    WebPFree(data);
-    WebPFree(out);
-  }
+  ~SteganographicImage() { WebPFree(data); }
 
   void hide(char *str) {
     int bit = 0;
@@ -55,8 +52,9 @@ class SteganographicImage {
     // NOTE: Doesn't work with transparent webps.
     s = WebPEncodeLosslessRGB(data, w, h, w * 3, &out);
 
-    std::ofstream f("new_" + filename, std::ios::binary);
+    std::ofstream f("new_" + filename, std::ios::binary | std::ios::out);
     f.write((char *)out, s);
+    WebPFree(out);
   }
 
   std::string recover() {
@@ -78,18 +76,27 @@ class SteganographicImage {
 };
 
 int main(int argc, char **argv) {
-  if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << " <input.webp>" << std::endl;
+  if (argc != 3) {
+    std::cerr << "Usage: " << argv[0] << " [h|r] <input.webp>" << std::endl;
     return 1;
   }
 
   char *str = (char *)"Hello, are you there?!";
 
   try {
-    SteganographicImage steg(argv[1]);
-    steg.hide(str);
-
-    std::cout << "Recovered message: " << steg.recover() << std::endl;
+    SteganographicImage steg(argv[2], 0, 1);
+    switch (argv[1][0]) {
+      case 'h':
+        steg.hide(str);
+        break;
+      case 'r':
+        std::cout << "Recovered message: " << steg.recover() << std::endl;
+        break;
+      default:
+        std::cerr << "Error: Invalid command: " << argv[1] << std::endl;
+        std::cerr << "Usage: " << argv[0] << " [h|r] <input.webp>" << std::endl;
+        return 1;
+    }
   } catch (char const *e) {
     std::cerr << "Error: " << e << std::endl;
     return 1;
