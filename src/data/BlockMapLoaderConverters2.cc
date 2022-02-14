@@ -121,6 +121,10 @@ cout << "num points=" << bml.getNumPoints() << '\n';
   }
   cout << "Found " << countextremepoints << " points outside range\n";
   //cerr << "Exact matches found:" << exactMatch << '\n';
+  uint32_t numPointsInSegments = 0;
+  for (int i = 0; i < bml.getNumSegments(); i++)
+    numPointsInSegments += bml.segments[i].numPoints;
+  cout << "number of points in segments=" << numPointsInSegments << '\n';
   return bml;
 }
 
