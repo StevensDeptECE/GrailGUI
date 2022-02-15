@@ -17,7 +17,6 @@ class SteganographicImage {
   int w, h;
   size_t s;
   uint8_t *data;
-  uint8_t *out;
 
  public:
   SteganographicImage(std::string filename, int start, int stride)
@@ -49,11 +48,10 @@ class SteganographicImage {
     }
 
     // NOTE: Doesn't work with transparent webps.
-    s = WebPEncodeLosslessRGB(data, w, h, w * 3, &out);
+    s = WebPEncodeLosslessRGB(data, w, h, w * 3, &data);
 
     std::ofstream f("new_" + filename, std::ios::binary | std::ios::out);
-    f.write((char *)out, s);
-    WebPFree(out);
+    f.write((char *)data, s);
   }
 
   std::string recover() {
@@ -62,7 +60,7 @@ class SteganographicImage {
     for (int i = start; i < s; i += stride) {
       if (data[i] & 1) c |= 1;
       if (++bit == 8) {
-        std::cout << c << ": " << (int)c << std::endl;
+        // std::cout << c << ": " << (int)c << std::endl;
         if (!c) break;
         bit = 0;
         str += c;
