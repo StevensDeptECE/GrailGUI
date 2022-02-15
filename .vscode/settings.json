@@ -82,7 +82,22 @@
     "xtree": "cpp",
     "xutility": "cpp",
     "complex": "cpp",
-    "valarray": "cpp"
+    "valarray": "cpp",
+    "bitset": "cpp",
+    "condition_variable": "cpp",
+    "cwctype": "cpp",
+    "semaphore": "cpp",
+    "span": "cpp",
+    "stack": "cpp",
+    "strstream": "cpp",
+    "typeindex": "cpp",
+    "unordered_set": "cpp",
+    "variant": "cpp",
+    "*.tcc": "cpp",
+    "memory_resource": "cpp",
+    "string_view": "cpp",
+    "cfenv": "cpp",
+    "cinttypes": "cpp"
   },
 
 }
