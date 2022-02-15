@@ -42,8 +42,7 @@ class SteganographicImage {
   ~SteganographicImage() { WebPFree(data); }
 
   void hide(char *str) {
-    int bit = 0;
-    char c = *str++;
+    char bit = 0, c = *str++;
     for (int i = start; i < s && c; i += stride) {
       data[i] = (c >> (7 - bit)) & 1 ? data[i] | 1 : data[i] & ~1;
       if (++bit == 8) bit = 0, c = *str++;
@@ -58,9 +57,8 @@ class SteganographicImage {
   }
 
   std::string recover() {
-    int bit = 0;
+    char bit = 0, c = 0;
     std::string str;
-    char c = 0;
     for (int i = start; i < s; i += stride) {
       if (data[i] & 1) c |= 1;
       if (++bit == 8) {
@@ -76,18 +74,21 @@ class SteganographicImage {
 };
 
 int main(int argc, char **argv) {
-  if (argc != 3) {
-    std::cerr << "Usage: " << argv[0] << " [h|r] <input.webp>" << std::endl;
+  if (argc < 3 || (argc == 4 && argv[1][0] != 'h') ||
+      (argc != 4 && argv[1][0] == 'h') || (argc != 3 && argv[1][0] == 'r')) {
+    std::cerr << "Usage: " << argv[0]
+              << " [h|r] <input.webp> 'string to hide'\n    "
+                 "h: Hide string in given image.\n    "
+                 "r: Recover string from given image."
+              << std::endl;
     return 1;
   }
-
-  char *str = (char *)"Hello, are you there?!";
 
   try {
     SteganographicImage steg(argv[2], 0, 1);
     switch (argv[1][0]) {
       case 'h':
-        steg.hide(str);
+        steg.hide(argv[3]);
         break;
       case 'r':
         std::cout << "Recovered message: " << steg.recover() << std::endl;
