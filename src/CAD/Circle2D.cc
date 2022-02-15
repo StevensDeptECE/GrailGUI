@@ -35,8 +35,6 @@ void Circle2D::init() {
   //allVerts = allV[vertecies*2];
   // circleVerts[742];
   for(int i = 0; i < 362; i++) {
-    std::cout << "val" << i << std::endl;
-    std::cout << "x" << circleVertX[i] << std::endl;
     circleVerts[i*2] = circleVertX[i];
     circleVerts[(i*2)+1] = circleVertY[i];
   }
