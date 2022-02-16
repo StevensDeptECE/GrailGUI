@@ -21,19 +21,21 @@ class CurveTest : public GLWin {
     baseGraphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
     baseGraphStyle->setLineWidth(10);
   
+    //set the camera
     MainCanvas *c = currentTab()->getMainCanvas();
     Camera* cam = c->setLookAtProjection(20, 20, 0, 0, 0, 0, 0, 0, 1);
-    
     c->setProjection(cam->getViewProjection());
-    Vec3D a(1,1,1);
-    Vec3D b(200,300,400);
+   
+    Vec3D a(0,0,0);
+    Vec3D b(10,2,3);
 
     Curve* c1 = new Curve(a, b, c, baseGraphStyle);
-    //c->addLayer(c1);
+    c->addLayer(c1);
     //cout << "points: " << *c1 << endl;
 
     //StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(c, baseGraphStyle));
     //m->fillRectangle(0,0,100,100,grail::red);
+    
     //helix test
     Vec3D start(0,0,0);
     Helix* test = new Helix(start, 10, 2, c, baseGraphStyle);

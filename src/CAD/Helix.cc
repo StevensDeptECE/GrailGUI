@@ -28,7 +28,7 @@ Vec3D Helix::getPoint(double step){
 
 void Helix::getPoints(){
   cout<< "start, height, radius: " << start << ", "<< height << ", "<< radius << endl;
-  for(double i=0; i<=1; i+=0.1){
+  for(double i=0; i<=1; i+=0.01){
       cout<< this->getPoint(i) << endl;
       points.push_back(this->getPoint(i));
   }
@@ -62,10 +62,10 @@ void Helix::init(){
 }
 
 void Helix::render(){
-  for(int i=0; i<drawingPoints.size(); i++){
-    cout << drawingPoints[i] << " " ;
-  }
-  cout << endl ;
+  // for(int i=0; i<drawingPoints.size(); i++){
+  //   cout << drawingPoints[i] << " " ;
+  // }
+  // cout << endl;
 
   Shader * shader = Shader::useShader(GLWin::COMMON_SHADER);
   shader->setMat4("projection",*(parentCanvas->getProjection()));
@@ -74,7 +74,7 @@ void Helix::render(){
   glEnableVertexAttribArray(0);
 
   glLineWidth(style->getLineWidth());
-  cout<< drawingPoints.size()/3 <<endl;
+  //cout<< drawingPoints.size()/3 <<endl;
   glDrawArrays(GL_LINE_STRIP, 0, drawingPoints.size()/3);
 
   glDisableVertexAttribArray(0);
