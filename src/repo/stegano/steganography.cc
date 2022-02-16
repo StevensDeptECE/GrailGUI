@@ -16,7 +16,7 @@ class SteganographicImage {
 
   int w, h;
   size_t s;
-  uint8_t *data;
+  uint8_t *rgb, *out;
 
  public:
   SteganographicImage(std::string filename, int start, int stride)
@@ -30,35 +30,37 @@ class SteganographicImage {
     f.clear();
     f.seekg(0);
 
-    data = new uint8_t[s];
-    f.read((char *)data, s);
+    uint8_t *img = new uint8_t[s];
+    f.read((char *)img, s);
 
-    if (!WebPGetInfo(data, s, &w, &h))
+    if (!WebPGetInfo(img, s, &w, &h))
       throw "Input image is not a valid WebP file.";
-    data = WebPDecodeRGB(data, s, &w, &h);
+    rgb = WebPDecodeRGB(img, s, &w, &h);
+    delete[] img;
   }
 
-  ~SteganographicImage() { WebPFree(data); }
+  ~SteganographicImage() { WebPFree(rgb); }
 
   void hide(char *str) {
     char bit = 0, c = *str++;
     for (int i = start; i < s && c; i += stride) {
-      data[i] = (c >> (7 - bit)) & 1 ? data[i] | 1 : data[i] & ~1;
+      rgb[i] = (c >> (7 - bit)) & 1 ? rgb[i] | 1 : rgb[i] & ~1;
       if (++bit == 8) bit = 0, c = *str++;
     }
 
     // NOTE: Doesn't work with transparent webps.
-    s = WebPEncodeLosslessRGB(data, w, h, w * 3, &data);
+    s = WebPEncodeLosslessRGB(rgb, w, h, w * 3, &out);
 
     std::ofstream f("new_" + filename, std::ios::binary | std::ios::out);
-    f.write((char *)data, s);
+    f.write((char *)out, s);
+    WebPFree(out);
   }
 
   std::string recover() {
     char bit = 0, c = 0;
     std::string str;
     for (int i = start; i < s; i += stride) {
-      if (data[i] & 1) c |= 1;
+      if (rgb[i] & 1) c |= 1;
       if (++bit == 8) {
         // std::cout << c << ": " << (int)c << std::endl;
         if (!c) break;
@@ -100,6 +102,5 @@ int main(int argc, char **argv) {
     std::cerr << "Error: " << e << std::endl;
     return 1;
   }
-
   return 0;
 }
