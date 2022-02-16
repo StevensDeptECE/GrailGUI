@@ -6,6 +6,8 @@
 #include "iostream"
 #include "CAD/Vec3d.hh"
 #include "opengl/GrailGUI.hh"
+#include "opengl/util/Camera.hh"
+
 using namespace std;
 
 class CurveTest : public GLWin {
@@ -20,7 +22,9 @@ class CurveTest : public GLWin {
     baseGraphStyle->setLineWidth(10);
   
     MainCanvas *c = currentTab()->getMainCanvas();
-    c->setLookAtProjection(200, 300, 400, 0, 0, 0, 0, 0, 1);
+    Camera* cam = c->setLookAtProjection(20, 20, 0, 0, 0, 0, 0, 0, 1);
+    
+    c->setProjection(cam->getViewProjection());
     Vec3D a(1,1,1);
     Vec3D b(200,300,400);
 
@@ -28,11 +32,11 @@ class CurveTest : public GLWin {
     //c->addLayer(c1);
     //cout << "points: " << *c1 << endl;
 
-    StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(c, baseGraphStyle));
-    m->fillRectangle(0,0,100,100,grail::red);
+    //StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(c, baseGraphStyle));
+    //m->fillRectangle(0,0,100,100,grail::red);
     //helix test
-    Vec3D start(100,100,0);
-    Helix* test = new Helix(start, 100, 100, c, baseGraphStyle);
+    Vec3D start(0,0,0);
+    Helix* test = new Helix(start, 10, 2, c, baseGraphStyle);
     c->addLayer(test);
     //c1.init();
   }
