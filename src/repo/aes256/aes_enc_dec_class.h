@@ -236,6 +236,8 @@ long int AESEncDec::decrypt_file(const char *path, const char *out) {
 
   // get end of encrypted data to know where to end
   int end_encrypted = ciphertext_file.tellg();
+
+
   // unsigned char tag[BLOCKSIZE];
   unsigned char* tag = (unsigned char *) calloc(BLOCKSIZE, 1);
   ciphertext_file.read((char *) tag, BLOCKSIZE);
@@ -289,32 +291,24 @@ long int AESEncDec::decrypt_file(const char *path, const char *out) {
   if (EVP_DecryptFinal_ex(ctx, plaintext + len, &len) <= 0) {
     std::cerr << "Failed to decrypt or authenticate" << std::endl;
     ERR_print_errors_fp(stderr);
-    close_files(&ciphertext_file, &plaintext_file);
-    return -1;
   }
 
-  if (!ciphertext_file.eof()) {
-    std::cerr << "Reading from ciphertext failed";
-    close_files(&ciphertext_file, &plaintext_file);
-    return -1;
-  }
+  // // write & ensure success
+  // plaintext_file.write((char *)plaintext, len);
+  // if (!plaintext_file.good()) {
+  //   std::cerr << "Writing to plaintext failed." << std::endl;
+  //   close_files(&ciphertext_file, &plaintext_file);
+  //   return -1;
+  // }
 
-  // write & ensure success
-  plaintext_file.write((char *)plaintext, len);
-  if (!plaintext_file.good()) {
-    std::cerr << "Writing to plaintext failed.";
-    close_files(&ciphertext_file, &plaintext_file);
-    return -1;
-  }
+  // plaintext_len += len;
 
-  plaintext_len += len;
-
-  if (!plaintext_file.good()) {
-    std::cerr << "Failed to write to plaintext";
-    plaintext_file.close();
-    ciphertext_file.close();
-    return -1;
-  }
+  // if (!plaintext_file.good()) {
+  //   std::cerr << "Failed to write to plaintext" << std::endl;
+  //   plaintext_file.close();
+  //   ciphertext_file.close();
+  //   return -1;
+  // }
 
   // clean up
   EVP_CIPHER_CTX_free(ctx);
