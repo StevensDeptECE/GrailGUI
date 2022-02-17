@@ -27,14 +27,14 @@ class AESEncDec {
   unsigned char iv[BLOCKSIZE];
 
  public:
-  AESEncDec(unsigned char *keybase);
+  AESEncDec(std::string keybase);
   long int encrypt_file(const char *path, const char *out);
   long int decrypt_file(const char *path, const char *out);
 };
 
-AESEncDec::AESEncDec(unsigned char *keybase) {
+AESEncDec::AESEncDec(std::string keybase) {
   if (!(PKCS5_PBKDF2_HMAC_SHA1(
-          (const char *)keybase, sizeof((const char *)keybase),
+          keybase.c_str(), sizeof(keybase.c_str()),
           // nullptr, 0 because no salt; consider adding salts later
           nullptr, 0, ITER_COUNT, KEYLEN, key))) {
     std::cerr << "Invalid key base";
