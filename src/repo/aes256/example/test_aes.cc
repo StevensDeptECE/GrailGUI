@@ -4,8 +4,6 @@
 #include <string>
 #include <fstream>
 
-#define KEYSIZE 16
-
 void print_help_msg() {
   std::cout << "Usage: ./test_aes key" << std::endl;
 }
@@ -16,6 +14,7 @@ int main (int argc, char* argv[]) {
   else { print_help_msg(); }
 
   AESEncDec cipher(key);
+  
   // encrypt the file
   long int enc_result = cipher.encrypt_file("top_secret.pdf", "top_secret.enc");
   printf("Encrypted %ld bytes.\n", enc_result);
