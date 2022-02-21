@@ -2,6 +2,7 @@
 #include <webp/decode.h>
 #include <webp/encode.h>
 
+#include <cstring>
 #include <fstream>
 #include <iostream>
 
@@ -10,8 +11,6 @@ class SteganographicImage {
   std::string filename;
 
   int start = 0;
-  // FIXME: Hiding and recovering doesn't work with stride and terminates before
-  // end of string.
   int stride = 1;
 
   int w, h;
@@ -22,7 +21,7 @@ class SteganographicImage {
   SteganographicImage(std::string filename, int start, int stride)
       : filename(filename), start(start), stride(stride) {
     std::ifstream f(filename, std::ios::binary | std::ios::in);
-    if (!f) throw "Input file " + filename + " does not exist.";
+    if (!f) throw "Input file '" + filename + "' does not exist.";
 
     // Get byte size of file and return for reading.
     f.seekg(0, std::ios::end);
@@ -42,12 +41,20 @@ class SteganographicImage {
   ~SteganographicImage() { WebPFree(rgb); }
 
   void hide(char *str) {
+    if (start + strlen(str) * stride > s)
+      throw "Input string is too long or stride and start are too large to fit in the image.";
     char bit = 0, c = *str++;
-    for (int i = start; i < s && c; i += stride) {
-      rgb[i] = (c >> (7 - bit)) & 1 ? rgb[i] | 1 : rgb[i] & ~1;
+    int i;
+    for (i = start; i < s && c; i += stride) {
+      rgb[i] = c >> (7 - bit) & 1 ? rgb[i] | 1 : rgb[i] & ~1;
       if (++bit == 8) bit = 0, c = *str++;
     }
+    // HACK: For correctly encoding the null-byte of strings.
+    if (!c)
+      for (int j = 0; i < s || j == 8; i += stride, ++j) rgb[i] &= ~1;
+  }
 
+  void write() {
     // NOTE: Doesn't work with transparent webps.
     s = WebPEncodeLosslessRGB(rgb, w, h, w * 3, &out);
 
@@ -62,10 +69,10 @@ class SteganographicImage {
     for (int i = start; i < s; i += stride) {
       if (rgb[i] & 1) c |= 1;
       if (++bit == 8) {
-        // std::cout << c << ": " << (int)c << std::endl;
-        if (!c) break;
-        bit = 0;
-        str += c;
+        if (!c) {
+          break;
+        }
+        bit = 0, str += c, c = 0;
       } else
         c <<= 1;
     }
@@ -85,10 +92,15 @@ int main(int argc, char **argv) {
   }
 
   try {
-    SteganographicImage steg(argv[2], 0, 1);
+    // TODO:
+    // - Use a seed to one-time randomize info start and offset.
+    // - Deterministically decide start/stride params based on side of image.
+    // - Maybe combine both of these to create a sort of random tolerance.
+    SteganographicImage steg(argv[2], 200, 5000);
     switch (argv[1][0]) {
       case 'h':
         steg.hide(argv[3]);
+        steg.write();
         break;
       case 'r':
         std::cout << "Recovered message: " << steg.recover() << std::endl;
