@@ -8,7 +8,7 @@
 #include "opengl/GLWin.hh"
 #include "opengl/Canvas.hh"
 
-Sphere::Sphere(uint32_t latRes, uint32_t longRes, uint32_t radius) : latRes(latRes), longRes(longRes), radius(radius){
+Sphere::Sphere(Canvas* c, uint32_t latRes, uint32_t longRes, uint32_t radius) : Shape(c), latRes(latRes), longRes(longRes), radius(radius){
 }
 Sphere::~Sphere(){
 }
