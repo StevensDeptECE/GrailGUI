@@ -31,6 +31,12 @@ add_grail_executable(SRC testCylinder.cc LIBS grail)
 add_grail_executable(SRC testSphere.cc LIBS grail)
 add_grail_executable(SRC testRectangularPrism.cc LIBS grail)
 #add_grail_executable(BINNAME testSolar SRC DrawNASAEphemerisSolarSystem2d.cc LIBS grail)
+add_grail_executable(SRC testTriangle.cc LIBS grail)
+add_grail_executable(SRC testRectangle.cc LIBS grail)
+add_grail_executable(SRC testCircle.cc LIBS grail)
+add_grail_executable(SRC testGear.cc LIBS grail)
+
+
 
 if(${MPV_FOUND})
   add_grail_executable(SRC testAudio.cc LIBS grail)

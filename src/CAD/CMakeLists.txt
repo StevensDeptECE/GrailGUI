@@ -3,6 +3,10 @@ set(grail-CAD
     Cylinder.cc
     RectangularPrism.cc
     Sphere.cc
+    Triangle.cc
+    Rectangle.cc
+    Circle2D.cc
+    Gear.cc
 )
 
 list(TRANSFORM grail-CAD PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
