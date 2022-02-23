@@ -3,7 +3,7 @@
 #include "opengl/Shape.hh"
 #include "opengl/Canvas.hh"
 
-class RectangularPrism : Shape {
+class RectangularPrism : public Shape {
     private:
         std::vector<uint32_t> vert;
         std::vector<uint32_t> ind;

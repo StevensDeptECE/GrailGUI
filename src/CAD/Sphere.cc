@@ -8,7 +8,9 @@
 #include "opengl/GLWin.hh"
 #include "opengl/Canvas.hh"
 
-Sphere::Sphere(uint32_t latRes, uint32_t longRes, uint32_t radius) : latRes(latRes), longRes(longRes), radius(radius){
+using namespace std::numbers;
+
+Sphere::Sphere(Canvas *c, uint32_t latRes, uint32_t longRes, uint32_t radius) : Shape(c), latRes(latRes), longRes(longRes), radius(radius){
 }
 Sphere::~Sphere(){
 }
@@ -69,11 +71,14 @@ void Sphere::render(){
   glEnableVertexAttribArray(0);
   
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
-  glDrawElements(GL_LINES, ind.size(), uint32_t, 0);
+  glDrawElements(GL_LINES, ind.size(), GL_UNSIGNED_INT, (void*)0);
 
   glDisableVertexAttribArray(0);
   glBindVertexArray(0);
 }
 
 void Sphere::cleanup(){
+}
+
+void Sphere::update(){
 }
