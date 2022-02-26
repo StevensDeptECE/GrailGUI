@@ -18,8 +18,7 @@
 int mkcert(X509 **x509p, EVP_PKEY **pkeyp, int bits, int serial, int days);
 int add_ext(X509 *cert, int nid, char *value);
 
-int main(int argc, char **argv)
-	{
+int main(int argc, char **argv) {
 	BIO *bio_err;
 	X509 *x509=NULL;
 	EVP_PKEY *pkey=NULL;
