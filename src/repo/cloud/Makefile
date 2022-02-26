@@ -1,2 +1,2 @@
 all:
-	g++ upload.cc -lcurl
+	g++ upload.cc -lcurl -o upload
