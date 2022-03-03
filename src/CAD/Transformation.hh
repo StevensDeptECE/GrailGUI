@@ -13,6 +13,8 @@ class Transformation : public Shape {
 private:
   glm::mat4 transform;
   Shape* s;
+  //to know wwhich type to apply to shape
+  std::vector<uint32_t> type = [0, 0, 0];
 public:
   /*
     By default create the identity matrix
