@@ -17,7 +17,6 @@ class SteganographicImage {
   size_t img_size;
   uint8_t *rgb;
 
-  uint8_t *secret;
   size_t secret_size;
 
  public:
@@ -27,22 +26,6 @@ class SteganographicImage {
   }
 
   ~SteganographicImage() { WebPFree(rgb); }
-
-  // Read in data from file into character array.
-  void read_secret(std::string img_name) {
-    // Instantiate filestream and set pointer to end of file
-    std::ifstream f(img_name, std::ios::binary | std::ios::ate);
-    if (!f) throw "Input file '" + img_name + "' does not exist.";
-
-    f.seekg(0, std::ios::end);
-    secret_size = f.tellg();
-    f.clear();
-    // Seek to 0 and read data into data array
-    f.seekg(0);
-
-    secret = new uint8_t[secret_size];
-    f.read((char *)secret, secret_size);
-  }
 
   void read_webp() {
     std::ifstream f(img_name, std::ios::binary | std::ios::in);
@@ -63,10 +46,25 @@ class SteganographicImage {
     delete[] img;
   }
 
-  void hide() {
+  // Read in data from file into character array.
+  void hide_secret(std::string secret_path) {
+    // Instantiate filestream and set pointer to end of file
+    std::ifstream f(secret_path, std::ios::binary | std::ios::ate);
+    if (!f) throw "Input file '" + secret_path + "' does not exist.";
+
+    f.seekg(0, std::ios::end);
+    secret_size = f.tellg();
+    // Seek to 0 and read in secret data to an array.
+    f.clear();
+    f.seekg(0);
+
+    uint8_t *secret = new uint8_t[secret_size];
+    f.read((char *)secret, secret_size);
+
     size_t lim = start + secret_size * stride;
     if (lim > img_size)
       throw "Input string is too long or stride and start are too large to fit in the image.";
+
     uint8_t bit = 0, c = *secret++;
     for (int i = start; i < lim; i += stride) {
       rgb[i] = c >> (7 - bit) & 1 ? rgb[i] | 1 : rgb[i] & ~1;
@@ -74,14 +72,12 @@ class SteganographicImage {
     }
   }
 
-  void write_webp() {
+  void write_webp(std::string output_path) {
     uint8_t *out;
     // NOTE: Doesn't work with transparent webps.
     img_size = WebPEncodeLosslessRGB(rgb, w, h, w * 3, &out);
 
-    // TODO: Add toggle for overwriting file or creating a new one?
-    // std::ofstream f("new_" + img_name, std::ios::binary | std::ios::out);
-    std::ofstream f(img_name, std::ios::binary | std::ios::out);
+    std::ofstream f(output_path, std::ios::binary | std::ios::out);
     f.write((char *)out, img_size);
     WebPFree(out);
   }
@@ -117,9 +113,8 @@ int main(int argc, char **argv) {
     // - Maybe combine both of these to create a sort of random tolerance.
     SteganographicImage steg("aurora_borealis.webp", 0, 1);
 
-    steg.read_secret("secret.txt");
-    steg.hide();
-    steg.write_webp();
+    steg.hide_secret("secret.txt");
+    steg.write_webp("aurora_borealis.webp");
 
     uint8_t *rec = steg.recover();
     std::cout << "Recovered message: " << rec << std::endl;
@@ -131,4 +126,3 @@ int main(int argc, char **argv) {
   }
   return 0;
 }
-// Work on upload: Check if downloaded file is diff from original - checksum
