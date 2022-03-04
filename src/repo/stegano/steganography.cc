@@ -16,36 +16,37 @@ class SteganographicImage {
   int w, h;
   size_t filesize;
   uint8_t *rgb, *out;
-  
+
   // Input data to be stored
   uint8_t *data;
   // Input data size
-  uint8_t data_size;
+  size_t data_size;
 
  public:
-  /** Read in data from file into character array
-   */
-  void read_file(std::string filename) {
+  // Read in data from file into character array.
+  void read_secret(std::string filename) {
     // Instantiate filestream and set pointer to end of file
     std::ifstream f(filename, std::ios::binary | std::ios::ate);
     if (!f) throw "Input file '" + filename + "' does not exist.";
 
+    f.seekg(0, std::ios::end);
     data_size = f.tellg();
-    
+    f.clear();
     // Seek to 0 and read data into data array
     f.seekg(0);
+
     data = new uint8_t[data_size];
     f.read((char *)data, data_size);
   }
 
   SteganographicImage(const std::string &filename, int start, int stride)
       : filename(filename), start(start), stride(stride) {
-    read(filename);
+    read_webp(filename);
   }
 
   ~SteganographicImage() { WebPFree(rgb); }
 
-  void read(std::string filename) {
+  void read_webp(std::string filename) {
     std::ifstream f(filename, std::ios::binary | std::ios::in);
     if (!f) throw "Input file '" + filename + "' does not exist.";
 
@@ -64,15 +65,14 @@ class SteganographicImage {
     delete[] img;
   }
 
-  // TODO: hide a char *, len - arbitary
-  // add len as param - don't wait for null byte
-  void hide(char *bytes, size_t len) {
-    if (start + len * stride > filesize)
+  void hide() {
+    size_t lim = start + data_size * stride;
+    if (lim > filesize)
       throw "Input string is too long or stride and start are too large to fit in the image.";
-    char bit = 0, c = *bytes++;
-    for (int i = start; i < len; i += stride) {
+    char bit = 0, c = *data++;
+    for (int i = start; i < lim; i += stride) {
       rgb[i] = c >> (7 - bit) & 1 ? rgb[i] | 1 : rgb[i] & ~1;
-      if (++bit == 8) bit = 0, c = *bytes++;
+      if (++bit == 8) bit = 0, c = *data++;
     }
   }
 
@@ -89,7 +89,7 @@ class SteganographicImage {
 
   char *recover() {
     char bit = 0, c = 0, *bytes = new char[filesize], *j = bytes;
-    for (int i = start; i < filesize; i += stride) {
+    for (int i = start; i < start + data_size * stride; i += stride) {
       if (rgb[i] & 1) c |= 1;
       if (++bit == 8)
         bit = 0, *j++ = c, c = 0;
@@ -101,28 +101,24 @@ class SteganographicImage {
 };
 
 int main(int argc, char **argv) {
-  if (argc < 3 || (argc == 4 && argv[1][0] != 'h') ||
-      (argc != 4 && argv[1][0] == 'h') || (argc != 3 && argv[1][0] == 'r')) {
-    std::cerr << "Usage: " << argv[0]
-              << " [h|r] <input.webp> 'string to hide'\n    "
-                 "h: Hide string in given image.\n    "
-                 "r: Recover string from given image."
-              << std::endl;
-    return 1;
-  }
+  // if (argc < 3 || (argc == 4 && argv[1][0] != 'h') ||
+  //     (argc != 4 && argv[1][0] == 'h') || (argc != 3 && argv[1][0] == 'r')) {
+  //   std::cerr << "Usage: " << argv[0]
+  //             << " [h|r] <input.webp> 'string to hide'\n    "
+  //                "h: Hide string in given image.\n    "
+  //                "r: Recover string from given image."
+  //             << std::endl;
+  //   return 1;
+  // }
 
-  // Read in data from file.
-  // char *data = (char *)"Hey how are you";
-  // char *data = (char *)to_string(123);
-  // std::cout << data << std::endl;
-  // size_t len = strlen(data);
   try {
     // TODO:
     // - Use a seed to one-time randomize info start and offset.
     // - Deterministically decide start/stride params based on side of image.
     // - Maybe combine both of these to create a sort of random tolerance.
-    SteganographicImage steg("aurora_borealis.webp", 200, 5000);
-    // steg.hide(data, len);
+    SteganographicImage steg("aurora_borealis.webp", 0, 1);
+    steg.read_secret("secret.txt");
+    steg.hide();
     steg.write();
     char *rec = steg.recover();
     std::cout << "Recovered message: " << rec << std::endl;
