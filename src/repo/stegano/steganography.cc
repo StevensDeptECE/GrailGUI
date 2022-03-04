@@ -14,69 +14,69 @@ class SteganographicImage {
   int stride = 1;
 
   int w, h;
-  size_t s;
+  size_t filesize;
   uint8_t *rgb, *out;
 
  public:
-  SteganographicImage(std::string filename, int start, int stride)
+  SteganographicImage(const std::string &filename, int start, int stride)
       : filename(filename), start(start), stride(stride) {
+    read(filename);
+  }
+
+  ~SteganographicImage() { WebPFree(rgb); }
+
+  void read(std::string filename) {
     std::ifstream f(filename, std::ios::binary | std::ios::in);
     if (!f) throw "Input file '" + filename + "' does not exist.";
 
     // Get byte size of file and return for reading.
     f.seekg(0, std::ios::end);
-    s = f.tellg();
+    filesize = f.tellg();
     f.clear();
     f.seekg(0);
 
-    uint8_t *img = new uint8_t[s];
-    f.read((char *)img, s);
+    uint8_t *img = new uint8_t[filesize];
+    f.read((char *)img, filesize);
 
-    if (!WebPGetInfo(img, s, &w, &h))
+    if (!WebPGetInfo(img, filesize, &w, &h))
       throw "Input image is not a valid WebP file.";
-    rgb = WebPDecodeRGB(img, s, &w, &h);
+    rgb = WebPDecodeRGB(img, filesize, &w, &h);
     delete[] img;
   }
 
-  ~SteganographicImage() { WebPFree(rgb); }
-
-  void hide(char *str) {
-    if (start + strlen(str) * stride > s)
+  // TODO: hide a char *, len - arbitary
+  // add len as param - don't wait for null byte
+  void hide(char *bytes, size_t len) {
+    if (start + len * stride > filesize)
       throw "Input string is too long or stride and start are too large to fit in the image.";
-    char bit = 0, c = *str++;
-    int i;
-    for (i = start; i < s && c; i += stride) {
+    char bit = 0, c = *bytes++;
+    for (int i = start; i < len; i += stride) {
       rgb[i] = c >> (7 - bit) & 1 ? rgb[i] | 1 : rgb[i] & ~1;
-      if (++bit == 8) bit = 0, c = *str++;
+      if (++bit == 8) bit = 0, c = *bytes++;
     }
-    // HACK: For correctly encoding the null-byte of strings.
-    if (!c)
-      for (int j = 0; i < s || j == 8; i += stride, ++j) rgb[i] &= ~1;
   }
 
   void write() {
     // NOTE: Doesn't work with transparent webps.
-    s = WebPEncodeLosslessRGB(rgb, w, h, w * 3, &out);
+    filesize = WebPEncodeLosslessRGB(rgb, w, h, w * 3, &out);
 
-    std::ofstream f("new_" + filename, std::ios::binary | std::ios::out);
-    f.write((char *)out, s);
+    // TODO: Add toggle for overwriting file or creating a new one?
+    // std::ofstream f("new_" + filename, std::ios::binary | std::ios::out);
+    std::ofstream f(filename, std::ios::binary | std::ios::out);
+    f.write((char *)out, filesize);
     WebPFree(out);
   }
 
-  std::string recover() {
-    char bit = 0, c = 0;
-    std::string str;
-    for (int i = start; i < s; i += stride) {
+  char *recover() {
+    char bit = 0, c = 0, *bytes = new char[filesize], *j = bytes;
+    for (int i = start; i < filesize; i += stride) {
       if (rgb[i] & 1) c |= 1;
-      if (++bit == 8) {
-        if (!c) {
-          break;
-        }
-        bit = 0, str += c, c = 0;
-      } else
+      if (++bit == 8)
+        bit = 0, *j++ = c, c = 0;
+      else
         c <<= 1;
     }
-    return str;
+    return bytes;
   }
 };
 
@@ -91,28 +91,26 @@ int main(int argc, char **argv) {
     return 1;
   }
 
+  // Read in data from file.
+  // char *data = (char *)"Hey how are you";
+  // char *data = (char *)to_string(123);
+  // std::cout << data << std::endl;
+  // size_t len = strlen(data);
   try {
     // TODO:
     // - Use a seed to one-time randomize info start and offset.
     // - Deterministically decide start/stride params based on side of image.
     // - Maybe combine both of these to create a sort of random tolerance.
-    SteganographicImage steg(argv[2], 200, 5000);
-    switch (argv[1][0]) {
-      case 'h':
-        steg.hide(argv[3]);
-        steg.write();
-        break;
-      case 'r':
-        std::cout << "Recovered message: " << steg.recover() << std::endl;
-        break;
-      default:
-        std::cerr << "Error: Invalid command: " << argv[1] << std::endl;
-        std::cerr << "Usage: " << argv[0] << " [h|r] <input.webp>" << std::endl;
-        return 1;
-    }
+    SteganographicImage steg("aurora_borealis.webp", 200, 5000);
+    // steg.hide(data, len);
+    steg.write();
+    char *rec = steg.recover();
+    std::cout << "Recovered message: " << rec << std::endl;
+    delete[] rec;
   } catch (char const *e) {
     std::cerr << "Error: " << e << std::endl;
     return 1;
   }
   return 0;
 }
+// Work on upload: Check if downloaded file is diff from original - checksum
