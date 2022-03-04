@@ -16,8 +16,28 @@ class SteganographicImage {
   int w, h;
   size_t filesize;
   uint8_t *rgb, *out;
+  
+  // Input data to be stored
+  uint8_t *data;
+  // Input data size
+  uint8_t data_size;
 
  public:
+  /** Read in data from file into character array
+   */
+  void read_file(std::string filename) {
+    // Instantiate filestream and set pointer to end of file
+    std::ifstream f(filename, std::ios::binary | std::ios::ate);
+    if (!f) throw "Input file '" + filename + "' does not exist.";
+
+    data_size = f.tellg();
+    
+    // Seek to 0 and read data into data array
+    f.seekg(0);
+    data = new uint8_t[data_size];
+    f.read((char *)data, data_size);
+  }
+
   SteganographicImage(const std::string &filename, int start, int stride)
       : filename(filename), start(start), stride(stride) {
     read(filename);
