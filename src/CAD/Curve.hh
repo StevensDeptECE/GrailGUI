@@ -2,7 +2,7 @@
 // #include "opengl/GrailGUI.hh"
 // #include "opengl/util/Transformation.hh"
 //#include "opengl/MultiShape3D.hh"
-#include "./Vec3d.hh"
+#include "CAD/Vec3d.hh"
 #include <vector>
 #include "opengl/Shape2D.hh"
 
@@ -23,7 +23,7 @@ class Curve : public Vec3D, public Shape2D {
     Curve(Vec3D p1, Vec3D p2, Canvas* c, Style* s) 
       :Shape2D(c, p1.x, p1.y, s){
       this->point=p1;
-      this->center=midpoint(p1,p2);
+      this->center = midpoint(p1, p2);
       this->radius=distance(p1,p2)/2;
       cout<< "start, stop, center, radius: " << p1 << ", "<< p2 << ", " << this->center << ", " << this->radius << endl;
       this->getPoints();
@@ -41,7 +41,7 @@ class Curve : public Vec3D, public Shape2D {
  // virtual Vec3D getTangent(double step) = 0; //virtual replaces "abstract" from java
   
   // Overload the << operator
-  friend std::ostream& operator<< (ostream& s, const Curve& c){
+  friend std::ostream& operator<< (std::ostream& s, const Curve& c){
     for (int i = 0; i < c.points.size(); i++){
       s << c.points[i] << ",";
     }

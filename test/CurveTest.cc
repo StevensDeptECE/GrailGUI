@@ -3,9 +3,7 @@
 #include "CAD/BezierPath.hh"
 #include "opengl/StyledMultiShape2D.hh"
 
-
-#include "iostream"
-#include "CAD/Vec3d.hh"
+#include <iostream>
 #include "opengl/GrailGUI.hh"
 #include "opengl/util/Camera.hh"
 
