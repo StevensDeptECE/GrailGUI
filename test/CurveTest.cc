@@ -1,5 +1,6 @@
-#include "CAD/Curve.cc"
-#include "CAD/Helix.cc"
+// #include "CAD/Helix.cc"
+// #include "CAD/Circle.cc"
+#include "CAD/BezierPath.hh"
 #include "opengl/StyledMultiShape2D.hh"
 
 
@@ -23,24 +24,27 @@ class CurveTest : public GLWin {
   
     //set the camera
     MainCanvas *c = currentTab()->getMainCanvas();
-    Camera* cam = c->setLookAtProjection(20, 20, 0, 0, 0, 0, 0, 0, 1);
+    Camera* cam = c->setLookAtProjection(0, 0, 30, 0, 0, 0, 0, 1, 0);
     c->setProjection(cam->getViewProjection());
-   
-    Vec3D a(0,0,0);
-    Vec3D b(10,2,3);
 
-    Curve* c1 = new Curve(a, b, c, baseGraphStyle);
-    c->addLayer(c1);
-    //cout << "points: " << *c1 << endl;
-
+    //rectangle test
     //StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(c, baseGraphStyle));
     //m->fillRectangle(0,0,100,100,grail::red);
     
     //helix test
-    Vec3D start(0,0,0);
-    Helix* test = new Helix(start, 10, 2, c, baseGraphStyle);
-    c->addLayer(test);
-    //c1.init();
+    // Vec3D start(0,0,0);
+    // Helix* test = new Helix(start, 10, 2, c, baseGraphStyle);
+    // c->addLayer(test);
+
+    //bezier test
+    Vec3D a(0,0,0);
+    Vec3D b(2,5,0);
+    Vec3D d(5,0,0);
+    Vec3D e(7,5,0);
+
+    BezierPath* btest = new BezierPath(a,b,d,e,c,baseGraphStyle);
+    btest->getPoints();
+    c->addLayer(btest);
   }
 };
 

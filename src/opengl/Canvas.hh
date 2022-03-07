@@ -38,6 +38,7 @@ class Canvas {
     originalProjection = projection;
     //    projection = glm::scale(projection, glm::vec3(16, -16, 1));
     //    projection = glm::translate(projection, glm::vec3(180, -90, 0));
+    //calling glm::ortho..., show init and render, works with z=0 and not with z!=0
   }
   ~Canvas();
   Canvas(const Canvas& orig) = delete;
