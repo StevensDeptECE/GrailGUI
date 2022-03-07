@@ -1,7 +1,6 @@
 #pragma once
 #include "opengl/GrailGUI.hh"
-#include "./Vec3d.hh"
-//#include "./Curve.hh"
+#include "CAD/Curve.hh"
 #include <vector>
 #include "opengl/Shape2D.hh"
 
