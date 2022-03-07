@@ -23,24 +23,25 @@ void Curve::compute(){
 Vec3D Curve::getPoint(double step){
   double t = M_PI * 2 * step;
   compute();
+  cout << "step: " << step << ", t: " << t << ", point: " << center + (u*(radius*cos(t))) + (v*(radius*sin(t))) << endl;
   return center + (u*(radius*cos(t))) + (v*(radius*sin(t)));
 }
 
 
 void Curve::getPoints(){
   for(double i=0; i<=0.5; i+=0.1){
-     // cout<< this->getPoint(i) << endl;
+    // cout<< this->getPoint(i) << endl;
       points.push_back(this->getPoint(i));
   }
 }
+
 //unwrap points to be a 1d array for drawing
 std::vector<float> unwrap(std::vector<Vec3D> x){
-  std::vector<float> temp;
-  temp.reserve(x.size()*3);
-  for (int i=0; i<x.size(); i++){
-    temp.push_back(x[i].x);
-    temp.push_back(x[i].y);
-    temp.push_back(x[i].z);
+  std::vector<float> temp(x.size()*3);
+  for (int i=0, j=0; i<x.size(); i++){
+    temp[j++] = x[i].x;
+    temp[j++] = x[i].y;
+    temp[j++] = x[i].z; //0, when z != 0 doesn't work
   }
   return temp;
 }
@@ -61,10 +62,10 @@ void Curve::init(){
 }
 
 void Curve::render(){
-  for(int i=0; i<drawingPoints.size(); i++){
-    cout << drawingPoints[i] << " " ;
-  }
-  cout << endl ;
+  // for(int i=0; i<drawingPoints.size(); i++){
+  //   cout << drawingPoints[i] << " " ;
+  // }
+  // cout << endl ;
 
   Shader * shader = Shader::useShader(GLWin::COMMON_SHADER);
   shader->setMat4("projection",*(parentCanvas->getProjection()));
@@ -73,7 +74,7 @@ void Curve::render(){
   glEnableVertexAttribArray(0);
 
   glLineWidth(style->getLineWidth());
-  glDrawArrays(GL_LINE_STRIP, 0, 6);
+  glDrawArrays(GL_LINE_STRIP, 0, drawingPoints.size()/3);
 
   glDisableVertexAttribArray(0);
   glBindVertexArray(0);

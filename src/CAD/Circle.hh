@@ -29,3 +29,9 @@ class Circle : public Vec3D {
     //Vec3D getTangent(double step);
 
 };
+
+//get the derivative along the path
+//take a shape and extrude it around an arbitrary path in space
+//what is the orientation
+//3d math, talk to someone in the math department
+//3d geometry? stack overflow

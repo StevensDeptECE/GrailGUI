@@ -25,6 +25,7 @@ class Curve : public Vec3D, public Shape2D {
       this->point=p1;
       this->center=midpoint(p1,p2);
       this->radius=distance(p1,p2)/2;
+      cout<< "start, stop, center, radius: " << p1 << ", "<< p2 << ", " << this->center << ", " << this->radius << endl;
       this->getPoints();
     }
 
