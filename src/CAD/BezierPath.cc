@@ -1,5 +1,4 @@
 #include "CAD/BezierPath.hh"
-#include "CAD/Vec3d.hh"
 //#include "CAD/Matrix3d.hh"
 
 using namespace std;
