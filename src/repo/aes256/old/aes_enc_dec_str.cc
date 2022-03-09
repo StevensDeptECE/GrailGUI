@@ -3,6 +3,16 @@
 // openssl aes-256-cbc -d -a -in secrets.txt.enc -out secrets.txt.new
 // https://stackoverflow.com/questions/16056135/how-to-use-openssl-to-encrypt-decrypt-files
 
+// TODO:
+//  get advice from experts
+//  turn into class
+//  implement file encryption
+
+
+// by next week:
+// - have triple aes 
+// - be able to encrypt whole files
+// - get public feedback on triple aes
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <openssl/aes.h>

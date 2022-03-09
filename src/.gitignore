@@ -1,9 +1,4 @@
 *.bin
-repo/aes256/*.txt
-.vscode/
-repo/aes256/*.enc
-repo/aes256/*.dec
-repo/aes256/test_AES
 */.vscode/
 repo/yubikey_auth/validateOtp
 repo/yubikey_auth/key.txt
