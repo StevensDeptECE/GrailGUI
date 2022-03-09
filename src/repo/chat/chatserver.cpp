@@ -130,7 +130,7 @@ void Servlet(SSL* ssl) /* Serve the connection -- threadable */ {
 int main(int count, char *strings[])
 {
 	SSL_CTX *ctx;
-	int server;
+	int server; //socket
 	char *portnum;
 	//if(!isRoot())        /* if root user is not executing server report must be root user */ {
 		//printf("This program must be run as root/sudo user!!");
