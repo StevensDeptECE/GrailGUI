@@ -14,7 +14,7 @@ CXXFLAGS += $(shell pkg-config --cflags openssl)
 LINK.o = $(LINK.cc)
 LDLIBS += $(shell pkg-config --libs openssl)
 
-test_aes.o: ../aes_enc_dec_class.h
+test_aes.o: ../aes_enc_dec_class.hh
 
 clean:
 	$(RM) test_aes *.o test.*
