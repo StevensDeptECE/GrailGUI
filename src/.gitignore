@@ -1,5 +1,5 @@
 *.bin
-*/.vscode/
+.vscode/
 repo/yubikey_auth/validateOtp
 repo/yubikey_auth/key.txt
 build/
