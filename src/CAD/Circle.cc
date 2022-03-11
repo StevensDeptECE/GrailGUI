@@ -1,5 +1,8 @@
+#define _USE_MATH_DEFINES
+
 #include "CAD/Circle.hh"
 #include <cmath>
+#include <math.h>
 
 using namespace std;
 

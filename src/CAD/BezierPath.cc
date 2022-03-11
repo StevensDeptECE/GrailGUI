@@ -85,10 +85,14 @@ float BezierPath::z(double t) {
 
 //computePoints
 void BezierPath::getPoints(){
-  for(double i=0; i<=1; i+=0.1){
-      cout<< Vec3D(x(i), y(i), z(i)) << endl;
-      points.push_back(Vec3D(x(i), y(i), z(i)));
+  double t = 0;
+  const int n = 10;
+  const double dt = 1.0/n;
+  for(int i=0; i<=n; i++, t+=dt){
+      // cout<< Vec3D(x(t), y(t), z(t)) << endl;
+      points.push_back(Vec3D(x(t), y(t), z(t)));
   }
+  cout<< "Size of points: " << points.size() << endl;
 }
 
 std::vector<float> BezierPath::unwrap(std::vector<Vec3D> x){

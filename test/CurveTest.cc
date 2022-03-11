@@ -41,7 +41,6 @@ class CurveTest : public GLWin {
     Vec3D e(7,5,0);
 
     BezierPath* btest = new BezierPath(a,b,d,e,c,baseGraphStyle);
-    btest->getPoints();
     c->addLayer(btest);
   }
 };

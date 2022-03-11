@@ -6,6 +6,7 @@
 #include <vector>
 #include "opengl/Shape2D.hh"
 
+using namespace std;
 
 /**
 Represent -- 
