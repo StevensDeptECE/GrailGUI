@@ -2,7 +2,10 @@
 #include <webp/decode.h>
 #include <webp/encode.h>
 
+// TODO: Need to store the size of the secret at the beginning of the image.
+// bzip2 or lzma
 #include <fstream>
+#include <vector>
 
 // std::basic_string<uint8_t>
 #include "bytevector.hh"
@@ -58,13 +61,13 @@ class SteganographicImage {
   }
 
   // Read in data from file into character array.
-  void hide_secret(byte_vec secret) {
+  void hide_secret(std::vector<uint8_t> secret) {
     secret_size = secret.size();
     size_t lim = start + secret_size * 8 * stride;
     if (lim > img_size)
       throw "Input string is too long or stride and start are too large to fit in the image.";
 
-    byte_vec::iterator it = secret.begin();
+    std::vector<uint8_t>::iterator it = secret.begin();
     uint8_t bit = 0, c = *it++;
     for (int i = start; i < lim; i += stride) {
       rgb[i] = c >> (7 - bit) & 1 ? rgb[i] | 1 : rgb[i] & ~1;
@@ -72,12 +75,12 @@ class SteganographicImage {
     }
   }
 
-  byte_vec recover() {
-    byte_vec secret;
+  std::vector<uint8_t> recover() {
+    std::vector<uint8_t> secret;
     uint8_t bit = 0, c = 0;
     for (int i = start; i < start + secret_size * 8 * stride; i += stride) {
       if (rgb[i] & 1) c |= 1;
-      ++bit == 8 ? bit = 0, secret += c, c = 0 : c <<= 1;
+      ++bit == 8 ? bit = 0, secret.push_back(c), c = 0 : c <<= 1;
     }
     return secret;
   }
@@ -93,31 +96,31 @@ int main(int argc, char **argv) {
   //             << std::endl;
   //   return 1;
   // }
+  std::string img_name = "hubble.webp";
+  std::string data_name = "bible.epub";
 
   try {
     // TODO:
     // - Use a seed to one-time randomize info start and offset.
     // - Deterministically decide start/stride params based on size of image.
     // - Maybe combine both of these to create a sort of random tolerance.
-    SteganographicImage steg("aurora_borealis.webp", 300, 40);
+    SteganographicImage steg(img_name, 0, 1);
 
-    byte_vec secret;
-    // for (int i = 0; i < 512 * 2; ++i) secret += {'a', 0};
-    // secret += {'a', 'h', 0x00, 'c', 0x4a, 0xb4, 0x7f, 0x70, 0x10, 0x6d};
-    // secret += {'a', 3, 0x00, 'g', 'i'};
-    // secret += {0xff, '\0', 0x6C};
-    secret += {'h', 'e', 'l', 0, 'l', 'o'};
+    std::ifstream in(data_name);
+    // std::vector<uint8_t> secret(std::istreambuf_iterator<char>(std::cin),
+    // {});
+    std::vector<uint8_t> secret(std::istreambuf_iterator<char>(in), {});
 
     std::cout << "Input size: " << secret.size() << std::endl;
 
     steg.hide_secret(secret);
-    steg.write_webp("aurora_borealis.webp");
+    steg.write_webp("new" + img_name);
 
-    byte_vec recov = steg.recover();
+    std::vector<uint8_t> recov = steg.recover();
 
-    std::cout << recov << std::endl;
+    std::ofstream out("new" + data_name);
+    for (uint8_t c : recov) out << c;
 
-    for (uint8_t c : recov) std::cout << c;
     std::cout << std::endl;
 
   } catch (char const *e) {
