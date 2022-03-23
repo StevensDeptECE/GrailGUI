@@ -87,17 +87,13 @@ class SteganographicImage {
 };
 
 int main(int argc, char **argv) {
-  // if (argc < 3 || (argc == 4 && argv[1][0] != 'h') ||
-  //     (argc != 4 && argv[1][0] == 'h') || (argc != 3 && argv[1][0] == 'r')) {
-  //   std::cerr << "Usage: " << argv[0]
-  //             << " [h|r] <input.webp> 'string to hide'\n    "
-  //                "h: Hide string in given image.\n    "
-  //                "r: Recover string from given image."
-  //             << std::endl;
-  //   return 1;
-  // }
-  std::string img_name = "hubble.webp";
-  std::string data_name = "bible.epub";
+  if (argc < 3) {
+    std::cerr << "Usage: " << argv[0] << " <input.webp> <file to hide>"
+              << std::endl;
+    return 1;
+  }
+  std::string img_name = argv[1];
+  std::string data_name = argv[2];
 
   try {
     // TODO:
