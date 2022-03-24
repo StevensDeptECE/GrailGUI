@@ -25,10 +25,14 @@ void Gear::init(){
 
   float da = 2.0 / pi / numTeeth / 4.0;
 
+  float first_spot = 0;
+  float sec_spot = 0;
+
   for(int i = 0; i < numTeeth; i++) {
     float angle = i * 2.0 * pi / numTeeth;
-    std::cout << x + radius0 * cos(angle) << std::endl;
+    first_spot = x + radius0 * cos(angle);
     verticies.push_back(x + radius0 * cos(angle));
+    sec_spot = y + radius0 * sin(angle);
     verticies.push_back(y + radius0 * sin(angle));
     verticies.push_back(x + radius1 * cos(angle));
     verticies.push_back(y + radius0 * sin(angle));
@@ -37,56 +41,39 @@ void Gear::init(){
       verticies.push_back(y + (radius0 * sin(angle)));
       verticies.push_back(x + (radius1 * cos(angle + 3 * da)));
       verticies.push_back(y + (radius1 * sin(angle + 3 * da)));
-
    }
   }
+  verticies.push_back(first_spot);
+  verticies.push_back(sec_spot);
+
 
   da = 2.0 *  pi / numTeeth / 4.0;
   for (int i = 0; i < numTeeth; i++) {
     float angle = i * 2.0 * pi / numTeeth;
-    std::cout << "new" << std::endl;
     verticies.push_back(x + radius1 * cos(angle));
-    std::cout << x + radius1 * cos(angle) << std::endl;
     verticies.push_back(y + radius1 * sin(angle));
-    std::cout << y + radius1 * sin(angle) << std::endl;
     verticies.push_back(x + radius2 * cos(angle + da));
-    std::cout << x + radius2 * cos(angle + da) << std::endl;
     verticies.push_back(y + radius2 * sin(angle + da));
-    std::cout << y + radius2 * sin(angle + da) << std::endl;
     verticies.push_back(x + radius2 * cos(angle + 2 * da));
-    std::cout << x + radius2 * cos(angle + 2 * da) << std::endl;
     verticies.push_back(y + radius2 * sin(angle + 2 * da));
-    std::cout << y + radius2 * sin(angle + 2 * da) << std::endl;
     verticies.push_back(x + radius1 * cos(angle + 3 * da));
-    std::cout << x + radius1 * cos(angle + 3 * da) << std::endl;
     verticies.push_back(y + radius1 * sin(angle + 3 * da));
-    std::cout << y + radius1 * sin(angle + 3 * da) << std::endl;
     
   }
   
+  std::cout << verticies.size() << std::endl;
 
-
-  // GLfloat circleVertX[362];// vertecies
-  // GLfloat circleVertY[362];
-
-  // circleVertX[0] = x;
-  // circleVertY[0] = y;
-  // //glVertex2f(x,y);
-  // for(int i = 1; i < 362; i++)
+  // for(int i =0; i <verticies.size(); i++)
   // {
-  //   circleVertX[i] = x +  (outterRadius * cos( i * (2 * 3.14159265358979323846 / 362)));
-  //   circleVertY[i] = y +  (outterRadius * sin( i * (2 * 3.14159265358979323846 / 362)));
-
+  //   std::cout << verticies[i] << std::endl;
   // }
-
-  // for(int i = 0; i < 362; i++) {
-  //   verticies.push_back(circleVertX[i]);
-  //   verticies.push_back(circleVertY[i]);
-  // }
-  for(int i =0; i <verticies.size(); i++)
-  {
-    std::cout << verticies[i] << std::endl;
-  }
+  // std::cout << verticies[-1] << std::endl;
+  // std::cout << verticies[-2] << std::endl;
+  // std::cout << verticies[-3] << std::endl;
+  // std::cout << verticies[-4] << std::endl;
+  // std::cout << verticies[-5] << std::endl;
+  // verticies.push_back(verticies[-2]);
+  // verticies.push_back(verticies[-1]);
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, verticies.size() * sizeof(float), verticies.data(), GL_DYNAMIC_DRAW);
@@ -103,7 +90,7 @@ void Gear::render(){
   glEnableVertexAttribArray(0);
 
   glLineWidth(style->getLineWidth());
-  glDrawArrays(GL_LINE_LOOP, 1, verticies.size()-123);//verticies.size());
+  glDrawArrays(GL_LINE_LOOP, 0, verticies.size());//verticies.size());
   //glDrawArrays(GL_LINE_LOOP, 0, 3);
   //glDrawArrays(GL_POINTS, 0, 3);
 

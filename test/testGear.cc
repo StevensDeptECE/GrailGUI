@@ -9,7 +9,7 @@ class TestGear : public GLWin {
   void init() {
     MainCanvas* c = currentTab()->getMainCanvas();
     const Style* s = getDefaultStyle();
-    Gear* circ = c->addLayer(new Gear(c, 500.0, 500.0, 100.0, 100.0, 20.0, 50.0, 10.0, s));    
+    Gear* circ = c->addLayer(new Gear(c, 500.0, 500.0, 100.0, 100.0, 6.0, 100.0, 100.0, s));    
   }
 };
 
