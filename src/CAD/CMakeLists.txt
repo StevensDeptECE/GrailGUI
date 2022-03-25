@@ -1,5 +1,7 @@
 set(grail-CAD
     Curve.cc
+    Cylinder.cc
+    RectangularPrism.cc
     Circle.cc
     BezierPath.cc
 )
