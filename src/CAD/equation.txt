@@ -1,0 +1,11 @@
+
+
+f(t)=ax*t^3 + bx*t^2+cx*t+dx
+f'(t)=3ax*t^2 + 2bx*t + cx
+
+f(0) = dx: dx = p0.x
+f'(0) = cx:   cx= p1.x-p0.x
+
+f(1) = ax+bx+cx+dx = p3.x
+ax+bx = p3.x - p0.x - (p1.x-p0.x)
+f'(1) = 3ax+bx+cx = (p3.x-p2.x)
