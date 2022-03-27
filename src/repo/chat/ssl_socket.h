@@ -1,6 +1,8 @@
 #pragma once
 #include "openssl/ssl.h"
 #include <arpa/inet.h> /*for using ascii to network bit*/
+#include "util/Ex.hh"
+#include "opengl/Errcode.hh"
 class SSLSocket {
     private:
         SSL_CTX *ctx;

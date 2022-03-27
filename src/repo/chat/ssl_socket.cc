@@ -1,5 +1,4 @@
 #include "ssl_socket.h"
-
 #include <arpa/inet.h> /*for using ascii to network bit*/
 #include <netdb.h>     // definitions for network database operations
 #include <string.h>    /*using fgets funtions for geting input from user*/
@@ -43,7 +42,7 @@ SSLSocket::SSLSocket(const char *ip_addr, const char *port) {
     struct hostent *host;
 
     if (!(host = gethostbyname(ip_addr))) {
-      throw "Could not find host";
+      throw Ex(__FILE__, __LINE__, Errcode::SERVER_INVALID);
     }
     addr.sin_addr.s_addr = *(long *)(host->h_addr);
   }
@@ -60,13 +59,12 @@ SSLSocket SSLSocket::createServer(const char *port) {
 
   if (bind(s.socket, (struct sockaddr *)&s.addr,
            sizeof(addr))) /* assiging the ip address and port*/ {
-    throw "can't bind port"; /* reporting error using errno.h library */
+    throw Ex(__FILE__, __LINE__, Errcode::NO_BIND);
   }
 
   if (listen(s.socket,
              10)) /*for listening to max of 10 clients in the queue*/ {
-    throw "Can't configure listening port"; /* reporting error using errno.h
-                                               library */
+    throw Ex(__FILE__, __LINE__, Errcode::LISTEN);
   }
 
   const SSL_METHOD *method =
@@ -75,7 +73,8 @@ SSLSocket SSLSocket::createServer(const char *port) {
 
   if (s.ctx == nullptr) {
     // ERR_print_errors_fp(stderr);
-    throw "Can't allocate SSL context.";
+    // Using an undefined error here because there weren't any in Errcode.hh that fit
+    throw Ex(__FILE__, __LINE__, Errcode::UNDEFINED);
   }
 
   socklen_t len = sizeof(addr);
@@ -151,13 +150,14 @@ SSLSocket SSLSocket::createClient(const char *ip_addr, const char *port) {
 
   if (s.ctx == nullptr) {
     ERR_print_errors_fp(stderr);
-    throw "could not set SSL context";
+    // Using an undefined error here because there weren't any in Errcode.hh that fit
+    throw Ex(__FILE__, __LINE__, Errcode::UNDEFINED);
   }
 
   if (connect(s.socket, (struct sockaddr *)&ip_addr,
               sizeof(ip_addr))) /*initiate a connection on a socket*/ {
     close(s.socket);
-    throw "Could not establish connection with server";
+    throw Ex(__FILE__, __LINE__, Errcode::SERVER_INVALID);
   }
 
   s.ssl = SSL_new(s.ctx);   /* create new SSL connection state */
