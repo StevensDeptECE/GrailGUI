@@ -1,4 +1,8 @@
 set(grail-CAD
+    Triangle.cc
+    Rectangle.cc
+    Circle2D.cc
+    Gear.cc
     Curve.cc
     Cylinder.cc
     RectangularPrism.cc
