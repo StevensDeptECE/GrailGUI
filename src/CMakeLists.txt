@@ -12,8 +12,8 @@ set(grail-path
             ${grail-opengl}
             ${grail-util}
             ${grail-xdl}
-	    ${grail-CAD}
-            )
+	          ${grail-CAD}
+)
 
 
 if(${GRAIL_EXPERIMENTAL})

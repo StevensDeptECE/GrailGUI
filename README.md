@@ -223,6 +223,13 @@ Otherwise, until there is sufficient OpenGL support for virtual Windows, you
 will have to resort to a dual boot or alternative computer to run Grail and
 Grail-based programs.
 
+### git: 'remote-https' is not found or can't run program
+
+This error could be a antivirus software quarantining your files. Avast is a 
+common software that will prevent your PC from  running the program properly.
+To fix this, go into the antivirus software and add an exception to the 
+git-remote-https.exe file so that your computer can access it. 
+
 ### Everything Else
 
 If you have an issue not on this list, and feel it should be included in the
