@@ -4,7 +4,7 @@
 // #include "opengl/GLWin.hh"
 // #include "opengl/Canvas.hh"
 #include <cmath>
-#include "./Helix.hh" //why does "CAD/Helix.hh" not work?
+#include "./Helix.hh"
 
 
 using namespace std;

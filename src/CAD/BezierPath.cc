@@ -141,19 +141,19 @@ void BezierPath::render(){
 
 }
 
-// int main(){
-//   Vec3D a(0,0,0);
-//   Vec3D b(2,5,0);
-//   Vec3D c(5,0,0);
-//   Vec3D d(7,5,0);
+int main(){
+  Vec3D a(0,0,0);
+  Vec3D b(2,5,0);
+  Vec3D c(5,0,0);
+  Vec3D d(7,5,0);
 
-//   Bezier b1(a,b,c,d);
+  Bezier b1(a,b,c,d);
   
-//   //check that unwrap works
-//   // for (int i=0; i<b1.drawingPoints.size(); i++){
-//   //   cout<< b1.drawingPoints[i] << endl;
-//   // }
-// }
+  //check that unwrap works
+  for (int i=0; i<b1.drawingPoints.size(); i++){
+    cout<< b1.drawingPoints[i] << endl;
+  }
+}
 
 //references:
 //https://www.google.com/search?q=how+to+Compute+the+coordinates+for+the+formula+of+a+circle+3D&rlz=1C1CHBF_enUS872US872&oq=how+to+Compute+the+coordinates+for+the+formula+of+a+circle+3D&aqs=chrome..69i57.2310j0j4&sourceid=chrome&ie=UTF-8
