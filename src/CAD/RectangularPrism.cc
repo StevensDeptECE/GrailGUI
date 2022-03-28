@@ -1,27 +1,29 @@
 #include "CAD/RectangularPrism.hh"
+
 #include "opengl/GLMath.hh"
 
-RectangularPrism::RectangularPrism(uint32_t length, uint32_t width, uint32_t height) : length(length), width(width), height(height){
-}
-RectangularPrism::~RectangularPrism(){
+RectangularPrism::RectangularPrism(Canvas* parent, uint32_t length,
+                                   uint32_t width, uint32_t height)
+    : Shape(parent), length(length), width(width), height(height) {}
+RectangularPrism::~RectangularPrism() {}
+
+inline void RectangularPrism::addRect(uint32_t i1, uint32_t i2, uint32_t i3,
+                                      uint32_t i4) {
+  ind.push_back(i1);
+  ind.push_back(i2);
+  ind.push_back(i3);
+  ind.push_back(i1);
+  ind.push_back(i3);
+  ind.push_back(i4);
 }
 
-inline void RectangularPrism::addRect(uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4) {
-  ind.push_back(i1);  ind.push_back(i2);  ind.push_back(i3);
-  ind.push_back(i1);  ind.push_back(i3);  ind.push_back(i4);
-}
+void RectangularPrism::init() {}
 
-void RectangularPrism::init(){
-
-}
-
-double RectangularPrism::getVolume(){
+double RectangularPrism::getVolume() {
   double volume = length * width * height;
   return volume;
 }
 
-void RectangularPrism::render(){
-}
+void RectangularPrism::render() {}
 
-void RectangularPrism::cleanup(){
-}
+void RectangularPrism::cleanup() {}
