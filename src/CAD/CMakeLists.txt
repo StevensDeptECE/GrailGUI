@@ -7,7 +7,6 @@ set(grail-CAD
     Rectangle.cc
     Circle2D.cc
     Gear.cc
-    Transform.cc
 )
 
 list(TRANSFORM grail-CAD PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)

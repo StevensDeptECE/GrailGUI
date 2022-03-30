@@ -51,6 +51,15 @@ void RectangularPrism::init(){
   ind.push_back(2); ind.push_back(1); ind.push_back(6);
   ind.push_back(6); ind.push_back(1); ind.push_back(5);
 
+  //Create VAO,
+  // a container to have all shapes and their attributes
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
+
+  gen(vbo, vertices); // handle for the buffer object for vertices
+  //Define parameter 0 in vertex shader contains 3 floats each (x,y,z)
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
  glGenBuffers(1, &elementbuffer);
  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
  glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind.size() * sizeof(uint32_t), &ind[0], GL_STATIC_DRAW);
