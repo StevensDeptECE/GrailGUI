@@ -2,7 +2,6 @@
 #include <webp/decode.h>
 #include <webp/encode.h>
 
-// TODO: Need to store the size of the secret at the beginning of the image.
 // bzip2 or lzma
 #include <fstream>
 #include <vector>
@@ -20,8 +19,6 @@ class SteganographicImage {
   int w, h;
   size_t img_size;
   uint8_t *rgb;
-
-  size_t secret_size;
 
  public:
   SteganographicImage(const std::string &img_name, int start, int stride)
@@ -62,23 +59,50 @@ class SteganographicImage {
 
   // Read in data from file into character array.
   void hide_secret(std::vector<uint8_t> secret) {
-    secret_size = secret.size();
-    size_t lim = start + secret_size * 8 * stride;
+    unsigned int secret_size = secret.size();
+
+    int lim = start + secret_size * 8 * stride;
     if (lim > img_size)
       throw "Input string is too long or stride and start are too large to fit in the image.";
 
-    std::vector<uint8_t>::iterator it = secret.begin();
-    uint8_t bit = 0, c = *it++;
-    for (int i = start; i < lim; i += stride) {
+    int i;
+    uint8_t bit = 0;
+    std::vector<uint8_t> secret_size_bytes;
+    for (i = 0; i < sizeof(int); i++)
+      secret_size_bytes.push_back((secret_size >> (i * 8)) & 0xFF);
+    std::vector<uint8_t>::iterator it = secret_size_bytes.begin();
+    uint8_t c = *it++;
+
+    // Encode each bit of the secret size
+    for (i = start; i < start + stride * sizeof(int) * 8; i += stride) {
+      rgb[i] = c >> (7 - bit) & 1 ? rgb[i] | 1 : rgb[i] & ~1;
+      if (++bit == 8) bit = 0, c = *it++;
+    }
+
+    c = *(it = secret.begin())++, bit = 0;
+
+    for (i += stride; i < lim; i += stride) {
       rgb[i] = c >> (7 - bit) & 1 ? rgb[i] | 1 : rgb[i] & ~1;
       if (++bit == 8) bit = 0, c = *it++;
     }
   }
 
   std::vector<uint8_t> recover() {
-    std::vector<uint8_t> secret;
+    int i;
+
+    std::vector<uint8_t> secret_size_bytes;
     uint8_t bit = 0, c = 0;
-    for (int i = start; i < start + secret_size * 8 * stride; i += stride) {
+    for (i = start; i < start + stride * sizeof(int) * 8; i += stride) {
+      if (rgb[i] & 1) c |= 1;
+      ++bit == 8 ? bit = 0, secret_size_bytes.push_back(c), c = 0 : c <<= 1;
+    }
+
+    unsigned int secret_size = 0;
+    for (i = 0; i < sizeof(int); i++)
+      secret_size |= secret_size_bytes[i] << (i * 8);
+
+    std::vector<uint8_t> secret;
+    for (i += stride; i < start + secret_size * 8 * stride; i += stride) {
       if (rgb[i] & 1) c |= 1;
       ++bit == 8 ? bit = 0, secret.push_back(c), c = 0 : c <<= 1;
     }
@@ -116,8 +140,6 @@ int main(int argc, char **argv) {
 
     std::ofstream out("new" + data_name);
     for (uint8_t c : recov) out << c;
-
-    std::cout << std::endl;
 
   } catch (char const *e) {
     std::cerr << "Error: " << e << std::endl;
