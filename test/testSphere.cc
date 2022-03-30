@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include "opengl/GrailGUI.hh"
 #include "CAD/Sphere.hh"
+#include "opengl/util/Camera.hh"
 using namespace std;
 using namespace grail;
 
@@ -21,8 +22,11 @@ class TestSphere : public GLWin {
     TestSphere() : GLWin(0x000000, 0xCCCCCC, "Test Sphere") {}
     void init() {
         MainCanvas* c = currentTab()->getMainCanvas();
-        //const Style* s = getDefaultStyle();
-        Sphere* sph = c->addLayer(new Sphere(c, 5, 5, 5));
+        Camera* cam = c->setLookAtProjection(0, 0, 30, 0, 0, 0, 0, 1, 0);
+        c->setProjection(cam->getViewProjection());
+
+        const Style* s = getDefaultStyle();
+        Sphere* sph = c->addLayer(new Sphere(c, s, 5, 5, 5));
   }
 };
 

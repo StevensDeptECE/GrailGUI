@@ -7,10 +7,11 @@
 #include "opengl/Shader.hh"
 #include "opengl/GLWin.hh"
 #include "opengl/Canvas.hh"
+#include "opengl/Style.hh"
 
 using namespace std::numbers;
 
-Sphere::Sphere(Canvas *c, uint32_t latRes, uint32_t longRes, uint32_t radius) : Shape(c), latRes(latRes), longRes(longRes), radius(radius){
+Sphere::Sphere(Canvas *c, const Style *s, uint32_t latRes, uint32_t longRes, uint32_t radius) : Shape(c), style(s), latRes(latRes), longRes(longRes), radius(radius){
 }
 Sphere::~Sphere(){
 }
@@ -19,7 +20,8 @@ void Sphere::init(){
   //create vertex array object
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
-
+  // Phi is lattitude from south to north
+  // Theta is the angle that goes from 0 to 360 around the sphere
   const double dphi = pi / latRes;
   double phi = -pi / 2 + dphi;
 
@@ -35,7 +37,9 @@ void Sphere::init(){
       vert.push_back(x);
       vert.push_back(y); 
       vert.push_back(z);
+      cout << x << ", " << y << ", " << z << "     ";
     }
+    cout << endl;
   }
 
   //rectangles
@@ -66,12 +70,16 @@ void Sphere::init(){
 }
 
 void Sphere::render(){
+  Shader * shader = Shader::useShader(GLWin::COMMON_SHADER);
+  shader->setMat4("projection",*(parentCanvas->getProjection()));
+	shader->setVec4("solidColor",style->getFgColor());
   
   glBindVertexArray(vao);
   glEnableVertexAttribArray(0);
   
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
-  glDrawElements(GL_LINES, ind.size(), GL_UNSIGNED_INT, (void*)0);
+  //glDrawElements(GL_LINES, ind.size(), GL_UNSIGNED_INT, (void*)0);
+  glDrawArrays(GL_LINE_STRIP, 0, ind.size()/3);
 
   glDisableVertexAttribArray(0);
   glBindVertexArray(0);
