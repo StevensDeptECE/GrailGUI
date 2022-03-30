@@ -1,127 +1,118 @@
+// TODO: Check if downloaded file is diff from original - checksum
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+
+#include <fstream>
 // https://curl.se/libcurl/c/libcurl-tutorial.html
-#include <curl/curl.h>
+// #include <curl/curl.h>
+// https://pragmaticjoe.blogspot.com/2015/09/uploading-file-with-google-drive-api.html
+// https://stackoverflow.com/questions/41958236/posting-and-receiving-json-payload-with-curlpp#41974669
 
-struct token_info {
-  char *access_token = (char *)malloc(1);
-  size_t size = 0;
-};
+#include <curlpp/Easy.hpp>
+#include <curlpp/Exception.hpp>
+#include <curlpp/Infos.hpp>
+#include <curlpp/Options.hpp>
+#include <curlpp/cURLpp.hpp>
 
-size_t get_token(void *buffer, size_t size, size_t nmemb, void *data) {
-  struct token_info *ti = (struct token_info *)data;
-  size_t realsize = size * nmemb;
-  char *p = (char *)realloc(ti->access_token, ti->size + realsize + 1);
-  if (!p) return 0;
-  ti->access_token = p;
-  memcpy(&(ti->access_token[ti->size]), data, realsize);
-  ti->size += realsize;
-  ti->access_token[ti->size] = 0;
-  return realsize;
+#include "json.hpp"
+
+std::string invoke(std::string url, std::string body) {
+  std::list<std::string> header;
+  header.push_back("Content-Type: application/json");
+
+  curlpp::Cleanup clean;
+  curlpp::Easy r;
+  r.setOpt(new curlpp::options::Url(url));
+  r.setOpt(new curlpp::options::HttpHeader(header));
+  r.setOpt(new curlpp::options::PostFields(body));
+  r.setOpt(new curlpp::options::PostFieldSize(body.length()));
+
+  std::ostringstream response;
+  r.setOpt(new curlpp::options::WriteStream(&response));
+
+  r.perform();
+
+  return std::string(response.str());
 }
 
 int main(int argc, char **argv) {
   if (argc != 2) {
-    fprintf(stderr, "File to upload required\n");
+    std::cout << "Usage: " << argv[0] << " <file>" << std::endl;
+    return 1;
+  }
+
+  std::ifstream fi(argv[1]);
+  if (!fi.is_open()) {
+    std::cerr << "File not found: " << argv[1] << std::endl;
     return EXIT_FAILURE;
   }
 
-  // Read in the input file which will be uploaded.
-  FILE *file = fopen(argv[1], "rb");
-  if (!file) {
-    fprintf(stderr, "Can't open %s\n", argv[1]);
-    return EXIT_FAILURE;
-  }
+  fi.seekg(0, std::ios::end);
+  size_t size = fi.tellg();
+  fi.seekg(0, std::ios::beg);
+  std::vector<uint8_t> f(size);
+  fi.read((char *)f.data(), size);
+  fi.close();
+  std::string f_str = std::string(f.begin(), f.end());
 
-  // Get the input file's metadata.
-  struct stat file_info;
-  if (fstat(fileno(file), &file_info)) return EXIT_FAILURE;
-
-  // Verifying tokens in environment.
-  char *token_strs[3] = {(char *)"GOOGLE_CLIENT_ID",
-                         (char *)"GOOGLE_CLIENT_SECRET",
-                         (char *)"GOOGLE_REFRESH_TOKEN"};
-  char *tokens[3] = {};
-  for (int i = 0; i < 3; ++i) {
-    if (!(tokens[i] = getenv(token_strs[i]))) {
-      fprintf(stderr, "%s token not in environment.\n", token_strs[i]);
-      return EXIT_FAILURE;
-    }
-  }
+  // Getting tokens from environment.
+  std::string client_id = getenv("GOOGLE_CLIENT_ID");
+  std::string client_secret = getenv("GOOGLE_CLIENT_SECRET");
+  std::string refresh_token = getenv("GOOGLE_REFRESH_TOKEN");
 
   // Get temp access token.
-  CURL *curl = curl_easy_init();
-  if (curl) {
-    // ACCESS_TOKEN=$(curl -d client_id="$GOOGLE_CLIENT_ID" \
+  curlpp::Easy req;
+  // ACCESS_TOKEN=$(curl -d client_id="$GOOGLE_CLIENT_ID" \
         //     -d client_secret="$GOOGLE_CLIENT_SECRET" \
         //     -d refresh_token="$GOOGLE_REFRESH_TOKEN" \
         //     -d grant_type=refresh_token \
         //     https://accounts.google.com/o/oauth2/token | head -2 | cut -d'"' -f4 | tail -1)
-    curl_easy_setopt(curl, CURLOPT_URL,
-                     "https://accounts.google.com/o/oauth2/token");
+  req.setOpt(
+      new curlpp::options::Url("https://accounts.google.com/o/oauth2/token"));
+  std::string fields =
+      "client_id=" + client_id + "&client_secret=" + client_secret +
+      "&refresh_token=" + refresh_token + "&grant_type=refresh_token";
+  req.setOpt(new curlpp::options::PostFields(fields));
+  req.setOpt(new curlpp::options::PostFieldSize(fields.length()));
+  std::ostringstream response;
+  req.setOpt(new curlpp::options::WriteStream(&response));
+  req.perform();
 
-    struct token_info token_info;
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_token);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &token_info);
+  nlohmann::json j = nlohmann::json::parse(response.str());
+  std::string access_token = j["access_token"].get<std::string>();
 
-    char fields[1024] = "";
-    strcpy(fields, strcat(fields, "client_id="));
-    strcpy(fields, strcat(fields, tokens[0]));
-    strcpy(fields, strcat(fields, "&client_secret="));
-    strcpy(fields, strcat(fields, tokens[1]));
-    strcpy(fields, strcat(fields, "&refresh_token="));
-    strcpy(fields, strcat(fields, tokens[2]));
-    strcpy(fields, strcat(fields, "&grant_type=refresh_token"));
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, fields);
-
-    CURLcode res = curl_easy_perform(curl);
-    if (res != CURLE_OK) {
-      fprintf(stderr, "Failed to get temp access token: %s\n",
-              curl_easy_strerror(res));
-      return EXIT_FAILURE;
-    }
-    printf("%s\n", token_info.access_token);
-
-    // UPLOAD_ID=$(curl -X POST -L \
+  // UPLOAD_ID=$(curl -X POST -L \
         //     -H "Authorization: Bearer $ACCESS_TOKEN" \
         //     -F "metadata={name :'$FILENAME'};type=application/json;charset=UTF-8" \
         //     -F "file=@$FILENAME;type=$(file --mime-type -b "$FILENAME")" \
         //     "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart" | head -3 | cut -d'"' -f4 | tail -1)
-    curl_easy_setopt(
-        curl, CURLOPT_URL,
-        "https://www.googleapis.com/upload/drive/v3/files?uploadType=media");
+  // TODO: Need to add metadata for filename based on argv[1]. (needs to be its
+  // own field?)
+  curlpp::Easy req2;
+  req2.setOpt(new curlpp::options::Url(
+      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"));
+  std::list<std::string> header;
+  header.push_back("Authorization: Bearer " + access_token);
+  req2.setOpt(new curlpp::options::HttpHeader(header));
 
-    // TODO: Need to add metadata for filename based on argv[1].
-    char auth[1024] = "";
-    strcpy(auth, strcat(auth, "Authorization: Bearer "));
-    strcpy(auth, strcat(auth, token_info.access_token));
-    char access_code[] = "";
+  std::string fields2;
+  fields2 += f_str;
+  // std::string metadata = "{name :'" + std::string(basename(argv[1]))
+  // + "';type=application/json;charset=UTF-8}";
+  // std::string fields2 = "metadata=" + metadata + "&" + "file=@" +
+  // std::string(argv[1]) + '&' + f_str;
+  req2.setOpt(new curlpp::options::PostFields(fields2));
 
-    struct curl_slist *header = NULL;
-    header = curl_slist_append(header, strcat(auth, access_code));
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header);
-    /* tell it to "upload" to the URL */
-    curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+  std::ostringstream response2;
+  req2.setOpt(new curlpp::options::WriteStream(&response2));
+  req2.perform();
 
-    /* set where to read from (on Windows you need to use READFUNCTION too) */
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, file);
-    /* give the size of the upload */
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE,
-                     (curl_off_t)file_info.st_size);
-    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_easy_setopt(curl, CURLOPT_READDATA, file);
+  nlohmann::json j2 = nlohmann::json::parse(response2.str());
+  std::string upload_id = j2["id"].get<std::string>();
 
-    /* enable verbose for easier tracing */
-    /* curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L); */
+  std::cout << "File uploaded to:" << '\n'
+            << "https://drive.google.com/file/d/" << upload_id << std::endl;
 
-    res = curl_easy_perform(curl);
-    if (res != CURLE_OK) {
-      fprintf(stderr, "Failed to upload file: %s\n", curl_easy_strerror(res));
-      return EXIT_FAILURE;
-    }
-    curl_easy_cleanup(curl);
-  }
-  fclose(file);
   return EXIT_SUCCESS;
 }

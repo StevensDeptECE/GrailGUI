@@ -1,2 +1,2 @@
 all:
-	g++ upload.cc -lcurl -o upload
+	g++ upload.cc $(shell pkg-config --libs curlpp) -o upload
