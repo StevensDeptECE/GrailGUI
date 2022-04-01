@@ -13,15 +13,15 @@ class SteganographicImage {
  private:
   std::string img_name;
 
-  int start = 0;
-  int stride = 1;
+  size_t start = 0;
+  size_t stride = 1;
 
   int w, h;
   size_t img_size;
   uint8_t *rgb;
 
  public:
-  SteganographicImage(const std::string &img_name, int start, int stride)
+  SteganographicImage(const std::string &img_name, size_t start, size_t stride)
       : img_name(img_name), start(start), stride(stride) {
     read_webp();
   }
@@ -59,22 +59,22 @@ class SteganographicImage {
 
   // Read in data from file into character array.
   void hide_secret(std::vector<uint8_t> secret) {
-    unsigned int secret_size = secret.size();
+    size_t secret_size = secret.size();
 
-    int lim = start + secret_size * 8 * stride;
+    size_t lim = start + secret_size * 8 * stride;
     if (lim > img_size)
       throw "Input string is too long or stride and start are too large to fit in the image.";
 
-    int i;
+    size_t i;
     uint8_t bit = 0;
     std::vector<uint8_t> secret_size_bytes;
-    for (i = 0; i < sizeof(int); i++)
+    for (i = 0; i < sizeof(size_t); i++)
       secret_size_bytes.push_back((secret_size >> (i * 8)) & 0xFF);
     std::vector<uint8_t>::iterator it = secret_size_bytes.begin();
     uint8_t c = *it++;
 
     // Encode each bit of the secret size
-    for (i = start; i < start + stride * sizeof(int) * 8; i += stride) {
+    for (i = start; i < start + stride * sizeof(size_t) * 8; i += stride) {
       rgb[i] = c >> (7 - bit) & 1 ? rgb[i] | 1 : rgb[i] & ~1;
       if (++bit == 8) bit = 0, c = *it++;
     }
@@ -88,17 +88,19 @@ class SteganographicImage {
   }
 
   std::vector<uint8_t> recover() {
-    int i;
+    size_t i;
 
+    // Grab the bytes from the image that store the secret's size.
     std::vector<uint8_t> secret_size_bytes;
     uint8_t bit = 0, c = 0;
-    for (i = start; i < start + stride * sizeof(int) * 8; i += stride) {
+    for (i = start; i < start + stride * sizeof(size_t) * 8; i += stride) {
       if (rgb[i] & 1) c |= 1;
       ++bit == 8 ? bit = 0, secret_size_bytes.push_back(c), c = 0 : c <<= 1;
     }
 
-    unsigned int secret_size = 0;
-    for (i = 0; i < sizeof(int); i++)
+    // Convert the secret's size bytes to an int.
+    size_t secret_size = 0;
+    for (i = 0; i < sizeof(size_t); i++)
       secret_size |= secret_size_bytes[i] << (i * 8);
 
     std::vector<uint8_t> secret;
@@ -116,8 +118,7 @@ int main(int argc, char **argv) {
               << std::endl;
     return 1;
   }
-  std::string img_name = argv[1];
-  std::string data_name = argv[2];
+  std::string img_name = argv[1], data_name = argv[2];
 
   try {
     // TODO:
@@ -130,8 +131,6 @@ int main(int argc, char **argv) {
     // std::vector<uint8_t> secret(std::istreambuf_iterator<char>(std::cin),
     // {});
     std::vector<uint8_t> secret(std::istreambuf_iterator<char>(in), {});
-
-    std::cout << "Input size: " << secret.size() << std::endl;
 
     steg.hide_secret(secret);
     steg.write_webp("new" + img_name);
