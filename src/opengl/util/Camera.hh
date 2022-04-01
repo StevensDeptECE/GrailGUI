@@ -69,7 +69,14 @@ class Camera {
 
 //TODO: make this not inline, move to c++ file, and have multiple different projections
 // also, keep more of the computation in the matrices, not computed on the fly each time
-  inline glm::mat4 getViewProjection() {
+//   inline glm::mat4 getViewProjection() {
+//     projection = glm::perspective(glm::radians(fov), float(screenWidth) / float(screenHeight), zNear, zFar);
+//     view = glm::lookAt(camPos, lookingAt, upVector);
+//     return projection * view;
+//   }
+
+
+inline glm::mat4 getViewProjection() {
     projection = glm::perspective(glm::radians(fov), float(screenWidth) / float(screenHeight), zNear, zFar);
     view = glm::lookAt(camPos, lookingAt, upVector);
     //std::cout<< "Screen Width: "<< screenWidth << ", Screen height: " << screenHeight << ", Znear: " << zNear << ", zFar: "<< ", CamPos: " << camPos << " , Looking At: " << lookingAt << ", up Vector: " << upVector << std::endl;
