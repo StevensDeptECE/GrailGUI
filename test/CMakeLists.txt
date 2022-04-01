@@ -35,7 +35,7 @@ add_grail_executable(SRC testGear.cc LIBS grail)
 
 
 if(${MPV_FOUND})
-  add_grail_executable(SRC testAudio.cc LIBS grail)
-  add_grail_executable(SRC testVideo.cc LIBS grail)
+  # add_grail_executable(SRC testAudio.cc LIBS grail)
+  # add_grail_executable(SRC testVideo.cc LIBS grail)
 endif()
 # setting up a new executable, only needs the two lines

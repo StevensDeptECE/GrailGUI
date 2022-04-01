@@ -8,6 +8,7 @@ set(grail-CAD
     RectangularPrism.cc
     Circle.cc
     BezierPath.cc
+    Line.cc
 )
 
 list(TRANSFORM grail-CAD PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)

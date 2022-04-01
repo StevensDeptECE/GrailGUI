@@ -35,8 +35,8 @@ class CurveTest : public GLWin {
     
     //helix test
     // Vec3D start(0,0,0);
-    Helix* test = new Helix(start, 10, 2, c, baseGraphStyle);
-    c->addLayer(test);
+    //Helix* test = new Helix(start, 10, 2, c, baseGraphStyle);
+    //c->addLayer(test);
 
     //bezier test
     Vec3D a(0,0,0);

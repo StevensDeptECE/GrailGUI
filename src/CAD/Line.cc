@@ -10,14 +10,19 @@
 using namespace std;
 
 
-// Vec3D Line::getPoint(double step){
-//   double x = start.x+(step*stop.x);
-//   double y = start.y+(step*stop.y);
-//   double z = start.y+(step*stop.y);
-//   return Vec3D (x, y, z);
-// }
+Vec3D Line::getPoint(double step){
+  double x = start.x+(step*stop.x);
+  double y = start.y+(step*stop.y);
+  double z = start.y+(step*stop.y);
+  return Vec3D (x, y, z);
+}
 
-
+Line::Line(Vec3D start, Vec3D stop, Canvas* c, Style* s):Shape2D(c, start.x, start.y, s)
+      {
+      this->start=start;
+      this->stop=stop;
+      this->getPoints();
+    }
 void Line::getPoints(){
   //cout<< "start, height, radius: " << start << ", "<< height << ", "<< radius << endl;
   for(double i=0; i<=1; i+=0.01){
