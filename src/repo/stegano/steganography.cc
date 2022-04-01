@@ -61,14 +61,14 @@ class SteganographicImage {
   void hide_secret(std::vector<uint8_t> secret) {
     size_t secret_size = secret.size();
 
-    size_t lim = start + secret_size * 8 * stride;
+    size_t lim = start + secret_size * 8 * stride + sizeof(size_t) * 8;
     if (lim > img_size)
       throw "Input string is too long or stride and start are too large to fit in the image.";
 
     size_t i;
     uint8_t bit = 0;
     std::vector<uint8_t> secret_size_bytes;
-    for (i = 0; i < sizeof(size_t); i++)
+    for (i = 0; i < sizeof(size_t); ++i)
       secret_size_bytes.push_back((secret_size >> (i * 8)) & 0xFF);
     std::vector<uint8_t>::iterator it = secret_size_bytes.begin();
     uint8_t c = *it++;
@@ -81,7 +81,7 @@ class SteganographicImage {
 
     c = *(it = secret.begin())++, bit = 0;
 
-    for (i += stride; i < lim; i += stride) {
+    for (i += stride; i < lim + 8; i += stride) {
       rgb[i] = c >> (7 - bit) & 1 ? rgb[i] | 1 : rgb[i] & ~1;
       if (++bit == 8) bit = 0, c = *it++;
     }
@@ -98,13 +98,15 @@ class SteganographicImage {
       ++bit == 8 ? bit = 0, secret_size_bytes.push_back(c), c = 0 : c <<= 1;
     }
 
-    // Convert the secret's size bytes to an int.
+    // Convert the secret's size bytes to an integer.
     size_t secret_size = 0;
-    for (i = 0; i < sizeof(size_t); i++)
-      secret_size |= secret_size_bytes[i] << (i * 8);
+    for (int j = 0; j < sizeof(size_t); ++j)
+      secret_size |= secret_size_bytes[j] << (j * 8);
 
     std::vector<uint8_t> secret;
-    for (i += stride; i < start + secret_size * 8 * stride; i += stride) {
+    for (i += stride;
+         i < start + sizeof(size_t) * 8 + secret_size * 8 * stride + 8;
+         i += stride) {
       if (rgb[i] & 1) c |= 1;
       ++bit == 8 ? bit = 0, secret.push_back(c), c = 0 : c <<= 1;
     }
