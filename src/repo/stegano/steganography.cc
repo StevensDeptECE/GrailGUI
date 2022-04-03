@@ -4,10 +4,12 @@
 
 // bzip2 or lzma
 #include <fstream>
+#include <iostream>
 #include <vector>
 
-// std::basic_string<uint8_t>
-#include "bytevector.hh"
+// https://renenyffenegger.ch/notes/development/Base64/Encoding-and-decoding-base-64-with-cpp/
+// https://github.com/ReneNyffenegger/cpp-base64
+#include "base64.h"
 
 class SteganographicImage {
  private:
@@ -141,6 +143,9 @@ int main(int argc, char **argv) {
 
     std::ofstream out("new" + data_name);
     for (uint8_t c : recov) out << c;
+
+    std::string base64 = base64_encode(recov.data(), recov.size());
+    std::cout << base64 << std::endl;
 
   } catch (char const *e) {
     std::cerr << "Error: " << e << std::endl;
