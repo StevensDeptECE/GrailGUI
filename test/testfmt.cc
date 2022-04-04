@@ -11,6 +11,7 @@
 
 using namespace std;
 using namespace fmt;
+using namespace grail::utils;
 
 template <typename C, typename T>
 constexpr uint32_t test_format(C destBuf, T fmt_val) {
@@ -304,10 +305,10 @@ constexpr void testboth(T data) {
   char dest[33];
   vector<char> out(33);
   constexpr uint64_t n = 1000000;
-  CBenchmark::benchmark("fmtlib format", n,
+  CBenchmark<>::benchmark("fmtlib format", n,
                         bind(test_format<vector<char>, T>, out, data));
-  CBenchmark::benchmark("sprintf format", n, bind(test_sprintf<T>, dest, data));
-  CBenchmark::benchmark("Grail float", n, bind(_formatgrl5<T>, dest, data));
+  CBenchmark<>::benchmark("sprintf format", n, bind(test_sprintf<T>, dest, data));
+  CBenchmark<>::benchmark("Grail float", n, bind(_formatgrl5<T>, dest, data));
   print("{}\n", data);
 }
 
@@ -319,16 +320,16 @@ constexpr void testAll(T data) {
   vector<char> out(33);
   constexpr uint64_t n = 1000000;
 
-  CBenchmark::benchmark("fmtlib format", n,
+  CBenchmark<>::benchmark("fmtlib format", n,
                         bind(test_format<vector<char>, T>, out, data));
-  CBenchmark::benchmark("sprintf format", n, bind(test_sprintf<T>, dest, data));
-  CBenchmark::benchmark("grail format RtoL 1 char", n,
+  CBenchmark<>::benchmark("sprintf format", n, bind(test_sprintf<T>, dest, data));
+  CBenchmark<>::benchmark("grail format RtoL 1 char", n,
                         bind(_formatgrl<T>, dest, data));
-  CBenchmark::benchmark("grail format RtoL 2 char", n,
+  CBenchmark<>::benchmark("grail format RtoL 2 char", n,
                         bind(_formatgrl2<T>, dest, data));
-  CBenchmark::benchmark("grail format RtoL 4 char pairs", n,
+  CBenchmark<>::benchmark("grail format RtoL 4 char pairs", n,
                         bind(_formatgrl3<T>, dest, data));
-  CBenchmark::benchmark("grail format RtoL 4 char", n,
+  CBenchmark<>::benchmark("grail format RtoL 4 char", n,
                         bind(_formatgrl4<T>, dest, data));
   // Benchmark::benchmark("grail format RtoL 4char, sys benchmark", n,
   //                     bind(_formatgrl4<T>, dest, data));

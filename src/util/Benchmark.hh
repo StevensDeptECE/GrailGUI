@@ -1,128 +1,55 @@
 #pragma once
+#include <fmt/chrono.h>
 #include <fmt/core.h>
 #include <sys/times.h>
 #include <time.h>
 
 #include <chrono>
 #include <cstdint>
+#include <functional>
 #include <iostream>
-/*
-class Benchmark {
- private:
-  uint64_t elapsedUserTime, elapsedSystemTime, elapsedWallTime,
-      elapsedClockTicks;
-  int BENCHCLOCKS_PER_SEC;
-  struct tms startCPUTimes;
-  time_t startWallTime;
-  struct tms endCPUTimes;
-  time_t endWallTime;
-  clock_t t;
 
- public:
-  // measure how long it takes to execute a function
-  void display() const {
-    std::cout << "User:        "
-              << elapsedUserTime / double(BENCHCLOCKS_PER_SEC) * 1E9 << '\n'
-              << "System:      "
-              << elapsedSystemTime / double(BENCHCLOCKS_PER_SEC) * 1E9 << '\n'
-              << "Wall:        " << elapsedWallTime << '\n'
-              << "Clock Ticks: " << elapsedClockTicks << '\n';
-  }
+#include "util/Ex.hh"
 
-  // display avg in nanoseconds
-  void displayavg(uint64_t iterations) const {
-    std::cout << "User:        "
-              << (elapsedUserTime / double(BENCHCLOCKS_PER_SEC)) / iterations *
-                     1E9
-              << '\n'
-              << "System:      "
-              << (elapsedSystemTime / double(BENCHCLOCKS_PER_SEC)) /
-                     iterations * 1E9
-              << '\n'
-              << "Wall:        " << elapsedWallTime << '\n'
-              << "Clock Ticks: " << elapsedClockTicks << '\n';
-  }
+namespace grail {
+namespace utils {
+namespace {
+void dropCaches() {
+  system("echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null");
+}
 
-  friend std::ostream& operator<<(std::ostream& s, const Benchmark& b) {
-    return s << "User:        "
-             << b.elapsedUserTime / double(b.BENCHCLOCKS_PER_SEC) << '\n'
-             << "System:      "
-             << b.elapsedSystemTime / double(b.BENCHCLOCKS_PER_SEC) << '\n'
-             << "Wall:        " << b.elapsedWallTime << '\n'
-             << "Clock Ticks: " << b.elapsedClockTicks << '\n';
-  }
+std::string trim_nonalpha(const std::string& s) {
+  std::string result;
+  result.reserve(s.length());
 
-  Benchmark()
-      : elapsedUserTime(0),
-        elapsedSystemTime(0),
-        elapsedWallTime(0),
-        elapsedClockTicks(0),
-        BENCHCLOCKS_PER_SEC(sysconf(_SC_CLK_TCK)) {}
+  std::remove_copy_if(s.begin(), s.end(), std::back_inserter(result),
+                      std::not1(std::ptr_fun(isalpha)));
 
-  void start() {
-    times(&startCPUTimes);
-    time(&startWallTime);
+  return result;
+}
+}  // namespace
 
-    t = clock();
-  }
-
-  void end() {
-    times(&endCPUTimes);
-    time(&endWallTime);
-    elapsedUserTime += endCPUTimes.tms_utime - startCPUTimes.tms_utime;
-    elapsedSystemTime += endCPUTimes.tms_stime - startCPUTimes.tms_stime;
-    elapsedWallTime += endWallTime - startWallTime;
-
-    elapsedClockTicks = clock() - t;
-  }
-
-  template <typename Func>
-  static void benchmark(Func func) {
-    Benchmark a;
-    a.start();
-    func();
-    a.end();
-    std::cout << a << '\n';
-  }
-
-  template <typename Func>
-  constexpr static void benchmark(const std::string& msg,
-                                  uint64_t numIterations, Func func) {
-    Benchmark a;
-    uint64_t iter = numIterations;
-    a.start();
-    for (; numIterations > 0; numIterations--) func();
-    a.end();
-    std::cout << msg << '\n';
-    a.displayavg(iter);
-  }
-};*/
-
+template <typename Ratio = std::milli>
 class CBenchmark {
  private:
   std::chrono::time_point<std::chrono::steady_clock, std::chrono::nanoseconds>
       t0;
-  double elapsedTime;
-  std::string msg;
+  std::chrono::duration<double, Ratio> elapsedTime;
+  const std::string_view msg;
 
  public:
-  CBenchmark(const std::string& msg) : msg(msg) { reset(); }
+  CBenchmark(const std::string_view msg) : msg(msg), elapsedTime(0) {}
 
-  void reset() { elapsedTime = 0; }
+  constexpr void reset() { elapsedTime.zero(); }
 
-  void start() {
-    t0 = time_point_cast<std::chrono::nanoseconds>(
-        std::chrono::steady_clock::now());
-  }
+  void start() { t0 = std::chrono::steady_clock::now(); }
 
   void end() {
-    std::chrono::time_point<std::chrono::steady_clock, std::chrono::nanoseconds>
-        t1 = time_point_cast<std::chrono::nanoseconds>(
-            std::chrono::steady_clock::now());
-    elapsedTime += (t1 - t0).count();
+    auto t1 = std::chrono::steady_clock::now();
+    elapsedTime += (t1 - t0);
   }
 
-  constexpr double elapsed() { return elapsedTime; }
+  auto elapsed() const { return elapsedTime; }
   void display() const {
     fmt::print("{} elapsed time: {}\n", msg, elapsedTime);
   }
@@ -131,15 +58,41 @@ class CBenchmark {
   }
 
   template <typename Func>
-  constexpr static void benchmark(const std::string& msg,
-                                  uint64_t numIterations, Func func) {
+  static void benchmark(const std::string& msg, uint64_t numIterations,
+                        Func func) {
     uint64_t iter = numIterations;
     CBenchmark b(msg);
     b.start();
-    for (; numIterations > 0; numIterations--) {func();
-      //fmt::print("{}\n", numIterations);
-    }
+    for (; numIterations > 0; numIterations--) func();
     b.end();
     b.displayavg(iter);
   }
+
+  template <typename Func>
+  static void benchmarkNoCache(const std::string_view msg,
+                               const uint64_t numIterations, const Func func,
+                               const bool mute_warnings = false) {
+    uint64_t iter = numIterations;
+    if (!mute_warnings) {
+      fmt::print("Warning: dropping caches requires root access,");
+      fmt::print(" be prepared for a sudo prompt.\n");
+      fmt::print("Are you sure that you want to proceed (Y/n)? ");
+      std::string consent;
+      std::cin >> consent;
+      consent = trim_nonalpha(consent);
+      if (consent.length() != 1 || tolower(consent[0]) != 'y') {
+        throw Ex1(Errcode::PERMISSION_DENIED);
+      }
+    }
+    CBenchmark<Ratio> b(msg);
+    for (; iter > 0; iter--) {
+      b.start();
+      func();
+      b.end();
+      dropCaches();
+    }
+    b.displayavg(numIterations);
+  }
 };
+};  // namespace benchmark
+};  // namespace grail
