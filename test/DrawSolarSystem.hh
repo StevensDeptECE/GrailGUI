@@ -8,11 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "opengl/GrailGUI.hh"
-
-using namespace std;
-
 #include "GravSim.hh"
+#include "opengl/GrailGUI.hh"
 
 class DrawSolarSystem : public GLWin {
  private:
@@ -43,7 +40,7 @@ class DrawSolarSystem : public GLWin {
       float screenY = -b->getPosition().y * scalePosition + 500;
       gui->drawCircle(screenX, screenY, r, 1, grail::purple);
       if (nameFlag) {
-        const string& name = b->getName();
+        const std::string& name = b->getName();
         m->add(screenX, screenY, name.c_str(), name.length());
       }
 
@@ -56,6 +53,6 @@ class DrawSolarSystem : public GLWin {
     }
     gui->update();
     s->advanceTime(1);
-    cout << *s << endl;
-    }
+    std::cout << *s << std::endl;
+  }
 };

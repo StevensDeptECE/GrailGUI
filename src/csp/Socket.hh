@@ -24,8 +24,6 @@
 #include <winsock2.h>
 #endif
 
-using namespace std;
-
 class Request;  // forward reference, all code is included in .cc
 class Socket {
  protected:

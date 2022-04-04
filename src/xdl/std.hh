@@ -870,7 +870,7 @@ class String32 : public XDLBuiltinType {
   std::string val;
 
  public:
-  String32(string val)
+  String32(std::string val)
       : XDLBuiltinType("STRING32", DataType::STRING32), val(val) {}
   DataType getDataType() const override;
   uint32_t size() const override;
@@ -892,7 +892,7 @@ class String64 : public XDLBuiltinType {
   std::string val;
 
  public:
-  String64(string val)
+  String64(std::string val)
       : XDLBuiltinType("STRING64", DataType::STRING64), val(val) {}
   DataType getDataType() const override;
   uint32_t size() const override;
@@ -1047,9 +1047,9 @@ class Struct : public CompoundType {
       : CompoundType(name), members(16), byName(16), packedSize(0) {}
   Struct(XDLCompiler* c) : Struct(c, empty) {}
 
-  void addSym(const string& name, const XDLType* t);
-  void addSymCheckNull(const string& name, const XDLType* t2);
-  void addSymCheckDup(const string& name, const XDLType* t2);
+  void addSym(const std::string& name, const XDLType* t);
+  void addSymCheckNull(const std::string& name, const XDLType* t2);
+  void addSymCheckDup(const std::string& name, const XDLType* t2);
 
   uint32_t addMemberName(const char memberName[]) {
     uint32_t offset = memberNames.size();
@@ -1236,7 +1236,7 @@ class ArrayOfBytes : public CompoundType {
 
   void addMeta(DataType t) { metadata.add(uint8_t(t)); }
   // TODO: string must be len < 256
-  void addMeta(const string& s) {
+  void addMeta(const std::string& s) {
     metadata.add(s.length());
     for (uint32_t i = 0; i < s.length(); i++) metadata.add(s[i]);
   }

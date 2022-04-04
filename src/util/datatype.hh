@@ -6,8 +6,6 @@
 
 #include "util/HashMap.hh"
 
-using namespace std;
-
 /**
  * @brief An enumerated class of XDL types that can be transferred
  *
@@ -168,12 +166,12 @@ class List2 {
 
 class Record {
  private:
-  vector<DataType> fieldTypes;
+  std::vector<DataType> fieldTypes;
 
  public:
   Record() {}
   void add(DataType t) { fieldTypes.push_back(t); }
-  friend ostream& operator<<(ostream& s, const Record& r) {
+  friend std::ostream& operator<<(std::ostream& s, const Record& r) {
     DataType t = r.fieldTypes.size() < 256
                      ? DataType::STRUCT8
                      : (r.fieldTypes.size() < 65536 ? DataType::STRUCT16

@@ -7,7 +7,7 @@ class XDLArray : public DynArray<uint8_t> {
  public:
   XDLArray(uint32_t size = 32) : DynArray(size) {}
   ~XDLArray();
-  void addString(const string& str);
+  void addString(const std::string& str);
   void addStruct(const char name[], uint8_t num_elements);
   void addBuiltinMember(DataType t, const char str[]);
   void addMember(DataType t, const char str[]);
