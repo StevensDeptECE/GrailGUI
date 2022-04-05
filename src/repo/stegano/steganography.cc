@@ -2,29 +2,28 @@
 #include <webp/decode.h>
 #include <webp/encode.h>
 
-// TODO: Need to store the size of the secret at the beginning of the image.
 // bzip2 or lzma
 #include <fstream>
+#include <iostream>
 #include <vector>
 
-// std::basic_string<uint8_t>
-#include "bytevector.hh"
+// https://renenyffenegger.ch/notes/development/Base64/Encoding-and-decoding-base-64-with-cpp/
+// https://github.com/ReneNyffenegger/cpp-base64
+#include "base64.h"
 
 class SteganographicImage {
  private:
   std::string img_name;
 
-  int start = 0;
-  int stride = 1;
+  size_t start = 0;
+  size_t stride = 1;
 
   int w, h;
   size_t img_size;
   uint8_t *rgb;
 
-  size_t secret_size;
-
  public:
-  SteganographicImage(const std::string &img_name, int start, int stride)
+  SteganographicImage(const std::string &img_name, size_t start, size_t stride)
       : img_name(img_name), start(start), stride(stride) {
     read_webp();
   }
@@ -62,23 +61,54 @@ class SteganographicImage {
 
   // Read in data from file into character array.
   void hide_secret(std::vector<uint8_t> secret) {
-    secret_size = secret.size();
-    size_t lim = start + secret_size * 8 * stride;
+    size_t secret_size = secret.size();
+
+    size_t lim = start + secret_size * 8 * stride + sizeof(size_t) * 8;
     if (lim > img_size)
       throw "Input string is too long or stride and start are too large to fit in the image.";
 
-    std::vector<uint8_t>::iterator it = secret.begin();
-    uint8_t bit = 0, c = *it++;
-    for (int i = start; i < lim; i += stride) {
+    size_t i;
+    uint8_t bit = 0;
+    std::vector<uint8_t> secret_size_bytes;
+    for (i = 0; i < sizeof(size_t); ++i)
+      secret_size_bytes.push_back((secret_size >> (i * 8)) & 0xFF);
+    std::vector<uint8_t>::iterator it = secret_size_bytes.begin();
+    uint8_t c = *it++;
+
+    // Encode each bit of the secret size
+    for (i = start; i < start + stride * sizeof(size_t) * 8; i += stride) {
+      rgb[i] = c >> (7 - bit) & 1 ? rgb[i] | 1 : rgb[i] & ~1;
+      if (++bit == 8) bit = 0, c = *it++;
+    }
+
+    c = *(it = secret.begin())++, bit = 0;
+
+    for (i += stride; i < lim + 8; i += stride) {
       rgb[i] = c >> (7 - bit) & 1 ? rgb[i] | 1 : rgb[i] & ~1;
       if (++bit == 8) bit = 0, c = *it++;
     }
   }
 
   std::vector<uint8_t> recover() {
-    std::vector<uint8_t> secret;
+    size_t i;
+
+    // Grab the bytes from the image that store the secret's size.
+    std::vector<uint8_t> secret_size_bytes;
     uint8_t bit = 0, c = 0;
-    for (int i = start; i < start + secret_size * 8 * stride; i += stride) {
+    for (i = start; i < start + stride * sizeof(size_t) * 8; i += stride) {
+      if (rgb[i] & 1) c |= 1;
+      ++bit == 8 ? bit = 0, secret_size_bytes.push_back(c), c = 0 : c <<= 1;
+    }
+
+    // Convert the secret's size bytes to an integer.
+    size_t secret_size = 0;
+    for (int j = 0; j < sizeof(size_t); ++j)
+      secret_size |= secret_size_bytes[j] << (j * 8);
+
+    std::vector<uint8_t> secret;
+    for (i += stride;
+         i < start + sizeof(size_t) * 8 + secret_size * 8 * stride + 8;
+         i += stride) {
       if (rgb[i] & 1) c |= 1;
       ++bit == 8 ? bit = 0, secret.push_back(c), c = 0 : c <<= 1;
     }
@@ -92,8 +122,7 @@ int main(int argc, char **argv) {
               << std::endl;
     return 1;
   }
-  std::string img_name = argv[1];
-  std::string data_name = argv[2];
+  std::string img_name = argv[1], data_name = argv[2];
 
   try {
     // TODO:
@@ -107,8 +136,6 @@ int main(int argc, char **argv) {
     // {});
     std::vector<uint8_t> secret(std::istreambuf_iterator<char>(in), {});
 
-    std::cout << "Input size: " << secret.size() << std::endl;
-
     steg.hide_secret(secret);
     steg.write_webp("new" + img_name);
 
@@ -117,7 +144,8 @@ int main(int argc, char **argv) {
     std::ofstream out("new" + data_name);
     for (uint8_t c : recov) out << c;
 
-    std::cout << std::endl;
+    std::string base64 = base64_encode(recov.data(), recov.size());
+    std::cout << base64 << std::endl;
 
   } catch (char const *e) {
     std::cerr << "Error: " << e << std::endl;

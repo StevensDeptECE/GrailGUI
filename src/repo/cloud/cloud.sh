@@ -43,7 +43,7 @@ upload() {
     # creating 2 copies.
     UPLOAD_ID=$(curl -X POST -L \
         -H "Authorization: Bearer $ACCESS_TOKEN" \
-        -F "metadata={name :'$(basename "$FILENAME")'};type=application/json;charset=UTF-8" \
+        -F "metadata={name :'$(basename "$FILENAME")'};type=application/json" \
         -F "file=@$FILENAME;type=$(file --mime-type -b "$FILENAME")" \
         "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart" | head -3 | cut -d'"' -f4 | tail -1)
 

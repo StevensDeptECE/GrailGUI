@@ -1,4 +1,6 @@
-set(grail-repo 
+set(grail-repo
+    stegano/steganography.cc
+    cloud/cloud.cc
     template.cc
 )
 
