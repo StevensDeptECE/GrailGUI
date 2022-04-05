@@ -37,9 +37,9 @@ void Sphere::init(){
       vert.push_back(x);
       vert.push_back(y); 
       vert.push_back(z);
-      cout << x << ", " << y << ", " << z << "     ";
+      std::cout << x << ", " << y << ", " << z << "     ";
     }
-    cout << endl;
+    std::cout << std::endl;
   }
 
   //rectangles
