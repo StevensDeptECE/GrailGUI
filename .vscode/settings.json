@@ -3,6 +3,7 @@
   "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 0}",
   "C_Cpp.errorSquiggles": "Disabled",
   "files.associations": {
+    "*.cc": "cpp",
     "ranges": "cpp",
     "vector": "cpp",
     "algorithm": "cpp",
@@ -98,7 +99,8 @@
     "memory_resource": "cpp",
     "string_view": "cpp",
     "cfenv": "cpp",
-    "cinttypes": "cpp"
+    "cinttypes": "cpp",
+    "shared_mutex": "cpp"
   },
 
 }

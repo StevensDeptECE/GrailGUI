@@ -6,17 +6,23 @@
 #include "opengl/Canvas.hh"
 #include "opengl/Style.hh"
 
-RectangularPrism::RectangularPrism(Canvas* c, const Style *s, float length, float width, float height, float x, float y, float z) : Shape(c), style(s), length(length), width(width), height(height), x(x), y(y), z(z){
+RectangularPrism::RectangularPrism(Canvas* c, const Style *s, float length, float width, float height, float x, float y, float z) : Shape(c),style(s), length(length), width(width), height(height), x(x), y(y), z(z){
 }
 RectangularPrism::~RectangularPrism(){
 }
-
+inline void RectangularPrism::addVert(float x, float y, float z) {
+  vert.push_back(x);
+  vert.push_back(y);
+  vert.push_back(z);
+}
 inline void RectangularPrism::addRect(uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4) {
-  // ind.push_back(i1);  ind.push_back(i2);  ind.push_back(i3);
-  // ind.push_back(i1);  ind.push_back(i3);  ind.push_back(i4);
+  ind.push_back(i1);  ind.push_back(i2);  ind.push_back(i3);
+  ind.push_back(i1);  ind.push_back(i3);  ind.push_back(i4);
 }
 
 void RectangularPrism::init(){
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
   //set vertex values
   // GLfloat length_half = length / 2;
   // GLfloat width_half = width / 2;
@@ -29,41 +35,46 @@ void RectangularPrism::init(){
   // vert.push_back(x - length_half); vert.push_back(y + width_half); vert.push_back(z + height); //6
   // vert.push_back(x + length_half); vert.push_back(y + width_half); vert.push_back(z + height); //7
 
-  add3DPoint(x, y, z);
-  add3DPoint(x + width, y, z);
-  add3DPoint(x, y + height, z);
-  add3DPoint(x + width, y + height, z);
-  add3DPoint(x, y, z - length);
-  add3DPoint(x + width, y, z - length);
-  add3DPoint(x, y + height, z - length);
-  add3DPoint(x + width, y + height, z - length);
-  add3DPoint(x, y + height, z);
-  add3DPoint(x + width, y + height, z);
-  add3DPoint(x, y, z);
-  add3DPoint(x + width, y, z);
-  add3DPoint(x + width, y, z);
-  add3DPoint(x + width, y + height, z);
+  addVert(x, y, z);
+  addVert(x + width, y, z);
+  addVert(x, y + height, z);
+  addVert(x + width, y + height, z);
+  addVert(x, y, z - length);
+  addVert(x + width, y, z - length);
+  addVert(x, y + height, z - length);
+  addVert(x + width, y + height, z - length);
+  addVert(x, y + height, z);
+  addVert(x + width, y + height, z);
+  addVert(x, y, z);
+  addVert(x + width, y, z);
+  addVert(x + width, y, z);
+  addVert(x + width, y + height, z);
 
   //bottom face
-  ind.push_back(0); ind.push_back(1); ind.push_back(2);
-  ind.push_back(1); ind.push_back(2); ind.push_back(3);
+  addRect(0, 1, 2, 3);
+  // ind.push_back(0); ind.push_back(1); ind.push_back(2);
+  // ind.push_back(1); ind.push_back(2); ind.push_back(3);
 
   //top face
-  ind.push_back(4); ind.push_back(5); ind.push_back(6);
-  ind.push_back(5); ind.push_back(6); ind.push_back(7);
+  addRect(4, 5, 6, 7);
+  // ind.push_back(4); ind.push_back(5); ind.push_back(6);
+  // ind.push_back(5); ind.push_back(6); ind.push_back(7);
 
   //front face
-  ind.push_back(4); ind.push_back(0); ind.push_back(6);
-  ind.push_back(0); ind.push_back(6); ind.push_back(2);
+  addRect(4, 0, 6, 2);
+  // ind.push_back(4); ind.push_back(0); ind.push_back(6);
+  // ind.push_back(0); ind.push_back(6); ind.push_back(2);
 
   //back face
-  ind.push_back(5); ind.push_back(12); ind.push_back(7);
-  ind.push_back(12); ind.push_back(7); ind.push_back(13);
+  addRect(5, 12, 7, 13);
+  // ind.push_back(5); ind.push_back(12); ind.push_back(7);
+  // ind.push_back(12); ind.push_back(7); ind.push_back(13);
 
   //side faces
-  ind.push_back(6); ind.push_back(8); ind.push_back(7);
-  ind.push_back(8); ind.push_back(7); ind.push_back(9);
-
+  addRect(6, 8, 7, 9);
+  // ind.push_back(6); ind.push_back(8); ind.push_back(7);
+  // ind.push_back(8); ind.push_back(7); ind.push_back(9);
+  addRect(4, 10, 5, 11);
   ind.push_back(4); ind.push_back(10); ind.push_back(5);
   ind.push_back(10); ind.push_back(5); ind.push_back(11);
 
@@ -74,15 +85,15 @@ void RectangularPrism::init(){
   //   }
   //   std::cout << vert[i] << " ";
   // }
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
 
-  gen(vbo, vert);
-
+  glGenBuffers(1, &vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vert.size(), &vert[0], GL_STATIC_DRAW);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-  gen(sbo, ind);
-
+  glGenBuffers(1,&lbo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,lbo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*ind.size(),&ind[0],GL_STATIC_DRAW);
 
 }
 
@@ -92,26 +103,18 @@ void RectangularPrism::init(){
 // }
 
 void RectangularPrism::render(){
-  // Enable depth test
-  glEnable(GL_DEPTH_TEST);
-  // Accept fragment if it closer to the camera than the former one
-  glDepthFunc(GL_LESS);
-
-  Shader * shader = Shader::useShader(GLWin::COMMON_SHADER);
-  shader->setMat4("projection",*(parentCanvas->getProjection()));
+  const Shader* shader = Shader::useShader(style->getShaderIndex());
+  //shader->setMat4("projection",*(parentCanvas->getProjection()));
 	shader->setVec4("solidColor",style->getFgColor());
   
   //glDrawArrays(GL_LINE_LOOP, 0, 3);
   //glDrawArrays(GL_POINTS, 0, 3);
 
   glBindVertexArray(vao);
-
   glEnableVertexAttribArray(0);
-  // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-  // glDrawElements(GL_TRIANGLES, ind.size(), GL_UNSIGNED_INT, 0);
-
-
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sbo);
+  glLineWidth(style->getLineWidth());
+  
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
   glDrawElements(GL_TRIANGLES, ind.size(), GL_UNSIGNED_INT, 0);
 
   glDisableVertexAttribArray(0);

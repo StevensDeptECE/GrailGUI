@@ -26,7 +26,7 @@ class TestSphere : public GLWin {
         c->setProjection(cam->getViewProjection());
 
         const Style* s = getDefaultStyle();
-        Sphere* sph = c->addLayer(new Sphere(c, s, 5, 5, 5));
+        Sphere* sph = c->addLayer(new Sphere(c, s, 30, 30, 5));
   }
 };
 
