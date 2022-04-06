@@ -57,9 +57,6 @@ void CloudClient::get_access_token() {
   access_token = json::parse(response.str())["access_token"].get<std::string>();
 }
 
-// XXX: There does not appear to be a way to access Google Drive's download
-// functionality from anything other than their Drive API for Java, Python,
-// or Node.js
 void CloudClient::upload(std::string file_name) {
   get_file_bytes(file_name);
   // Write file hash to file.
@@ -67,7 +64,6 @@ void CloudClient::upload(std::string file_name) {
   fo << sha256(file_bytes);
   fo.close();
   get_access_token();
-
   if (service == "google") {
     req.setOpt(
         new curlpp::options::Url("https://www.googleapis.com/upload/drive/v3/"
@@ -97,15 +93,38 @@ void CloudClient::upload(std::string file_name) {
   }
 }
 
-// TODO: Check if downloaded file is diff from original - checksum
-void CloudClient::download(std::string file_name) {
+// XXX: There does not appear to be a way to access Google Drive's private
+// download functionality from anything other than their Drive API for Java,
+// Python, or Node.js
+// NOTE: There does appear to be a way to download public files though:
+// https://stackoverflow.com/questions/25010369/wget-curl-large-file-from-google-drive
+void CloudClient::download(std::string file_name, std::string file_id) {
   get_access_token();
+  std::list<std::string> header;
+  header.push_back("Authorization: Bearer " + access_token);
+  req.setOpt(new curlpp::options::HttpHeader(header));
   // Download from Google Drive.
-  get_file_bytes(file_name);
+  req.setOpt(
+      new curlpp::options::Url("https://drive.google.com/"
+                               "uc?export=download&id=" +
+                               file_id));
+  std::ofstream out(file_id + ".webp");
+  req.perform();
+  req.setOpt(new curlpp::options::WriteStream(&out));
+
+  get_file_bytes(file_id + ".webp");
 
   // Compare hash of downloaded file to original.
-  std::string downloaded_f_hash = file_bytes;
-  std::cout << "Downloaded file hash: " << downloaded_f_hash << std::endl;
+  std::ifstream fi(file_name + ".sha256");
+  if (!fi.is_open()) throw "File not found: " + file_name + ".sha256";
+  std::string original_f_hash(std::istreambuf_iterator<char>(fi), {});
+  fi.close();
+
+  if (sha256(file_bytes) != original_f_hash)
+    throw "Downloaded file is NOT THE SAME as the original.";
+  else
+    std::cout << "All good! Downloaded file is the same as the original."
+              << std::endl;
 }
 
 // https://stackoverflow.com/questions/41958236/posting-and-receiving-json-payload-with-curlpp#41974669
@@ -129,13 +148,26 @@ std::string CloudClient::invoke(std::string url, std::string body) {
 }
 
 int main(int argc, char **argv) {
-  if (argc != 2) {
-    std::cout << "Usage: " << argv[0] << " <file>" << std::endl;
+  if (argc < 3) {
+    std::cout << "Usage: " << argv[0] << " <upload|download> <file>"
+              << std::endl;
     return 1;
   }
   try {
     CloudClient client;
-    client.upload(argv[1]);
+    if (!strcmp(argv[1], "upload"))
+      client.upload(argv[2]);
+    else if (!strcmp(argv[1], "download")) {
+      if (argc != 4) {
+        std::cout << "Usage: " << argv[0] << " download <file_name> <file_id>"
+                  << std::endl;
+        return EXIT_FAILURE;
+      }
+      client.download(argv[2], argv[3]);
+    } else {
+      std::cout << "Usage: " << argv[0] << " <upload|download> <file>"
+                << std::endl;
+    }
   } catch (char const *e) {
     std::cerr << "Error: " << e << std::endl;
     return EXIT_FAILURE;

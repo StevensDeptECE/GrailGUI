@@ -38,7 +38,7 @@ class CloudClient {
 
   void get_access_token();
   void upload(std::string file_name);
-  void download(std::string file_name);
+  void download(std::string file_name, std::string file_id);
   void delete_file(std::string file_name);
   void list_files();
   std::string invoke(std::string url, std::string body);
