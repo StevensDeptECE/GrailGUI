@@ -5,18 +5,6 @@
 using namespace std;
 using namespace grail;
 
-// int main(){
-//     Cylinder cylinder(2, 2, 2);
-//     double volume = cylinder.getVolume();
-//     cout << "Volume of Cylinder: " << volume << "\n";
-//     cout << "Expected 25.13\n";
-
-//     Cylinder cylinder(2, 2);
-//     double volume = cylinder.getVolume();
-//     cout << "Volume of Cylinder: " << volume << "\n";
-//     cout << "Expected 25.13\n";
-// }
-
 class TestSphere : public GLWin {
     public:
     TestSphere() : GLWin(0x000000, 0xCCCCCC, "Test Sphere") {}
@@ -26,7 +14,7 @@ class TestSphere : public GLWin {
         c->setProjection(cam->getViewProjection());
 
         const Style* s = getDefaultStyle();
-        Sphere* sph = c->addLayer(new Sphere(c, s, 30, 30, 5));
+        Sphere* sph = c->addLayer(new Sphere(c, s, 30, 30, 3));
   }
 };
 

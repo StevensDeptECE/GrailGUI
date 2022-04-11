@@ -17,6 +17,7 @@ class RectangularPrism : public Shape {
         RectangularPrism(Canvas* c, const Style *s, float length, float width, float height, float x, float y, float z);
         ~RectangularPrism();
         double getVolume();
+        std::vector<float> getVerts(){ return vert; }
         void init();
         void render();
         void cleanup();

@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include "opengl/GrailGUI.hh"
 #include "CAD/Cylinder.hh"
+#include "opengl/util/Camera.hh"
 using namespace std;
 using namespace grail;
 
@@ -21,8 +22,10 @@ class TestCylinder : public GLWin {
     TestCylinder() : GLWin(0x000000, 0xCCCCCC, "Test Cylinder") {}
     void init() {
         MainCanvas* c = currentTab()->getMainCanvas();
-        //const Style* s = getDefaultStyle();
-        Cylinder* cyl = c->addLayer(new Cylinder(c, 5, 0, 0, 0, 5, 360));
+        Camera* cam = c->setLookAtProjection(0, 0, 30, 0, 0, 0, 0, 1, 0);
+        c->setProjection(cam->getViewProjection());
+        const Style* s = getDefaultStyle();
+        Cylinder* cyl = c->addLayer(new Cylinder(c, s, 3, -10, -10, -10, 3, 360));
   }
 };
 

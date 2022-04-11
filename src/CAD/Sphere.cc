@@ -72,10 +72,10 @@ void Sphere::init(){
     addTri(S, i-1, i);
   addTri(S, longRes-1, 0);
 
-  const uint32_t NORTHEDGE = (latRes-1) * longRes;
-  for (int i = 1; i < longRes; i++)
-    addTri(N, NORTHEDGE+i-1, NORTHEDGE+i);
-  addTri(N, NORTHEDGE+longRes-1, NORTHEDGE);
+  // const uint32_t NORTHEDGE = (latRes-1) * longRes;
+  // for (int i = 1; i < longRes; i++)
+  //   addTri(N, NORTHEDGE+i-1, NORTHEDGE+i);
+  // addTri(N, NORTHEDGE+longRes-1, NORTHEDGE);
   
   
   //Vertices

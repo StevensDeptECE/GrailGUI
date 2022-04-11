@@ -14,7 +14,8 @@ class TestRectangularPrism : public GLWin {
         c->setProjection(cam->getViewProjection());
 
         const Style* s = getDefaultStyle();
-        RectangularPrism* rec = c->addLayer(new RectangularPrism(c, s, 20, 20, 20, 20, 20, 20));
+        RectangularPrism* rec = new RectangularPrism(c, s, 3, 3, 3, -10, -5, 0);
+        c->addLayer(rec);
   }
 };
 
