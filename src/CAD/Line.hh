@@ -24,13 +24,13 @@ class Line: public Vec3D, public Shape2D {
       {
       this->start=start;
       this->stop=stop;
-      this->getPoints();
+      points.push_back(start);
+      points.push_back(stop);
     }
 
   void init();
   void render();
 
-  //Vec3D getPoint(double step);
   void getPoints();
   
 };

@@ -18,13 +18,13 @@ using namespace std;
 // }
 
 
-void Line::getPoints(){
-  //cout<< "start, height, radius: " << start << ", "<< height << ", "<< radius << endl;
-  for(double i=0; i<=1; i+=0.01){
-     // cout<< this->getPoint(i) << endl;
-      points.push_back(this->start+(this->stop*i));
-  }
-}
+// void Line::getPoints(){
+//   //cout<< "start, height, radius: " << start << ", "<< height << ", "<< radius << endl;
+//   for(double i=0; i<=1; i+=0.01){
+//      // cout<< this->getPoint(i) << endl;
+//       points.push_back(this->start+(this->stop*i));
+//   }
+// }
 
 //unwrap points to be a 1d array for drawing
 std::vector<float> unwrap(std::vector<Vec3D> x){
@@ -61,7 +61,7 @@ void Line::render(){
   glEnableVertexAttribArray(0);
 
   glLineWidth(style->getLineWidth());
-  glDrawArrays(GL_LINE_STRIP, 0, drawingPoints.size()/3);
+  glDrawArrays(GL_LINES, 0, drawingPoints.size()/3);
 
   glDisableVertexAttribArray(0);
   glBindVertexArray(0);
