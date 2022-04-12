@@ -28,7 +28,8 @@ class SteganographicImage {
   ~SteganographicImage();
 
   void read_webp();
-  void write_webp(std::string output_path);
-  void hide_secret(std::vector<uint8_t> secret);
+  void print(const std::vector<uint8_t> &bytes);
+  void write_webp(const std::string &output_path);
+  void hide_secret(std::vector<uint8_t> &secret);
   std::vector<uint8_t> recover();
 };

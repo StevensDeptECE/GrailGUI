@@ -1,7 +1,5 @@
 #include "steganography.hh"
 
-#include <iostream>
-
 SteganographicImage::SteganographicImage(const std::string &img_name,
                                          size_t start, size_t stride)
     : img_name(img_name), start(start), stride(stride) {
@@ -29,7 +27,11 @@ void SteganographicImage::read_webp() {
   delete[] img;
 }
 
-void SteganographicImage::write_webp(std::string output_path) {
+void SteganographicImage::print(const std::vector<uint8_t> &bytes) {
+  std::cout << base64_encode(bytes.data(), bytes.size()) << std::endl;
+}
+
+void SteganographicImage::write_webp(const std::string &output_path) {
   uint8_t *out;
   // NOTE: Doesn't work with transparent webps.
   img_size = WebPEncodeLosslessRGB(rgb, w, h, w * 3, &out);
@@ -42,7 +44,7 @@ void SteganographicImage::write_webp(std::string output_path) {
 // Read in data from file into character array.
 // TODO: Some future ideas:
 //    - Allow ability to split secret over multiple images.
-void SteganographicImage::hide_secret(std::vector<uint8_t> secret) {
+void SteganographicImage::hide_secret(std::vector<uint8_t> &secret) {
   size_t secret_size = secret.size();
 
   size_t lim = start + secret_size * 8 * stride + sizeof(size_t) * 8;
@@ -125,9 +127,9 @@ int main(int argc, char **argv) {
     std::ofstream out("new" + data_name);
     for (uint8_t c : recov) out << c;
 
-    std::cout << base64_encode(recov.data(), recov.size()) << std::endl;
+    steg.print(recov);
 
-  } catch (char const *e) {
+  } catch (const std::string &e) {
     std::cerr << "Error: " << e << std::endl;
     return 1;
   }

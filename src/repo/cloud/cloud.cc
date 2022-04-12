@@ -28,15 +28,17 @@ std::string CloudClient::sha256(std::string str) {
   SHA256_Final(hash, &sha256);
   std::string output = "";
   for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) output += to_hex(hash[i]);
-  std::cout << "SHA256: " << output << std::endl;
+  // std::cout << "SHA256: " << output << std::endl;
   return output;
 }
 
 CloudClient::CloudClient() {
   // Getting tokens from environment.
-  client_id = getenv("GOOGLE_CLIENT_ID"),
-  client_secret = getenv("GOOGLE_CLIENT_SECRET"),
-  refresh_token = getenv("GOOGLE_REFRESH_TOKEN");
+  if (service == "google") {
+    client_id = getenv("GOOGLE_CLIENT_ID"),
+    client_secret = getenv("GOOGLE_CLIENT_SECRET"),
+    refresh_token = getenv("GOOGLE_REFRESH_TOKEN");
+  }
 };
 CloudClient::~CloudClient(){};
 
@@ -63,8 +65,8 @@ void CloudClient::upload(std::string file_name) {
   std::ofstream fo(file_name + ".sha256");
   fo << sha256(file_bytes);
   fo.close();
-  get_access_token();
   if (service == "google") {
+    get_access_token();
     req.setOpt(
         new curlpp::options::Url("https://www.googleapis.com/upload/drive/v3/"
                                  "files?uploadType=multipart"));
@@ -96,23 +98,41 @@ void CloudClient::upload(std::string file_name) {
 // XXX: There does not appear to be a way to access Google Drive's private
 // download functionality from anything other than their Drive API for Java,
 // Python, or Node.js
-// NOTE: There does appear to be a way to download public files though:
+// NOTE: This only works with publicly-shared files
 // https://stackoverflow.com/questions/25010369/wget-curl-large-file-from-google-drive
 void CloudClient::download(std::string file_name, std::string file_id) {
-  get_access_token();
-  std::list<std::string> header;
-  header.push_back("Authorization: Bearer " + access_token);
-  req.setOpt(new curlpp::options::HttpHeader(header));
-  // Download from Google Drive.
-  req.setOpt(
-      new curlpp::options::Url("https://drive.google.com/"
-                               "uc?export=download&id=" +
-                               file_id));
-  std::ofstream out(file_id + ".webp");
-  req.perform();
-  req.setOpt(new curlpp::options::WriteStream(&out));
+  if (service == "google") {
+    // get_access_token();
+    // std::list<std::string> header;
+    // header.push_back("Authorization: Bearer " + access_token);
+    // req.setOpt(new curlpp::options::HttpHeader(header));
 
-  get_file_bytes(file_id + ".webp");
+    // TODO: Need to save cookie from first GET request and use in second
+    // request
+    std::list<std::string> cookies;
+
+    req.setOpt(
+        new curlpp::options::Url("https://drive.google.com/"
+                                 "uc?export=download&id=" +
+                                 file_id));
+    req.perform();
+
+    curlpp::infos::CookieList::get(req, cookies);
+    // for (auto &cookie : cookies) std::cout << cookie << std::endl;
+
+    req.setOpt(
+        new curlpp::options::Url("https://drive.google.com/"
+                                 "uc?export=download&confirm=&id=" +
+                                 file_id));
+    response.str("");
+    req.setOpt(new curlpp::options::WriteStream(&response));
+
+    std::ofstream out_file(file_name);
+    for (char c : response.str()) out_file << c;
+  }
+
+  get_file_bytes(file_name);
+  // std::cout << file_bytes << std::endl;
 
   // Compare hash of downloaded file to original.
   std::ifstream fi(file_name + ".sha256");
