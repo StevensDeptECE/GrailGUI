@@ -50,7 +50,8 @@ void GrailRepository::backupToCloud(const std::string& service_name,
     SteganographicImage steg(img_name, offset, stride);
 
     steg.hide_secret(bytes);
-    steg.write_webp("new" + img_name);
+    steg.write_webp(img_name);
+    client.upload(img_name);
 
   } catch (char const* e) {
     std::cerr << "Error: " << e << std::endl;
@@ -63,6 +64,7 @@ void GrailRepository::restoreFromCloud(const std::string& service_name,
                                        uint32_t offset, uint32_t stride,
                                        std::string& img_name) {
   try {
+    client.download(img_name, "");
     SteganographicImage steg(img_name, offset, stride);
 
     bytes = steg.recover();
@@ -102,3 +104,26 @@ void GrailRepository::getUserid(const std::string& area,
 
 // TODO: Require hardware authentication (à la YubiKey)?
 void GrailRepository::recover2ndFactor(){};
+
+int main(int argc, char** argv) {
+  if (argc != 2) {
+    std::cerr << "Usage: " << argv[0] << " <add|upload|download>" << std::endl;
+    return 1;
+  }
+
+  GrailRepository repo(1024);
+  std::string img_name = "test.webp";
+
+  if (!strcmp(argv[1], "add")) {
+    repo.generateKey("test.com");
+  } else if (!strcmp(argv[1], "upload")) {
+    repo.backupToCloud("google", "userid", "password", 0, 1, img_name);
+  } else if (!strcmp(argv[1], "download")) {
+    repo.restoreFromCloud("google", "userid", "password", 0, 1, img_name);
+  } else {
+    std::cerr << "Usage: " << argv[0] << " <add|upload|download>" << std::endl;
+    return 1;
+  }
+
+  return EXIT_SUCCESS;
+}

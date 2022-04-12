@@ -21,6 +21,7 @@ class GrailRepository {
     uint32_t startOffset;
     uint32_t size;
   };
+  CloudClient client;
   HashMap<Range> regions;
   std::vector<uint8_t> bytes;  // the raw bytes of the repository
  public:
