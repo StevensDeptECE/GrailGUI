@@ -63,7 +63,14 @@ audio and video).
  3. In Windows Powershell type the following commands `wsl --install` `wsl --set-default Ubuntu-20.04` `wsl --set-version Ubuntu-20.04 2` Note: If you have an error about version mismatch, use command `wsl -l` to show what the name of the Ubuntu LTS is.
  4. Download the x server [here](https://sourceforge.net/projects/vcxsrv/). To finish the install click Next -> Next -> Finish.
  5. Once installation is complete, create a desktop shortcut for the server and in the Properties, target field type in `"C:\Program Files\VcXsrv\vcxsrv.exe" :0 -ac -terminate -lesspointer -multiwindow -clipboard -dpi auto` and apply the changes.
- 6. 
+ 6. Install dependencies 
+ 
+  ```shell
+  sudo apt-get update
+  sudo add-apt-repository ppa:oibaf/graphics-drivers
+  sudo apt-get install gcc cmake
+  ```
+ 7. Edit the `~/.bashrc` file the same as the step above.
 
 ## Getting Set Up - Ubuntu
 
