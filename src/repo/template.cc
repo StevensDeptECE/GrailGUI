@@ -1,12 +1,15 @@
 #include "template.hh"
 
-GrailRepository::GrailRepository(uint32_t size) : regions(64) {
+#include <unordered_map>
+
+GrailRepository::GrailRepository(uint32_t size) {
   std::vector<uint8_t> bytes(size, 0);
 }
 
 GrailRepository::~GrailRepository() {}
 
-void GrailRepository::generateKey(const std::string& siteName) {
+void GrailRepository::generateKey(const std::string& regionName,
+                                  const std::string& siteName) {
   int bits = 2048;
 
   BIGNUM* bne = BN_new();
@@ -29,7 +32,20 @@ void GrailRepository::generateKey(const std::string& siteName) {
   //     std::cerr << "Error: Writing private key failed." << std::endl;
 
   // Couple each site with its keypair.
-  siteKeys.push_back(std::make_pair(siteName, r));
+  for (auto region : siteKeys) {
+    if (region.first == regionName) {
+      region.second[siteName] = r;
+      return;
+    }
+  }
+  siteKeys.push_back(
+      std::make_pair(regionName, std::unordered_map<std::string, RSA*>()));
+  for (auto region : siteKeys) {
+    if (region.first == regionName) {
+      region.second[siteName] = r;
+      return;
+    }
+  }
 }
 
 void GrailRepository::deleteKey(const std::string& siteName) {
@@ -98,9 +114,11 @@ uint64_t GrailRepository::proveIdentity(const std::string& password,
   return 0;
 }
 
-void GrailRepository::getUserid(const std::string& area,
-                                const std::string& name, std::string& userid,
-                                std::string& passwd){};
+void GrailRepository::get(const std::string& area, const std::string& name,
+                          std::string& userid, std::string& passwd) {
+  for (auto region : siteKeys)
+    if (region.first == area) std::cout << region.second[name] << std::endl;
+};
 
 // TODO: Require hardware authentication (à la YubiKey)?
 void GrailRepository::recover2ndFactor(){};
@@ -115,7 +133,7 @@ int main(int argc, char** argv) {
   std::string img_name = "test.webp";
 
   if (!strcmp(argv[1], "add")) {
-    repo.generateKey("test.com");
+    repo.generateKey("main", "test.com");
   } else if (!strcmp(argv[1], "upload")) {
     repo.backupToCloud("google", "userid", "password", 0, 1, img_name);
   } else if (!strcmp(argv[1], "download")) {

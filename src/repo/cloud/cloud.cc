@@ -1,6 +1,6 @@
 #include "cloud.hh"
 
-void CloudClient::get_file_bytes(std::string fname) {
+void CloudClient::get_file_bytes(const std::string &fname) {
   std::ifstream fi(fname);
   if (!fi.is_open()) throw "File not found: " + fname;
   // std::string str((std::istreambuf_iterator<char>(fi)),
@@ -20,7 +20,7 @@ std::string CloudClient::to_hex(unsigned char s) {
   return ss.str();
 }
 
-std::string CloudClient::sha256(std::string str) {
+std::string CloudClient::sha256(const std::string &str) {
   unsigned char hash[SHA256_DIGEST_LENGTH];
   SHA256_CTX sha256;
   SHA256_Init(&sha256);
@@ -59,7 +59,7 @@ void CloudClient::get_access_token() {
   access_token = json::parse(response.str())["access_token"].get<std::string>();
 }
 
-void CloudClient::upload(std::string file_name) {
+void CloudClient::upload(const std::string &file_name) {
   get_file_bytes(file_name);
   // Write file hash to file.
   std::ofstream fo(file_name + ".sha256");
@@ -100,7 +100,8 @@ void CloudClient::upload(std::string file_name) {
 // Python, or Node.js
 // NOTE: This only works with publicly-shared files
 // https://stackoverflow.com/questions/25010369/wget-curl-large-file-from-google-drive
-void CloudClient::download(std::string file_name, std::string file_id) {
+void CloudClient::download(const std::string &file_name,
+                           const std::string &file_id) {
   if (service == "google") {
     // get_access_token();
     // std::list<std::string> header;
@@ -148,7 +149,8 @@ void CloudClient::download(std::string file_name, std::string file_id) {
 }
 
 // https://stackoverflow.com/questions/41958236/posting-and-receiving-json-payload-with-curlpp#41974669
-std::string CloudClient::invoke(std::string url, std::string body) {
+std::string CloudClient::invoke(const std::string &url,
+                                const std::string &body) {
   std::list<std::string> header;
   header.push_back("Content-Type: application/json");
 

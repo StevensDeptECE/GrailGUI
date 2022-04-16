@@ -1,6 +1,7 @@
 #include <openssl/ssl.h>
 
 #include <random>
+#include <unordered_map>
 #include <vector>
 
 #include "../util/HashMap.hh"
@@ -13,27 +14,27 @@ class Factor2 {};
 class KeyPair {};
 class GrailRepository {
  private:
-  std::vector<std::pair<std::string, RSA*>> siteKeys;
   SymmetricKey key;  // 2nd key to unlock this file
   // note: this example implementation shows only how to create one file,not the
   // alternate versions in feature 4
-  struct Range {  // specifies a section of the file for encryption
-    uint32_t startOffset;
-    uint32_t size;
-  };
   CloudClient client;
-  HashMap<Range> regions;
-  std::vector<uint8_t> bytes;  // the raw bytes of the repository
+
+  union {
+    // A stack storing: region_name -> (site_name -> key)
+    std::vector<std::pair<std::string, std::unordered_map<std::string, RSA*>>>
+        siteKeys;
+    std::vector<uint8_t> bytes;  // the raw bytes of the repository
+  };
+
  public:
   GrailRepository(
       uint32_t size);  // set up empty repo with size bytes of storage
   ~GrailRepository();
   GrailRepository(const GrailRepository& orig) = delete;
   GrailRepository& operator=(const GrailRepository& orig) = delete;
-
-  void generateKey(const std::string& siteName);  // generate a new key for the
-                                                  // specified website
-  void deleteKey(const std::string& siteName);    // unregister for site?
+  // generate a new key for the specified website
+  void generateKey(const std::string& regionName, const std::string& siteName);
+  void deleteKey(const std::string& siteName);  // unregister for site?
 
   void backupToCloud(const std::string& service_name, const std::string& userid,
                      const std::string& passwd, uint32_t offset,
@@ -49,12 +50,10 @@ class GrailRepository {
   void unlock(const std::string& password, const Factor2& factor,
               const std::string& area);
 
-  // overwrite the array in RAM with random numbers to get rid of data in the
-  // clear
+  // Overwrite the array in RAM with random numbers
   void scramble(const std::string& area);
 
-  // scramble array with random values and write back to disk, destroying this
-  // repository.
+  // Scramble array with random values and write back to disk.
   void destroy();
 
   // extract public key
@@ -72,8 +71,8 @@ class GrailRepository {
                          const std::string& area);
 
   // in area “main” get website “gmail.com” get userid and password
-  void getUserid(const std::string& area, const std::string& name,
-                 std::string& userid, std::string& passwd);
+  void get(const std::string& area, const std::string& name,
+           std::string& userid, std::string& passwd);
 
   // The hard, research optional area. How do we recover if a 2nd factor
   // authentication is lost? how do we prevent attackers from erroneously

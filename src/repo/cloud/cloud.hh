@@ -29,18 +29,18 @@ class CloudClient {
   std::string access_token;
   std::string client_id, client_secret, refresh_token;
 
-  void get_file_bytes(std::string fname);
+  void get_file_bytes(const std::string& fname);
   std::string to_hex(unsigned char s);
-  std::string sha256(std::string str);
+  std::string sha256(const std::string& str);
 
  public:
   CloudClient();
   ~CloudClient();
 
   void get_access_token();
-  void upload(std::string file_name);
-  void download(std::string file_name, std::string file_id);
-  void delete_file(std::string file_name);
+  void upload(const std::string& file_name);
+  void download(const std::string& file_name, const std::string& file_id);
+  void delete_file(const std::string& file_name);
   void list_files();
-  std::string invoke(std::string url, std::string body);
+  std::string invoke(const std::string& url, const std::string& body);
 };
