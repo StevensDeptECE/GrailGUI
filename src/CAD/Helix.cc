@@ -4,7 +4,7 @@
 // #include "opengl/GLWin.hh"
 // #include "opengl/Canvas.hh"
 #include <cmath>
-#include "./Helix.hh" //why does "CAD/Helix.hh" not work?
+#include "./Helix.hh"
 
 
 using namespace std;
@@ -52,7 +52,7 @@ void Helix::init(){
   glBindVertexArray(vao);
   
   //create VBO to hold vertex points
-  drawingPoints = unwrap(points);
+  //drawingPoints = unwrap(points);
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, drawingPoints.size() * sizeof(float), &drawingPoints[0], GL_STATIC_DRAW);

@@ -1,10 +1,10 @@
 #pragma once
-// #include "opengl/GrailGUI.hh"
-// #include "opengl/util/Transformation.hh"
-//#include "opengl/MultiShape3D.hh"
+#include "opengl/GrailGUI.hh"
+#include "opengl/util/Transformation.hh"
+#include "opengl/MultiShape3D.hh"
 #include "./Vec3d.hh"
 #include <vector>
-//#include "opengl/Shape2D.hh"
+#include "opengl/Shape2D.hh"
 
 
 /**
