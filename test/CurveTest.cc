@@ -60,8 +60,8 @@ class CurveTest : public GLWin {
 
     points.push_back(f1);
     points.push_back(f2);
+    points.push_back(f4);
     points.push_back(f3);
-    //points.push_back(f4);
 
     Facet* ftest = new Facet(points,c,baseGraphStyle);
     c->addLayer(ftest);
@@ -72,37 +72,35 @@ class CurveTest : public GLWin {
     Vec3D b3(9,0,0);
     Vec3D b4(12,7,0);
     BezierPath* btest = new BezierPath(b1,b2,b3,b4,c,baseGraphStyle);
-    // cout<< "BPOITNS: " << btest->points[0] <<", " << btest->points[size(btest->points)-1] << endl;
-    cout<< "BPOITNS: " << size(btest->points) << endl;
+
+//    cout<< "BPOITNS: " << size(btest->points) << endl;
     c->addLayer(btest);
 
-    //cout<< (btest->points[size(btest->points)-1]).x << endl;
-    double t = size(btest->points)-1;
-    double xn = (btest->points[size(btest->points)-1]).x/(size(btest->points)-1);
-    double yn= (btest->points[size(btest->points)-1]).y/(size(btest->points)-1);
-    double zn = (btest->points[size(btest->points)-1]).z/(size(btest->points)-1);
-    cout << xn <<", " << yn << ", " << zn << endl;
-    for (double i=0; i<=t; i+=1){
+    double pointSize = size(btest->points);
+    //extrude a triangle along a bezier
+    // uncomment line 93 to turn into a square extrusion
+     for (double i=0; i<pointSize; i+=1){
       std::vector<Vec3D> points2;
-      Vec3D m(xn*i,yn*i,zn*i);
-      cout << i << ": " << m << endl;
+      Vec3D m = btest->points[i]-btest->points[0];
+
       Vec3D f5=f1+m;
       Vec3D f6=f2+m;
       Vec3D f7=f3+m;
+      Vec3D f8=f4+m;
+     
       points2.push_back(f5);
       points2.push_back(f6);
+      //points2.push_back(f8);
       points2.push_back(f7);
       Facet* ftest2 = new Facet(points2,c,baseGraphStyle);
       c->addLayer(ftest2);
-    }
-   
-    // Line* ltest = new Line(f1,f2,c, baseGraphStyle);
-    // c->addLayer(ltest);
-    // Line* ltest2 = new Line(f2,f3,c, baseGraphStyle);
-    // c->addLayer(ltest2);
-    // Line* ltest3 = new Line(f3,f1,c, baseGraphStyle);
-    // c->addLayer(ltest3);
-
+     }
+    Line* ltest = new Line(f1,f2,c, baseGraphStyle);
+    c->addLayer(ltest);
+    Line* ltest2 = new Line(f2,f3,c, baseGraphStyle);
+    c->addLayer(ltest2);
+    Line* ltest3 = new Line(f3,f1,c, baseGraphStyle);
+    c->addLayer(ltest3);
   }
 };
 
