@@ -9,6 +9,7 @@ set(grail-CAD
     Line.cc
     Facet.cc
     Helix.cc
+    Extrusion.cc
 )
 
 list(TRANSFORM grail-CAD PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)

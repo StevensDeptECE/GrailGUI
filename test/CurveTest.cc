@@ -3,6 +3,8 @@
 #include "CAD/Circle.hh"
 #include "CAD/Line.hh"
 #include "CAD/Facet.hh"
+#include "CAD/Extrusion.hh"
+
 
 #include "CAD/Vec3d.hh"
 
@@ -31,13 +33,14 @@ class CurveTest : public GLWin {
   
     //set the camera
     MainCanvas *c = currentTab()->getMainCanvas();
-    Camera* cam = c->setLookAtProjection(-80, 0, 30, 0, 0, 0, 0, 1, 0);
+    //set x to -80 to get a view of the x,z plane
+    Camera* cam = c->setLookAtProjection(0, 0, 30, 0, 0, 0, 0, 1, 0);
     c->setProjection(cam->getViewProjection());
 
     //helix test
     Vec3D start(3,0,0);
     Helix* htest = new Helix(start, 10, 2, c, baseGraphStyle);
-    c->addLayer(htest);
+    //c->addLayer(htest);
 
   
 
@@ -62,28 +65,28 @@ class CurveTest : public GLWin {
     Vec3D b4(12,7,0);
     BezierPath* btest = new BezierPath(b1,b2,b3,b4,c,baseGraphStyle);
 
-  //  c->addLayer(btest);
-
-    double pointSize = size(htest->points);
+    c->addLayer(btest);
+    Extrusion* extest = new Extrusion(points,btest->points,c, baseGraphStyle); 
+   // double pointSize = size(htest->points);
     //extrude a triangle along a bezier
     // uncomment line 93 to turn into a square extrusion
     //change htest to btest to get it to draw on a bezier
-     for (double i=0; i<pointSize; i+=1){
-      std::vector<Vec3D> points2;
-      Vec3D m = htest->points[i]-htest->points[0];
+    //  for (double i=0; i<pointSize; i+=1){
+    //   std::vector<Vec3D> points2;
+    //   Vec3D m = htest->points[i]-htest->points[0];
 
-      Vec3D f5=f1+m;
-      Vec3D f6=f2+m;
-      Vec3D f7=f3+m;
-      Vec3D f8=f4+m;
+    //   Vec3D f5=f1+m;
+    //   Vec3D f6=f2+m;
+    //   Vec3D f7=f3+m;
+    //   Vec3D f8=f4+m;
      
-      points2.push_back(f5);
-      points2.push_back(f6);
-      points2.push_back(f8);
-      points2.push_back(f7);
-      Facet* ftest2 = new Facet(points2,c,baseGraphStyle);
-     c->addLayer(ftest2);
-     }
+    //   points2.push_back(f5);
+    //   points2.push_back(f6);
+    //   points2.push_back(f8);
+    //   points2.push_back(f7);
+    //   Facet* ftest2 = new Facet(points2,c,baseGraphStyle);
+    //  c->addLayer(ftest2);
+    //  }
 //     Line* ltest = new Line(f1,f2,c, baseGraphStyle);
 //     c->addLayer(ltest);
 //     Line* ltest2 = new Line(f2,f3,c, baseGraphStyle);
