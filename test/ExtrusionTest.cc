@@ -19,12 +19,12 @@
 
 using namespace std;
 
-class CurveTest : public GLWin {
+class ExtrusionTest : public GLWin {
   private:
     Style *baseGraphStyle;
 
   public:
-    CurveTest() : GLWin(0x000000, 0xCCCCCC, "CurveTest") {}
+    ExtrusionTest() : GLWin(0x000000, 0xCCCCCC, "ExtrusionTest") {}
 
   void init(){
     //set
@@ -34,9 +34,9 @@ class CurveTest : public GLWin {
     //set the camera
     MainCanvas *c = currentTab()->getMainCanvas();
     //set x to -80 to get a view of the x,z plane
-    Camera* cam = c->setLookAtProjection(-80, 0, 100, 0, 0, 0, 0, 1, 0);
-    c->setProjection(cam->getViewProjection());
-    cout<< "HELLO" << endl;
+    Camera* cam = c->setLookAtProjection(0, 0, 75, 0, 0, 0, 0, 1, 0);
+    c->setProjection(cam->getViewProjection());   
+
     std::vector<Vec3D> facetPoints;
     Vec3D f1(3,0,0);
     Vec3D f2(3,3,0);
@@ -57,29 +57,33 @@ class CurveTest : public GLWin {
     Vec3D b3(9,0,0);
     Vec3D b4(12,7,0);
     BezierPath* bez = new BezierPath(b1,b2,b3,b4,c,baseGraphStyle);
-
+    c->addLayer(bez);
     Extrusion* firstExtrusion = new Extrusion(facetPoints,bez->points,c, baseGraphStyle); 
 
 
     //helix test
-    Vec3D start(-3,0,0);
-    Helix* hel = new Helix(start, 10, 2, c, baseGraphStyle);
+    // Vec3D start(-3,0,0);
+    // Helix* hel = new Helix(start, 3, 2, c, baseGraphStyle);
 
-    Vec3D f5(-3,0,0);
-    Vec3D f6(-3,3,0);
-    Vec3D f7(0,0,0);
+    Vec3D b5(-20,-20,0);
+    Vec3D b6(-15,-10,0);
+    Vec3D b7(-10,-20,0);
+    Vec3D b8(-5,-10,0);
+    BezierPath* bez2 = new BezierPath(b5,b6,b7,b8,c,baseGraphStyle);
+    c->addLayer(bez2);
+    Vec3D f5(-20,-20,0);
+    Vec3D f6(-20,-17,0);
+    Vec3D f7(-17,-20,0);
     facetPoints.clear();
     facetPoints.push_back(f5);
     facetPoints.push_back(f6);
     facetPoints.push_back(f7);
-
-    Extrusion* secondExtrusion = new Extrusion(facetPoints,hel->points,c, baseGraphStyle); 
-
-
+    cout << bez2->points[0] << endl;
+    Extrusion* secondExtrusion = new Extrusion(facetPoints,bez2->points,c, baseGraphStyle); 
   
   }
 };
 
 int main(int argc, char *argv[]) {
-  return GLWin::init(new CurveTest(), 1000, 1000);
+  return GLWin::init(new ExtrusionTest(), 1000, 1000);
 }
