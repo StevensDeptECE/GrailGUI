@@ -3,18 +3,29 @@
 //GLM
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
-#include "Group.hh"
+#include <glm/gtc/type_ptr.hpp>
+#include "opengl/Shape.hh"
+#include <ostream>
+#include <iostream>
+#include "opengl/util/Camera.hh"
+
+// #include "Group.hh"
 /*
   wrap a glm::Mat4 and provide all the methods to cleanly transform
   https://open.gl/transformations
 */
+class Style;
+class Shader;
 
 class Transformation : public Shape {
 private:
+  Canvas* c;
+  const Style* style;
+  Shape* shape;
+  float x, y, z;
   glm::mat4 transform;
-  Shape* s;
   //to know wwhich type to apply to shape
-  std::vector<uint32_t> type = [0, 0, 0];
+  //std::vector<uint32_t> type = [0, 0, 0];
 public:
   /*
     By default create the identity matrix
@@ -23,7 +34,7 @@ public:
     0 0 1 0   z
     0 0 0 1   1
   */
-  Transformation(){
+  Transformation(Canvas* c, const Style* s, Shape* shape) : Shape(c), c(c), style(s), shape(shape){
     transform = glm::mat4(1.0f);
   }
 
@@ -37,9 +48,8 @@ public:
   m  m  m  m
   +x +y +z 0
   */
-  void translate(float x, float y, float z, Shape shape){
+  void translate(float x, float y, float z){
     transform = glm::translate(transform,glm::vec3(x,y,z));
-    s = shape;
   }
 /*
     By default create the identity matrix
@@ -48,12 +58,11 @@ public:
     0 0 2 0    z    0x+0y+2z
     0 0 0 1    1
   */
-  void scale(float x, float y, float z, Shape shape){
+  void scale(float x, float y, float z){
     transform = glm::scale(transform, glm::vec3(x,y,z));
-    s = shape;
   }
   void scale(float s) {
-    transform = transform = glm::scale(transform, glm::vec3(s,s,s));
+    transform = glm::scale(transform, glm::vec3(s,s,s));
   }
 
 /* start with an identity matrix and set to pure rotation as a convenience function
@@ -63,14 +72,12 @@ TODO: make this faster by just writing the right numbers? Not a priority
    g h i 0
    0 0 0 1
 */
-  void setRotate(float angleRad, float xAxis, float yAxis, float zAxis, Shape shape) {
+  void setRotate(float angleRad, float xAxis, float yAxis, float zAxis) {
     transform = glm::rotate(glm::mat4(1.0f), angleRad, glm::vec3(xAxis,yAxis,zAxis));
-    s = shape;
   }
 
-  void rotate(float angleRad, float xAxis, float yAxis, float zAxis, Shape shape) {
+  void rotate(float angleRad, float xAxis, float yAxis, float zAxis) {
     transform = glm::rotate(transform, angleRad, glm::vec3(xAxis,yAxis,zAxis));
-    s = shape;
   }
 
   const glm::mat4& getTransform() const {
@@ -88,5 +95,6 @@ TODO: make this faster by just writing the right numbers? Not a priority
   }
 	void init() override;
 	void render() override;
+  void update() override;
 };
 

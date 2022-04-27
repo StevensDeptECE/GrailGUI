@@ -6,7 +6,7 @@
 #include "opengl/Canvas.hh"
 #include "opengl/Style.hh"
 
-RectangularPrism::RectangularPrism(Canvas* c, const Style *s, float length, float width, float height, float x, float y, float z) : Shape(c),style(s), length(length), width(width), height(height), x(x), y(y), z(z){
+RectangularPrism::RectangularPrism(Canvas* c, const Style *s, float xsize, float ysize, float zsize, float x, float y, float z) : Shape(c),style(s), xsize(xsize), ysize(ysize), zsize(zsize), x(x), y(y), z(z){
 }
 RectangularPrism::~RectangularPrism(){
 }
@@ -36,15 +36,16 @@ inline void RectangularPrism::addTri(uint32_t i1, uint32_t i2, uint32_t i3) {
 void RectangularPrism::init(){
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
+  //Width = xsize 
 
   addVert(x, y, z); //0
-  addVert(x + width, y, z); //1
-  addVert(x + width, y + height, z); //2
-  addVert(x, y + height, z); //3
-  addVert(x, y, z + length); //4
-  addVert(x + width, y, z + length); //5
-  addVert(x + width, y + height, z + length); //6
-  addVert(x, y + height, z + length); //7
+  addVert(x + xsize, y, z); //1
+  addVert(x + xsize, y + ysize, z); //2
+  addVert(x, y + ysize, z); //3
+  addVert(x, y, z + zsize); //4
+  addVert(x + xsize, y, z + zsize); //5
+  addVert(x + xsize, y + ysize, z + zsize); //6
+  addVert(x, y + ysize, z + zsize); //7
 
   //front
   addRect(0, 1, 2, 3);
@@ -62,7 +63,6 @@ void RectangularPrism::init(){
 
   //Bottom
   addRect(0, 1, 5, 4);
-  
 
 
   glGenBuffers(1, &vbo);
@@ -83,11 +83,10 @@ void RectangularPrism::init(){
 
 void RectangularPrism::render(){
   const Shader* shader = Shader::useShader(style->getShaderIndex());
-  //shader->setMat4("projection",*(parentCanvas->getProjection()));
+  shader->setMat4("projection",*(parentCanvas->getProjection()));
 	shader->setVec4("solidColor",style->getFgColor());
   
   //glDrawArrays(GL_LINE_LOOP, 0, vert.size());
-
   glBindVertexArray(vao);
   glEnableVertexAttribArray(0);
   glLineWidth(style->getLineWidth());
