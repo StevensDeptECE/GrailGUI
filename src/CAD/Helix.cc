@@ -1,8 +1,8 @@
 #define _USE_MATH_DEFINES
-// #include "glad/glad.h"
-// #include "opengl/Shader.hh"
-// #include "opengl/GLWin.hh"
-// #include "opengl/Canvas.hh"
+#include "glad/glad.h"
+#include "opengl/Shader.hh"
+#include "opengl/GLWin.hh"
+#include "opengl/Canvas.hh"
 #include <cmath>
 #include "./Helix.hh"
 
@@ -29,21 +29,21 @@ Vec3D Helix::getPoint(double step){
 void Helix::getPoints(){
   cout<< "start, height, radius: " << start << ", "<< height << ", "<< radius << endl;
   for(double i=0; i<=1; i+=0.01){
-      cout<< this->getPoint(i) << endl;
+     // cout<< this->getPoint(i) << endl;
       points.push_back(this->getPoint(i));
   }
 }
 
 //unwrap points to be a 1d array for drawing
-// std::vector<float> unwrap(std::vector<Vec3D> x){
-//   std::vector<float> temp(x.size()*3);
-//   for (int i=0, j=0; i<x.size(); i++){
-//     temp[j++] = x[i].x;
-//     temp[j++] = x[i].y;
-//     temp[j++] = x[i].z;
-//   }
-//   return temp;
-// }
+std::vector<float> Helix::unwrap(std::vector<Vec3D> x){
+  std::vector<float> temp(x.size()*3);
+  for (int i=0, j=0; i<x.size(); i++){
+    temp[j++] = x[i].x;
+    temp[j++] = x[i].y;
+    temp[j++] = x[i].z;
+  }
+  return temp;
+}
 
 
 void Helix::init(){
@@ -66,7 +66,6 @@ void Helix::render(){
   //   cout << drawingPoints[i] << " " ;
   // }
   // cout << endl;
-
   Shader * shader = Shader::useShader(GLWin::COMMON_SHADER);
   shader->setMat4("projection",*(parentCanvas->getProjection()));
 	shader->setVec4("solidColor",style->getFgColor());

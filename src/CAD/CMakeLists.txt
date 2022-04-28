@@ -8,10 +8,12 @@ set(grail-CAD
     Circle2D.cc
     Gear.cc
     Curve.cc
-    Cylinder.cc
     Circle.cc
     BezierPath.cc
     Line.cc
+    Facet.cc
+    Helix.cc
+    Extrusion.cc
 )
 
 list(TRANSFORM grail-CAD PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)

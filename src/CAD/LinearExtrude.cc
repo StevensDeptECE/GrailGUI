@@ -9,11 +9,13 @@
 #include "CAD/Gear.hh"
 #include "CAD/Rectangle.hh"
 #include "CAD/Triangle.hh"
+#include "CAD/Line.hh"
 
 using namespace std;
 
 //posible shapes: circle2d, gear, rectangle, triangle
 void LinearExtrude::draw(){
-  
+  cout<<"in linear extrude draw" << endl;
+  Line* ltest = new Line(this->start,this->stop,c,baseGraphStyle);
 
 }
