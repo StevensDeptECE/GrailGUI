@@ -77,6 +77,21 @@ class CurveTest : public GLWin {
 
 
   
+    // Vec3D start(0,0,0);
+    //Helix* test = new Helix(start, 10, 2, c, baseGraphStyle);
+    //c->addLayer(test);
+
+    //bezier test
+  //  Vec3D a(0,0,0);
+   // Vec3D b(2,5,0);
+   // Vec3D d(5,0,0);
+   // Vec3D e(7,5,0);
+
+    // BezierPath* btest = new BezierPath(a,b,d,e,c,baseGraphStyle);
+    // c->addLayer(btest);
+   // cout << "new curve test" << endl;
+   // Line* ltest = new Line(a,b,c,baseGraphStyle);
+    //c->addLayer(ltest);
   }
 };
 

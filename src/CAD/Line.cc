@@ -10,13 +10,12 @@
 using namespace std;
 
 
-// Vec3D Line::getPoint(double step){
-//   double x = start.x+(step*stop.x);
-//   double y = start.y+(step*stop.y);
-//   double z = start.y+(step*stop.y);
-//   return Vec3D (x, y, z);
-// }
-
+Vec3D Line::getPoint(double step){
+  double x = start.x+(step*stop.x);
+  double y = start.y+(step*stop.y);
+  double z = start.y+(step*stop.y);
+  return Vec3D (x, y, z);
+}
 
 // void Line::getPoints(){
 //   //cout<< "start, height, radius: " << start << ", "<< height << ", "<< radius << endl;
@@ -25,6 +24,8 @@ using namespace std;
 //       points.push_back(this->start+(this->stop*i));
 //   }
 // }
+
+
 
 //unwrap points to be a 1d array for drawing
 std::vector<float> unwrap(std::vector<Vec3D> x){

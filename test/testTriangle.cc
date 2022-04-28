@@ -9,8 +9,8 @@ class TestTriangle : public GLWin {
   void init() {
     MainCanvas* c = currentTab()->getMainCanvas();
     const Style* s = getDefaultStyle();
-    Triangle* tri = c->addLayer(new Triangle(c, 0, 50, 100, 50, s));    
-    //Triangle* trr = c->addLayer(new Triangle(c, 1, 1, 500, 500, 700,456, s));   
+    //Triangle* tri = c->addLayer(new Triangle(c, 0, 50, 100, 50, s));    
+    Triangle* trr = c->addLayer(new Triangle(c, 300, 200, 500, 500, 700,-400, s));   
   }
 };
 

@@ -22,9 +22,9 @@ if(${GRAIL_EXPERIMENTAL})
 endif()
 
 if(${MPV_FOUND})
-  add_subdirectory(audio)
-  add_subdirectory(video)
-  list(APPEND grail-path ${grail-audio} ${grail-video})
+  # add_subdirectory(audio)
+  # add_subdirectory(video)
+  # list(APPEND grail-path ${grail-audio} ${grail-video})
 endif()
 
 add_library(grail ${grail-path})
