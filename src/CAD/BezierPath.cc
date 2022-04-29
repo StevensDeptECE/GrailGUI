@@ -121,11 +121,6 @@ void BezierPath::init(){
 }
 
 void BezierPath::render(){
-  // for(int i=0; i<drawingPoints.size(); i++){
-  //   cout << drawingPoints[i] << " " ;
-  // }
-  // cout << endl;
-
   Shader * shader = Shader::useShader(GLWin::COMMON_SHADER);
   shader->setMat4("projection",*(parentCanvas->getProjection()));
 	shader->setVec4("solidColor",style->getFgColor());

@@ -29,7 +29,7 @@ class ExtrusionTest : public GLWin {
   void init(){
     //set
     baseGraphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
-    baseGraphStyle->setLineWidth(10);
+    baseGraphStyle->setLineWidth(5);
   
     //set the camera
     MainCanvas *c = currentTab()->getMainCanvas();
