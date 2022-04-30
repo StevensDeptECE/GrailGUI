@@ -18,7 +18,7 @@ class TestTransform : public GLWin {
     c->setProjection(cam->getViewProjection());
     RectangularPrism* rec = new RectangularPrism(c, s, 40, 756, 3, -10, -5, 0);
     c->addLayer(rec);
-    Transformation* rotate = new Transformation(c, s, new RectangularPrism(c, s, 3, 10, 3, -10, -5, 0));
+    Transformation* rotate = new Transformation(c, s, new RectangularPrism(c, s, 3, 7, 3, -10, -5, 0));
     rotate->rotate(pi/4, 1, 0, 0);
     rotate->translate(5, 4, 3);
     c->addLayer(rotate);    

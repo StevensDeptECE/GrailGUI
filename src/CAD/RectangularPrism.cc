@@ -82,9 +82,9 @@ void RectangularPrism::init(){
 }
 
 void RectangularPrism::render(){
-  const Shader* shader = Shader::useShader(style->getShaderIndex());
-  shader->setMat4("projection",*(parentCanvas->getProjection()));
-	shader->setVec4("solidColor",style->getFgColor());
+  // const Shader* shader = Shader::useShader(style->getShaderIndex());
+  // shader->setMat4("projection",*(parentCanvas->getProjection()));
+	// shader->setVec4("solidColor",style->getFgColor());
   
   //glDrawArrays(GL_LINE_LOOP, 0, vert.size());
   glBindVertexArray(vao);
