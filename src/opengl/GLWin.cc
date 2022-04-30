@@ -335,6 +335,10 @@ GLWin::~GLWin() {
 // }
 
 void GLWin::mainLoop() {
+  //TODO: baseInit() has to be called twice, fix it
+  //seems stupid but called baseInit twice since shapes wouldn't render if it was after, 
+  //but transform in CAD would segfault if it wasn't before
+  baseInit();  // call grails initialization for shaders
   init();      // call the child class method to set up
   baseInit();  // call grails initialization for shaders
 

@@ -1,18 +1,28 @@
 #include "opengl/GrailGUI.hh"
-#include "CAD/Triangle.hh"
+#include "CAD/RectangularPrism.hh"
 #include "CAD/Transformation.hh"
+#include <unistd.h>
+#include "opengl/util/Camera.hh"
+#include <numbers>
 using namespace std;
 using namespace grail;
+using namespace std::numbers;
 
-class Transform : public GLWin {
+class TestTransform : public GLWin {
  public:
-  TestTriangle() : GLWin(0x000000, 0xCCCCCC, "Test Transform") {}
+  TestTransform() : GLWin(0x000000, 0xCCCCCC, "Test Transform") {}
   void init() {
     MainCanvas* c = currentTab()->getMainCanvas();
     const Style* s = getDefaultStyle();
-    Transformation* translate = c->addLayer(new Transformation(10, 20, 0, new Triangle(c, 0, 50, 100, 50, s)));    
-    //Triangle* trr = c->addLayer(new Triangle(c, 1, 1, 500, 500, 700,456, s));   
+    Camera* cam = c->setLookAtProjection(0, 0, 30, 0, 0, 0, 0, 1, 0);
+    c->setProjection(cam->getViewProjection());
+    RectangularPrism* rec = new RectangularPrism(c, s, 40, 756, 3, -10, -5, 0);
+    c->addLayer(rec);
+    Transformation* rotate = new Transformation(c, s, new RectangularPrism(c, s, 3, 10, 3, -10, -5, 0));
+    rotate->rotate(pi/4, 1, 0, 0);
+    rotate->translate(5, 4, 3);
+    c->addLayer(rotate);    
   }
 };
 
-int main(int argc, char* argv[]) { return GLWin::init(new TestTriangle()); }
+int main(int argc, char* argv[]) { return GLWin::init(new TestTransform()); }

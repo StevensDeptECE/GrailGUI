@@ -36,6 +36,7 @@ add_grail_executable(SRC testTriangle.cc LIBS grail)
 add_grail_executable(SRC testRectangle.cc LIBS grail)
 add_grail_executable(SRC testCircle.cc LIBS grail)
 add_grail_executable(SRC testGear.cc LIBS grail)
+add_grail_executable(SRC testTransform.cc LIBS grail)
 
 
 
