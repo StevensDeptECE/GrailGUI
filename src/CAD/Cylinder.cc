@@ -16,35 +16,95 @@ using namespace std::numbers;
 // }
 Cylinder::Cylinder(Canvas* c, const Style *s, uint32_t height, uint32_t x, uint32_t y, uint32_t z, uint32_t radius, uint32_t segments) : Shape(c), style(s), height(height), radius(radius), x(x), y(y), z(z), segments(segments){
 }
-// Cylinder::~Cylinder(){
-// }
+Cylinder::~Cylinder(){
+}
+
+inline void Cylinder::getUnitCircleVertices() {
+  //This is to generate the unit circle on the XY plane that will be used to help render the cylinder
+  float steps = 2 * pi / segments; // How many points around the circle
+  float angle;                     // The current angle
+
+  for (int i = 0; i <= segments; ++i) {
+    angle = i * steps;
+    unitVert.push_back(cos(angle)); // x
+    unitVert.push_back(sin(angle)); // y
+    unitVert.push_back(0);          // z
+  }
+}
 
 void Cylinder::init(){
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
   uint32_t vertices = segments + 2;
-  
-  for(int i=0; i < vertices; i++){
-    vert.push_back(x +  (radius * cos( i * (2 * pi / segments))));
-    vert.push_back(y +  (radius * sin( i * (2 * pi / segments))));
-    vert.push_back(z); //z=0
-  }
-  for(int i=0; i < vertices; i++){
-    vert.push_back(x +  (radius * cos( i * (2 * pi / segments))));
-    vert.push_back(y + (radius * sin( i * (2 * pi / segments))));
-    vert.push_back(z + height); //z=height
+
+  getUnitCircleVertices();
+
+  // Generate the side vertices twice
+  for (int i = 0; i < 2; ++i) {
+    float h = height * (i * 2);  
+    // Variable k will be used to access the unit circle at the current iteration.
+    for (int k = 0; k < segments; k++) {
+      // ------ Unit Circle ------ //
+      float ux = unitVert[k * 3];
+      float uy = unitVert[(k * 3) + 1];
+      
+      // ------------------------- //
+
+      vert.push_back(ux * radius); // x
+      vert.push_back(uy * radius); // y
+      vert.push_back(h); // z
+    }
   }
 
+  int baseCenterIndex = (int)vert.size() / 3;
+  int topCenterIndex = baseCenterIndex + segments + 1;
+  std::cout << baseCenterIndex << std::endl;
 
-  for(int i=0; i < vertices/2; i++){
-    ind.push_back(i);
-    ind.push_back(i+1);
-    ind.push_back(vertices + i);
-    ind.push_back(vertices + i);
-    ind.push_back(i+1);
-    ind.push_back(vertices + i + 1);
+  int k1 = 0; // 1st vertex at base
+  int k2 = segments + 1; // 1st vertex at top
+
+  // indices for side
+  for (int i = 0; i < segments; ++i, ++k1, ++k2) {
+    ind.push_back(k1);
+    ind.push_back(k1 + 1);
+    ind.push_back(k2);
+
+    ind.push_back(k2);
+    ind.push_back(k1 + 1);
+    ind.push_back(k2 + 1);
   }
+
+  // indices for top surface
+  // for (int i = 0, k = baseCenterIndex + 1; i < segments; ++i, ++k) {
+  //   if(i < segments - 1) {
+      
+  //     ind.push_back(baseCenterIndex);
+  //     ind.push_back(k + 1);
+  //     ind.push_back(k);
+  //   }
+  //   else { // last triangle
+  //     ind.push_back(baseCenterIndex);
+  //     ind.push_back(baseCenterIndex + 1);
+  //     ind.push_back(k);
+  //   }
+  // }
+
+  for(int i = 0, k = topCenterIndex + 1; i < segments; ++i, ++k)
+{
+    if(i < segments - 1)
+    {
+        ind.push_back(topCenterIndex);
+        ind.push_back(k);
+        ind.push_back(k + 1);
+    }
+    else // last triangle
+    {
+        ind.push_back(topCenterIndex);
+        ind.push_back(k);
+        ind.push_back(topCenterIndex + 1);
+    }
+}
 
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -64,13 +124,17 @@ void Cylinder::render(){
 
   glBindVertexArray(vao);
   glEnableVertexAttribArray(0);
+  glLineWidth(style->getLineWidth());
 
   //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
   // glLineWidth(style->getLineWidth());
 
-  glDrawArrays(GL_LINES, 0, vert.size());
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
   glDrawElements(GL_TRIANGLES, ind.size(), GL_UNSIGNED_INT, (void*)0);
+
+  // glDrawArrays(GL_LINES, 0, vert.size());
+  // glDrawElements(GL_TRIANGLES, ind.size(), GL_UNSIGNED_INT, (void*)0);
   glDisableVertexAttribArray(0);
   glBindVertexArray(0);
 

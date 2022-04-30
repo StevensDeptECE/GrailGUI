@@ -24,8 +24,10 @@ class TestCylinder : public GLWin {
         MainCanvas* c = currentTab()->getMainCanvas();
         Camera* cam = c->setLookAtProjection(0, 0, 30, 0, 0, 0, 0, 1, 0);
         c->setProjection(cam->getViewProjection());
+        
         const Style* s = getDefaultStyle();
-        Cylinder* cyl = c->addLayer(new Cylinder(c, s, 3, -10, -10, -10, 3, 360));
+        Cylinder* cyl = new Cylinder(c, s, 5, 60, 60, 0, 1, 200);
+        c->addLayer(cyl);
   }
 };
 
