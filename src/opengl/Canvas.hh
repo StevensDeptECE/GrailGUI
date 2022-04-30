@@ -47,6 +47,7 @@ class Canvas {
   uint32_t getHeight() const { return vpH; }
   GLWin* getWin() const { return w; };
   glm::mat4* getProjection() { return &projection; }
+  Camera* getCamera() { return cam;}
   void setProjection(const glm::mat4& proj) { projection = proj; }
 
   void setOrthoProjection(float xLeft, float xRight, float yBottom,

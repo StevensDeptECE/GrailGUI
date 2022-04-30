@@ -8,6 +8,8 @@ set(grail-CAD
     Circle2D.cc
     Gear.cc
     Curve.cc
+    Cylinder.cc
+    Transformation.cc
     Circle.cc
     BezierPath.cc
     Line.cc
