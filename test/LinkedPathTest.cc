@@ -1,0 +1,53 @@
+#include "CAD/Line.hh"
+#include "CAD/BezierPath.hh"
+#include "CAD/Helix.hh"
+#include "CAD/Vec3d.hh"
+#include "opengl/StyledMultiShape2D.hh"
+#include <iostream>
+#include "opengl/GrailGUI.hh"
+#include "opengl/util/Camera.hh"
+
+#include <vector>
+
+using namespace std;
+
+class LineTest : public GLWin {
+  private:
+    Style *baseGraphStyle;
+
+  public:
+    LineTest() : GLWin(0x000000, 0xCCCCCC, "LineTest") {}
+
+  void init(){
+    baseGraphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
+    baseGraphStyle->setLineWidth(10);
+  
+    //set the camera
+    MainCanvas *c = currentTab()->getMainCanvas();
+    Camera* cam = c->setLookAtProjection(0, 0, 75, 0, 0, 0, 0, 1, 0);
+    c->setProjection(cam->getViewProjection());
+
+    Vec3D start1(-10,0,0);
+    Vec3D stop1(0,0,0);
+    Line* firstLine = new Line(start1, stop1, c, baseGraphStyle);
+    c->addLayer(firstLine);
+
+    Vec3D b2(3,7,0);
+    Vec3D b3(6,0,0);
+    Vec3D b4(9,7,0);
+    BezierPath* firstBezier = new BezierPath(stop1,b2,b3,b4,c,baseGraphStyle);
+    c->addLayer(firstBezier);
+
+    Vec3D stop2(15,0,0);
+    Line* secondLine = new Line(b4, stop2, c, baseGraphStyle);
+    c->addLayer(secondLine);
+
+    Helix* secondHelix = new Helix(b4, 10, 4, c, baseGraphStyle);
+    c->addLayer(secondHelix);
+
+  }
+};
+
+int main(int argc, char *argv[]) {
+  return GLWin::init(new LineTest(), 1000, 1000);
+}

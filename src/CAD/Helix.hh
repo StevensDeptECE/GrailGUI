@@ -1,7 +1,7 @@
 #pragma once
 #include "opengl/GrailGUI.hh"
-#include "opengl/util/Transformation.hh"
-#include "opengl/MultiShape3D.hh"
+// #include "opengl/util/Transformation.hh"
+//#include "opengl/MultiShape3D.hh"
 #include "./Vec3d.hh"
 #include <vector>
 #include "opengl/Shape2D.hh"
@@ -11,7 +11,7 @@
 Represent -- 
 **/
 class Helix: public Vec3D, public Shape2D {
-  protected:
+  public:
     std::vector<Vec3D> points;
     Vec3D start;
     double height;
@@ -30,10 +30,10 @@ class Helix: public Vec3D, public Shape2D {
 
   void init();
   void render();
-  //where is the origin?
 
   Vec3D getPoint(double step);
   void getPoints();
+  std::vector<float> unwrap(std::vector<Vec3D> x);
   
 };
 

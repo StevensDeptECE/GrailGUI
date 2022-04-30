@@ -121,11 +121,6 @@ void BezierPath::init(){
 }
 
 void BezierPath::render(){
-  // for(int i=0; i<drawingPoints.size(); i++){
-  //   cout << drawingPoints[i] << " " ;
-  // }
-  // cout << endl;
-
   Shader * shader = Shader::useShader(GLWin::COMMON_SHADER);
   shader->setMat4("projection",*(parentCanvas->getProjection()));
 	shader->setVec4("solidColor",style->getFgColor());
@@ -153,7 +148,8 @@ void BezierPath::render(){
 //   for (int i=0; i<b1.drawingPoints.size(); i++){
 //     cout<< b1.drawingPoints[i] << endl;
 //   }
-//}
+// }
+
 
 //references:
 //https://www.google.com/search?q=how+to+Compute+the+coordinates+for+the+formula+of+a+circle+3D&rlz=1C1CHBF_enUS872US872&oq=how+to+Compute+the+coordinates+for+the+formula+of+a+circle+3D&aqs=chrome..69i57.2310j0j4&sourceid=chrome&ie=UTF-8

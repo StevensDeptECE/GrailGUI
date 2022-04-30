@@ -20,14 +20,21 @@ class Line: public Vec3D, public Shape2D {
     Style* s;
   
   public:
-    Line(Vec3D start, Vec3D stop, Canvas* c, Style* s);
-    ~Line(){}
+    Line(Vec3D start, Vec3D stop, Canvas* c, Style* s):Shape2D(c, start.x, start.y, s)
+      {
+      this->start=start;
+      this->stop=stop;
+      points.push_back(start);
+      points.push_back(stop);
+    }
+
 
   void init();
   void render();
 
+
   Vec3D getPoint(double step);
-  void getPoints();
+//  void getPoints();
   
 };
 

@@ -22,14 +22,56 @@ Vec3D Circle::getPoint(double step){
   return center + (u*(radius*cos(t))) + (v*(radius*sin(t)));
 }
 
-// int main() {
-//   Vec3D a(1,1,1);
-//   Vec3D b(2,3,4);
+void Circle::getPoints(){
+   for(double i=0; i<=1; i+=0.01){
+      points.push_back(getPoint(i));
+  }
+}
 
-//   Circle c1(1, a, b);
-//   c1.compute();
-//   for(double i=0; i<=1; i+=0.2){
-//       cout<< c1.getPoint(i) << endl;
-//   }
-//   cout << "in circle1.cc, radius: " << c1.getRadius() << endl;
-// }
+
+
+std::vector<float> Circle::unwrap(std::vector<Vec3D> x){
+  std::vector<float> temp(x.size()*3);
+  for (int i=0, j=0; i<x.size(); i++){
+    temp[j++] = x[i].x;
+    temp[j++] = x[i].y;
+    temp[j++] = x[i].z;
+  }
+  return temp;
+}
+
+void Circle::init(){
+  //create VAO to hold shapes
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
+  
+  //create VBO to hold vertex points
+  drawingPoints = unwrap(points);
+  glGenBuffers(1, &vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, drawingPoints.size() * sizeof(float), &drawingPoints[0], GL_STATIC_DRAW);
+
+  //describe in shaders
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+}
+
+void Circle::render(){
+  // for(int i=0; i<drawingPoints.size(); i++){
+  //   cout << drawingPoints[i] << " " ;
+  // }
+  // cout << endl;
+
+  Shader * shader = Shader::useShader(GLWin::COMMON_SHADER);
+  shader->setMat4("projection",*(parentCanvas->getProjection()));
+	shader->setVec4("solidColor",style->getFgColor());
+  glBindVertexArray(vao);
+  glEnableVertexAttribArray(0);
+
+  glLineWidth(style->getLineWidth());
+  //cout<< drawingPoints.size()/3 <<endl;
+  glDrawArrays(GL_LINE_STRIP, 0, drawingPoints.size()/3);
+
+  glDisableVertexAttribArray(0);
+  glBindVertexArray(0);
+
+}
