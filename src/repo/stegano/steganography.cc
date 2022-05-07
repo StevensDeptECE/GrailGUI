@@ -10,7 +10,7 @@ SteganographicImage::~SteganographicImage() { WebPFree(rgb); }
 
 void SteganographicImage::read_webp() {
   std::ifstream f(img_name, std::ios::binary | std::ios::in);
-  if (!f) throw "Input file '" + img_name + "' does not exist.";
+  if (!f) throw Ex2(Errcode::FILE_NOT_FOUND, img_name);
 
   // Get byte size of file and return for reading.
   f.seekg(0, std::ios::end);
@@ -22,7 +22,8 @@ void SteganographicImage::read_webp() {
   f.read((char *)img, img_size);
 
   if (!WebPGetInfo(img, img_size, &w, &h))
-    throw "Input image is not a valid WebP file.";
+    // Input image is not a valid WebP file.
+    throw Ex2(Errcode::FILE_READ, img_name);
   rgb = WebPDecodeRGB(img, img_size, &w, &h);
   delete[] img;
 }
@@ -49,7 +50,8 @@ void SteganographicImage::hide_secret(std::vector<uint8_t> &secret) {
 
   size_t lim = start + secret_size * 8 * stride + sizeof(size_t) * 8;
   if (lim > img_size)
-    throw "Input string is too long or stride and start are too large to fit in the image.";
+    // Input string is too long or stride/start are too big to fit in img.
+    throw Ex1(Errcode::STRING_TOO_LONG);
 
   size_t i;
   uint8_t bit = 0;

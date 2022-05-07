@@ -4,9 +4,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../util/HashMap.hh"
 #include "cloud/cloud.hh"
 #include "stegano/steganography.hh"
+#include "util/HashMap.hh"
 
 class PubKey {};
 class SymmetricKey {};
@@ -19,6 +19,11 @@ class GrailRepository {
   // alternate versions in feature 4
   CloudClient client;
 
+  // One per region:
+  //    Private key of user
+  //
+  // One per site:
+  //    Pair<Public key of user, Public key of website>
   union {
     // A stack storing: region_name -> (site_name -> key)
     std::vector<std::pair<std::string, std::unordered_map<std::string, RSA*>>>

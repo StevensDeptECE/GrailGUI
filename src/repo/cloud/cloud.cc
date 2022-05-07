@@ -2,7 +2,7 @@
 
 void CloudClient::get_file_bytes(const std::string &fname) {
   std::ifstream fi(fname);
-  if (!fi.is_open()) throw "File not found: " + fname;
+  if (!fi.is_open()) throw Ex2(Errcode::FILE_NOT_FOUND, fname);
   // std::string str((std::istreambuf_iterator<char>(fi)),
   //                 std::istreambuf_iterator<char>());
   fi.seekg(0, std::ios::end);
@@ -28,7 +28,7 @@ std::string CloudClient::sha256(const std::string &str) {
   SHA256_Final(hash, &sha256);
   std::string output = "";
   for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) output += to_hex(hash[i]);
-  // std::cout << "SHA256: " << output << std::endl;
+  // std::cout << "SHA256: " << output << '\n';
   return output;
 }
 
@@ -90,8 +90,8 @@ void CloudClient::upload(const std::string &file_name) {
     std::string upload_id =
         json::parse(response.str())["id"].get<std::string>();
 
-    std::cout << "File uploaded to:" << '\n'
-              << "https://drive.google.com/file/d/" << upload_id << std::endl;
+    std::cout << "File uploaded to:\nhttps://drive.google.com/file/d/"
+              << upload_id << '\n';
   }
 }
 
@@ -119,7 +119,7 @@ void CloudClient::download(const std::string &file_name,
     req.perform();
 
     curlpp::infos::CookieList::get(req, cookies);
-    // for (auto &cookie : cookies) std::cout << cookie << std::endl;
+    // for (auto &cookie : cookies) std::cout << cookie << '\n';
 
     req.setOpt(
         new curlpp::options::Url("https://drive.google.com/"
@@ -133,19 +133,20 @@ void CloudClient::download(const std::string &file_name,
   }
 
   get_file_bytes(file_name);
-  // std::cout << file_bytes << std::endl;
+  // std::cout << file_bytes << '\n';
 
   // Compare hash of downloaded file to original.
   std::ifstream fi(file_name + ".sha256");
-  if (!fi.is_open()) throw "File not found: " + file_name + ".sha256";
+  if (!fi.is_open()) throw Ex2(Errcode::FILE_NOT_FOUND, file_name + ".sha256");
   std::string original_f_hash(std::istreambuf_iterator<char>(fi), {});
   fi.close();
 
   if (sha256(file_bytes) != original_f_hash)
-    throw "Downloaded file is NOT THE SAME as the original.";
+    // Downloaded file is NOT THE SAME as the original.
+    throw Ex1(Errcode::REPOSITORY_TAMPERED);
   else
     std::cout << "All good! Downloaded file is the same as the original."
-              << std::endl;
+              << '\n';
 }
 
 // https://stackoverflow.com/questions/41958236/posting-and-receiving-json-payload-with-curlpp#41974669
@@ -171,8 +172,7 @@ std::string CloudClient::invoke(const std::string &url,
 
 int main(int argc, char **argv) {
   if (argc < 3) {
-    std::cout << "Usage: " << argv[0] << " <upload|download> <file>"
-              << std::endl;
+    std::cout << "Usage: " << argv[0] << " <upload|download> <file>" << '\n';
     return 1;
   }
   try {
@@ -182,13 +182,12 @@ int main(int argc, char **argv) {
     else if (!strcmp(argv[1], "download")) {
       if (argc != 4) {
         std::cout << "Usage: " << argv[0] << " download <file_name> <file_id>"
-                  << std::endl;
+                  << '\n';
         return EXIT_FAILURE;
       }
       client.download(argv[2], argv[3]);
     } else {
-      std::cout << "Usage: " << argv[0] << " <upload|download> <file>"
-                << std::endl;
+      std::cout << "Usage: " << argv[0] << " <upload|download> <file>" << '\n';
     }
   } catch (char const *e) {
     std::cerr << "Error: " << e << std::endl;

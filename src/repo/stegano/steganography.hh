@@ -9,6 +9,8 @@
 // https://renenyffenegger.ch/notes/development/Base64/Encoding-and-decoding-base-64-with-cpp/
 // https://github.com/ReneNyffenegger/cpp-base64
 #include "base64.h"
+#include "opengl/Errcode.hh"
+#include "util/Ex.hh"
 
 // std::basic_string<uint8_t>
 

@@ -99,7 +99,7 @@ void unlock(const std::string& password, const Factor2& factor,
 void GrailRepository::scramble(const std::string& area) {
   std::independent_bits_engine<std::default_random_engine, CHAR_BIT, uint8_t>
       rbe;
-  std::generate(bytes.begin(), bytes.end(), std::ref(rbe));
+  std::generate(bytes.begin(), bytes.end(), rbe);
 }
 
 void GrailRepository::destroy() { std::fill(bytes.begin(), bytes.end(), 0); }

@@ -1,8 +1,8 @@
 #include <fstream>
 #include <string>
-// https://curl.se/libcurl/c/libcurl-tutorial.html
-// #include <curl/curl.h>
-// https://pragmaticjoe.blogspot.com/2015/09/uploading-file-with-google-drive-api.html
+
+#include "opengl/Errcode.hh"
+#include "util/Ex.hh"
 
 // #include <gio/gio.h>
 #include <openssl/sha.h>
