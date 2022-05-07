@@ -1,8 +1,7 @@
 #!/bin/sh
 # https://towardsdatascience.com/uploading-files-to-google-drive-directly-from-the-terminal-using-curl-2b89db28bb06
 
-setup()
-{
+setup() {
     # Step 1. Visit https://console.developers.google.com/apis/credentials?pli=1
     # Creating account will provide the client ID and client secret.
 
@@ -29,10 +28,10 @@ setup()
         https://accounts.google.com/o/oauth2/token
 }
 
-upload()
-{
+upload() {
     # File we want to upload (In our case, the website key/sitename pair file)
     FILENAME="$1"
+    sha256sum "$FILENAME" >checksum.txt
     # Refresh the access token each upload so you never get locked out.
     ACCESS_TOKEN=$(curl -d client_id="$GOOGLE_CLIENT_ID" \
         -d client_secret="$GOOGLE_CLIENT_SECRET" \
@@ -44,7 +43,7 @@ upload()
     # creating 2 copies.
     UPLOAD_ID=$(curl -X POST -L \
         -H "Authorization: Bearer $ACCESS_TOKEN" \
-        -F "metadata={name :'$FILENAME'};type=application/json;charset=UTF-8" \
+        -F "metadata={name :'$(basename "$FILENAME")'};type=application/json" \
         -F "file=@$FILENAME;type=$(file --mime-type -b "$FILENAME")" \
         "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart" | head -3 | cut -d'"' -f4 | tail -1)
 
@@ -52,8 +51,7 @@ upload()
     echo "https://drive.google.com/file/d/$UPLOAD_ID"
 }
 
-download()
-{
+download() {
     # Name of file we want to download (In our case, the website key/sitename pair file)
     FILENAME="$1"
     # Refresh the access token each upload so you never get locked out.
@@ -70,16 +68,28 @@ download()
         -F "metadata={name :'$FILENAME'};type=application/json;charset=UTF-8" \
         -F "file=@$FILENAME;type=$(file --mime-type -b "$FILENAME")" \
         "https://www.googleapis.com/upload/drive/v3/files?"
+    # TODO: Check if downloaded file is diff from original - checksum
+    if [ "$(sha256sum "$FILENAME")" != "$(cat checksum.txt)" ]; then
+        echo "Erorr: Checksum failed for $FILENAME. Something is very wrong!"
+        return 1
+    fi
 }
 
-if [ ! "$1" ]; then
+case $1 in
+setup)
     setup
-elif [ "$1" = "upload" ]; then
+    ;;
+upload)
     if [ -f "$2" ]; then
         upload "$2"
     else
-        echo "$2 is not a valid file to upload"
+        echo "Error: $2 is not a valid file to upload"
     fi
-elif [ "$1" = "download" ]; then
+    ;;
+download)
     download "$2"
-fi
+    ;;
+*)
+    echo "Usage: $0 [setup|upload|download] <file to upload>"
+    ;;
+esac

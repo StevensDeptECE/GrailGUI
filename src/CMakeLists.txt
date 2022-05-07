@@ -3,6 +3,7 @@ add_subdirectory(data)
 add_subdirectory(opengl)
 add_subdirectory(util)
 add_subdirectory(xdl)
+add_subdirectory(repo)
 
 set(grail-path
             ${PROJECT_SOURCE_DIR}/include/glad/glad.c
@@ -11,6 +12,7 @@ set(grail-path
             ${grail-opengl}
             ${grail-util}
             ${grail-xdl}
+            ${grail-repo}
             )
 
 
@@ -26,6 +28,7 @@ if(${MPV_FOUND})
 endif()
 
 add_library(grail ${grail-path})
+
 
 # GLFW
 target_include_directories(grail INTERFACE ${GLFW_INCLUDE_DIRS})
@@ -49,6 +52,10 @@ if(${MPV_FOUND})
   target_link_libraries(grail ${MPV_LIBRARY})
   target_include_directories(grail INTERFACE ${MPV_INCLUDE_DIR})
 endif()
+
+# openssl
+target_include_directories(grail INTERFACE ${OPENSSL_INCLUDE_DIR})
+target_link_libraries(grail OpenSSL::Crypto OpenSSL::SSL)
 
 # Shapelib
 target_link_libraries(grail shpgrail)
