@@ -1,6 +1,4 @@
-#include "template.hh"
-
-#include <unordered_map>
+#include "Repository.hh"
 
 GrailRepository::GrailRepository(uint32_t size) {
   std::vector<uint8_t> bytes(size, 0);
@@ -10,39 +8,20 @@ GrailRepository::~GrailRepository() {}
 
 void GrailRepository::generateKey(const std::string& regionName,
                                   const std::string& siteName) {
-  int bits = 2048;
-
-  BIGNUM* bne = BN_new();
-  int ret = BN_set_word(bne, RSA_F4);
-  if (ret != 1) std::cerr << "Error: Creating bignum failed." << std::endl;
-
-  RSA* r = RSA_new();
-  ret = RSA_generate_key_ex(r, bits, bne, NULL);
-  if (ret != 1) std::cerr << "Error: Generating key pair failed." << std::endl;
-
-  // // XXX: Should we save keys to disk?
-  // BIO *bp_public = BIO_new_file("public.pem", "w+");
-  // ret = PEM_write_bio_RSAPublicKey(bp_public, r);
-  // if (ret != 1)
-  //     std::cerr << "Error: Writing public key failed." << std::endl;
-
-  // BIO *bp_private = BIO_new_file("private.pem", "w+");
-  // ret = PEM_write_bio_RSAPrivateKey(bp_private, r, NULL, NULL, 0, NULL,
-  // NULL); if (ret != 1)
-  //     std::cerr << "Error: Writing private key failed." << std::endl;
+  AESEncDec cipher(password);
 
   // Couple each site with its keypair.
   for (auto region : siteKeys) {
     if (region.first == regionName) {
-      region.second[siteName] = r;
+      region.second[siteName] = cipher;
       return;
     }
   }
   siteKeys.push_back(
-      std::make_pair(regionName, std::unordered_map<std::string, RSA*>()));
+      std::make_pair(regionName, std::unordered_map<std::string, AESEncDec>()));
   for (auto region : siteKeys) {
     if (region.first == regionName) {
-      region.second[siteName] = r;
+      region.second[siteName] = cipher;
       return;
     }
   }
@@ -62,16 +41,11 @@ void GrailRepository::backupToCloud(const std::string& service_name,
                                     const std::string& userid,
                                     const std::string& passwd, uint32_t offset,
                                     uint32_t stride, std::string& img_name) {
-  try {
-    SteganographicImage steg(img_name, offset, stride);
+  SteganographicImage steg(img_name, offset, stride);
 
-    steg.hide_secret(bytes);
-    steg.write_webp(img_name);
-    client.upload(img_name);
-
-  } catch (char const* e) {
-    std::cerr << "Error: " << e << std::endl;
-  }
+  steg.hide_secret(bytes);
+  steg.write_webp(img_name);
+  client.upload(img_name);
 };
 
 void GrailRepository::restoreFromCloud(const std::string& service_name,
@@ -79,22 +53,21 @@ void GrailRepository::restoreFromCloud(const std::string& service_name,
                                        const std::string& passwd,
                                        uint32_t offset, uint32_t stride,
                                        std::string& img_name) {
-  try {
-    client.download(img_name, "");
-    SteganographicImage steg(img_name, offset, stride);
+  client.download(img_name, "");
+  SteganographicImage steg(img_name, offset, stride);
 
-    bytes = steg.recover();
+  bytes = steg.recover();
 
-    std::string base64 = base64_encode(bytes.data(), bytes.size());
-    std::cout << base64 << std::endl;
-
-  } catch (char const* e) {
-    std::cerr << "Error: " << e << std::endl;
-  }
+  std::string base64 = base64_encode(bytes.data(), bytes.size());
+  std::cout << base64 << std::endl;
 }
 
-void unlock(const std::string& password, const Factor2& factor,
-            const std::string& area){};
+void GrailRepository::unlock(const std::string& password, const Factor2& factor,
+                             const std::string& area) {
+  this->password = password;
+  AESEncDec cipher(password);
+  cipher.decrypt_file(area.c_str(), "tmp");
+};
 
 void GrailRepository::scramble(const std::string& area) {
   std::independent_bits_engine<std::default_random_engine, CHAR_BIT, uint8_t>
@@ -108,16 +81,18 @@ void GrailRepository::destroy() { std::fill(bytes.begin(), bytes.end(), 0); }
 // std::string& area)
 // }
 
+// akin to gpg -s && gpg --verify
 uint64_t GrailRepository::proveIdentity(const std::string& password,
                                         uint64_t nonce,
                                         const std::string& area) {
   return 0;
 }
 
-void GrailRepository::get(const std::string& area, const std::string& name,
-                          std::string& userid, std::string& passwd) {
+AESEncDec GrailRepository::get(const std::string& area, const std::string& name,
+                               std::string& userid, std::string& passwd) {
   for (auto region : siteKeys)
-    if (region.first == area) std::cout << region.second[name] << std::endl;
+    if (region.first == area) return region.second[name];
+  return AESEncDec(NULL);
 };
 
 // TODO: Require hardware authentication (à la YubiKey)?

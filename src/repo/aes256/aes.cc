@@ -1,36 +1,9 @@
-#include <openssl/aes.h>
-#include <openssl/err.h>
-#include <openssl/evp.h>
-#include <openssl/rand.h>
-
-#include <cstdio>
-#include <cstring>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <string>
+#include "aes.hh"
 
 void close_files(std::ifstream *in, std::ofstream *out) {
   in->close();
   out->close();
 }
-
-/**
- * @brief An instance of AESEncDec is tied to a key, with which
- * files can be encrypted or decrypted as desired.
- */
-class AESEncDec {
-  static constexpr size_t KEYLEN = 32;
-  static constexpr size_t BLOCKSIZE = 16;
-  static constexpr size_t ITER_COUNT = 10000;
-  unsigned char key[KEYLEN];
-  unsigned char iv[BLOCKSIZE];
-
- public:
-  AESEncDec(std::string keybase);
-  long int encrypt_file(const char *path, const char *out);
-  long int decrypt_file(const char *path, const char *out);
-};
 
 AESEncDec::AESEncDec(std::string keybase) {
   if (!(PKCS5_PBKDF2_HMAC_SHA1(
@@ -42,7 +15,7 @@ AESEncDec::AESEncDec(std::string keybase) {
   }
 }
 
-long int AESEncDec::encrypt_file(const char *path, const char *out) {
+long AESEncDec::encrypt_file(const char *path, const char *out) {
   // reinitialize iv to avoid reuse
   if (!RAND_bytes(iv, BLOCKSIZE)) {
     std::cerr << "Failed to initialize IV";
@@ -74,13 +47,12 @@ long int AESEncDec::encrypt_file(const char *path, const char *out) {
     close_files(&plaintext_file, &ciphertext_file);
     return -1;
   }
-  // initialize iv 
+  // initialize iv
   if (!RAND_bytes(iv, BLOCKSIZE)) {
     std::cerr << "Failed to initialize IV";
     close_files(&plaintext_file, &ciphertext_file);
     return -1;
   }
-
 
   // put iv into encrypted file
   ciphertext_file.write((char *)iv, BLOCKSIZE);
@@ -91,14 +63,16 @@ long int AESEncDec::encrypt_file(const char *path, const char *out) {
   }
 
   // set cipher/key/iv
-  if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), nullptr, nullptr, nullptr)) {
+  if (1 !=
+      EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), nullptr, nullptr, nullptr)) {
     std::cerr << "Failed to initialize encrypt";
     close_files(&plaintext_file, &ciphertext_file);
     return -1;
   }
 
-    // set IV len to 16
-  if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, BLOCKSIZE, nullptr)) {
+  // set IV len to 16
+  if (1 !=
+      EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, BLOCKSIZE, nullptr)) {
     std::cerr << "Failed to set IV length";
     ERR_print_errors_fp(stderr);
     close_files(&plaintext_file, &ciphertext_file);
@@ -118,23 +92,23 @@ long int AESEncDec::encrypt_file(const char *path, const char *out) {
 
   // get length of file and move position back to start
   plaintext_file.seekg(0, std::ios_base::end);
-  int eof = (int) plaintext_file.tellg();
+  int eof = (int)plaintext_file.tellg();
   plaintext_file.seekg(0, std::ios_base::beg);
 
   // for keeping track of result length
   int len;
-  long int cipherlen = 0;
+  long cipherlen = 0;
   int bytes_read;
   int bytes_to_read;
 
-
   // read and encrypt a block at a time, write to file
   while (true) {
-    bytes_to_read = std::min((int) (eof - plaintext_file.tellg()), (int) BLOCKSIZE);
+    bytes_to_read =
+        std::min((int)(eof - plaintext_file.tellg()), (int)BLOCKSIZE);
     if (bytes_to_read <= 0) break;
 
     plaintext_file.read((char *)plaintext, bytes_to_read);
-    bytes_read = (int) plaintext_file.gcount();
+    bytes_read = (int)plaintext_file.gcount();
 
     if (1 != EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, bytes_read)) {
       std::cerr << "Failed to continue encryption";
@@ -175,9 +149,9 @@ long int AESEncDec::encrypt_file(const char *path, const char *out) {
     close_files(&plaintext_file, &ciphertext_file);
     return -1;
   }
-  
+
   // last 16 bytes are tag
-  ciphertext_file.write((char *) tag, BLOCKSIZE); 
+  ciphertext_file.write((char *)tag, BLOCKSIZE);
   if (!ciphertext_file.good()) {
     std::cerr << "Writing tag failed";
     close_files(&plaintext_file, &ciphertext_file);
@@ -190,7 +164,7 @@ long int AESEncDec::encrypt_file(const char *path, const char *out) {
   return cipherlen;
 }
 
-long int AESEncDec::decrypt_file(const char *path, const char *out) {
+long AESEncDec::decrypt_file(const char *path, const char *out) {
   // open files for reading and writing
   std::ifstream ciphertext_file;
   std::ofstream plaintext_file;
@@ -212,13 +186,15 @@ long int AESEncDec::decrypt_file(const char *path, const char *out) {
     return -1;
   }
 
-  if (1 != EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), nullptr, nullptr, nullptr)) {
+  if (1 !=
+      EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), nullptr, nullptr, nullptr)) {
     std::cerr << "Failed to initialize decrypt";
     close_files(&ciphertext_file, &plaintext_file);
     return -1;
   }
 
-  if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, BLOCKSIZE, nullptr)) {
+  if (1 !=
+      EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, BLOCKSIZE, nullptr)) {
     std::cerr << "Failed to set IV length";
     ERR_print_errors_fp(stderr);
     close_files(&ciphertext_file, &plaintext_file);
@@ -233,24 +209,22 @@ long int AESEncDec::decrypt_file(const char *path, const char *out) {
     return -1;
   }
 
-
   if (1 != EVP_DecryptInit_ex(ctx, nullptr, nullptr, key, iv)) {
     std::cerr << "Failed to set key+iv" << std::endl;
     ERR_print_errors_fp(stderr);
     close_files(&ciphertext_file, &plaintext_file);
   }
 
-
   // get tag from last 16 bytes
   ciphertext_file.seekg(-BLOCKSIZE, std::ios_base::end);
 
   // get end of encrypted data to know where to end
-  int end_encrypted = (int) ciphertext_file.tellg();
+  int end_encrypted = (int)ciphertext_file.tellg();
 
   // unsigned char tag[BLOCKSIZE];
-  unsigned char* tag = (unsigned char *) calloc(BLOCKSIZE, 1);
-  ciphertext_file.read((char *) tag, BLOCKSIZE);
-  
+  unsigned char *tag = (unsigned char *)calloc(BLOCKSIZE, 1);
+  ciphertext_file.read((char *)tag, BLOCKSIZE);
+
   if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, tag)) {
     std::cerr << "Failed to set tag" << std::endl;
     ERR_print_errors_fp(stderr);
@@ -259,9 +233,8 @@ long int AESEncDec::decrypt_file(const char *path, const char *out) {
 
   // initialize encryption
   int len;
-  long int plaintext_len = 0;
-  unsigned char plaintext[BLOCKSIZE + BLOCKSIZE],
-    ciphertext[BLOCKSIZE];
+  long plaintext_len = 0;
+  unsigned char plaintext[BLOCKSIZE + BLOCKSIZE], ciphertext[BLOCKSIZE];
   int bytes_to_read;
   int bytes_read;
 
@@ -270,19 +243,18 @@ long int AESEncDec::decrypt_file(const char *path, const char *out) {
 
   // go through the file one block at a time
   while (true) {
-
-
-    bytes_to_read = std::min((int) (end_encrypted - ciphertext_file.tellg()), (int) BLOCKSIZE);
+    bytes_to_read = std::min((int)(end_encrypted - ciphertext_file.tellg()),
+                             (int)BLOCKSIZE);
     if (bytes_to_read <= 0) break;
 
     ciphertext_file.read((char *)ciphertext, bytes_to_read);
-    bytes_read = (int) ciphertext_file.gcount();
+    bytes_read = (int)ciphertext_file.gcount();
 
     // decrypt block
     if (1 != EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, bytes_read)) {
       std::cerr << "Decrypt failed";
       close_files(&ciphertext_file, &plaintext_file);
-  
+
       // Proper way to exit??
       return -1;
     }
@@ -293,7 +265,7 @@ long int AESEncDec::decrypt_file(const char *path, const char *out) {
     if (!plaintext_file.good()) {
       std::cerr << "Failed to write decryption";
       close_files(&ciphertext_file, &plaintext_file);
-  
+
       return -1;
     }
   }

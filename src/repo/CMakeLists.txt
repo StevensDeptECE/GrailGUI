@@ -3,6 +3,7 @@ set(grail-repo
     cloud/cloud.cc
     template.cc
     chat
+    aes256/aes.cc
 )
 
 list(TRANSFORM grail-repo PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
