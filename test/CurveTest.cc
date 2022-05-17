@@ -34,9 +34,9 @@ class CurveTest : public GLWin {
     //set the camera
     MainCanvas *c = currentTab()->getMainCanvas();
     //set x to -80 to get a view of the x,z plane
-    Camera* cam = c->setLookAtProjection(-80, 0, 100, 0, 0, 0, 0, 1, 0);
-    c->setProjection(cam->getViewProjection());
-    cout<< "HELLO" << endl;
+    //Camera* cam = c->setLookAtProjection(-80, 0, 100, 0, 0, 0, 0, 1, 0);
+    //c->setProjection(cam->getViewProjection());
+    //cout<< "HELLO" << endl;
     std::vector<Vec3D> facetPoints;
     Vec3D f1(3,0,0);
     Vec3D f2(3,3,0);
