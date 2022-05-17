@@ -1,4 +1,4 @@
-#include "CAD/HelixPath.hh"
+#include "CAD/Helix.hh"
 #include "CAD/Vec3d.hh"
 #include "opengl/StyledMultiShape2D.hh"
 #include <iostream>
