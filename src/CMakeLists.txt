@@ -3,6 +3,7 @@ add_subdirectory(data)
 add_subdirectory(opengl)
 add_subdirectory(util)
 add_subdirectory(xdl)
+add_subdirectory(CAD)
 
 set(grail-path
             ${PROJECT_SOURCE_DIR}/include/glad/glad.c
@@ -11,7 +12,8 @@ set(grail-path
             ${grail-opengl}
             ${grail-util}
             ${grail-xdl}
-            )
+	          ${grail-CAD}
+)
 
 
 if(${GRAIL_EXPERIMENTAL})
@@ -20,9 +22,9 @@ if(${GRAIL_EXPERIMENTAL})
 endif()
 
 if(${MPV_FOUND})
-  add_subdirectory(audio)
-  add_subdirectory(video)
-  list(APPEND grail-path ${grail-audio} ${grail-video})
+  # add_subdirectory(audio)
+  # add_subdirectory(video)
+  # list(APPEND grail-path ${grail-audio} ${grail-video})
 endif()
 
 add_library(grail ${grail-path})

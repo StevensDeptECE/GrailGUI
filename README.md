@@ -56,6 +56,15 @@ audio and video).
 4. Edit `~/.bashrc` to include `export GRAIL=/path/to/GRAIL` and
    `export PATH=$PATH:$GRAIL/bin` on the following line. `source ~/.bashrc` the
    first time.
+  
+ If the MSYS2 method does not work, or there are issues, try the method below.
+ 1. Install Ubuntu 20.04 LTS from the Microsoft Store.
+ 2. Initially run the Ubuntu terminal once it is finished installing.
+ 3. In Windows Powershell type the following commands `wsl --install` `wsl --set-default Ubuntu-20.04` `wsl --set-version Ubuntu-20.04 2` Note: If you have an error about version mismatch, use command `wsl -l` to show what the name of the Ubuntu LTS is.
+ 4. Download the x server [here](https://sourceforge.net/projects/vcxsrv/). To finish the install click Next -> Next -> Finish.
+ 5. Once installation is complete, create a desktop shortcut for the server and in the Properties, target field type in `"C:\Program Files\VcXsrv\vcxsrv.exe" :0 -ac -terminate -lesspointer -multiwindow -clipboard -dpi auto` and apply the changes.
+ 6. Install dependencies by referring to the Ubuntu 20.04 setup.
+ 7. Edit the `~/.bashrc` file the same as the step above.
 
 ## Getting Set Up - Ubuntu
 
@@ -222,6 +231,13 @@ but do not need Windows, a virtual machine running Ubuntu Linux should work.
 Otherwise, until there is sufficient OpenGL support for virtual Windows, you
 will have to resort to a dual boot or alternative computer to run Grail and
 Grail-based programs.
+
+### git: 'remote-https' is not found or can't run program
+
+This error could be a antivirus software quarantining your files. Avast is a 
+common software that will prevent your PC from  running the program properly.
+To fix this, go into the antivirus software and add an exception to the 
+git-remote-https.exe file so that your computer can access it. 
 
 ### Everything Else
 
