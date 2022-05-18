@@ -17,18 +17,17 @@ class Shape2D : public Shape {
   std::vector<uint32_t> lineIndices;
   std::vector<uint32_t> pointIndices;
 
-  Style* style;
+  const Style* style;
   Transformation* transform;
 
   void applyTransform(Shader* s);
 
- public:
-  // Shape2D(float x, float y) : Shape2D(x,y,nullptr,nullptr){}
-  // Shape2D(float x, float y, Transformation* transform) :
-  // Shape2D(x,y,nullptr,transform){}
-  Shape2D(Canvas* c, float x, float y, Style* style,
-          Transformation* transform = new Transformation())
-      : Shape(c), x(x), y(y), style(style), transform(transform) {}
+public:
+  //Shape2D(float x, float y) : Shape2D(x,y,nullptr,nullptr){}
+  //Shape2D(float x, float y, Transformation* transform) : Shape2D(x,y,nullptr,transform){}
+  Shape2D(Canvas* c, float x, float y, const Style* style, Transformation* transform = new Transformation()) : 
+    Shape(c), x(x),y(y),style(style),transform(transform)
+  {}
 
   void addPoint(float x, float y) {
     vertices.push_back(x);
@@ -48,7 +47,7 @@ class Shape2D : public Shape {
 
   uint32_t getSize() { return vertices.size(); }
 
-  Style* getStyle() { return style; }
+  const Style * getStyle() const { return style; }
 
   Transformation* getTransformation() { return transform; }
   void setTransform(Transformation* t) { transform = t; }

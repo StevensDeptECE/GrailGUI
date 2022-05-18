@@ -23,7 +23,7 @@ std::string trim_nonalpha(const std::string& s) {
   result.reserve(s.length());
 
   std::remove_copy_if(s.begin(), s.end(), std::back_inserter(result),
-                      std::not1(std::ptr_fun(isalpha)));
+                      std::not_fn(std::function(isalpha)));
 
   return result;
 }
