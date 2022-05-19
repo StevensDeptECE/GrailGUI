@@ -15,7 +15,7 @@ namespace grail {
 namespace utils {
 namespace {
 void dropCaches() {
-  system("echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null");
+  int status = system("echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null");
 }
 
 std::string trim_nonalpha(const std::string& s) {
