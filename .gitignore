@@ -166,6 +166,9 @@ docs/man
 .ccls-cache
 compile_commands.json
 
+# Clangd Cache
+.cache/
+
 # Block Map Loader
 *.bml
 

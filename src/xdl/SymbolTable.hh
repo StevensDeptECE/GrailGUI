@@ -21,7 +21,7 @@ class SymbolTable : public Struct {
 
   // this is a hack, root happens to be = the number after all enums...
   const XDLType* getRoot() const { return members[root].type; }
-  Struct* addStruct(const string& name);
+  Struct* addStruct(const std::string& name);
   void addXDLType(const std::string& name, XDLType* xdlType);
   // void writeMeta(Buffer& metadataBuf) override;
   // read in metadata from buffer and return pointer to the type being added to

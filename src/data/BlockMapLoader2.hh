@@ -85,6 +85,10 @@ class BlockMapLoader : public BlockLoader {
   // fast load a blockmap from a .bml file
   BlockMapLoader(const char filename[]);
   BlockMapLoader(uint64_t size, uint16_t version) : BlockLoader(size, Type::gismap, version) {}
+  //BlockMapLoader(const BlockMapLoader& orig) = delete;
+  //BlockMapLoader(BlockMapLoader&& orig) : 
+  //BlockLoader(std::move(orig)), blockMapHeader(orig.blockMapHeader), regionContainers(orig.regionContainers), regions(orig.regions), segments(orig.segments), points(orig.points)
+  //{ }
   #if 0
   // is move constructor defined by default?
   BlockMapLoader(BlockMapLoader&& orig) :

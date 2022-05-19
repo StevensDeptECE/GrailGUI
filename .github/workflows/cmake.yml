@@ -2,16 +2,16 @@ name: CMake
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, s22-merge ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, s22-merge ]
   workflow_dispatch:
 
 jobs:
   build-ubuntu:
     strategy:
       matrix:
-        ubuntu-version: [ubuntu-18.04, ubuntu-latest]
+        ubuntu-version: [ubuntu-latest]
         build-type: [Debug, Release]
 
     runs-on: ${{matrix.ubuntu-version}}

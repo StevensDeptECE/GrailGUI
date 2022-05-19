@@ -6,6 +6,7 @@
 #include "util/Benchmark.hh"
 
 using namespace std;
+using namespace grail::utils;
 
 void loadESRIShapefile(const char filename[]) {
   SHPHandle shapeHandle = SHPOpen(filename, "rb");
@@ -155,13 +156,13 @@ int main() {
   PointInfo info;
   const string dir = getenv("GRAIL");
   const string counties_shp = dir + "/test/res/maps/USA_Counties.shp";
-  CBenchmark::benchmark("stats", 1,
-                        bind(statsESRI, counties_shp.c_str(), &info));
+  CBenchmark<>::benchmark("stats", 1,
+                          std::bind(statsESRI, counties_shp.c_str(), &info));
   const string counties_dbf = dir + "/test/res/maps/USA_Counties.dbf";
-  CBenchmark::benchmark("names", 10, bind(loadESRIDBF, counties_dbf, &info));
+  CBenchmark<>::benchmark("names", 10, std::bind(loadESRIDBF, counties_dbf, &info));
   string countyNameInfo;
 #if 0
-  CBenchmark::benchmark(
+  CBenchmark<>::benchmark(
       "extract names", 1,
       bind(extractESRIDBF, counties_dbf.c_str(), &countyNameInfo));
 #endif

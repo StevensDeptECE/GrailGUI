@@ -5,6 +5,7 @@
 #include "libshape/shapefil.h"
 
 using namespace std;
+using namespace grail::utils;
 
 void loadESRIShapefile(const char filename[]) {
   SHPHandle shapeHandle = SHPOpen(filename, "rb");
@@ -104,7 +105,7 @@ int main() {
   string dir = getenv("GRAIL");
   dir += "/test/res/maps/";
   cout << "dir: " << dir << '\n';
-  CBenchmark::benchmark("Load from ESRI", 1e2, std::bind(loadESRIShapefile, (dir + "USA_Counties.shp").c_str()));
+  CBenchmark<>::benchmark("Load from ESRI", 1e2, std::bind(loadESRIShapefile, (dir + "USA_Counties.shp").c_str()));
 
  // loadESRIDBF((dir + "USA_Counties.dbf").c_str());
   //string data = buildString(getenv("GRAILDATA"), "/maps/c_10nv20.dbf");

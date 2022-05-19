@@ -20,7 +20,6 @@
 
 class XDLRaw;
 
-using namespace std;
 class Buffer {
  public:
   Buffer(size_t initialSize, bool writing);
@@ -48,7 +47,7 @@ class Buffer {
     readNext();
   }
 
-  void displayText(ostream& s) const;
+  void displayText(std::ostream& s) const;
   void displayRawRead() const;
   void displayRaw() const;
   void displayHTTPRaw();  // TODO: eliminate! die die die
@@ -65,7 +64,7 @@ class Buffer {
   }
   void readNext();
   // write is binary
-  void write(const string& s);
+  void write(const std::string& s);
   void write(const char* s, uint32_t len);
   void writeStructMeta(const char name[], uint32_t numMembers);
 
@@ -103,9 +102,9 @@ class Buffer {
     return v;
   }
 
-  bool parseRegex(const regex& r, const char*& start, int& len);
+  bool parseRegex(const std::regex& r, const char*& start, int& len);
   // if parse returns true, advance past the token
-  bool parseToken(const string& match);
+  bool parseToken(const std::string& match);
   bool getUrl(const char*& ptr, uint32_t& len);
   bool getHTTPVersion(const char*& ptr, uint32_t& len);
   bool getHost(const char*& ptr, uint32_t& len);
@@ -117,9 +116,9 @@ class Buffer {
      token
   */
   bool getNextTokenWithSpace(const char*& ptr, const uint32_t& len);
-  string readString8();
-  string readString16();
-  string readString32();
+  std::string readString8();
+  std::string readString16();
+  std::string readString32();
 
   /*
     Write out a data type as a single byte
@@ -231,7 +230,7 @@ class Buffer {
   //*********************************//
   //************ uint8_t uint16_t uint32_t uint64_t vector *************//
   template <typename T>
-  void checkVectorSpace(const vector<T>& v) {
+  void checkVectorSpace(const std::vector<T>& v) {
     if (size < v.size() * sizeof(T)) {
       // TODO: buffer is not big enough to copy data, write directly
     }

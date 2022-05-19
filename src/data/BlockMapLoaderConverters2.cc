@@ -12,8 +12,8 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
   SHPHandle shapeHandle = SHPOpen(filename, "rb");
   // Load basic information
   int nEntities = shapeHandle->nRecords;
-  int nShapeType = shapeHandle->nShapeType;
-  //cerr << "nEntities: " << nEntities << endl;
+  // int nShapeType = shapeHandle->nShapeType;
+  // cerr << "nEntities: " << nEntities << endl;
 
   double minBounds[4], maxBounds[4];
 
@@ -37,7 +37,8 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
   }
 
   BlockMapLoader bml(sizeof(BlockMapHeader) + nEntities * sizeof(Region) +
-                     numSegments * sizeof(Segment) + numPoints * 8, version);
+                         numSegments * sizeof(Segment) + numPoints * 8,
+                     version);
   // first bytes past standard header is the header specific to this file format
   bml.blockMapHeader = (BlockMapHeader*)bml.getSpecificHeader();
   // next, get the location of the segments
@@ -50,12 +51,12 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
   bml.blockMapHeader->numSegments = numSegments;
   bml.blockMapHeader->numPoints = numPoints;
   bml.regions = (Region*)((char*)bml.blockMapHeader + sizeof(BlockMapHeader));
-  bml.segments =
-      (Segment*)((char*)bml.regions + bml.blockMapHeader->numRegions * sizeof(Region));
+  bml.segments = (Segment*)((char*)bml.regions +
+                            bml.blockMapHeader->numRegions * sizeof(Region));
 
   // last, points are a block of floating point numbers
-  bml.points =
-      (float*)((char*)bml.segments + bml.blockMapHeader->numSegments * sizeof(Segment));
+  bml.points = (float*)((char*)bml.segments +
+                        bml.blockMapHeader->numSegments * sizeof(Segment));
   uint32_t numDups = 0;
   uint32_t segCount = 0;
   //  float* xPoints = points;  // all x points are together in a single block
@@ -91,7 +92,8 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
         bml.points[pointOffset++] = shapes[i]->padfY[start[j] + k];
       }
       if (approxeqpt(bml.points[startOffset], bml.points[startOffset + 1],
-                     bml.points[pointOffset - 2], bml.points[pointOffset - 1])) {
+                     bml.points[pointOffset - 2],
+                     bml.points[pointOffset - 1])) {
         if (bml.points[startOffset] == bml.points[pointOffset - 2] &&
             bml.points[startOffset + 1] == bml.points[pointOffset - 1])
           exactMatch++;
@@ -103,13 +105,28 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
     }
   }
 
-  cerr << "Removed " << numDups << " final points of polygons\n";
-  bml.blockMapHeader->numPoints -= numDups;
-  bml.size -= numDups * 2 * sizeof(float);
-  for (auto shape : shapes) SHPDestroyObject(shape);
+  // cerr << "Removed " << numDups << " final points of polygons\n";
+  uint32_t numFloatsRemoved = numDups * 2;
+  bml.blockMapHeader->numPoints -= numFloatsRemoved;
+  bml.size -= numFloatsRemoved * sizeof(float);
+  for (const auto& shape : shapes) SHPDestroyObject(shape);
   SHPClose(shapeHandle);
 
-  cerr << "Exact matches found:" << exactMatch << '\n';
+  // cout << "num points=" << bml.getNumPoints() << '\n';
+  //   constexpr float small = 5;
+  //   uint64_t countextremepoints = 0;
+  //   for (uint32_t i = 0, j = 0; i < bml.getNumPoints(); i++, j += 2) {
+  //     if (abs(bml.points[j]) < small || abs(bml.points[j+1]) < small) {
+  //       countextremepoints++;
+  // //      cout << "found zero " << i << "\n";
+  //     }
+  //   }
+  // //cout << "Found " << countextremepoints << " points outside range\n";
+  // //cerr << "Exact matches found:" << exactMatch << '\n';
+  // uint32_t numPointsInSegments = 0;
+  // for (int i = 0; i < bml.getNumSegments(); i++)
+  //   numPointsInSegments += bml.segments[i].numPoints;
+  // cout << "number of points in segments=" << numPointsInSegments << '\n';
   return bml;
 }
 
