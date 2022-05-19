@@ -42,6 +42,8 @@ external/xerces-c-3.2.2
 libs/libgrail.a
 *.lib
 
+libs/
+
 # Executables
 *.exe
 *.out
