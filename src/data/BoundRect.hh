@@ -18,14 +18,19 @@ class BoundRect {
   }
 
   // returns true if a is completely contained within this BoundRect
-  bool contains(const BoundRect& a) {
+  bool contains(const BoundRect& a) const {
     return a.xMin >= xMin && a.xMin <= xMax && a.yMin >= yMin &&
            a.yMin <= yMax && a.xMax >= xMin && a.xMax <= xMax &&
            a.yMax >= yMin && a.yMax <= yMax;
   }
 
+  // returns true if a is completely contained within this BoundRect
+  bool contains(const float x, float y) const {
+    return x >= xMin && x <= xMax && y >= yMin && y <= yMax;
+  }
+
   // returns true if any part of a is within this BoundRect
-  bool intersects(const BoundRect& a) {
+  bool intersects(const BoundRect& a) const {
     return (a.xMin >= xMin && a.xMin <= xMax ||
             a.xMax >= xMin && a.xMax <= xMax) &&
            (a.yMin >= yMin && a.yMin <= yMax ||

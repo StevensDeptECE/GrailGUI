@@ -90,6 +90,7 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
         bml.points[pointOffset++] = shapes[i]->padfX[start[j] + k];
         bml.points[pointOffset++] = shapes[i]->padfY[start[j] + k];
       }
+      #if 0
       if (approxeqpt(bml.points[startOffset], bml.points[startOffset + 1],
                      bml.points[pointOffset - 2], bml.points[pointOffset - 1])) {
         if (bml.points[startOffset] == bml.points[pointOffset - 2] &&
@@ -100,16 +101,17 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
         numDups++;
         bml.segments[segCount].numPoints--;
       }
+      #endif
     }
   }
 
-  cerr << "Removed " << numDups << " final points of polygons\n";
+  //cerr << "Removed " << numDups << " final points of polygons\n";
   bml.blockMapHeader->numPoints -= numDups;
   bml.size -= numDups * 2 * sizeof(float);
   for (auto shape : shapes) SHPDestroyObject(shape);
   SHPClose(shapeHandle);
 
-  cerr << "Exact matches found:" << exactMatch << '\n';
+  //cerr << "Exact matches found:" << exactMatch << '\n';
   return bml;
 }
 

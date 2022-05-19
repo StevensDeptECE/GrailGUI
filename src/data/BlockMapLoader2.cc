@@ -57,6 +57,15 @@ void BlockMapLoader::methodPolygon() {}
 
 void BlockMapLoader::methodPolyline() {}
 
+int32_t BlockMapLoader::getRegionWithin(uint32_t start_index, const BoundRect& r) const {
+   
+  for (uint32_t i = start_index; i < getNumRegions(); i++)
+    if (r.intersects(regions[i].bounds)) {
+      return i;
+    }
+  return -1;
+}
+
 #if 0
 //TODO: test of walking through all points, but since they are float this seems worthless and weird except to test traversal
 uint64_t BlockMapLoader::sum() const {

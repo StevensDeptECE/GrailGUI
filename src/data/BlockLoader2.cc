@@ -9,7 +9,7 @@
 
 BlockLoader::BlockLoader(uint64_t bytes, Type t, uint16_t version)
       : mem(new uint64_t[(getHeaderSize() + (bytes + 7) / 8)]), size(bytes) {
-          std::cerr << "mem=" << mem << std::endl;
+          //std::cerr << "mem=" << mem << std::endl;
     generalHeader = (GeneralHeader*)mem;  // header is the first chunk of bytes
     generalHeader->magic = ((((('!' << 8) + 'B') << 8) + 'L') << 8) +
                            'd';  // magic number for all block loaders

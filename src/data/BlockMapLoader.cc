@@ -86,6 +86,15 @@ BlockMapLoader BlockMapLoader::loadCompressed(const char lzmaFile[]) {
 }
 #endif
 
+int32_t BlockMapLoader::getRegionWithin(uint32_t start_index, const BoundRect& r) const {
+   
+  for (uint32_t i = start_index; i < getNumRegions(); i++)
+    if (r.intersects(regions[i].bounds)) {
+      return i;
+    }
+  return -1;
+}
+
 void BlockMapLoader::save(const char filename[]) {
   int fh = open(filename, O_WRONLY | O_TRUNC | O_CREAT, 0644);
   int bytesWritten = write(fh, (char*)mem, size);

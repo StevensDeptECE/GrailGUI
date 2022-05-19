@@ -103,6 +103,7 @@ class BlockMapLoader : public BlockLoader {
   // TODO: const RegionContainers* getRegionContainers() const { return
   // regionContainers; }
 
+  int32_t getRegionWithin(uint32_t i, const BoundRect& r) const ;
   const Region* getRegions() const { return regions; }
   const Segment* getSegments() const { return segments; }
   // save a fast blockmap file
