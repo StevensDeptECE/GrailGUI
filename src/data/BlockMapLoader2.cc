@@ -7,8 +7,8 @@
 #include <cstdio>
 #include <iostream>
 
-#include "util/PlatFlags.hh"
 #include "util/Ex.hh"
+#include "util/PlatFlags.hh"
 
 using namespace std;
 
@@ -17,9 +17,9 @@ BlockMapLoader BlockMapLoader::loadCompressed(const char lzmaFile[]) {
 }
 
 /*
-  Block Loaders are high-speed binary data. While this is extremely fast, it means
-  that byte order matters.
-  You cannot write this in on an Intel and read in on a big-endian machine
+  Block Loaders are high-speed binary data. While this is extremely fast, it
+  means that byte order matters. You cannot write this in on an Intel and read
+  in on a big-endian machine
 
   float: b1 b2 b3 b4 uint32_t:   b1 b2 b3 b4   b4 b3 b2 b1 b4 b3 b2 b1
   uint64_t:   b1 b2 b3 b4 b5 b6 b7 b8 --> b8 b7 b6 b5 b4 b3 b2 b1
@@ -31,7 +31,8 @@ void BlockMapLoader::save(const char filename[]) {
 }
 
 BlockMapLoader::BlockMapLoader(const char filename[]) : BlockLoader(filename) {
-  blockMapHeader = (BlockMapHeader*)getSpecificHeader(); //((char*)mem + getHeaderSize());
+  blockMapHeader =
+      (BlockMapHeader*)getSpecificHeader();  //((char*)mem + getHeaderSize());
   // TODO: add RegionContainer and NamedEntities
   regionContainers = nullptr;
   regions = (Region*)((char*)blockMapHeader + sizeof(BlockMapHeader));
@@ -67,13 +68,14 @@ uint64_t BlockMapLoader::sum() const {
 }
 #endif
 
-//TODO: test of walking through all points, but since it's weighted towards the number of points it's useless as a practical measure of center anything
+// TODO: test of walking through all points, but since it's weighted towards the
+// number of points it's useless as a practical measure of center anything
 void BlockMapLoader::mean(float* meanx, float* meany) const {
   float xsum = 0, ysum = 0;
   const float* p = points;
   for (uint32_t i = blockMapHeader->numPoints; i > 0; i--) {
-      xsum += *p++;
-      ysum += *p++;
+    xsum += *p++;
+    ysum += *p++;
   }
   *meanx = xsum / blockMapHeader->numPoints;
   *meany = ysum / blockMapHeader->numPoints;

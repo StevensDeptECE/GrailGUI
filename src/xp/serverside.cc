@@ -1,8 +1,8 @@
 #include <array>
-#include <iostream>
-#include <string>
 #include <cstring>
+#include <iostream>
 #include <memory>
+#include <string>
 using namespace std;
 
 enum class Type {
@@ -22,35 +22,25 @@ enum class Type {
   SIZE_OF_TYPES
 };
 
-const char* typenames[] = {
-  "U8",
-  "U16",
-  "U32",
-  "U64",
-  "I8",
-  "I16",
-  "I32",
-  "I64",
-  "F32",
-  "F64",
-  "STRING8",
-  "STRUCT",
-  "LIST"
-};
+const char* typenames[] = {"U8",      "U16",    "U32", "U64", "I8",
+                           "I16",     "I32",    "I64", "F32", "F64",
+                           "STRING8", "STRUCT", "LIST"};
 
 class XDLType {
-private:
-    string name;
-  public:
-    XDLType(const string& name) : name(name) {}
-    string getName() const { return name; }
+ private:
+  string name;
+
+ public:
+  XDLType(const string& name) : name(name) {}
+  string getName() const { return name; }
 };
 
 class U32 : public XDLType {
-  private:
-    uint32_t v;
-  public:
-    U32(uint32_t v) : XDLType("U32"), v(v) {}
+ private:
+  uint32_t v;
+
+ public:
+  U32(uint32_t v) : XDLType("U32"), v(v) {}
 };
 
 uint32_t operator"" _32(const char* s) {
@@ -134,19 +124,19 @@ void writeMeta(char*& buf, double val) {
 class Point {
  public:
   double x, y, z;
-    Point(double x = 0, double y = 0, double z = 0) :  x(x), y(y), z(z) {}
+  Point(double x = 0, double y = 0, double z = 0) : x(x), y(y), z(z) {}
 };
 
 void write(char*& buf, const char name[]) {
   uint32_t len = strlen(name);
-  *buf++ = len; // strings must be <256 chars for this demo
+  *buf++ = len;  // strings must be <256 chars for this demo
   memcpy(buf, name, len);
   buf += len;
 }
 
 void write(char*& buf, const string& name) {
   uint32_t len = name.length();
-  *buf++ = len;// strings must be <256 chars for this demo
+  *buf++ = len;  // strings must be <256 chars for this demo
   memcpy(buf, name.c_str(), len);
   buf += len;
 }
@@ -166,29 +156,27 @@ void writeMeta(char*& buf, Type t, const char name[]) {
 void writeMeta(char*& buf, const Point& p) {
   *buf++ = (char)Type::STRUCT;
   write(buf, "Point");
-  *buf++ = 3; // 3 fields
+  *buf++ = 3;  // 3 fields
   writeMeta(buf, Type::F64, "x");
   writeMeta(buf, Type::F64, "y");
   writeMeta(buf, Type::F64, "z");
 }
 
 class StockQuote {
-  public:
-    uint32_t date;
-    float open, close, high, low;
-    StockQuote(uint32_t date, float open, float close, float high, float low) : date(date), open(open), high(high), low(low) {}
+ public:
+  uint32_t date;
+  float open, close, high, low;
+  StockQuote(uint32_t date, float open, float close, float high, float low)
+      : date(date), open(open), high(high), low(low) {}
 };
 
-void write(char*& buf, const StockQuote& q) {
-
-
-}
+void write(char*& buf, const StockQuote& q) {}
 
 void writeMeta(char*& buf, const StockQuote& q) {
   *buf++ = (char)Type::STRUCT;
   write(buf, "StockQuote");
   *buf++ = 5;
-  writeMeta(buf, Type::U32, "date"); // should be Date!
+  writeMeta(buf, Type::U32, "date");  // should be Date!
   writeMeta(buf, Type::F32, "open");
   writeMeta(buf, Type::F32, "close");
   writeMeta(buf, Type::F32, "high");
@@ -202,50 +190,51 @@ void writeBuf(char*& buf, char*& meta, const Args&... args) {
   (writeMeta(meta, args), ...);
 }
 
-template<typename T>
+template <typename T>
 void writeBoth(char*& buf, char*& meta, const T& v) {
   write(buf, v);
   writeMeta(meta, v);
 }
 
-template<typename T>
+template <typename T>
 class List : public XDLType {
-  private:
-    uint32_t capacity;
-    uint32_t size_;
-    T* data; // quick hack for this MWE, generic list contains block of objects of type T, not optimal
-    void checkGrow() {
-      if (size_ < capacity) {
-        return;
-      }
-      const T* old = data;
-      data = new T[capacity*=2];
-      memcpy(data, old, size_ * sizeof(T));
+ private:
+  uint32_t capacity;
+  uint32_t size_;
+  T* data;  // quick hack for this MWE, generic list contains block of objects
+            // of type T, not optimal
+  void checkGrow() {
+    if (size_ < capacity) {
+      return;
     }
-  public:
-    List(const string& name, uint32_t capacity = 16) : XDLType(name), capacity(capacity), size_(0), data(new T[capacity]){}
-    ~List() { delete [] data; }
-    List(const List& orig) = delete; // don't support copying for this MWE
-    List& operator=(const List& orig) = delete; // don't support copying for this MWE
+    const T* old = data;
+    data = new T[capacity *= 2];
+    memcpy(data, old, size_ * sizeof(T));
+  }
 
-    void add(const T& e) {
-      checkGrow();
-      data[size_++] = e;
-    }
-    const T& operator [](uint32_t i) const {
-      return data[i];
-    }
-    uint32_t size() const { return size_; }
+ public:
+  List(const string& name, uint32_t capacity = 16)
+      : XDLType(name), capacity(capacity), size_(0), data(new T[capacity]) {}
+  ~List() { delete[] data; }
+  List(const List& orig) = delete;  // don't support copying for this MWE
+  List& operator=(const List& orig) =
+      delete;  // don't support copying for this MWE
+
+  void add(const T& e) {
+    checkGrow();
+    data[size_++] = e;
+  }
+  const T& operator[](uint32_t i) const { return data[i]; }
+  uint32_t size() const { return size_; }
 };
 
-template<typename T>
+template <typename T>
 void write(char*& buf, const List<T>& list) {
-  write(buf, uint8_t(list.size())); // only handle lists up to 255 elements
-  for (uint32_t i = 0; i < list.size(); i++)
-    write(buf, list[i]);
+  write(buf, uint8_t(list.size()));  // only handle lists up to 255 elements
+  for (uint32_t i = 0; i < list.size(); i++) write(buf, list[i]);
 }
 
-template<typename T>
+template <typename T>
 void writeMeta(char*& buf, const List<T>& list) {
   *buf++ = (char)Type::LIST;
   write(buf, list.getName());
@@ -290,8 +279,7 @@ void dump(const char msg[], const char buf[], uint32_t len) {
   cout << '\n';
 }
 
-void dumpStr() {
-}
+void dumpStr() {}
 
 // nicer dump of metadata, aware of what the types mean?
 void dumpMeta(const char buf[], uint32_t len) {
@@ -304,9 +292,9 @@ void dumpMeta(const char buf[], uint32_t len) {
       cerr << "Found illegal typecode:" << uint32_t(buf[i]) << ' ';
       continue;
     }
-    switch(Type(buf[i])) {
+    switch (Type(buf[i])) {
       case Type::STRUCT:
- //       dumpString(buf);
+        //       dumpString(buf);
         break;
       case Type::LIST:
         break;
@@ -328,20 +316,14 @@ int main() {
   numbers.add(4);
 
   List<Point> points("fred");
-  for (int i = 0; i < 2; i++)
-    points.add(Point(i,i+1,i+2));
+  for (int i = 0; i < 2; i++) points.add(Point(i, i + 1, i + 2));
 
   char* buf = buffer;
   char* meta = metadata;
 
-  writeBuf(buf, meta,
-           uint32_t(2),
-           uint64_t(123456789012345678ULL),
-           1.5,
-           p,
-           points,
-           numbers);
+  writeBuf(buf, meta, uint32_t(2), uint64_t(123456789012345678ULL), 1.5, p,
+           points, numbers);
 
-  dump("data: ", buffer, buf-buffer);
+  dump("data: ", buffer, buf - buffer);
   dump("metadata: ", metadata, meta - metadata);
 }

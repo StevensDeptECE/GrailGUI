@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 
-#include "util/Benchmark.hh"
 #include "libshape/shapefil.h"
+#include "util/Benchmark.hh"
 
 using namespace std;
 
@@ -53,10 +53,10 @@ void loadESRIShapefile(const char filename[]) {
 }
 
 class PointInfo {
-public:
-	double meanLat, meanLon;
-	uint32_t numPoints;
-	uint32_t numSegments;
+ public:
+  double meanLat, meanLon;
+  uint32_t numPoints;
+  uint32_t numSegments;
 };
 
 // compute the average of lat/lon and extract number of points and segments
@@ -67,7 +67,7 @@ void statsESRI(const char filename[], PointInfo* info) {
 
   uint64_t numPoints = 0;
   uint32_t numSegments = 0;
-	double sumLat = 0, sumLon = 0;
+  double sumLat = 0, sumLon = 0;
   for (int i = 0; i < nEntities; i++) {
     SHPObject* shape = SHPReadObject(shapeHandle, i);
     if (shape == nullptr) {
@@ -76,30 +76,29 @@ void statsESRI(const char filename[], PointInfo* info) {
     }
     numPoints += shape->nVertices;
     numSegments += shape->nParts;
-		int* start = shape->panPartStart;
-		for (uint32_t j = 0; j < shape->nParts-1; j++) {
+    int* start = shape->panPartStart;
+    for (uint32_t j = 0; j < shape->nParts - 1; j++) {
       uint32_t numPointsPerSeg = start[j + 1] - start[j];
       for (uint32_t k = 0; k < numPointsPerSeg; k++) {
-				sumLon += shape->padfX[start[j] + k];
+        sumLon += shape->padfX[start[j] + k];
         sumLat += shape->padfY[start[j] + k];
-			}
-		}
-		// now for the last segment
-		const uint32_t lastStart = start[shape->nParts-1];
-		uint32_t numPointsPerSeg = shape->nVertices - lastStart;
-		for (uint32_t k = 0; k < numPointsPerSeg; k++) {
-			sumLon += shape->padfX[lastStart + k];
-			sumLat += shape->padfY[lastStart + k];
-		}
-		SHPDestroyObject(shape);
-	}
-	info->meanLat = sumLat / numPoints;
-	info->meanLon = sumLon / numPoints;
-	info->numPoints = numPoints;
-	info->numSegments = numSegments;
+      }
+    }
+    // now for the last segment
+    const uint32_t lastStart = start[shape->nParts - 1];
+    uint32_t numPointsPerSeg = shape->nVertices - lastStart;
+    for (uint32_t k = 0; k < numPointsPerSeg; k++) {
+      sumLon += shape->padfX[lastStart + k];
+      sumLat += shape->padfY[lastStart + k];
+    }
+    SHPDestroyObject(shape);
+  }
+  info->meanLat = sumLat / numPoints;
+  info->meanLon = sumLon / numPoints;
+  info->numPoints = numPoints;
+  info->numSegments = numSegments;
   SHPClose(shapeHandle);
 }
-
 
 void loadESRIDBF(const char filename[]) {
   DBFHandle dbf = DBFOpen(filename, "rb");
@@ -117,8 +116,8 @@ void loadESRIDBF(const char filename[]) {
   int SQMI = DBFGetFieldIndex(dbf, "SQMI");  // get index of this field
   for (int i = 0; i < recordCount; i++) {
     cout << DBFReadStringAttribute(dbf, i, 0) << '\t'
-				 << DBFReadStringAttribute(dbf, i, 1) << '\t'
-				 << DBFReadStringAttribute(dbf, i, 2) << '\t'
+         << DBFReadStringAttribute(dbf, i, 1) << '\t'
+         << DBFReadStringAttribute(dbf, i, 2) << '\t'
          << DBFReadStringAttribute(dbf, i, 3) << '\t'
          << DBFReadStringAttribute(dbf, i, 4) << '\t'
          << DBFReadStringAttribute(dbf, i, 5) << '\t'
@@ -152,8 +151,8 @@ void extractESRIDBF(const char filename[], PointInfo* info) {
   int recordCount = DBFGetRecordCount(dbf);
   int SQMI = DBFGetFieldIndex(dbf, "SQMI");  // get index of this field
   for (int i = 0; i < recordCount; i++) {
-		cout << DBFReadStringAttribute(dbf, i, 0) << '\t'
-				 << DBFReadStringAttribute(dbf, i, 2) << '\t'
+    cout << DBFReadStringAttribute(dbf, i, 0) << '\t'
+         << DBFReadStringAttribute(dbf, i, 2) << '\t'
          << DBFReadStringAttribute(dbf, i, 3) << '\t'
          << DBFReadStringAttribute(dbf, i, 4) << '\t'
          << DBFReadStringAttribute(dbf, i, 5) << '\t'
@@ -167,14 +166,14 @@ void extractESRIDBF(const char filename[], PointInfo* info) {
 }
 
 int main() {
-	PointInfo info;
-	const string dir = getenv("GRAIL");
-	const string counties_shp = dir + "/test/res/maps/USA_Counties.shp";
-	//	Benchmark::benchmark(statsESRI, counties_shp, &info);
-	const string counties_dbf = dir + "/test/res/maps/USA_Counties.dbf";
-	//	Benchmark::benchmark(loadESRIDBF, counties_dbf, &info);
-	loadESRIDBF(counties_dbf.c_str());
-	
-// //    string data = buildString(getenv("GRAILDATA"), "/maps/c_10nv20.dbf");
-// //    loadESRIDBF((dir + "USA_Counties.dbf").c_str());
+  PointInfo info;
+  const string dir = getenv("GRAIL");
+  const string counties_shp = dir + "/test/res/maps/USA_Counties.shp";
+  //	Benchmark::benchmark(statsESRI, counties_shp, &info);
+  const string counties_dbf = dir + "/test/res/maps/USA_Counties.dbf";
+  //	Benchmark::benchmark(loadESRIDBF, counties_dbf, &info);
+  loadESRIDBF(counties_dbf.c_str());
+
+  // //    string data = buildString(getenv("GRAILDATA"), "/maps/c_10nv20.dbf");
+  // //    loadESRIDBF((dir + "USA_Counties.dbf").c_str());
 }

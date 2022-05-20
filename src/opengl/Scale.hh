@@ -16,8 +16,8 @@ class Scale {
   // Scale(double scale, double shift) : scale(scale), shift(shift) {}
   Scale() : scale(0), shift(0) {}
   virtual float transform(double x) = 0;
-  virtual void init(double min, double max, double shift,
-                    double axisSize, double tickInterval) = 0;
+  virtual void init(double min, double max, double shift, double axisSize,
+                    double tickInterval) = 0;
   virtual float next(float v) = 0;
 };
 
@@ -25,8 +25,8 @@ class LinearScale : public Scale {
  public:
   // LinearScale(double scale, double shift) : Scale(scale, shift) {}
   float transform(double x) override;
-  void init(double min, double max, double shift,
-            double axisSize, double tickInterval) override;
+  void init(double min, double max, double shift, double axisSize,
+            double tickInterval) override;
   float next(float v) override;
 };
 
@@ -34,7 +34,7 @@ class LogScale : public Scale {
  public:
   // LogarithmicScale(double scale, double shift) : Scale(scale, shift) {}
   float transform(double x) override;
-  void init(double min, double max, double shift,
-            double axisSize, double tickInterval) override;
+  void init(double min, double max, double shift, double axisSize,
+            double tickInterval) override;
   float next(float v) override;
 };

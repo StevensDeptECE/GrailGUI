@@ -15,11 +15,12 @@ class BlockLoader {
   uint64_t* mem;  // hating unique pointers right now
   uint64_t size;
   struct GeneralHeader {
-    uint32_t magic;         // magic number for all block loaders
+    uint32_t magic;    // magic number for all block loaders
     uint16_t type;     // type of block loader
     uint16_t version;  // version
-    static constexpr uint32_t bh = 0x644C4221; // !BLd
-    GeneralHeader(Type type, uint16_t version):magic(bh), type((uint16_t)type), version(version){}
+    static constexpr uint32_t bh = 0x644C4221;  // !BLd
+    GeneralHeader(Type type, uint16_t version)
+        : magic(bh), type((uint16_t)type), version(version) {}
   };
   struct SecurityHeaderV0 {
     uint64_t yoho;  // TODO: put something in
@@ -34,7 +35,7 @@ class BlockLoader {
 
   GeneralHeader* generalHeader;
   SecurityHeaderV0* securityHeader;
-  
+
  protected:
   /*
     TODO: Find better way than uninitialized parent?

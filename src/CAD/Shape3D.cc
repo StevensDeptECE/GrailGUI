@@ -25,25 +25,31 @@
 //   glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*)0);
 
 //   //Create SBO
-//   //Create an object to hold the order at which the vertices are drawn(from indices)
+//   //Create an object to hold the order at which the vertices are drawn(from
+//   indices)
 //   //in order to draw it as a solid(filled)
 //   glGenBuffers(1,&sbo);
 //   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,sbo);
-//   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*solidIndices.size(),&solidIndices[0],GL_STATIC_DRAW);
+//   glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+//   sizeof(GLuint)*solidIndices.size(),&solidIndices[0],GL_STATIC_DRAW);
 
 //   //Create LBO
-//   //Create an object to hold the order at which the vertices are drawn(from indices)
+//   //Create an object to hold the order at which the vertices are drawn(from
+//   indices)
 //   //in order to draw it as lines(wireframe)
 //   glGenBuffers(1,&lbo);
 //   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,lbo);
-//   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*lineIndices.size(),&lineIndices[0],GL_STATIC_DRAW);
+//   glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+//   sizeof(GLuint)*lineIndices.size(),&lineIndices[0],GL_STATIC_DRAW);
 
 //   //Create PBO
-//   //Create an object to hold the order at which the vertices are drawn(from indices)
+//   //Create an object to hold the order at which the vertices are drawn(from
+//   indices)
 //   //in order to draw it as points.
 //   glGenBuffers(1,&pbo);
 //   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,pbo);
-//   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*pointIndices.size(),&pointIndices[0],GL_STATIC_DRAW);
+//   glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+//   sizeof(GLuint)*pointIndices.size(),&pointIndices[0],GL_STATIC_DRAW);
 
 //   //Create CBO if exists
 //   //Create an object that will hold the rgb information per vertex if

@@ -15,15 +15,18 @@ class BoxChartWidget : public GraphWidget {
   double boxWidth;
 
  public:
- //c, 300, 300, 400, 200, GraphWidget::AxisType::TEXT, GraphWidget::AxisType::LINEAR, this);
-  BoxChartWidget(Canvas* c, float x, float y, float w, float h, AxisType xAxisType, AxisType yAxisType, const GraphStyle* s)
-      : GraphWidget(c, x, y, w, h, DISCRETE_PERMITTED, FUNCTIONS_PERMITTED, xAxisType, yAxisType, s),
+  // c, 300, 300, 400, 200, GraphWidget::AxisType::TEXT,
+  // GraphWidget::AxisType::LINEAR, this);
+  BoxChartWidget(Canvas* c, float x, float y, float w, float h,
+                 AxisType xAxisType, AxisType yAxisType, const GraphStyle* s)
+      : GraphWidget(c, x, y, w, h, DISCRETE_PERMITTED, FUNCTIONS_PERMITTED,
+                    xAxisType, yAxisType, s),
         data(std::vector<double>()),
         names(std::vector<std::string>()),
         boxWidth(20),
         pointsPerBox(3) {
-          setStyle(s);
-        }
+    setStyle(s);
+  }
 
   void setBoxWidth(double width);
   void setPointsPerBox(int n);

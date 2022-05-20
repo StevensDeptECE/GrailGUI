@@ -15,11 +15,10 @@ class PopupMenu : public Widget2D {
   PopupMenu(StyledMultiShape2D* m, MultiText* t, Font* f, float x, float y,
             float w, float h)
       : Widget2D(m, t, x, y, w, h), menuItems(16), menuFont(f) {}
-  
-  
-  PopupMenu(StyledMultiShape2D* m, MultiText* t, const Font* f,
-   float x, float y,
-            float w, float h, const std::string menuItems[], uint32_t len)
+
+  PopupMenu(StyledMultiShape2D* m, MultiText* t, const Font* f, float x,
+            float y, float w, float h, const std::string menuItems[],
+            uint32_t len)
       : Widget2D(m, t, x, y, w, h), menuItems(len), menuFont(f) {
     for (uint32_t i = 0; i < len; i++) {
       this->menuItems.add(menuItems[i]);

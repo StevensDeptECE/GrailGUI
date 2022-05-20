@@ -8,17 +8,17 @@ using namespace std;
 
 GraphWidget::GraphWidget(Canvas* c, double x, double y, double w, double h,
                          uint32_t allowedXAxis, uint32_t allowedYAxis,
-                         AxisType xAxisType, AxisType yAxisType, const GraphStyle* s)
+                         AxisType xAxisType, AxisType yAxisType,
+                         const GraphStyle* s)
     : SuperWidget2D(c, x, y, w, h),
       allowedXAxis(allowedXAxis),
       allowedYAxis(allowedYAxis),
-      s(s)
- {
-   xAxis = nullptr;
-   createXAxis(xAxisType);
-   yAxis = nullptr;
-   createYAxis(yAxisType);
- }
+      s(s) {
+  xAxis = nullptr;
+  createXAxis(xAxisType);
+  yAxis = nullptr;
+  createYAxis(yAxisType);
+}
 
 GraphWidget::~GraphWidget() {
   // TODO: ccls no like this for some reason, claims that AxisWidget is abstract
@@ -38,7 +38,8 @@ AxisWidget* GraphWidget::createAxis(uint32_t allowed, AxisType typ,
   double axisX, axisY, axisW, axisH;
 
   if (isVert) {
-    mnew = new StyledMultiShape2D(c, &s->yAxisStyle, numbers::pi / 2, x - w, y + h);
+    mnew = new StyledMultiShape2D(c, &s->yAxisStyle, numbers::pi / 2, x - w,
+                                  y + h);
     tnew = new MultiText(c, &s->yAxisTextStyle, 0, x, y);
     axisX = 0;
     axisY = 0;
@@ -80,15 +81,15 @@ AxisWidget* GraphWidget::createAxis(uint32_t allowed, AxisType typ,
 
 void GraphWidget::createXAxis(AxisType typ) {
   delete xAxis;
-  xAxis = createAxis(allowedXAxis, typ, &s->xAxisStyle, &s->xAxisTextStyle, false,
-                     xAxisType);
+  xAxis = createAxis(allowedXAxis, typ, &s->xAxisStyle, &s->xAxisTextStyle,
+                     false, xAxisType);
 }
 
 void GraphWidget::createYAxis(AxisType typ) {
   delete yAxis;
-  yAxis = createAxis(allowedYAxis, typ, &s->yAxisStyle, &s->yAxisTextStyle, true,
-                     yAxisType);
-	yAxis->setIsVert(true);
+  yAxis = createAxis(allowedYAxis, typ, &s->yAxisStyle, &s->yAxisTextStyle,
+                     true, yAxisType);
+  yAxis->setIsVert(true);
 }
 
 void GraphWidget::commonRender() {
@@ -97,8 +98,8 @@ void GraphWidget::commonRender() {
   MultiText* t = c->addLayer(new MultiText(c, &s->baseStyle));
   const Font* titleFont = s->titleStyle.f;
   if (graphTitle.size())
-    t->addCentered(x + w / 2, y - titleFont->getHeight(),
-                   titleFont, graphTitle.c_str(), graphTitle.size());
+    t->addCentered(x + w / 2, y - titleFont->getHeight(), titleFont,
+                   graphTitle.c_str(), graphTitle.size());
 
   m->drawLine(x, y, x + w, y, s->baseStyle.fg);
   m->drawLine(x + w, y, x + w, y + h, s->baseStyle.fg);
@@ -109,12 +110,12 @@ void GraphWidget::commonRender() {
 void GraphWidget::setGraphTitle(const std::string& text) { graphTitle = text; }
 
 void GraphWidget::setStyle(const GraphStyle* s) {
-	xAxis->setTickDrawSize(s->xTickDrawSize);
-	yAxis->setTickDrawSize(s->yTickDrawSize);
-	xAxis->setAxisColor(grail::green);
-	xAxis->setTickColor(grail::purple);
-	yAxis->setIsVert(true);
-	yAxis->setShowTicks(true);
-	yAxis->setAxisColor(grail::yellow);
+  xAxis->setTickDrawSize(s->xTickDrawSize);
+  yAxis->setTickDrawSize(s->yTickDrawSize);
+  xAxis->setAxisColor(grail::green);
+  xAxis->setTickColor(grail::purple);
+  yAxis->setIsVert(true);
+  yAxis->setShowTicks(true);
+  yAxis->setAxisColor(grail::yellow);
   yAxis->setTickColor(grail::red);
 }

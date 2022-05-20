@@ -9,16 +9,13 @@ void PositionTool::init() {
   }
 }
 
-void PositionTool::addNewCord( float newX,float newY,float newR) {
+void PositionTool::addNewCord(float newX, float newY, float newR) {
   xCord.push_back(newX);
   yCord.push_back(newY);
   radius.push_back(newR);
 }
 
-void PositionTool::update(float newX,float newY, uint32_t position) {
-  
-    xCord.at(position) = newX;
-    yCord.at(position) = newY;
-  
-  
+void PositionTool::update(float newX, float newY, uint32_t position) {
+  xCord.at(position) = newX;
+  yCord.at(position) = newY;
 }

@@ -1,21 +1,17 @@
 #pragma once
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include "data/BlockLoader2.hh"
 #include <cstring>
+#include <iostream>
+#include <string>
+#include <vector>
 
+#include "data/BlockLoader2.hh"
 
-//constexpr float NaN = 0xffffffff;
+// constexpr float NaN = 0xffffffff;
 
-class GapMinderExtra : public BlockLoader{
-public:
+class GapMinderExtra : public BlockLoader {
+ public:
+  GapMinderExtra() {}
 
-  GapMinderExtra(){}
-
-  std::vector <int> getContinents();
-  
+  std::vector<int> getContinents();
 };
-
-
