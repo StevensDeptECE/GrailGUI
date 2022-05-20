@@ -1,10 +1,9 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
-
 #include "opengl/GrailGUI.hh"
 using namespace std;
 
-class TestText3 : public GLWin {
+class TestText3 : public Member {
  public:
   void numericFormatting(MultiText* m, const Font* f, float y) {
     m->add(10, y, f, 123);
@@ -15,7 +14,8 @@ class TestText3 : public GLWin {
     y += 20;
     m->addHex0(10, y, f, 0x0034ABCD);
     m->addHex0(150, y, f, 0xABCDEF12);
-    m->addHex0(300, y, f, 0xABCDEF1234567890ULL);
+    //TODO: uint64_t conversion is broken on Windows? so we won't do it for now.
+    //m->addHex0(300, y, f, 0xABCDEF1234567890ULL);
     m->addHex0(550, y, f, uint64_t(0xABCDEF1234567890ULL));
     m->addHex0(800, y, f, uint8_t(0xFF));
     m->addHex0(900, y, f, uint16_t(0xBEEF));
@@ -47,14 +47,14 @@ class TestText3 : public GLWin {
     return yStart + 50;
   }
 
-  void init() {
-    Canvas* c = currentTab()->getMainCanvas();
+  TestText3(Tab* tab) : Member(tab, 0, 0.1) {
+    Canvas* c = tab->getMainCanvas();
+    uint32_t width = c->getWidth(), height = c->getHeight();
+
     const Font* f = FontFace::get("TIMES", 16, FontFace::BOLD);
 
     Style* s = new Style(f, 0, 0, 0, 0, .2, 0.9, GLWin::TEXT_SHADER);
 
-    //    const Font* f = getDefaultFont();
-    //		s->setShaderIndex(GLWin::TEXT_SHADER);
     StyledMultiShape2D* ms = c->addLayer(new StyledMultiShape2D(c, s));
     ms->fillRectangle(10, 10, width - 20, height - 20, grail::black);
     cout << width << "," << height << '\n';
@@ -71,6 +71,7 @@ class TestText3 : public GLWin {
   }
 };
 
-int main(int argc, char* argv[]) {
-  return GLWin::init(new TestText3(), 1600, 1024);
+void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+  w->setTitle("Test Text3");
+  new TestText3(defaultTab);
 }

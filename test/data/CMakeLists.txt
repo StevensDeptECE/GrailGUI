@@ -1,6 +1,0 @@
-add_grail_executable(SRC testLoadFromESRI.cc LIBS grail)
-add_grail_executable(SRC convertESRItoBlockLoader.cc LIBS grail)
-add_grail_executable(SRC testFastMapLoad.cc LIBS grail)
-add_grail_executable(SRC testGapMinderWidget.cc LIBS grail)
-#add_grail_executable(SRC testGapMinder.cc LIBS grail)
-add_grail_executable(SRC loadESRIShapefile.cc LIBS grail)

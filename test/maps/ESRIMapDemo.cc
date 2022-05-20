@@ -3,7 +3,7 @@
 
 #include "opengl/GrailGUI.hh"
 #include "opengl/Shapefile.hh"
-#include "util/Timers.hh"
+#include "util/Timers.hh" // TODO: Fix the timer stuff going on here. The closest equivalent is util/Benchmark.hh
 
 using namespace std;
 using namespace grail;
