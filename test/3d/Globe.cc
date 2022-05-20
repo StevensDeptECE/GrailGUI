@@ -27,6 +27,6 @@ class Globe : public Member {
 };
 
 void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
-  w->setTitle("Solar System");
+  w->setTitle("Globe");
   new Globe(defaultTab);
 }
