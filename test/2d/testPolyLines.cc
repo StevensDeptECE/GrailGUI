@@ -19,10 +19,8 @@ class TestPolyLines : public GLWin {
 
     float xy3[] = {200, 500, 400, 500, 200, 600};
     gui->drawPolygon(xy3, 3, green);
-    //gui->dump();
+    // gui->dump();
   }
 };
 
-int main(int argc, char* argv[]) {
-  return GLWin::init(new TestPolyLines());
-}
+int main(int argc, char* argv[]) { return GLWin::init(new TestPolyLines()); }

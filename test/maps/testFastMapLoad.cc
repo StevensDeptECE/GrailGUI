@@ -27,11 +27,10 @@ int main(int argc, char* argv[]) {
   float meanx, meany;
   bml.mean(&meanx, &meany);
 
-
-  CBenchmark<>::benchmarkNoCache("BML load", 1e2, [&]() {
-    loadFromBMLTest((grail + shapefilename).c_str());
-  },true);
-  CBenchmark<>::benchmarkNoCache("BML mean", 1e2, [&]() {
-    BMLLoadMeanTest((grail + shapefilename).c_str());
-  },true);
+  CBenchmark<>::benchmarkNoCache(
+      "BML load", 1e2,
+      [&]() { loadFromBMLTest((grail + shapefilename).c_str()); }, true);
+  CBenchmark<>::benchmarkNoCache(
+      "BML mean", 1e2,
+      [&]() { BMLLoadMeanTest((grail + shapefilename).c_str()); }, true);
 }

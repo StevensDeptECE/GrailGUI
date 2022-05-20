@@ -11,7 +11,6 @@
 
 #include "opengl/GrailGUI.hh"
 
-
 class Vector3D {
  public:
   double x;
@@ -348,7 +347,8 @@ class NASAEphemerisSolarSystem {
     }
   }
 
-  friend std::ostream& operator<<(std::ostream& s, const NASAEphemerisSolarSystem& Sol) {
+  friend std::ostream& operator<<(std::ostream& s,
+                                  const NASAEphemerisSolarSystem& Sol) {
     for (auto b : Sol.bodies) {
       s << " " << *b << " ";
     }

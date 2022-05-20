@@ -1,16 +1,17 @@
-#include "opengl/GrailGUI.hh"
 #include "CAD/Triangle.hh"
+#include "opengl/GrailGUI.hh"
 using namespace std;
 using namespace grail;
 
 class TestTriangle : public Member {
  public:
-  TestTriangle(Tab* tab) : Member(tab, 0,0) {}
+  TestTriangle(Tab* tab) : Member(tab, 0, 0) {}
 
   void init() {
     MainCanvas* c = tab->getMainCanvas();
     const Style* s = tab->getDefaultStyle();
-    Triangle* trr = c->addLayer(new Triangle(c, 300, 200, 500, 500, 700, 400, s));   
+    Triangle* trr =
+        c->addLayer(new Triangle(c, 300, 200, 500, 500, 700, 400, s));
   }
 };
 

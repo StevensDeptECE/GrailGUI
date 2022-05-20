@@ -10,5 +10,4 @@ int main(int argc, char* argv[]) {
 
   grail += argc > 1 ? (argv[1]) : "";
   GapMinderBinaryDB db(grail.c_str());
-  
 }

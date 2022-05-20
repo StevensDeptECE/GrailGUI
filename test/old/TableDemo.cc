@@ -1,11 +1,12 @@
-#include <iostream>
+#include <algorithm>
 #include <fstream>
+#include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <algorithm>
-#include <sstream>
-#include "opengl/TableWidget.hh"
+
 #include "opengl/GrailGUI.hh"
+#include "opengl/TableWidget.hh"
 using namespace std;
 using namespace grail;
 
@@ -25,27 +26,25 @@ class TestMultiShape : public GLWin {
     int tH = 4;
     int tW = 5;
 
-    TableWidget a(gui,guiText,x,y,w,h,tH,tW);
+    TableWidget a(gui, guiText, x, y, w, h, tH, tW);
     a.init();
-/*
-    gui->drawRectangle(x,y,w,h,black);
+    /*
+        gui->drawRectangle(x,y,w,h,black);
 
-    if(tH > 0){
-      for(int i = 1; i < tH; i++){
-        gui->drawLine(x,(i*(y/tH))+h,x+w,(i*(y/tH))+h,black);
-      }
-    }
+        if(tH > 0){
+          for(int i = 1; i < tH; i++){
+            gui->drawLine(x,(i*(y/tH))+h,x+w,(i*(y/tH))+h,black);
+          }
+        }
 
-    if(tW > 0){
-      for(int i = 1; i < tW; i++){ 
-        gui->drawLine(i*(x/tW)+w,y,i*(x/tW)+w,y+h,black);
-      }
-    }
+        if(tW > 0){
+          for(int i = 1; i < tW; i++){
+            gui->drawLine(i*(x/tW)+w,y,i*(x/tW)+w,y+h,black);
+          }
+        }
 
-*/
+    */
   }
 };
 
-int main(int argc, char* argv[]) {
-  return GLWin::init(new TestMultiShape());
-}
+int main(int argc, char* argv[]) { return GLWin::init(new TestMultiShape()); }

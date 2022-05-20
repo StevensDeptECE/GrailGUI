@@ -3,17 +3,16 @@ using namespace std;
 using namespace grail;
 
 class LuisaDemo : public GLWin {
-public:
-	LuisaDemo() :
-		GLWin(0x000000, 0xCCCCCC, "Luisa Demo") {}
-	void init() {
-		MainCanvas* c = currentTab()->getMainCanvas();
-		StyledMultiShape2D* gui = c->getGui();
+ public:
+  LuisaDemo() : GLWin(0x000000, 0xCCCCCC, "Luisa Demo") {}
+  void init() {
+    MainCanvas* c = currentTab()->getMainCanvas();
+    StyledMultiShape2D* gui = c->getGui();
 
-		const float boxSize = 100;
-		const float drawSize = 90;
+    const float boxSize = 100;
+    const float drawSize = 90;
 
-    #if 0
+#if 0
 		gui->drawRectangle(0, 400, drawSize, drawSize, green);
 		gui->drawPolygon(boxSize * 1, 400, drawSize, drawSize, 5, blue);
 		gui->drawPolygon(boxSize * 2, 400, drawSize, drawSize, 6, blue);
@@ -51,13 +50,13 @@ public:
 		points.push_back(600);
 		points.push_back(550);
 		gui->spline(points, 100, purple);
-    #endif
+#endif
 
     gui->fillPolygon(boxSize * 1, boxSize, drawSize, drawSize, 7, yellow);
-		gui->fillCircle(boxSize , boxSize * 1.5, drawSize / 2, 5, black);
-	}
+    gui->fillCircle(boxSize, boxSize * 1.5, drawSize / 2, 5, black);
+  }
 };
 
-int main(int argc, char *argv[]) {
-	return GLWin::init(new LuisaDemo(),500,500);
+int main(int argc, char* argv[]) {
+  return GLWin::init(new LuisaDemo(), 500, 500);
 }

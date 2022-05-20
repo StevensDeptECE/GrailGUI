@@ -1,11 +1,11 @@
 #include "grail/Grail.hh"
-#include "openglColors.hh"
-#include "opengl/util/Transformation.hh"
 #include "opengl/GLMath.hh"
+#include "opengl/util/Transformation.hh"
+#include "openglColors.hh"
 using namespace std;
 
 class TestDemo3D : public GLWin {
-private:
+ private:
   Camera* cam;
   Transformation tEarth;
   Transformation tMoon;
@@ -19,16 +19,17 @@ private:
   float t;
   float dt;
   static constexpr float s = 0.3;
- public:
 
+ public:
   ~TestDemo3D() { delete cam; }
 
-  static void forewardFly(GLWin* w) { 
+  static void forewardFly(GLWin* w) {
     TestDemo3D* d = (TestDemo3D*)(w);
-    d->shipx-=s, d->shipy+=s, d->shipz+=s; }
+    d->shipx -= s, d->shipy += s, d->shipz += s;
+  }
   static void backFly(GLWin* w) {
     TestDemo3D* d = (TestDemo3D*)(w);
-    d->shipx+=s, d->shipy-=s, d->shipz-=s;
+    d->shipx += s, d->shipy -= s, d->shipz -= s;
   }
 
   static void lookUp(GLWin* w) {
@@ -64,13 +65,15 @@ private:
         c->addLayer(new MultiShape3D(s, cam, "textures/moon.jpg", &tMoon));
     moon->genOBJModel("models/moon.obj");
 
-    MultiShape3D* ship = c->addLayer(new MultiShape3D(s, cam, "textures/starship.jpg", &tShip));
+    MultiShape3D* ship =
+        c->addLayer(new MultiShape3D(s, cam, "textures/starship.jpg", &tShip));
     ship->genOBJModel("models/starship.obj");
     shipx = 10, shipy = 4, shipz = 0;
 
     tSky.ident();
-    tSky.translate(0,0,-10);
-    MultiShape3D* sky = c->addLayer(new MultiShape3D(s, cam, "textures/sky1.jpg", &tSky));
+    tSky.translate(0, 0, -10);
+    MultiShape3D* sky =
+        c->addLayer(new MultiShape3D(s, cam, "textures/sky1.jpg", &tSky));
     sky->genOBJModel("models/spacesky.obj");
 
     // Arrow keys move ship, wasd look camera around
@@ -90,7 +93,7 @@ private:
   }
   void update() {
     tEarth.ident();
-    tEarth.rotate(23.5*DEG2RAD<float>, 0,0,1);
+    tEarth.rotate(23.5 * DEG2RAD<float>, 0, 0, 1);
     tEarth.rotate(earthRot * t, 0, 1, 0);
     tEarth.scale(2);
 

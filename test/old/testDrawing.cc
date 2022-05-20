@@ -1,5 +1,6 @@
-#include "opengl/GrailGUI.hh"
 #include <cmath>
+
+#include "opengl/GrailGUI.hh"
 
 //#include "grail/BarGraph.hh"
 //#include "grail/Grail.hh"

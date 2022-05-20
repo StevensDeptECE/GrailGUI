@@ -1,7 +1,8 @@
-#include "grail/Grail.hh"
-#include "ActionListener.hh"
-#include "opengl/Cursor.hh"
 #include <iostream>
+
+#include "ActionListener.hh"
+#include "grail/Grail.hh"
+#include "opengl/Cursor.hh"
 
 using namespace std;
 
@@ -14,25 +15,26 @@ void mouse_clicked_callback(ActionListener::MouseEvent e) {
   static MultiShape2D *ms = c->addLayer(new MultiShape2D(g->getDefaultStyle()));
 
   switch (e.type) {
-  case ActionListener::MouseType::PRESSED:
-    switch (e.data) {
-    case ActionListener::MouseData::LEFT:
-      x1 = Cursor::getXPos(0);
-      y1 = Cursor::getYPos(0);
+    case ActionListener::MouseType::PRESSED:
+      switch (e.data) {
+        case ActionListener::MouseData::LEFT:
+          x1 = Cursor::getXPos(0);
+          y1 = Cursor::getYPos(0);
+          break;
+      }
       break;
-    }
-    break;
-  case ActionListener::MouseType::RELEASED:
-    switch (e.data) {
-    case ActionListener::MouseData::LEFT:
-      x2 = Cursor::getXPos(0);
-      y2 = Cursor::getYPos(0);
-      ms->drawRectangle(x1, y1, x2-x1, y2-y1);
-      c->init();
-      cout << "Drawing rectangle at: (" << x1 << ", " << y1 << "), (" << x2 << ", " << y2 << ")" << endl;
+    case ActionListener::MouseType::RELEASED:
+      switch (e.data) {
+        case ActionListener::MouseData::LEFT:
+          x2 = Cursor::getXPos(0);
+          y2 = Cursor::getYPos(0);
+          ms->drawRectangle(x1, y1, x2 - x1, y2 - y1);
+          c->init();
+          cout << "Drawing rectangle at: (" << x1 << ", " << y1 << "), (" << x2
+               << ", " << y2 << ")" << endl;
+          break;
+      }
       break;
-    }
-    break;
   }
 }
 
@@ -47,7 +49,7 @@ int main(int argc, char *argv[]) {
   try {
     Grail::init(1024, 1024, init, nullptr, "out.cml");
     delete a;
-  } catch (const char* msg) {
+  } catch (const char *msg) {
     cerr << msg << endl;
   }
   return 0;

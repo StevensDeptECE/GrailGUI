@@ -159,7 +159,8 @@ int main() {
   CBenchmark<>::benchmark("stats", 1,
                           std::bind(statsESRI, counties_shp.c_str(), &info));
   const string counties_dbf = dir + "/test/res/maps/USA_Counties.dbf";
-  CBenchmark<>::benchmark("names", 10, std::bind(loadESRIDBF, counties_dbf, &info));
+  CBenchmark<>::benchmark("names", 10,
+                          std::bind(loadESRIDBF, counties_dbf, &info));
   string countyNameInfo;
 #if 0
   CBenchmark<>::benchmark(

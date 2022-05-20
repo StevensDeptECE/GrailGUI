@@ -6,10 +6,8 @@ class SimpleDemo : public GLWin {
   void init() {
     MainCanvas* c = currentTab()->getMainCanvas();
     StyledMultiShape2D* gui = c->getGui();
-    c->addButton("test", 0,0, 600, 100);
+    c->addButton("test", 0, 0, 600, 100);
   }
 };
 
-int main(int argc, char* argv[]) {
-  return GLWin::init(new SimpleDemo());
-}
+int main(int argc, char* argv[]) { return GLWin::init(new SimpleDemo()); }

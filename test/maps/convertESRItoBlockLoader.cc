@@ -23,5 +23,4 @@ int main(int argc, char **argv) {
   if (seg >= 0) bml.dumpSegment(seg);
   shapefile = getFile("/test/res/maps/", "uscounties.bml", 0, nullptr);
   bml.save(shapefile.c_str());
-
 }

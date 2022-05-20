@@ -5,12 +5,11 @@ using namespace std;
 using namespace grail;
 
 /*
-  Demonstration of the old way to create a grail graphical program, by subclassing GLWin.
-  This is no longer the best way
-  In this case we load an image and display it in the window
+  Demonstration of the old way to create a grail graphical program, by
+  subclassing GLWin. This is no longer the best way In this case we load an
+  image and display it in the window
 */
 class TestImage : public GLWin {
-
  public:
   TestImage() : GLWin(0x000000, 0xCCCCCC, "TestImage") {}
 

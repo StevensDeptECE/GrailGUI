@@ -1,34 +1,29 @@
 #pragma once
 
-#include <thread>
-#include <iostream>
-#include <unordered_map>
 #include <unistd.h>
+
+#include <iostream>
+#include <thread>
+#include <unordered_map>
+
 #include "../src/input/linux/Inputs.hh"
 class ActionListener {
-public:
+ public:
   /* Used with registerCallback() */
-  enum Events {
-    MOUSE
-  };
+  enum Events { MOUSE };
 
   /* MouseEvent identifiers */
-  enum class MouseData {
-    LEFT, RIGHT, MIDDLE
-  };
+  enum class MouseData { LEFT, RIGHT, MIDDLE };
 
-  enum class MouseType {
-    PRESSED, RELEASED, ENTERED, EXITED, CLICKED
-  };
+  enum class MouseType { PRESSED, RELEASED, ENTERED, EXITED, CLICKED };
 
   struct MouseEvent {
     MouseType type;
     MouseData data;
-    MouseEvent(MouseType t, MouseData d) : type(t), data(d)
-    {}
+    MouseEvent(MouseType t, MouseData d) : type(t), data(d) {}
   };
 
-private:
+ private:
   static Inputs *i;
   static std::thread t;
   static int die;
@@ -37,15 +32,11 @@ private:
     int left, right, middle;
     int id;
     void (*f)(MouseEvent e);
-    Mouse() {
-      std::cout << "Default constructor called\n";
-    }
-    Mouse(void (*f)(MouseEvent e)) : f(f) {
-      left = right = middle = 0;
-    }
+    Mouse() { std::cout << "Default constructor called\n"; }
+    Mouse(void (*f)(MouseEvent e)) : f(f) { left = right = middle = 0; }
   };
 
-  static std::unordered_map<int, Mouse*> mice;
+  static std::unordered_map<int, Mouse *> mice;
 
   static void listen(int id) {
     while (!die) {
@@ -72,15 +63,15 @@ private:
         else
           mice[id]->f(MouseEvent(MouseType::RELEASED, MouseData::MIDDLE));
       }
-      
+
       mice[id]->left = left;
       mice[id]->right = right;
       mice[id]->middle = middle;
       usleep(50);
     }
   }
-public:
 
+ public:
   ActionListener(Inputs *i) {
     ActionListener::i = i;
     ActionListener::die = 0;
@@ -92,9 +83,9 @@ public:
     t.join();
   }
 
-  void registerCallback(Events e, int id, void(*f)(MouseEvent e)) {
+  void registerCallback(Events e, int id, void (*f)(MouseEvent e)) {
     switch (e) {
-    case Events::MOUSE:
+      case Events::MOUSE:
         mice[id] = new Mouse(f);
         t = std::thread(listen, id);
     }

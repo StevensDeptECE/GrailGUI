@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
+
 #include "opengl/GrailGUI.hh"
 using namespace std;
 
@@ -14,8 +15,8 @@ class TestText3 : public Member {
     y += 20;
     m->addHex0(10, y, f, 0x0034ABCD);
     m->addHex0(150, y, f, 0xABCDEF12);
-    //TODO: uint64_t conversion is broken on Windows? so we won't do it for now.
-    //m->addHex0(300, y, f, 0xABCDEF1234567890ULL);
+    // TODO: uint64_t conversion is broken on Windows? so we won't do it for
+    // now. m->addHex0(300, y, f, 0xABCDEF1234567890ULL);
     m->addHex0(550, y, f, uint64_t(0xABCDEF1234567890ULL));
     m->addHex0(800, y, f, uint8_t(0xFF));
     m->addHex0(900, y, f, uint16_t(0xBEEF));

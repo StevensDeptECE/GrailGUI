@@ -1,9 +1,11 @@
 #include <unistd.h>
-#include "opengl/GrailGUI.hh"
-#include "CAD/Cylinder.hh"
-#include "opengl/util/Camera.hh"
-#include "CAD/Transformation.hh"
+
 #include <numbers>
+
+#include "CAD/Cylinder.hh"
+#include "CAD/Transformation.hh"
+#include "opengl/GrailGUI.hh"
+#include "opengl/util/Camera.hh"
 
 using namespace std;
 using namespace grail;
@@ -22,24 +24,24 @@ using namespace std::numbers;
 // }
 
 class TestCylinder : public Member {
-    public:
-    TestCylinder(Tab* tab) : Member(tab, 0, 0) {
-        MainCanvas* c = tab->getMainCanvas();
-        Camera* cam = c->setLookAtProjection(0, 0, 30, 0, 0, 0, 0, 1, 0);
-        c->setProjection(cam->getViewProjection());
-        
-        const Style* s = tab->getDefaultStyle();
-        // Cylinder* cyl = ;
-        // c->addLayer(cyl);
-        Transformation* rotate = new Transformation(c, s, new Cylinder(c, s, 4, 60, 60, 0, 1, 200));
-        rotate->rotate(pi/3, 0, 2, 0);
-        //rotate->translate(5, 4, 3);
-        c->addLayer(rotate);    
+ public:
+  TestCylinder(Tab* tab) : Member(tab, 0, 0) {
+    MainCanvas* c = tab->getMainCanvas();
+    Camera* cam = c->setLookAtProjection(0, 0, 30, 0, 0, 0, 0, 1, 0);
+    c->setProjection(cam->getViewProjection());
+
+    const Style* s = tab->getDefaultStyle();
+    // Cylinder* cyl = ;
+    // c->addLayer(cyl);
+    Transformation* rotate =
+        new Transformation(c, s, new Cylinder(c, s, 4, 60, 60, 0, 1, 200));
+    rotate->rotate(pi / 3, 0, 2, 0);
+    // rotate->translate(5, 4, 3);
+    c->addLayer(rotate);
   }
 };
 
-
-void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab){
+void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
   w->setTitle("Cylinder Test");
   new TestCylinder(defaultTab);
 }

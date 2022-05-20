@@ -19,21 +19,13 @@ constexpr uint32_t test_format(C destBuf, T fmt_val) {
   return destBuf.size();  // size of the formatted data
 }
 
-uint32_t formatspf(char data[33], float f) {
-  return sprintf(data, "%f", f);
-}
+uint32_t formatspf(char data[33], float f) { return sprintf(data, "%f", f); }
 
-int32_t formatspf(char data[33], double f) {
-  return sprintf(data, "%lf", f);
-}
+int32_t formatspf(char data[33], double f) { return sprintf(data, "%lf", f); }
 
-uint32_t formatspf(char data[33], int f) {
-  return sprintf(data, "%d", f);
-}
+uint32_t formatspf(char data[33], int f) { return sprintf(data, "%d", f); }
 
-uint32_t formatspf(char data[33], uint32_t f) {
-  return sprintf(data, "%u", f);
-}
+uint32_t formatspf(char data[33], uint32_t f) { return sprintf(data, "%u", f); }
 
 uint32_t formatspf(char data[33], uint64_t f) {
   return sprintf(data, "%lu", f);
@@ -306,8 +298,9 @@ constexpr void testboth(T data) {
   vector<char> out(33);
   constexpr uint64_t n = 1000000;
   CBenchmark<>::benchmark("fmtlib format", n,
-                        bind(test_format<vector<char>, T>, out, data));
-  CBenchmark<>::benchmark("sprintf format", n, bind(test_sprintf<T>, dest, data));
+                          bind(test_format<vector<char>, T>, out, data));
+  CBenchmark<>::benchmark("sprintf format", n,
+                          bind(test_sprintf<T>, dest, data));
   CBenchmark<>::benchmark("Grail float", n, bind(_formatgrl5<T>, dest, data));
   print("{}\n", data);
 }
@@ -321,16 +314,17 @@ constexpr void testAll(T data) {
   constexpr uint64_t n = 1000000;
 
   CBenchmark<>::benchmark("fmtlib format", n,
-                        bind(test_format<vector<char>, T>, out, data));
-  CBenchmark<>::benchmark("sprintf format", n, bind(test_sprintf<T>, dest, data));
+                          bind(test_format<vector<char>, T>, out, data));
+  CBenchmark<>::benchmark("sprintf format", n,
+                          bind(test_sprintf<T>, dest, data));
   CBenchmark<>::benchmark("grail format RtoL 1 char", n,
-                        bind(_formatgrl<T>, dest, data));
+                          bind(_formatgrl<T>, dest, data));
   CBenchmark<>::benchmark("grail format RtoL 2 char", n,
-                        bind(_formatgrl2<T>, dest, data));
+                          bind(_formatgrl2<T>, dest, data));
   CBenchmark<>::benchmark("grail format RtoL 4 char pairs", n,
-                        bind(_formatgrl3<T>, dest, data));
+                          bind(_formatgrl3<T>, dest, data));
   CBenchmark<>::benchmark("grail format RtoL 4 char", n,
-                        bind(_formatgrl4<T>, dest, data));
+                          bind(_formatgrl4<T>, dest, data));
   // Benchmark::benchmark("grail format RtoL 4char, sys benchmark", n,
   //                     bind(_formatgrl4<T>, dest, data));
   print("{}\n", data);

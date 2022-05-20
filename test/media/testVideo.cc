@@ -11,9 +11,11 @@ class TestVideoPlayer : public Member {
 
     // playing a link from youtube (and maybe other places idk) requires you to
     // have youtube-dl installed
-    v->loadFile("https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4");
-    //v->loadFile("Downloads/SampleVideo_1280x720_1mb.mp4");
-    // v->cropVideo(0, 0, 65, 65);
+    v->loadFile(
+        "https://sample-videos.com/video123/mp4/720/"
+        "big_buck_bunny_720p_1mb.mp4");
+    // v->loadFile("Downloads/SampleVideo_1280x720_1mb.mp4");
+    //  v->cropVideo(0, 0, 65, 65);
     v->setVolume(50);
     v->setPlaying();
   }

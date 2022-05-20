@@ -1,19 +1,16 @@
 #include "Calendar.hh"
 
-
-void Calendar::drawWeek() const {
-
-}
+void Calendar::drawWeek() const {}
 
 void Calendar::drawMonth() const {
-	const int daysPerWeek = 7;
-	mt->add(x0 + w/2, top, start.getMonthName());
-	sms->drawGrid(x0, y0, w, h, daysPerWeek, 5, edgeColor);
-	const float down = 20;
-	float x = x0, top = y0 + down;
-	for (int i = 0; i < daysPerWeek; i++) {
-		mt->add(x, top, Date::weekDay[i]);
-	}
+  const int daysPerWeek = 7;
+  mt->add(x0 + w / 2, top, start.getMonthName());
+  sms->drawGrid(x0, y0, w, h, daysPerWeek, 5, edgeColor);
+  const float down = 20;
+  float x = x0, top = y0 + down;
+  for (int i = 0; i < daysPerWeek; i++) {
+    mt->add(x, top, Date::weekDay[i]);
+  }
 }
 
 void Calendar::drawYear() const {
@@ -24,10 +21,7 @@ void Calendar::drawYear() const {
 		for (int c = 0; c < 4; c++) {
 		}
 	}
-#endif		
+#endif
 }
 
-void Calendar::draw() const {
-	drawMonth();
-}
-
+void Calendar::draw() const { drawMonth(); }

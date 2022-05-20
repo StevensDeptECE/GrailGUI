@@ -19,6 +19,5 @@ int main(int argc, char **argv) {
       getFile("/test/res/maps/", "USA_Counties.shp", argc, argv);
 
   BlockMapLoader bml(shapefile.c_str(), "ESRI");
-	for (int i = 0; i < bml.getNumSegments(); i++)
-		bml.dumpSegment(seg);
+  for (int i = 0; i < bml.getNumSegments(); i++) bml.dumpSegment(seg);
 }

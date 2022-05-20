@@ -1,9 +1,11 @@
-#include "opengl/GrailGUI.hh"
+#include <unistd.h>
+
+#include <numbers>
+
 #include "CAD/RectangularPrism.hh"
 #include "CAD/Transformation.hh"
-#include <unistd.h>
+#include "opengl/GrailGUI.hh"
 #include "opengl/util/Camera.hh"
-#include <numbers>
 using namespace std;
 using namespace grail;
 using namespace std::numbers;
@@ -18,10 +20,11 @@ class TestTransform : public GLWin {
     c->setProjection(cam->getViewProjection());
     RectangularPrism* rec = new RectangularPrism(c, s, 40, 756, 3, -10, -5, 0);
     c->addLayer(rec);
-    Transformation* rotate = new Transformation(c, s, new RectangularPrism(c, s, 3, 7, 3, -10, -5, 0));
-    rotate->rotate(pi/4, 1, 0, 0);
+    Transformation* rotate = new Transformation(
+        c, s, new RectangularPrism(c, s, 3, 7, 3, -10, -5, 0));
+    rotate->rotate(pi / 4, 1, 0, 0);
     rotate->translate(5, 4, 3);
-    c->addLayer(rotate);    
+    c->addLayer(rotate);
   }
 };
 

@@ -20,7 +20,7 @@ class TestMultiShape : public GLWin {
     gui->drawRectangle(500, 600, 0, 250, 100, red);
     gui->drawRectangle(550, 650, 0, 250, 100, glm::vec4(0, 0, 0, 0.5f));
 
-    #if 0
+#if 0
     gui->drawRectangle(0, 400, 0, drawSize, drawSize, green);
     gui->drawPolygon(boxSize * 1, 400, 0, drawSize, drawSize, 5, blue);
     gui->drawPolygon(boxSize * 2, 400, 0, drawSize, drawSize, 6, blue);
@@ -61,7 +61,7 @@ class TestMultiShape : public GLWin {
     points.push_back(550);
     gui->spline(points, 100, purple);
 
-    #endif
+#endif
   }
 };
 
