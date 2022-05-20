@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        ubuntu-version: [ubuntu-latest]
         build-type: [Debug, Release]
 
     steps:

@@ -4,12 +4,12 @@
 #include "util/Ex.hh"
 #include "util/JulianDate.hh"
 /*
-        @author Dov Kruger 2019-06-06
+   @author Dov Kruger 2019-06-06
 
-        Represent a date as a 32-bit integer for business purposes
-        This representation is smaller than JulianDate and is only intended for
-        integer days for scheduling purposes, ie calendars and the like.
-        Because the internal date is signed, it can represent dates +/- 2
+   Represent a date as a 32-bit integer for business purposes
+   This representation is smaller than JulianDate and is only intended for
+   integer days for scheduling purposes, ie calendars and the like.
+   Because the internal date is signed, it can represent dates +/- 2
    billion days from the Epoch. I am going to set the epoch for both JulianDate
    and this to January 1, 2000. So we have a looming issue: the Y5755424
    problem.  Start planning now...

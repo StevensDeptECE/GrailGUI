@@ -63,4 +63,5 @@ const char* Ex::errNames[] = {
     "MPV_FAILURE",
     "NONEXISTENT_ACTION",
     "BAD_ARGUMENT",
+    "UNIMPLEMENTED",
 };

@@ -4,37 +4,54 @@
 
 using namespace std;
 using namespace grail;
-class BookViewer : public GLWin {
+class BookViewer : public Member {
  private:
   Document *doc;
   DocView *docView;
   const char *filename;
-  void init();
 
  public:
-  BookViewer(const char filename[]) : filename(filename) {}
+  BookViewer(Tab *tab, const char filename[]);
 
-  void advance() { docView->advance(); }
-  void back() { docView->back(); }
-
-  void advance10() { docView->advance10(); }
-
-  void top() { docView->top(); }
-
-  void bottom() { docView->bottom(); }
+  void advance();
+  void back();
+  void advance10();
+  void top();
+  void bottom();
 };
 
-void BookViewer::init() {
-  bindEvent(264, &BookViewer::bottom, this);
-  bindEvent(265, &BookViewer::top, this);
-  bindEvent(262, &BookViewer::advance, this);
-  bindEvent(263, &BookViewer::back, this);
+void BookViewer::advance() {
+  docView->advance();
+  tab->setRender();
+}
+void BookViewer::back() {
+  docView->back();
+  tab->setRender();
+}
+void BookViewer::advance10() {
+  docView->advance10();
+  tab->setRender();
+}
+void BookViewer::top() {
+  docView->top();
+  tab->setRender();
+}
+void BookViewer::bottom() {
+  docView->bottom();
+  tab->setRender();
+}
+
+BookViewer::BookViewer(Tab *tab, const char filename[])
+    : Member(tab), filename(filename) {
+  tab->bindEvent(264, &BookViewer::bottom, this);
+  tab->bindEvent(265, &BookViewer::top, this);
+  tab->bindEvent(262, &BookViewer::advance, this);
+  tab->bindEvent(263, &BookViewer::back, this);
 
   //  Font *font = getDefaultFont();
   const Font *font = FontFace::get("TIMES", 30, 0);
-  Style *s = new Style(font, 1, 1, 1, 0, 0, 0);
-  s->setLineWidth(1);
-  Canvas *c = currentTab()->getMainCanvas();
+  Style *s = new Style(font, 1, 1, 1, 0, 0, 0, 1);
+  Canvas *c = tab->getMainCanvas();
   c->addLayer(new Image(c, 0, 5, 320, 32, "res/toolbar1.png"));
   StyledMultiShape2D *m = new StyledMultiShape2D(c, s);
   m->fillTriangle(350, 5, 380, 0, 360, 30, green);
@@ -51,7 +68,7 @@ void BookViewer::init() {
   // c->addLayer(new Image(400, 400, 400, 400, "res/trumpmelania.png", s));
 }
 
-int main(int argc, char *argv[]) {
+void grailmain(int argc, char *argv[], GLWin *w, Tab *defaultTab) {
   const char *filename = argc < 2 ? "res/Annatest.txt" : argv[1];
-  return GLWin::init(new BookViewer(filename), 1600, 1024);
+  new BookViewer(defaultTab, filename);
 }

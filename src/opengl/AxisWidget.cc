@@ -1,12 +1,12 @@
 #include "opengl/AxisWidget.hh"
+#include <cstring>
 
 using namespace std;
 
 AxisWidget::AxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y,
                        double w, double h, double minBound, double maxBound,
                        double tickInterval, double tickDrawSize, bool showTicks,
-                       bool isVert, std::string axisTitle,
-                       const glm::vec4& axisColor, const glm::vec4& tickColor,
+                       bool isVert, const std::string& axisTitle,
                        int tickFormatWidth, int tickFormatPrecision,
                        double bottomOffset)
     : Widget2D(m, t, x, y, w, h),
@@ -17,9 +17,7 @@ AxisWidget::AxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y,
       showTicks(showTicks),
       isVert(isVert),
       axisTitle(axisTitle),
-      axisColor(axisColor),
-      tickColor(tickColor),
-      tickFormat({.width = tickFormatWidth, .precision = tickFormatPrecision}),
+			tickFormat({.width = tickFormatWidth, .precision = tickFormatPrecision}),
       bottomOffset(bottomOffset) {}
 
 AxisWidget::~AxisWidget() {}

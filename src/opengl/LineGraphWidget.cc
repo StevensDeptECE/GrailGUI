@@ -1,18 +1,15 @@
 #include "opengl/LineGraphWidget.hh"
 
 #include <algorithm>
-#include <numbers>
+#include <numbers> // C++20 constants
 
 #include "util/Ex.hh"
 
 using namespace std;
 
-void LineGraphWidget::setDataStyle(const Style* s) { dataStyle = s; }
-
 void LineGraphWidget::setPointFormat(char pt, double size, glm::vec4& color) {
   pointSize = size;
   markerFunction = marker_pointer_table[pt];
-  pointColor = color;
 }
 
 void LineGraphWidget::setXPoints(const std::vector<double>& xPoints) {
@@ -34,7 +31,7 @@ void LineGraphWidget::init() {
     throw(Ex1(Errcode::VECTOR_MISMATCHED_LENGTHS));
   }
 
-  StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(c, dataStyle));
+  StyledMultiShape2D* m = c->addLayer(new StyledMultiShape2D(c, &s->dataStyle));
 
   double xMin = xAxis->getMinBound();
   double xMax = xAxis->getMaxBound();
@@ -72,14 +69,14 @@ void LineGraphWidget::init() {
   double xPoint1 = xPoints[0];
   double yPoint1 = yPoints[0];
 
-  (m->*markerFunction)(xPoint1, yPoint1, pointSize, pointColor);
+  (m->*markerFunction)(xPoint1, yPoint1, pointSize, s->pointColor);
 
   for (int i = 1; i < xPoints.size(); i++) {
     double xPoint2 = xPoints[i];
     double yPoint2 = yPoints[i];
 
-    m->drawLine(xPoint1, yPoint1, xPoint2, yPoint2, grail::black);
-    (m->*markerFunction)(xPoint2, yPoint2, pointSize, pointColor);
+    m->drawLine(xPoint1, yPoint1, xPoint2, yPoint2, s->lineColor);
+    (m->*markerFunction)(xPoint2, yPoint2, pointSize, s->pointColor);
 
     xPoint1 = xPoint2;
     yPoint1 = yPoint2;

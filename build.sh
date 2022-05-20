@@ -2,10 +2,10 @@
 
 if [[ -f "Grail_Workspace.code-workspace" ]]; then
     echo "\"Grail_Workspace.code-workspace\" found, most likely in Grail's root"
-elif [[ $(pwd | awk -F"/" '{print $NF}') == "test" ]]; then
+    elif [[ $(pwd | awk -F"/" '{print $NF}') == "test" ]]; then
     echo "Current directory is a test directory, assuming Grail's test"
     cd ..
-elif [[ -z ${GRAIL} ]]; then # Currently does not find GRAIL
+    elif [[ -z ${GRAIL} ]]; then # Currently does not find GRAIL
     echo "GRAIL environment variable set"
     cd "${GRAIL}" || exit 1
     pwd
@@ -27,10 +27,13 @@ else
     fi
 fi
 
-if [ -f "build.ninja" ]; then
-    ninja
-else
+if ! [ -f "build.ninja" ]; then
     cmake -GNinja ..
+fi
+
+if  [ "$#" -eq 1 ]; then
+    ninja "$1"
+else 
     ninja
 fi
 

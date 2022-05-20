@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+
 #include <cmath>
 #include <numbers>
 #include <string>
@@ -18,9 +20,14 @@ using namespace grail;
 class TestWidgets : public GLWin {
  private:
   ScrollbarWidget *scrollbar;
+  ButtonWidget *button;
 
  public:
   TestWidgets() : GLWin(0x000000, 0xCCCCCC, "TestWidgets") {}
+  ~TestWidgets() {
+    delete scrollbar;
+    delete button;
+  }
 
   void scrollUp() {
     scrollbar->scroll(-5);
@@ -31,7 +38,7 @@ class TestWidgets : public GLWin {
     setDirty();
   }
 
-  void testButton(StyledMultiShape2D *gui, MultiText *guiText) {
+  void testButton(MainCanvas *c, StyledMultiShape2D *gui, MultiText *guiText) {
     const float boxSize = 100;
     const float drawSize = (boxSize / 4) * 5;
 
@@ -43,9 +50,8 @@ class TestWidgets : public GLWin {
     gui->fillRectangle(boxSize * 1.5, boxSize * 1.5, drawSize * .4,
                        drawSize / 5, black);
 
-    // c->addButton("Hello",100,100,100,100);
-    ButtonWidget b(gui, guiText, "hello", 0, 0, 100, 50);
-    b.init();
+    button = new ButtonWidget(c, 0, 0, 300, 50, "hello", "helloWorld");
+    button->init();
   }
 
   void testGapMinder(StyledMultiShape2D *gui, MultiText *guiText) {
@@ -90,7 +96,7 @@ class TestWidgets : public GLWin {
                      const Style *s) {
     const char thing[] = "hello world";
     // guiText->add(0, 50, s->f, thing, strlen(thing));
-    MultiText *mt = c->addLayer(new MultiText(c, s, numbers::pi / 2, 100, 100));
+    MultiText *mt = c->addLayer(new MultiText(c, s, M_PI_2, 100, 100));
     mt->add(0, 0, s->f, thing, strlen(thing));
   }
 
@@ -119,13 +125,13 @@ class TestWidgets : public GLWin {
     MultiText *guiText = c->addLayer(new MultiText(c, s));
 
     StyledMultiShape2D *p =
-        c->addLayer(new StyledMultiShape2D(c, s, -numbers::pi / 4, 0, 0));
+        c->addLayer(new StyledMultiShape2D(c, s, -M_PI_4, 0, 0));
 
     const Style *graphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
     // testCandlestick(gui, guiText);
     testGapMinder(gui, guiText);
     testSparkline(gui, guiText);
-    // testButton(gui, guiText);
+    testButton(c, gui, guiText);
     testAngleText(gui, guiText, c, s);
 
     testScrollBar(gui, guiText);
@@ -140,4 +146,9 @@ class TestWidgets : public GLWin {
 
 int main(int argc, char *argv[]) {
   return GLWin::init(new TestWidgets(), 1024, 600);
+}
+
+template <typename T>
+extern T foo(T a) {
+  return a;
 }
