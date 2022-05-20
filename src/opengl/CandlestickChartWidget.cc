@@ -7,22 +7,6 @@
 
 using namespace std;
 
-void CandlestickChartWidget::setLineStyle(const Style* s) { lineStyle = s; }
-
-void CandlestickChartWidget::setBoxStyle(const Style* s) { boxStyle = s; }
-
-void CandlestickChartWidget::setBoxWidth(double width) { boxWidth = width; }
-
-void CandlestickChartWidget::setBoxColors(
-    const std::vector<glm::vec4>& colors) {
-  boxColors = colors;
-}
-
-void CandlestickChartWidget::setBoxOutlineColors(
-    const std::vector<glm::vec4>& colors) {
-  outlineColors = colors;
-}
-
 void CandlestickChartWidget::setData(const vector<double>& data) {
   this->data = data;
 }
@@ -39,8 +23,8 @@ void CandlestickChartWidget::init() {
     throw(Ex1(Errcode::VECTOR_ZERO_LENGTH));
   }
 
-  StyledMultiShape2D* lines = c->addLayer(new StyledMultiShape2D(c, lineStyle));
-  StyledMultiShape2D* boxes = c->addLayer(new StyledMultiShape2D(c, boxStyle));
+  StyledMultiShape2D* lines = c->addLayer(new StyledMultiShape2D(c, &s->lineStyle));
+  StyledMultiShape2D* boxes = c->addLayer(new StyledMultiShape2D(c, &s->boxStyle));
 
   double min = yAxis->getMinBound();
   double max = yAxis->getMaxBound();
@@ -52,8 +36,8 @@ void CandlestickChartWidget::init() {
 
   double correction = -yscale * min;
 
-  auto currentBoxColor = boxColors.begin();
-  auto currentOutlineColor = outlineColors.begin();
+  auto currentBoxColor = s->boxColors.begin();
+  auto currentOutlineColor = s->outlineColors.begin();
 
   // for now I will sort the four points given, and assume that it goes low,
   // close, open, high (bearish style)
@@ -94,9 +78,9 @@ void CandlestickChartWidget::init() {
     currentBoxColor++;
     currentOutlineColor++;
 
-    if (currentBoxColor == boxColors.end()) currentBoxColor = boxColors.begin();
-    if (currentOutlineColor == outlineColors.end())
-      currentOutlineColor = outlineColors.begin();
+    if (currentBoxColor == s->boxColors.end()) currentBoxColor = s->boxColors.begin();
+    if (currentOutlineColor == s->outlineColors.end())
+      currentOutlineColor = s->outlineColors.begin();
   }
 
   commonRender();

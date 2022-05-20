@@ -4,7 +4,7 @@
 using namespace std;
 using namespace grail;
 
-class TestAudioPlayer : public GLWin {
+class TestAudioPlayer : public Member {
  private:
   double startTime;
   double time;
@@ -22,11 +22,7 @@ class TestAudioPlayer : public GLWin {
   }
 
  public:
-  TestAudioPlayer()
-      : GLWin(0x000000, 0xCCCCCC, "TestAudioPlayer"),
-        startTime(0),
-        a(nullptr),
-        step(0) {}
+  TestAudioPlayer(Tab *tab) : Member(tab, 0), startTime(0), a(nullptr), step(0) {}
 
   // required to ensure that the memory of the audio player is freed
   ~TestAudioPlayer() { delete a; }
@@ -34,7 +30,7 @@ class TestAudioPlayer : public GLWin {
   // using the built in timing of GLWin and if statements allows for control
   // flow of the player with respect to time the program has been running
   void update() {
-    time = getTime();
+    time = tab->getTime();
 
     helper(1, 0, "simultaneous playback", [](AudioPlayer *a) {
       a->setCurrentContext("default");
@@ -59,7 +55,7 @@ class TestAudioPlayer : public GLWin {
       a->printCurrentTime();
 
       // this should fail, chicken not valid lmao
-      a->seekLocation("66", "chicken");
+      //a->seekLocation("66", "chicken");
     });
 
     helper(7, 3, "revert skip", [](AudioPlayer *a) {
@@ -96,8 +92,7 @@ class TestAudioPlayer : public GLWin {
   }
 
   void init() {
-    startTime = getTime();
-    MainCanvas *c = currentTab()->getMainCanvas();
+    startTime = tab->getTime();
 
     StyledMultiShape2D *m = c->getGui();
 
@@ -114,10 +109,10 @@ class TestAudioPlayer : public GLWin {
     // creating a new context, calling it "new context"
     // set the current context to the new one, give it a playlist that mpv can
     // understand (see playlist.txt in test/res/)
-    a->newContext("new context");
-    a->setCurrentContext("new context");
-    a->setVolume(50);
-    a->loadPlaylist("res/playlist.txt");
+    /* a->newContext("new context");
+     a->setCurrentContext("new context");
+     a->setVolume(50);
+     a->loadPlaylist("res/playlist.txt");*/
 
     // if you try to set a current context that doesn't exist, a message will
     // print telling you what's happened
@@ -140,6 +135,6 @@ class TestAudioPlayer : public GLWin {
   }
 };
 
-int main(int argc, char *argv[]) {
-  return GLWin::init(new TestAudioPlayer(), 300, 300);
+void grailmain(int argc, char *argv[], GLWin *w, Tab *defaultTab) {
+  new TestAudioPlayer(defaultTab);
 }

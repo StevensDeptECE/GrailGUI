@@ -97,6 +97,15 @@ class MultiShape3D : public MultiShape {
   void genOBJModel(const char* filePath, std::vector<uint32_t>& texIndices,
                    float xOffset = 0, float yOffset = 0, float zOffset = 0);
   void genOBJModel(const char* filePath);
+  MultiShape3D(Canvas* canv, Camera* c, const char textureFile[],
+               Transformation* t, const char modelFile[],
+               uint32_t elemPerVert = 3, uint32_t vertCount = 1024,
+               uint32_t solidIndCount = 1024, uint32_t lineIndCount = 1024,
+               uint32_t pointIndCount = 1024, uint32_t colorIndCount = 1024) :
+               MultiShape3D(canv, c, textureFile, t, elemPerVert, vertCount,
+               solidIndCount, lineIndCount, pointIndCount, colorIndCount) {
+                this->genOBJModel(modelFile);
+               }
 
   ~MultiShape3D();
 

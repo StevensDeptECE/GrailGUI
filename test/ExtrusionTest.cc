@@ -19,20 +19,18 @@
 
 using namespace std;
 
-class ExtrusionTest : public GLWin {
+class ExtrusionTest : public Member {
   private:
     Style *baseGraphStyle;
 
   public:
-    ExtrusionTest() : GLWin(0x000000, 0xCCCCCC, "ExtrusionTest") {}
-
-  void init(){
+    ExtrusionTest(Tab* tab) : Member(tab, 0,0) {
     //set
     baseGraphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
     baseGraphStyle->setLineWidth(5);
   
     //set the camera
-    MainCanvas *c = currentTab()->getMainCanvas();
+    MainCanvas *c = tab->getMainCanvas();
     //set x to -80 to get a view of the x,z plane
     Camera* cam = c->setLookAtProjection(0, 0, 75, 0, 0, 0, 0, 1, 0);
     c->setProjection(cam->getViewProjection());   
@@ -84,6 +82,7 @@ class ExtrusionTest : public GLWin {
   }
 };
 
-int main(int argc, char *argv[]) {
-  return GLWin::init(new ExtrusionTest(), 1000, 1000);
+void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+  w->setTitle("Solar System");
+  new ExtrusionTest(defaultTab);
 }

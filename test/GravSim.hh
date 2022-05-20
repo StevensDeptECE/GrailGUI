@@ -11,7 +11,6 @@
 
 #include "opengl/GrailGUI.hh"
 
-using namespace std;
 
 class Vector3D {
  public:
@@ -21,7 +20,7 @@ class Vector3D {
 
   Vector3D(double x = 0, double y = 0, double z = 0) : x(x), y(y), z(z) {}
 
-  friend ostream& operator<<(ostream& s, const Vector3D& vec) {
+  friend std::ostream& operator<<(std::ostream& s, const Vector3D& vec) {
     return s << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
   }
 
@@ -137,8 +136,8 @@ class Body {
   Vector3D velocity;
   Vector3D acceleration;
 
-  string name;
-  string orbits;
+  std::string name;
+  std::string orbits;
 
   double mass;
   double diameter;
@@ -183,23 +182,23 @@ class Body {
   Vector3D getPosition() const { return position; }
   Vector3D getVelocity() const { return position; }
   Vector3D getAcceleration() const { return acceleration; }
-  string getName() const { return name; }
+  std::string getName() const { return name; }
   double getMass() const { return mass; }
   double getDiameter() const { return diameter; }
   double getDistFromSun() const { return distFromSun; }
 
-  friend ostream& operator<<(ostream& s, const Body b) {
+  friend std::ostream& operator<<(std::ostream& s, const Body b) {
     return s << b.name << ": " << b.distFromSun << "au " << b.position << " "
-             << b.acceleration << " " << b.velocity << " " << endl;
+             << b.acceleration << " " << b.velocity << " " << std::endl;
   }
 
-  friend istream& operator>>(istream& s, Body* b) {
+  friend std::istream& operator>>(std::istream& s, Body* b) {
     s >> b->name >> b->orbits >> b->a >> b->e >> b->i >> b->o >> b->p >> b->L >>
         b->n >> b->m >> b->diameter;
     return s;
   }
 
-  static void setPosition(vector<Body*> bodies, JulDate t) {
+  static void setPosition(std::vector<Body*> bodies, JulDate t) {
     double dayNumber = t.getJDay() - 2451545.00000;
 
     for (auto b : bodies) {
@@ -245,7 +244,7 @@ class Body {
     }
   }
 
-  static void setVelocity(vector<Body*> bodies, JulDate t) {
+  static void setVelocity(std::vector<Body*> bodies, JulDate t) {
     for (auto b : bodies) {
       if (b->name != "Sun") {
         double mew = 1.32712440042e20;
@@ -281,7 +280,7 @@ class Body {
       }
     }
   }
-  static void computeAccelerations(vector<Body*>& bodies, double dt) {
+  static void computeAccelerations(std::vector<Body*>& bodies, double dt) {
     for (auto b : bodies) {
       Vector3D a = 0;
 
@@ -302,7 +301,7 @@ class Body {
       b->acceleration = a;
     }
   }
-  static void stepForward(vector<Body*>& bodies, double dt) {
+  static void stepForward(std::vector<Body*>& bodies, double dt) {
     for (auto b : bodies) {
       b->position =
           b->position + b->velocity * dt + 0.5 * b->acceleration * dt * dt;
@@ -313,12 +312,12 @@ class Body {
 
 class NASAEphemerisSolarSystem {
  public:
-  vector<Body*> bodies;
+  std::vector<Body*> bodies;
   JulDate currentTime;
 
  public:
   NASAEphemerisSolarSystem(const char* filename) : currentTime() {
-    ifstream f(filename);
+    std::ifstream f(filename);
 
     char buf[1024];
     f.getline(buf, sizeof(buf));
@@ -327,7 +326,7 @@ class NASAEphemerisSolarSystem {
 
     while (f.getline(buf, sizeof(buf))) {
       b = new Body;
-      istringstream line(buf);
+      std::istringstream line(buf);
       line >> b;
       bodies.push_back(b);
     }
@@ -349,7 +348,7 @@ class NASAEphemerisSolarSystem {
     }
   }
 
-  friend ostream& operator<<(ostream& s, const NASAEphemerisSolarSystem& Sol) {
+  friend std::ostream& operator<<(std::ostream& s, const NASAEphemerisSolarSystem& Sol) {
     for (auto b : Sol.bodies) {
       s << " " << *b << " ";
     }

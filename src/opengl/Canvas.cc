@@ -6,18 +6,19 @@
 // TODO: gl.h can't be included multiple times, really ugly.
 // is there a fix?
 //#include <GL/gl.h>
+#include "opengl/InteractiveWidget2D.hh"
 #include "opengl/MultiText.hh"
 #include "opengl/StyledMultiShape2D.hh"
 #include "opengl/util/Camera.hh"
 
 using namespace std;
 
+Canvas::Canvas(Tab* tab) : Canvas(tab->getParentWin(), tab) {}
+
 Canvas::~Canvas() { cleanup(); }
 
 void Canvas::cleanup() {
-  for (auto s : layers) {
-    delete s;
-  }
+  for (uint32_t i = 0; i < layers.size(); i++) delete layers[i];
   layers.clear();
   if (!cam) {
     delete cam;
@@ -30,13 +31,10 @@ void Canvas::render() {
   Shader::useShader(style->getShaderIndex())->setMat4("projection", projection);
   glViewport(vpX, w->height - vpH - vpY, vpW, vpH);
 
-  for (const auto& l : layers) {
-    l->render();
-  }
+  for (uint32_t i = 0; i < layers.size(); i++) layers[i]->render();
 }
 
 Camera* Canvas::setLookAtProjection(float eyeX, float eyeY, float eyeZ,
-
                                     float lookAtX, float lookAtY, float lookAtZ,
                                     float upX, float upY, float upZ) {
   cam = new Camera(w->width, w->height, glm::vec3(upX, upY, upZ));
@@ -45,13 +43,11 @@ Camera* Canvas::setLookAtProjection(float eyeX, float eyeY, float eyeZ,
   return cam;
 }
 
-MainCanvas::MainCanvas(GLWin* parent)
-    : Canvas(parent, parent->getDefaultStyle(), 0, 0, parent->getWidth(),
-             parent->getHeight(), parent->getWidth(), parent->getHeight()) {
-  gui = new StyledMultiShape2D(this, parent->getGuiStyle());
-  guiText = new MultiText(this, parent->getGuiTextStyle(), 16384);
-  menu = new StyledMultiShape2D(this, parent->getMenuStyle());
-  menuText = new MultiText(this, parent->getMenuTextStyle(), 16384);
+MainCanvas::MainCanvas(Tab* tab) : Canvas(tab) {
+  gui = new StyledMultiShape2D(this, w->getGuiStyle());
+  guiText = new MultiText(this, w->getGuiTextStyle(), 16384);
+  menu = new StyledMultiShape2D(this, w->getMenuStyle());
+  menuText = new MultiText(this, w->getMenuTextStyle(), 16384);
 }
 
 MainCanvas::~MainCanvas() {
@@ -60,6 +56,7 @@ MainCanvas::~MainCanvas() {
   delete menu;
   delete menuText;
 }
+
 void MainCanvas::addButton(const char text[], float x, float y, float w,
                            float h) {
   gui->drawRectangle(x, y, w, h, style->fg);
@@ -87,6 +84,10 @@ void MainCanvas::init() {
   guiText->init();
   menu->init();
   menuText->init();
+  tab->registerCallback(Tab::Inputs::MOUSE0_PRESS, "Widget Callback- Press",
+                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
+  tab->registerCallback(Tab::Inputs::MOUSE0_RELEASE, "Widget Callback- Release",
+                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
 }
 
 void MainCanvas::render() {
@@ -105,4 +106,19 @@ void MainCanvas::cleanup() {
   //  guiText->cleanup();
   //  menu->cleanup();
   //  menuText->cleanup();
+}
+
+void MainCanvas::click() {
+  /*
+  widgets are added sequentially, and each one is on top of the others
+  unless we define a z-order. In the absence of that, go backward, the
+  first one found that the mouse click is inside is it.
+  */
+  GLWin* win = getWin();
+  float mouseX = win->mouseX;
+  float mouseY = win->mouseY;
+
+  for (InteractiveWidget2D* widget : widgets) {
+    if (widget->checkClick(mouseX, mouseY)) return;
+  }
 }

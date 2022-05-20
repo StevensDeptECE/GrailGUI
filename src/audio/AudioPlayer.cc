@@ -1,7 +1,10 @@
 #include "audio/AudioPlayer.hh"
 
 using namespace std;
-AudioPlayer::AudioPlayer() { newContext("default"); }
+AudioPlayer::AudioPlayer() {
+  newContext("default");
+  setCurrentContext("default");
+}
 
 AudioPlayer::~AudioPlayer() {
   // fun little c++ 17 feature
@@ -9,7 +12,7 @@ AudioPlayer::~AudioPlayer() {
     mpv_terminate_destroy(context.handle);
   }
 
-  printf("audio has terminated succesfully\n");
+  printf("audio has terminated successfully\n");
 }
 
 void AudioPlayer::newContext(string name) {

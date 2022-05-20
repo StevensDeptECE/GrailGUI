@@ -399,27 +399,27 @@ void StyledMultiShape2D::drawHexGrid(float x, float y, float w, float h,
 
 // Markers for Graphs
 void StyledMultiShape2D::drawCircleMarker(float x, float y, float size,
-                                          glm::vec4& color) {
+                                          const glm::vec4& color) {
   fillCircle(x, y, size, 3, color);
 }
 void StyledMultiShape2D::drawTriangleMarker(float x, float y, float size,
-                                            glm::vec4& color) {
+                                            const glm::vec4& color) {
   fillPolygon(x, y, size, size, 3, color);
 }
 void StyledMultiShape2D::drawSquareMarker(float x, float y, float size,
-                                          glm::vec4& color) {
+                                          const glm::vec4& color) {
   fillPolygon(x, y, size, size, 4, color);
 }
 void StyledMultiShape2D::drawPentagonMarker(float x, float y, float size,
-                                            glm::vec4& color) {
+                                            const glm::vec4& color) {
   fillPolygon(x, y, size, size, 5, color);
 }
 void StyledMultiShape2D::drawHexagonMarker(float x, float y, float size,
-                                           glm::vec4& color) {
+                                           const glm::vec4& color) {
   fillPolygon(x, y, size, size, 6, color);
 }
 void StyledMultiShape2D::drawCrossMarker(float x, float y, float size,
-                                         glm::vec4& color) {
+                                         const glm::vec4& color) {
   drawLine(x, y + size, x, y - size, color);
   drawLine(x - size, y, x + size, y, color);
 }

@@ -8,19 +8,17 @@
 
 using namespace std;
 
-class CircleTest : public GLWin {
+class CircleTest : public Member {
   private:
     Style *baseGraphStyle;
 
   public:
-    CircleTest() : GLWin(0x000000, 0xCCCCCC, "CircleTest") {}
-
-  void init(){
+    CircleTest(Tab* tab) : Member(tab,0,0) {
     baseGraphStyle = new Style("TIMES", 12, 1, 0, 0, 0, 0, 0, 0);
     baseGraphStyle->setLineWidth(10);
   
     //set the camera
-    MainCanvas *c = currentTab()->getMainCanvas();
+    MainCanvas *c = tab->getMainCanvas();
     Camera* cam = c->setLookAtProjection(0, 0, 30, 0, 0, 0, 0, 1, 0);
     c->setProjection(cam->getViewProjection());
 
@@ -38,6 +36,7 @@ class CircleTest : public GLWin {
   }
 };
 
-int main(int argc, char *argv[]) {
-  return GLWin::init(new CircleTest(), 1000, 1000);
+void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+  w->setTitle("CircleTest");
+  new CircleTest(defaultTab);
 }

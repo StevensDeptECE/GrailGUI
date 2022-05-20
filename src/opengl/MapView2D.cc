@@ -3,7 +3,6 @@
 #include <iomanip>
 #include <iostream>
 
-#include "data/BlockMapLoader.hh"  //TODO: move to util or new data directory
 #include "opengl/Style.hh"
 using namespace std;
 
@@ -27,8 +26,10 @@ void MapView2D::init() {
   numIndicesToDraw = numPoints + numSegments;
   uint32_t* lineIndices = new uint32_t[numIndicesToDraw];
   for (uint32_t i = 0, j = 0, c = 0; i < numSegments; i++) {
+    uint32_t startSegment = j;
     for (uint32_t k = 0; k < bml->getSegment(i).numPoints; k++)
       lineIndices[c++] = j++;
+    lineIndices[c++] = startSegment;
     lineIndices[c++] = endIndex;
   }
   glGenBuffers(1, &lbo);
@@ -63,6 +64,7 @@ void MapView2D::render() {
   // debug(t, 0, 70, 0);
   shader->setMat4("projection", transform);
 
+#if 0
   // quick debugging rectangle in old immediate mode
   glBegin(GL_QUADS);
   glVertexAttrib2f(0, 0, 0);
@@ -70,6 +72,7 @@ void MapView2D::render() {
   glVertexAttrib2f(0, 200, 200);
   glVertexAttrib2f(0, 0, 200);
   glEnd();
+#endif
 
   glEnable(GL_PRIMITIVE_RESTART);
   glPrimitiveRestartIndex(0xFFFFFFFFU);

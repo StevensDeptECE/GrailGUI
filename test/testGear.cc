@@ -1,17 +1,19 @@
-#include "opengl/GrailGUI.hh"
 #include "CAD/Gear.hh"
+#include "opengl/GrailGUI.hh"
 using namespace std;
 using namespace grail;
 
-class TestGear : public GLWin {
+class TestGear : public Member {
  public:
-  TestGear() : GLWin(0x000000, 0xCCCCCC, "Test Gear") {}
+  TestGear(Tab* tab) : Member(tab, 0, 0) {}
   void init() {
-    MainCanvas* c = currentTab()->getMainCanvas();
-    const Style* s = getDefaultStyle();
-    Gear* circ = c->addLayer(new Gear(c, 500.0, 500.0, 100.0, 100.0, 6.0, 100.0, 100.0, s));    
+    MainCanvas* c = tab->getMainCanvas();
+    const Style* s = tab->getDefaultStyle();
+    c->addLayer(new Gear(c, 500.0, 500.0, 100.0, 100.0, 6.0, 100.0, 100.0, s));
   }
 };
 
-int main(int argc, char* argv[]) { return GLWin::init(new TestGear()); }
-
+void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+  w->setTitle("Gear Test");
+  new TestGear(defaultTab);
+}

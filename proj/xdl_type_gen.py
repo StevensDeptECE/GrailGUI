@@ -30,6 +30,8 @@ def main():
 
 /*
    The list of XDL types specific to this application.
+   Note: When a comment says 'n byte length' it means that the type
+         has 2^(8*n) elements
  */
 enum class DataType {\n"""
         )
@@ -51,8 +53,8 @@ const char* DataTypeNames[] = {\n"""
         )
 
         for type_name, name in type_dict.items():
-            types.write(f"  {type_name},\n")
-            names.write(f'    "{name}",\n')
+            types.write(f"  {type_name},  //{name['comment']}\n")
+            names.write(f'    "{name["name"]}",\n')
 
         types.write("};\n")
         names.write("};\n")

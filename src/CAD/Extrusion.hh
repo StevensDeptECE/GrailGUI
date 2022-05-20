@@ -9,7 +9,7 @@
 
 using namespace std;
 
-
+// TODO: This should be 3d?
 class Extrusion: public Vec3D, public Shape2D {
   public:
     std::vector<Vec3D> points;

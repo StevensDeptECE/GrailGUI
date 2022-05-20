@@ -1,7 +1,6 @@
 #include <chrono>
 
-using namespace std;
-using namespace chrono;
+// TODO: Consider deleting this, Benchmark.hh does a very similar thing
 
 class CTimer {
  public:

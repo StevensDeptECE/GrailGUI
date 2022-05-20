@@ -69,7 +69,7 @@ void Circle::render(){
 
   glLineWidth(style->getLineWidth());
   //cout<< drawingPoints.size()/3 <<endl;
-  glDrawArrays(GL_LINE_STRIP, 0, drawingPoints.size()/3);
+  glDrawArrays(GL_LINE_LOOP, 0, drawingPoints.size()/3);
 
   glDisableVertexAttribArray(0);
   glBindVertexArray(0);

@@ -1,17 +1,18 @@
-#include "opengl/GrailGUI.hh"
 #include "CAD/Circle2D.hh"
+#include "opengl/GrailGUI.hh"
 using namespace std;
 using namespace grail;
 
-class TestCircle : public GLWin {
+class TestCircle : public Member {
  public:
-  TestCircle() : GLWin(0x000000, 0xCCCCCC, "Test Circle") {}
-  void init() {
-    MainCanvas* c = currentTab()->getMainCanvas();
-    const Style* s = getDefaultStyle();
-    Circle2D* circ = c->addLayer(new Circle2D(c, 678, 500, 100, 360, s));    
+  TestCircle(Tab* tab) : Member(tab, 0, 0) {
+    MainCanvas* c = tab->getMainCanvas();
+    const Style* s = tab->getDefaultStyle();
+    c->addLayer(new Circle2D(c, 678, 500, 100, 360, s));
   }
 };
 
-int main(int argc, char* argv[]) { return GLWin::init(new TestCircle()); }
-
+void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+  w->setTitle("Circle Test");
+  new TestCircle(defaultTab);
+}

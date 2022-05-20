@@ -3,13 +3,13 @@
 #include <algorithm>
 
 #include "glad/glad.h"
-#include "opengl/Style.hh"
 #include "opengl/Canvas.hh"
-#include "opengl/GLWin.hh"
-#include "opengl/Shader.hh"
 #include "opengl/Colors.hh"
 #include "opengl/Document.hh"
+#include "opengl/GLWin.hh"
 #include "opengl/MultiText.hh"
+#include "opengl/Shader.hh"
+#include "opengl/Style.hh"
 
 using namespace std;
 using namespace grail;
@@ -64,7 +64,7 @@ void DocView::update() {
   uint32_t start = p->getLine(0);
   uint32_t next = p->getLine(1);
   for (uint32_t i = 1; i < p->size(); i++) {
-    t->add(x, y, f, (const char*)(text+start), next-start);
+    t->add(x, y, f, (const char*)(text + start), next - start);
 #if 0
     for (uint32_t j = start; j < next; j++) {
       if (text[j] == ' ') {
@@ -87,7 +87,6 @@ void DocView::update() {
       y += f->getHeight();
     }
   }
-  //	GLWin::setDirty();
 }
 
 void DocView::render() {

@@ -1,4 +1,8 @@
-#include <numbers>
+#define _USE_MATH_DEFINES
+
+//#include <numbers> For C++20 constants
+
+#include <cmath>
 
 #include "opengl/AxisWidget.hh"
 #include "opengl/GrailGUI.hh"
@@ -73,7 +77,7 @@ class testAxis : public GLWin {
     double y = 400;
 
     StyledMultiShape2D* rot90 = c->addLayer(
-        new StyledMultiShape2D(c, s, numbers::pi / 2, x - width, y + height));
+        new StyledMultiShape2D(c, s, M_PI_2, x - width, y + height));
     MultiText* t90 = c->addLayer(new MultiText(c, s, 0, x, y));
     LinearAxisWidget vertical(rot90, t90, 0, 0, width, height);
     // LogAxisWidget vertical(rot90, t90, 0, 0, width, height);

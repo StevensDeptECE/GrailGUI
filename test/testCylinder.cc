@@ -21,15 +21,14 @@ using namespace std::numbers;
 //     cout << "Expected 25.13\n";
 // }
 
-class TestCylinder : public GLWin {
+class TestCylinder : public Member {
     public:
-    TestCylinder() : GLWin(0x000000, 0xCCCCCC, "Test Cylinder") {}
-    void init() {
-        MainCanvas* c = currentTab()->getMainCanvas();
+    TestCylinder(Tab* tab) : Member(tab, 0, 0) {
+        MainCanvas* c = tab->getMainCanvas();
         Camera* cam = c->setLookAtProjection(0, 0, 30, 0, 0, 0, 0, 1, 0);
         c->setProjection(cam->getViewProjection());
         
-        const Style* s = getDefaultStyle();
+        const Style* s = tab->getDefaultStyle();
         // Cylinder* cyl = ;
         // c->addLayer(cyl);
         Transformation* rotate = new Transformation(c, s, new Cylinder(c, s, 4, 60, 60, 0, 1, 200));
@@ -39,4 +38,8 @@ class TestCylinder : public GLWin {
   }
 };
 
-int main(int argc, char* argv[]) { return GLWin::init(new TestCylinder()); }
+
+void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab){
+  w->setTitle("Cylinder Test");
+  new TestCylinder(defaultTab);
+}

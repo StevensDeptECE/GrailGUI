@@ -1,19 +1,22 @@
+#include <cmath>
 #include <numbers>
 #include <string>
-#include <vector>
 
 #include "opengl/Errcode.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/MultiShape3D.hh"
 #include "opengl/util/Transformation.hh"
+#include "util/DynArray.hh"
 #include "util/Ex.hh"
+
 using namespace std;
 
 class Body {
  private:
   std::string name;  // for label, if desired
-  double r;  // radius in m, for OpenGL you will have to scale, float can't
-             // handle space well
+  Body* orbits;  // the body around which this one orbits, or nullptr if none
+  double r;      // radius in m, for OpenGL you will have to scale, float can't
+                 // handle space well
   double orbitalRadius;  // distance of circular orbit
   double orbitalFreq;   // inverse of orbital Period, used for relative speed of
                         // animation
@@ -21,180 +24,136 @@ class Body {
   double axialTilt;     // TODO: this should be a full vector, and if you want
                         // accuracy, precession...
   double phase;
-  Transformation t;
-#if 0
-  Vec3d pos; // position
-  Vec3d v;   // velocity
-  Vec3d a;   // acceleration
-#endif
+  Transformation* trans;
+
  public:
-  Body(Canvas* c, Style* s, Camera* cam, const std::string& name,
+  Body(Canvas* c, const Style* s, Camera* cam, const std::string& name,
        const char textureFile[], double r, double orbitalRadius,
-       double orbitalPeriod, double rotationalPeriod, double axialTilt);
+       double orbitalPeriod, double rotationalPeriod, double axialTilt,
+       double startTime, Body* orbits = nullptr);
   void update(double time);
 };
 
-Body::Body(Canvas* c, Style* s, Camera* cam, const std::string& name,
+Body::Body(Canvas* c, const Style* s, Camera* cam, const std::string& name,
            const char textureFile[], double r, double orbitalRadius,
-           double orbitalPeriod, double rotationalPeriod, double axialTilt)
+           double orbitalPeriod, double rotationalPeriod, double axialTilt,
+           double startTime, Body* orbits)
     : name(name),
       r(r),
       orbitalRadius(orbitalRadius),
       orbitalFreq(1.0 / orbitalPeriod),
-      rotationFreq(1.0 / rotationalPeriod) {
-  phase = numbers::pi;
-  MultiShape3D* body = c->addLayer(new MultiShape3D(c, cam, textureFile, &t));
+      rotationFreq(1.0 / rotationalPeriod),
+      axialTilt(axialTilt * DEG2RAD<double>),
+      orbits(orbits) {
+  trans = new Transformation();
+  MultiShape3D* body =
+      c->addLayer(new MultiShape3D(c, cam, textureFile, trans));
   body->genOBJModel("models/sphere.obj");
-  t.ident();
-  t.scale(r);
+  update(startTime);
 }
 
-void Body::update(double time) {
-  t.ident();  // set to the identity transformation
-  cout << "name= " << name << " orbitalFreq=" << orbitalFreq * time << '\n';
-  t.rotate(orbitalFreq * time, 0, 1, 0);
-  t.translate(orbitalRadius, 0, 0);
-  t.rotate(-orbitalFreq * time, 0, 1, 0);
-  t.rotate((float)(axialTilt * DEG2RAD<double>), 0.0f, 0.0f,
-           1.0f);  // TODO: fix general axial tilt
-  t.rotate((float)(rotationFreq * time), 0.0f, 1.0f, 0.0f);
-  t.scale(r);  // scale to the relative size of this body
-  cout << t << '\n';
+void Body::update(double t) {
+  trans->ident();  // set to the identity transformation
+  // cout << "name= " << name << " orbitalFreq=" << orbitalFreq * t << '\n';
+  if (orbits != nullptr) {
+    trans->rotate(orbits->orbitalFreq * t, 0, 1, 0);
+    trans->translate(orbits->orbitalRadius, 0, 0);
+    trans->rotate(-orbits->orbitalFreq * t, 0, 1, 0);
+  }
+
+  trans->rotate(orbitalFreq * t, 0, 1, 0);
+  trans->translate(orbitalRadius, 0, 0);
+  trans->rotate(-orbitalFreq * t, 0, 1, 0);
+  trans->rotate(axialTilt, 0.0f, 0.0f, 1.0f);  // TODO: fix general axial tilt
+  trans->rotate((rotationFreq * t), 0.0f, 1.0f, 0.0f);
+  trans->scale(r);  // scale to the relative size of this body
+
+  // cout << *trans << '\n';
 }
 
-class SolarSystem : public GLWin {
+// TODO; Implement polar coordinates???
+// TODO: Implement panUp/Down for 2D-like views
+// TODO: Follow planets
+
+class SolarSystem : public Member {
  private:
-  Transformation tSky;
-  Transformation tEarth;
-  Transformation tSun;
-  Transformation tMoon;
-  Transformation tJupiter;
-
-  float earthOrbitAngle;
-  float earthRotationAngle;
-  float moonOrbitAngle;
-
-  float jupiterOrbitFreq;
-  float jupiterRotationFreq;
-  vector<Body> bodies;  // list of all bodies to be drawn
   Camera* cam;
+  Transformation tSky;
+  DynArray<Body*> bodies;  // list of all bodies to be drawn
 
+  constexpr static double YEAR =
+      365.2425;  // number of 24-hour days it takes earth to go around the sun
+  constexpr static double SIDEREAL_DAY =
+      0.9972;  // number of 24-hour "days" it takes earth to rotate once
  public:
-  // TODO; Implement polar coordinates???
-  // TODO: Implement panUp/Down for 2D-like views
-  // TODO: Follow planets
-  void panBack() { cam->translate(0, 0, +1); }
-  void panForward() { cam->translate(0, 0, -1); }
-  void panRight() { cam->translate(+1, 0, 0); }
-  void panLeft() { cam->translate(-1, 0, 0); }
-
-  void init() {
-    setDt(0.1);
-    earthOrbitAngle = 1.0 / 365.2425;
-    earthRotationAngle = 0.9972;  // Earth rotates in 23h 56m 4.1s.
-    moonOrbitAngle = 1.0 / 28.5;  // moon orbits about once every 28.5 days,
-                                  // depending on the way you measure
-
-    jupiterOrbitFreq = earthOrbitAngle / 12;  // 12 of our earth years
-    jupiterRotationFreq = 0.45;               // 10 hours-ish?
-
-    const Style* s = getDefaultStyle();
-    const Font* font = getDefaultFont();
-    Canvas* c = currentTab()->getMainCanvas();
+  SolarSystem(Tab* tab) : Member(tab, 0, .0125), bodies(10) {
     cam = c->setLookAtProjection(2, 3, 40, 0, 0, 0, 0, 0, 1);
-    //#if 0
-    MultiShape3D* sky =
-        c->addLayer(new MultiShape3D(c, cam, "textures/sky1.png", &tSky));
-    sky->genOBJModel("models/spacesky.obj");
+    GLWin* w = tab->getParentWin();
+    const Style* s = w->getDefaultStyle();
+    const Font* font = w->getDefaultFont();
+    defineBindings();
+    MultiShape3D* sky = c->addLayer(new MultiShape3D(
+        c, cam, "textures/sky1.png", &tSky, "models/spacesky.obj"));
     // tSky.translate(0,0,-10);
     // tSky.scale(10);
 
-    MultiShape3D* earth =
-        c->addLayer(new MultiShape3D(c, cam, "textures/earth.jpg", &tEarth));
-    earth->genOBJModel("models/sphere.obj");
+    double startTime = tab->time();
+    Body* earth;
 
-    MultiShape3D* sun =
-        c->addLayer(new MultiShape3D(c, cam, "textures/sun.jpg", &tSun));
-    sun->genOBJModel("models/sphere.obj");
+    bodies.add(earth = new Body(c, s, cam, "Earth", "textures/earth.jpg", 0.4,
+                                8, YEAR, SIDEREAL_DAY, 23.5, startTime));
+    constexpr double LUNAR_MONTH = 28.5;
+    bodies.add(new Body(c, s, cam, "Moon", "textures/moon.jpg", 0.15, 2,
+                        LUNAR_MONTH, LUNAR_MONTH, 6, startTime, earth));
+    constexpr double MARS_YEAR = 687;
+    constexpr double MARS_DAY = 1.14;  // scaled in earth days
 
-    MultiShape3D* moon =
-        c->addLayer(new MultiShape3D(c, cam, "textures/moon.jpg", &tMoon));
-    moon->genOBJModel("models/sphere.obj");
-    //#endif
-    //    bodies.push_back(Body(s, c, cam, "Earth", "textures/earth.jpg", 5, 3,
-    //    365.2425, 0.996, 23.5 )); bodies.push_back(Body(s, c, cam, "Mars",
-    //    "textures/mars.jpg", 0.2, 11, 687, 1.14, 0)); bodies.push_back(Body(s,
-    //    c, cam, "Earth", "textures/earth.jpg", 1, 14, 365.2425, 0.996, 23.5
-    //    )); bodies.push_back(Body(s, c, cam, "Jupiter",
-    //    "textures/jupiter.jpg", 1.5, 0, 12*365.2425, 0.48, 0 ));
-    MultiShape3D* jupiter = c->addLayer(
-        new MultiShape3D(c, cam, "textures/jupiter.jpg", &tJupiter));
-    jupiter->genOBJModel("models/sphere.obj");
+    bodies.add(new Body(c, s, cam, "Mars", "textures/mars.jpg", 0.2, 11,
+                        MARS_YEAR, MARS_DAY, 0, startTime));
+    constexpr double JUPITER_YEAR = 12 * YEAR;
+    constexpr double JUPITER_DAY = 0.48;  // scaled in earth days
+    Body* jupiter;
+    bodies.add(jupiter =
+                   new Body(c, s, cam, "Jupiter", "textures/jupiter.jpg", 1.5,
+                            14, JUPITER_YEAR, JUPITER_DAY, 0, startTime));
 
-    // right arrow = pan right
-    // left arrow = pan left
-    // page up = zoom out
-    // page down = zoom in
-    bindEvent(Inputs::RARROW, &SolarSystem::panRight, this);
-    bindEvent(Inputs::LARROW, &SolarSystem::panLeft, this);
-    bindEvent(Inputs::UPARROW, &SolarSystem::panForward, this);
-    bindEvent(Inputs::DOWNARROW, &SolarSystem::panBack, this);
-    bindEvent(Inputs::INSERT, &SolarSystem::speedTime, this);
-    bindEvent(Inputs::DEL, &SolarSystem::slowTime, this);
+    // TODO: Add some moons of Jupiter
+    constexpr double SOLAR_ROTATION =
+        30;  // takes about 30 days for the sun to rotate?
+    bodies.add(new Body(c, s, cam, "Sun", "textures/sun.jpg", 2, 0, 1,
+                        SOLAR_ROTATION, 0, startTime));
+
+    update();
   }
+
+  void panBack();
+  void panForward();
+  void panRight();
+  void panLeft();
+
   void update() {
-    Canvas* c = currentTab()->getMainCanvas();
-    c->getWin()->setDirty();
-    double t = time();
-    //#if 0
-    tEarth.ident();  // set to the identity transformation
-    tEarth.rotate(earthOrbitAngle * t, 0, 1, 0);
-    tEarth.translate(8, 0, 0);
-    tEarth.rotate(-earthOrbitAngle * t, 0, 1, 0);
-    tMoon = tEarth;
-    tEarth.rotate(23.5f * DEG2RAD<float>, 0.0f, 0.0f,
-                  1.0f);  // rotate axis by 23.5 degrees
-    tEarth.rotate((float)(earthRotationAngle * t), 0.0f, 1.0f, 0.0f);
-    tEarth.scale(0.4);
-
-    tMoon.rotate(6.8f * DEG2RAD<float>, 0.0f, 0.0f, 1.0f);
-    tMoon.rotate(moonOrbitAngle * t, 0, 1, 0);
-    tMoon.translate(2, 0, 0);
-    tMoon.scale(0.15);
-
-    tSun.ident();
-    tSun.rotate(earthRotationAngle * .045 * t, 0, 1, 0);
-    tSun.scale(1.5);
-    //#endif
-
-    tJupiter.ident();  // set to the identity transformation
-    // tEarth.scale(2);
-    tJupiter.rotate(jupiterOrbitFreq * t, 0, 1, 0);
-    tJupiter.translate(14, 0, 0);
-    tJupiter.rotate(-jupiterOrbitFreq * t, 0, 1, 0);
-    tJupiter.rotate((float)(jupiterRotationFreq * t), 0.0f, 1.0f, 0.0f);
-    tJupiter.scale(1.5);
-
-// cout << "t=" << t << '\t' << "earth rot=" << earthRotationAngle*t << '\n' <<
-// tEarth;
-#if 0
-    for (auto& b : bodies) {
-      b.update(t);
-    }
-#endif
+    double t = tab->time();
+    for (int i = 0; i < bodies.size(); i++) bodies[i]->update(t);
   }
+  void defineBindings();
 };
 
-int main(int argc, char* argv[]) {
-  try {
-    return GLWin::init(new SolarSystem(), 800, 800);
-  } catch (const char msg[]) {
-    cerr << msg << '\n';
-  } catch (Ex& e) {
-    cout << e << '\n';
-  } catch (exception& e) {
-    cout << e.what() << '\n';
-  } catch (...) {
-    cerr << "unknown exception handled\n";
-  }
+void SolarSystem::panBack() { cam->translate(0, 0, +1); }
+void SolarSystem::panForward() { cam->translate(0, 0, -1); }
+void SolarSystem::panRight() { cam->translate(+1, 0, 0); }
+void SolarSystem::panLeft() { cam->translate(-1, 0, 0); }
+
+void SolarSystem::defineBindings() {
+  tab->bindEvent(Tab::Inputs::RARROW, &SolarSystem::panRight, this);
+  tab->bindEvent(Tab::Inputs::LARROW, &SolarSystem::panLeft, this);
+  tab->bindEvent(Tab::Inputs::UPARROW, &SolarSystem::panForward, this);
+  tab->bindEvent(Tab::Inputs::DOWNARROW, &SolarSystem::panBack, this);
+  tab->bindEvent(Tab::Inputs::INSERT, &Tab::speedTime, tab);
+  tab->bindEvent(Tab::Inputs::DEL, &Tab::slowTime, tab);
+  tab->bindEvent(Tab::Inputs::HOME, &Tab::gotoStartTime, tab);
+}
+
+void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+  w->setTitle("Solar System");
+  new SolarSystem(defaultTab);
 }
