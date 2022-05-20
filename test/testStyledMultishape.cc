@@ -5,9 +5,8 @@ using namespace std;
 using namespace grail;
 class TestStyledMultishape : public Member {
 public:
-	TestStyledMultishape(Tab* tab) : member(tab, 0, 0) {
-	  w->setSize(1024,800);
-		MainCanvas* c = w->getMainCanvas();
+	TestStyledMultishape(Tab* tab) : Member(tab, 0, 0) {
+		MainCanvas* c = tab->getMainCanvas();
 		StyledMultiShape2D* gui = c->getGui();
 		
 		const float boxSize = 100;
