@@ -24,7 +24,6 @@ void BlockLoader::init(uint64_t bytes, Type t, uint32_t version) {
       (SecurityHeaderV0*)((uint64_t*)mem + sizeof(GeneralHeader) / 8);
 }
 
-
 void BlockLoader::init(uint64_t* mem, uint64_t size) {
   this->mem = mem;
   this->size = size;

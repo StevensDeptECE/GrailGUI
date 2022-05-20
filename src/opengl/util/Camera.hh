@@ -59,32 +59,35 @@ class Camera {
     camPos += delta;
   }
 
-  void zoomIn() {
-    zoomIn(0.5);
-  }
+  void zoomIn() { zoomIn(0.5); }
 
-  void zoomOut() {
-    zoomIn(-0.5);
-  }
+  void zoomOut() { zoomIn(-0.5); }
 
-//TODO: make this not inline, move to c++ file, and have multiple different projections
-// also, keep more of the computation in the matrices, not computed on the fly each time
-//   inline glm::mat4 getViewProjection() {
-//     projection = glm::perspective(glm::radians(fov), float(screenWidth) / float(screenHeight), zNear, zFar);
-//     view = glm::lookAt(camPos, lookingAt, upVector);
-//     return projection * view;
-//   }
+  // TODO: make this not inline, move to c++ file, and have multiple different
+  // projections
+  //  also, keep more of the computation in the matrices, not computed on the
+  //  fly each time
+  //    inline glm::mat4 getViewProjection() {
+  //      projection = glm::perspective(glm::radians(fov), float(screenWidth) /
+  //      float(screenHeight), zNear, zFar); view = glm::lookAt(camPos,
+  //      lookingAt, upVector); return projection * view;
+  //    }
 
-
-inline glm::mat4 getViewProjection() {
-    projection = glm::perspective(glm::radians(fov), float(screenWidth) / float(screenHeight), zNear, zFar);
+  inline glm::mat4 getViewProjection() {
+    projection =
+        glm::perspective(glm::radians(fov),
+                         float(screenWidth) / float(screenHeight), zNear, zFar);
     view = glm::lookAt(camPos, lookingAt, upVector);
-    //std::cout<< "Screen Width: "<< screenWidth << ", Screen height: " << screenHeight << ", Znear: " << zNear << ", zFar: "<< ", CamPos: " << camPos << " , Looking At: " << lookingAt << ", up Vector: " << upVector << std::endl;
+    // std::cout<< "Screen Width: "<< screenWidth << ", Screen height: " <<
+    // screenHeight << ", Znear: " << zNear << ", zFar: "<< ", CamPos: " <<
+    // camPos << " , Looking At: " << lookingAt << ", up Vector: " << upVector
+    // << std::endl;
     glm::mat4 temp = projection * view;
-   // std::cout << std::string glm::to_string(temp) << std::endl;
-   std::cout << "-------------------" << std::endl;
-    for (int i=0; i<temp.length(); i++){
-      std::cout <<"column " << i << ": " << temp[i].x << ", " << temp[i].y << ", " << temp[i].z << std::endl;
+    // std::cout << std::string glm::to_string(temp) << std::endl;
+    std::cout << "-------------------" << std::endl;
+    for (int i = 0; i < temp.length(); i++) {
+      std::cout << "column " << i << ": " << temp[i].x << ", " << temp[i].y
+                << ", " << temp[i].z << std::endl;
     }
     std::cout << "-------------------" << std::endl;
     return temp;

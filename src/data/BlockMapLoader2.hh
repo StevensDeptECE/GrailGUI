@@ -58,10 +58,11 @@ class BlockMapLoader : public BlockLoader {
   };
   struct Segment {
     uint32_t numPoints : 24;  // up to 16 million points
-    uint32_t type : 8;        // TODO: Define what type of segments exist. polygons (islands, border) polyline (rivers, roads) etc
+    uint32_t type : 8;  // TODO: Define what type of segments exist. polygons
+                        // (islands, border) polyline (rivers, roads) etc
   };
   void mean(float* meanx, float* meany) const;
-  
+
  private:
   BlockMapHeader* blockMapHeader;
   RegionContainer* regionContainers;
@@ -79,17 +80,20 @@ class BlockMapLoader : public BlockLoader {
   static bool approxeqpt(float x1, float y1, float x2, float y2) {
     return std::abs(x2 - x1) < eps && std::abs(y2 - y1) < eps;
   }
+
  public:
-  //void init(const uint64_t* mem, uint64_t size);
-  //void init(uint32_t numLists, uint32_t numPoints);
-  // fast load a blockmap from a .bml file
+  // void init(const uint64_t* mem, uint64_t size);
+  // void init(uint32_t numLists, uint32_t numPoints);
+  //  fast load a blockmap from a .bml file
   BlockMapLoader(const char filename[]);
-  BlockMapLoader(uint64_t size, uint16_t version) : BlockLoader(size, Type::gismap, version) {}
-  //BlockMapLoader(const BlockMapLoader& orig) = delete;
-  //BlockMapLoader(BlockMapLoader&& orig) : 
-  //BlockLoader(std::move(orig)), blockMapHeader(orig.blockMapHeader), regionContainers(orig.regionContainers), regions(orig.regions), segments(orig.segments), points(orig.points)
-  //{ }
-  #if 0
+  BlockMapLoader(uint64_t size, uint16_t version)
+      : BlockLoader(size, Type::gismap, version) {}
+// BlockMapLoader(const BlockMapLoader& orig) = delete;
+// BlockMapLoader(BlockMapLoader&& orig) :
+// BlockLoader(std::move(orig)), blockMapHeader(orig.blockMapHeader),
+// regionContainers(orig.regionContainers), regions(orig.regions),
+// segments(orig.segments), points(orig.points) { }
+#if 0
   // is move constructor defined by default?
   BlockMapLoader(BlockMapLoader&& orig) :
    BlockLoader(orig),
@@ -98,7 +102,7 @@ class BlockMapLoader : public BlockLoader {
    regions(orig.regions),
    segments(segments),
    points(points) {}
-   #endif
+#endif
 
   // load and convert an ESRI .shp to BlockMap format
   BlockMapLoader(const char filename[], const char[]);

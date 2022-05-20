@@ -1,4 +1,5 @@
 #include "csp/Socket.hh"
+
 #include "csp/Request.hh"
 
 Socket::Socket(uint16_t port, Request *req)
@@ -19,6 +20,5 @@ Socket::Socket(uint16_t port)
       out(BUFSIZE, true) {}
 
 Socket::~Socket() {
-      if (req != nullptr)
-            delete req;
+  if (req != nullptr) delete req;
 }

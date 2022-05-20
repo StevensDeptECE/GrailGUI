@@ -1,22 +1,25 @@
 #pragma once
 #include "opengl/GLWin.hh"
-#include "opengl/Shape.hh"
 #include "opengl/GLWinFonts.hh"
+#include "opengl/Shape.hh"
 class Style;
 
 class PageText : public Shape {
-private:
+ private:
   uint32_t textureId;
   const Style* style;
   std::string text;
   std::vector<float> vert;
-  void addPoint(float x, float y, float u, float v){
-    vert.push_back(x);  vert.push_back(y);
-    vert.push_back(u);  vert.push_back(v);
+  void addPoint(float x, float y, float u, float v) {
+    vert.push_back(x);
+    vert.push_back(y);
+    vert.push_back(u);
+    vert.push_back(v);
   }
-  float velX = 1,velY=1;
-public:
-  MultiText(const Style * style, uint32_t size);
+  float velX = 1, velY = 1;
+
+ public:
+  MultiText(const Style* style, uint32_t size);
   void clear() { vert.clear(); }
   void loadText(const char s[], uint32_t len);
   void addChar(float x, float y, Font* f, const char c);

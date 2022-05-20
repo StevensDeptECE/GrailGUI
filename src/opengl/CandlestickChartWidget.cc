@@ -23,8 +23,10 @@ void CandlestickChartWidget::init() {
     throw(Ex1(Errcode::VECTOR_ZERO_LENGTH));
   }
 
-  StyledMultiShape2D* lines = c->addLayer(new StyledMultiShape2D(c, &s->lineStyle));
-  StyledMultiShape2D* boxes = c->addLayer(new StyledMultiShape2D(c, &s->boxStyle));
+  StyledMultiShape2D* lines =
+      c->addLayer(new StyledMultiShape2D(c, &s->lineStyle));
+  StyledMultiShape2D* boxes =
+      c->addLayer(new StyledMultiShape2D(c, &s->boxStyle));
 
   double min = yAxis->getMinBound();
   double max = yAxis->getMaxBound();
@@ -78,7 +80,8 @@ void CandlestickChartWidget::init() {
     currentBoxColor++;
     currentOutlineColor++;
 
-    if (currentBoxColor == s->boxColors.end()) currentBoxColor = s->boxColors.begin();
+    if (currentBoxColor == s->boxColors.end())
+      currentBoxColor = s->boxColors.begin();
     if (currentOutlineColor == s->outlineColors.end())
       currentOutlineColor = s->outlineColors.begin();
   }

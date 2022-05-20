@@ -1,7 +1,7 @@
 #include "opengl/LineGraphWidget.hh"
 
 #include <algorithm>
-#include <numbers> // C++20 constants
+#include <numbers>  // C++20 constants
 
 #include "util/Ex.hh"
 

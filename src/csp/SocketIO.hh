@@ -14,7 +14,7 @@
 #pragma comment(lib, "Mswsock.lib")
 #pragma comment(lib, "AdvApi32.lib")
 
-//Compiler is not a fan of this define
+// Compiler is not a fan of this define
 //#define errno WSAGetLastError()
 #else  // linux
 

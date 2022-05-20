@@ -1,6 +1,7 @@
 #include "opengl/MultiText2.hh"
 
 #include <algorithm>
+#include <numbers>
 
 #include "glad/glad.h"
 #include "opengl/Canvas.hh"
@@ -8,7 +9,6 @@
 #include "opengl/GLWinFonts.hh"
 #include "opengl/Shader.hh"
 #include "opengl/Style.hh"
-#include <numbers>
 
 using namespace std;
 // todo: fix render to pass everything in the text vert to draw it
@@ -22,15 +22,17 @@ using namespace std;
 MultiText2::MultiText2(Canvas* c, const Style* style, uint32_t numChars)
     : Shape(c), style(style), transform(1.0f), numChars(numChars) {
   // if !once, once = !once was a thing
-  vert.reserve(numChars * 16); // x,y,u,v (4 floats per character)
-  indices.reserve(numChars * 5); // 5 indicies per triangle strip i1 i2 i3 i4 and then 0xFFFFFFFF (terminator)
-  const Font* f = style->f;  // FontFace::getFace(1)->getFont(0);
+  vert.reserve(numChars * 16);    // x,y,u,v (4 floats per character)
+  indices.reserve(numChars * 5);  // 5 indicies per triangle strip i1 i2 i3 i4
+                                  // and then 0xFFFFFFFF (terminator)
+  const Font* f = style->f;       // FontFace::getFace(1)->getFont(0);
 }
 
-MultiText2::MultiText2(Canvas* c, const Style* style) : MultiText2(c, style, 16) {}
+MultiText2::MultiText2(Canvas* c, const Style* style)
+    : MultiText2(c, style, 16) {}
 
-MultiText2::MultiText2(Canvas* c, const Style* style, uint32_t numChars, float angle,
-                     float x, float y)
+MultiText2::MultiText2(Canvas* c, const Style* style, uint32_t numChars,
+                       float angle, float x, float y)
     : MultiText2(c, style, numChars) {
   transform = glm::translate(transform, glm::vec3(x, y, 0));
   transform = glm::rotate(transform, angle, glm::vec3(0, 0, -1));
@@ -38,15 +40,13 @@ MultiText2::MultiText2(Canvas* c, const Style* style, uint32_t numChars, float a
 }
 
 MultiText2::MultiText2(Canvas* c, const Style* style, float angle, float x,
-                     float y)
-    : MultiText2(c, style, 4096, angle, x, y) {
-    }
+                       float y)
+    : MultiText2(c, style, 4096, angle, x, y) {}
 MultiText2::~MultiText2() {}
 
-
-//TODO: factor out code into addchar, make inline
-// will require an internal version that passes a glyph as parameter
-// but then there will be only one copy of this code.
+// TODO: factor out code into addchar, make inline
+//  will require an internal version that passes a glyph as parameter
+//  but then there will be only one copy of this code.
 void MultiText2::addChar(float x, float y, const Font* f, unsigned char c) {
   const Font::Glyph* glyph = f->getGlyph(c);
   cout << "Glyph for char " << c << "\n" << *glyph << '\n';
@@ -61,8 +61,8 @@ void MultiText2::addChar(float x, float y, const Font* f, unsigned char c) {
   x += glyph->advance;
 }
 
-inline void MultiText2::internalAdd(float x, float y, const Font* f, const char s[],
-                    uint32_t len) {
+inline void MultiText2::internalAdd(float x, float y, const Font* f,
+                                    const char s[], uint32_t len) {
   for (uint32_t i = 0; i < len; i++) {
     const Font::Glyph* glyph = f->getGlyph(s[i]);
     float x0 = x + glyph->bearingX, x1 = x0 + glyph->sizeX;
@@ -77,14 +77,15 @@ inline void MultiText2::internalAdd(float x, float y, const Font* f, const char 
   }
 }
 
-inline void rotateAround(float xc, float yc, float cosa, float sina, float& x, float& y) {
+inline void rotateAround(float xc, float yc, float cosa, float sina, float& x,
+                         float& y) {
   const double dx = x - xc, dy = y - yc;
   x = xc + dx * cosa - dy * sina;
   y = yc + dx * sina + dy * cosa;
 }
 
-void MultiText2::add(float x, float y, float ang, const Font* f,
-    const char s[], uint32_t len) {
+void MultiText2::add(float x, float y, float ang, const Font* f, const char s[],
+                     uint32_t len) {
   float startx = x, starty = y;
   double cosa = cos(ang), sina = sin(ang);
   for (uint32_t i = 0; i < len; i++) {
@@ -104,7 +105,6 @@ void MultiText2::add(float x, float y, float ang, const Font* f,
     x += glyph->advance;
   }
 }
-
 
 void MultiText2::add(float x, float y, uint32_t v) {
   char s[10];
@@ -160,7 +160,7 @@ void MultiText2::add(float x, float y, const Font* f, double v) {
 }
 
 void MultiText2::add(float x, float y, const Font* f, double v, int fieldWidth,
-                    int precision) {
+                     int precision) {
   char fmt[35];
   sprintf(fmt, "%%%d.%dlf", fieldWidth, precision);
   char s[35];
@@ -169,7 +169,7 @@ void MultiText2::add(float x, float y, const Font* f, double v, int fieldWidth,
 }
 
 void MultiText2::addCentered(float x, float y, const Font* f, double v,
-                            int fieldWidth, int precision) {
+                             int fieldWidth, int precision) {
   char fmt[35];
   sprintf(fmt, "%%%d.%dlf", fieldWidth, precision);
   char s[35];
@@ -182,7 +182,7 @@ void MultiText2::addCentered(float x, float y, const Font* f, double v,
 }
 
 void MultiText2::addCentered(float x, float y, const Font* f, const char s[],
-                            uint32_t len) {
+                             uint32_t len) {
   float textWidth = f->getWidth(s, len);
   float textHeight = f->getHeight();
 
@@ -190,12 +190,12 @@ void MultiText2::addCentered(float x, float y, const Font* f, const char s[],
 }
 
 void MultiText2::add(float x, float y, const Font* f, const char s[],
-                    uint32_t len) {
+                     uint32_t len) {
   internalAdd(x, y, f, s, len);
 }
 
 void MultiText2::add(float x, float y, const Font* f, const std::string& s) {
-  internalAdd(x, y, f, s.c_str(), s.length());  
+  internalAdd(x, y, f, s.c_str(), s.length());
 }
 
 /*
@@ -208,7 +208,7 @@ void MultiText2::add(float x, float y, const char s[], uint32_t len) {
 
 // find the index of the first character over the margin with this font
 uint32_t MultiText2::findFirstOverMargin(float x, const Font* f, const char s[],
-                                        uint32_t len, float rightMargin) {
+                                         uint32_t len, float rightMargin) {
   uint32_t i = 0;
   while (true) {
     const Font::Glyph* g = f->getGlyph(s[i]);
@@ -223,8 +223,8 @@ uint32_t MultiText2::findFirstOverMargin(float x, const Font* f, const char s[],
 }
 
 void MultiText2::checkAdd(float& x, float& y, const Font* f,
-                         const unsigned char c, float leftMargin, float rowSize,
-                         float rightMargin) {
+                          const unsigned char c, float leftMargin,
+                          float rowSize, float rightMargin) {
   const Font::Glyph* g = f->getGlyph(c);
   if (x + g->bearingX + g->sizeX > rightMargin) {
     x = leftMargin;  // really left margin for now, but perhaps later...
@@ -254,14 +254,15 @@ void MultiText2::init() {
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4,
                         (void*)(sizeof(float) * 2));
 
-  // Create the indicies that draw each glyph. Each is a a triangle_strip so 4 indicies
-  // j, j+1, j+2, j+3 draws a rectangle and then 0xFFFFFFFF starts a new glyph
+  // Create the indicies that draw each glyph. Each is a a triangle_strip so 4
+  // indicies j, j+1, j+2, j+3 draws a rectangle and then 0xFFFFFFFF starts a
+  // new glyph
   for (uint32_t i = 0, j = 0; i < numChars; i += 5, j += 4) {
     indices[i] = j;
-    indices[i+1] = j+1;
-    indices[i+2] = j+2;
-    indices[i+3] = j+3;
-    indices[i+4] = 0xFFFFFFFFU;
+    indices[i + 1] = j + 1;
+    indices[i + 2] = j + 2;
+    indices[i + 3] = j + 3;
+    indices[i + 4] = 0xFFFFFFFFU;
   }
   glGenBuffers(1, &sbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sbo);
@@ -278,8 +279,6 @@ static uint32_t pow10(uint32_t v) {
 }
 static uint32_t pow10arr[10] = {
     0, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
-
-
 
 void MultiText2::render() {
   glBindVertexArray(vao);
@@ -301,11 +300,12 @@ void MultiText2::render() {
   // Update points for any new chars
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferSubData(GL_ARRAY_BUFFER, 0, vert.size() * sizeof(float), &vert[0]);
-  
-  // Draw characters using 4 points to glyph (triangle strip) terminated by special value 0xFFFFFFFF
+
+  // Draw characters using 4 points to glyph (triangle strip) terminated by
+  // special value 0xFFFFFFFF
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
   glDrawElements(GL_TRIANGLE_STRIP, indices.size(), GL_UNSIGNED_INT, 0);
-  
+
   glDisableVertexAttribArray(1);
   glDisableVertexAttribArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);

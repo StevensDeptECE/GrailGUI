@@ -2,18 +2,19 @@
 
 #include "opengl/Shape2D.hh"
 
-class Rectangle : public Shape2D{
-private:
-  float width,height;
-public:
-  Rectangle(Canvas* c, float x, float y, float width,float height, Style* s) :
-   Shape2D(c, x,y,s) {
-    addPoint(x,y);
-    addPoint(x,y-height);
-    addPoint(x+width,y-height);
-    addPoint(x+width,y);
+class Rectangle : public Shape2D {
+ private:
+  float width, height;
 
-    for(int i = 0;i<vertices.size();i++){
+ public:
+  Rectangle(Canvas* c, float x, float y, float width, float height, Style* s)
+      : Shape2D(c, x, y, s) {
+    addPoint(x, y);
+    addPoint(x, y - height);
+    addPoint(x + width, y - height);
+    addPoint(x + width, y);
+
+    for (int i = 0; i < vertices.size(); i++) {
       lineIndices.push_back(i);
       pointIndices.push_back(i);
     }

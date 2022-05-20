@@ -93,5 +93,5 @@ class CBenchmark {
     b.displayavg(numIterations);
   }
 };
-};  // namespace benchmark
+};  // namespace utils
 };  // namespace grail

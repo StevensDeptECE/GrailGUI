@@ -1,6 +1,6 @@
 #pragma once
-#include <memory>
 #include <iostream>
+#include <memory>
 
 /*
   A BlockLoader is a class of file format designed to be loaded in a
@@ -23,7 +23,7 @@ class BlockLoader {
   };
 
   // std::unique_ptr<uint64_t> mem;
-  uint64_t* mem; 
+  uint64_t* mem;
   uint64_t size;
   struct GeneralHeader {
     uint32_t magic;         // magic number for all block loaders
@@ -80,8 +80,8 @@ class BlockLoader {
 
  public:
   BlockLoader(const char filename[]);
-  ~BlockLoader() { 
-    //std::cerr << "destroying: " << mem << std::endl;
+  ~BlockLoader() {
+    // std::cerr << "destroying: " << mem << std::endl;
     delete[] mem;
   }
   BlockLoader(const BlockLoader& orig) = delete;
@@ -91,17 +91,19 @@ class BlockLoader {
     orig.mem = nullptr;
   }
 
-  //void init(uint64_t* mem, uint64_t size);
-  //void init(uint64_t bytes, Type t, uint32_t version);
-  // Fast load a blockfile
+  // void init(uint64_t* mem, uint64_t size);
+  // void init(uint64_t bytes, Type t, uint32_t version);
+  //  Fast load a blockfile
   void readBlockFile(const char filename[]);
   uint32_t getHeaderSize() const { return sizeof(GeneralHeader); }
-  void* getSpecificHeader() const { return (char*)mem + sizeof(GeneralHeader) + generalHeader->header_size; } //TODO: do we need header_size at all? variable sized headers?
+  void* getSpecificHeader() const {
+    return (char*)mem + sizeof(GeneralHeader) + generalHeader->header_size;
+  }  // TODO: do we need header_size at all? variable sized headers?
 
-  void registerDocument(uint64_t author_id) const;  
+  void registerDocument(uint64_t author_id) const;
   // register this document with a server under author's id
   bool authenticateDocument()
       const;  // return true if this document is correctly signed on server
-  
+
   BlockLoader(uint64_t bytes, Type t, uint16_t version);
 };
