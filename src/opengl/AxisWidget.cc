@@ -1,4 +1,5 @@
 #include "opengl/AxisWidget.hh"
+#include <cstring>
 
 using namespace std;
 

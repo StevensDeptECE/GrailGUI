@@ -59,7 +59,6 @@ class MultiText2 : public Shape {
   uint32_t numDigits(uint32_t) { return 10; }
   uint32_t numDigits(uint16_t) { return 5; }
   uint32_t numDigits(uint8_t) { return 3; }
-  uint32_t numDigits(unsigned long long x) { return numDigits(uint64_t(x)); }
   uint32_t numDigits(int) { return 10; }
   uint32_t numDigits(float) { return 10; }
   uint32_t numDigits(double) { return 21; }
@@ -67,8 +66,6 @@ class MultiText2 : public Shape {
   uint32_t biggestpow10(uint32_t) { return 1000000000U; }
   uint32_t biggestpow10(uint16_t) { return 10000U; }
   uint32_t biggestpow10(uint8_t) { return 10000U; }
-  uint64_t biggestpow10(unsigned long long x) { return biggestpow10(uint64_t(x)); }
-  uint64_t unsignit(unsigned long long int v) { return uint64_t(v); }
   uint64_t unsignit(int64_t v) { return uint64_t(v); }
   uint32_t unsignit(int32_t v) { return uint32_t(v); }
   uint16_t unsignit(int16_t v) { return uint16_t(v); }

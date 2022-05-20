@@ -1,7 +1,6 @@
 #pragma once
 #include <fmt/chrono.h>
 #include <fmt/core.h>
-#include <sys/times.h>
 #include <time.h>
 
 #include <chrono>
