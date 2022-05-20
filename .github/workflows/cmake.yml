@@ -2,43 +2,86 @@ name: CMake
 
 on:
   push:
-    branches: [ main, s22-merge ]
+    branches: [main]
   pull_request:
-    branches: [ main, s22-merge ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  build-ubuntu:
+  build-ubuntu-latest:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         ubuntu-version: [ubuntu-latest]
         build-type: [Debug, Release]
 
-    runs-on: ${{matrix.ubuntu-version}}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: Set up GCC 11
+        run: sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+      - run: sudo apt-get update
+      - run: sudo apt-get install gcc-11 g++-11
+      - run:
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11
+          999
+      - run:
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11
+          999
+
+      - name: Install Grail dependencies
+        run:
+          sudo apt install libglfw3-dev libfreetype-dev mpv libmpv-dev
+          liblzma-dev
+
+      - name: Configure CMake
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+        run:
+          cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build-type
+          }}
+
+      - name: Build
+        # Build your program with the given configuration
+        run: cmake --build build --config ${{ matrix.build-type }}
+
+  build-ubuntu-18:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        build-type: [Debug, Release]
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: seanmiddleditch/gha-setup-ninja@master
+      - uses: actions/checkout@v2
+      - uses: seanmiddleditch/gha-setup-ninja@master
 
-    - name: Set up GCC 11
-      run: sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-    - run: sudo apt-get update
-    - run: sudo apt-get install gcc-11 g++-11
-    - run: sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 999
-    - run: sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 999
+      - name: Set up GCC 11
+        run: sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+      - run: sudo apt-get update
+      - run: sudo apt-get install gcc-11 g++-11
+      - run:
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11
+          999
+      - run:
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11
+          999
 
+      - name: Install Grail dependencies
+        run:
+          sudo apt install libglfw3-dev libfreetype6-dev mpv libmpv-dev
+          liblzma-dev
 
-    - name: Install Grail dependencies
-      run: sudo apt install libglfw3-dev libfreetype-dev mpv libmpv-dev liblzma-dev
+      - name: Configure CMake
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+        run:
+          cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build-type
+          }}
 
-    - name: Configure CMake
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
-
-    - name: Build
-      # Build your program with the given configuration
-      run: cmake --build build --config ${{ matrix.build-type }}
+      - name: Build
+        # Build your program with the given configuration
+        run: cmake --build build --config ${{ matrix.build-type }}
 
   build-windows:
     runs-on: windows-latest
@@ -48,35 +91,29 @@ jobs:
     defaults:
       run:
         shell: msys2 {0}
-    
+
     steps:
-    - uses: actions/checkout@v2
-    - uses: msys2/setup-msys2@v2
-      with:
-        msystem: MINGW64
-        path-type: inherit
-        update: true
-        install: >-
-          git
-          flex
-          bison
-          make
-          mingw-w64-x86_64-toolchain
-          mingw-w64-x86_64-cmake
-          mingw-w64-x86_64-zlib
-          mingw-w64-x86_64-freetype
-          mingw-w64-x86_64-glfw
-          mingw-w64-x86_64-mpv
-          mingw-w64-x86_64-youtube-dl
-          mingw-w64-x86_64-intel-tbb
+      - uses: actions/checkout@v2
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          path-type: inherit
+          update: true
+          install: >-
+            git flex bison make mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake mingw-w64-x86_64-zlib
+            mingw-w64-x86_64-freetype mingw-w64-x86_64-glfw mingw-w64-x86_64-mpv
+            mingw-w64-x86_64-youtube-dl mingw-w64-x86_64-intel-tbb
 
-    - uses: seanmiddleditch/gha-setup-ninja@master
-    
-    - name: Configure CMake
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+      - uses: seanmiddleditch/gha-setup-ninja@master
 
-    - name: Build
-      # Build your program with the given configuration
-      run: cmake --build build --config ${{ matrix.build-type }}
+      - name: Configure CMake
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+        run:
+          cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=${{ matrix.build-type
+          }}
+
+      - name: Build
+        # Build your program with the given configuration
+        run: cmake --build build --config ${{ matrix.build-type }}
