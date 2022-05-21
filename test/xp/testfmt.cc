@@ -245,7 +245,7 @@ void _insertdec(char destBuf[33], uint32_t& i, uint32_t decimalLoc,
 }
 
 // R to L, 4 at a time
-constexpr uint32_t _formatgrlfloat(char destBuf[33], uint64_t printVal,
+uint32_t _formatgrlfloat(char destBuf[33], uint64_t printVal,
                                    uint32_t precision, uint32_t decimalLoc) {
   uint32_t len;
   uint32_t i;
