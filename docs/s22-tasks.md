@@ -4,7 +4,7 @@
 | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ------ |
 | WebP Integration                                         | Reading/Writing WebP                                                                                |   Shiya | 
 | Improving 3D rendering                                   | Draw 3D shapes (DIY globe, solarsystem, etc)                                                        |      Daniil  |
-| Using ButtonWidgets to make other Widgets (navbar, menu) | Printing to the console on click                                                                    |        |
+| Using ButtonWidgets to make other Widgets (navbar, menu) | Printing to the console on click                                                                    |   Trent |
 | Refactor Graphs and/or Stock Graphs                      | Make a new graph (scatterplot?)                                                                     |        |
 | CAD project (preferably 3D)                              | Draw 2D shapes with existing CAD library                                                            |        |
 | Vector and 3D fonts                                      | Writing text to window                                                                              | Audrey       |
