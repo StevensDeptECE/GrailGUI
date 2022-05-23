@@ -8,9 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "aes256/aes.hh"
-#include "cloud/cloud.hh"
-#include "stegano/steganography.hh"
+#include "aes/AES.hh"
+#include "cloud/Cloud.hh"
+#include "stegano/Steganography.hh"
 #include "util/HashMap.hh"
 
 class Blob {
@@ -63,9 +63,9 @@ class GrailRepository {
   // One per site:
   //    Pair<Public key of user, Public key of website>
   union {
-    // A stack storing: region_name -> (site_name -> key)
+    // A stack storing: region_name -> map of (site_name -> key)
     std::vector<
-        std::pair<std::string, std::unordered_map<std::string, AESEncDec>>>
+        std::pair<std::string, std::unordered_map<std::string, AESEncDec*>>>
         siteKeys;
     std::vector<uint8_t> bytes;  // the raw bytes of the repository
   };

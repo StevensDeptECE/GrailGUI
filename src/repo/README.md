@@ -3,9 +3,4 @@ Current prototype for implementing a single key password management infrastructu
 
 # Dependencies
 - OpenSSL (For Cryptographic encryption/decryption of keys)
-- cURL (For Google Drive Upload Functionality)
-
-# Building
-```sh
-make all
-```
+- cURLpp (For Google Drive Upload Functionality)

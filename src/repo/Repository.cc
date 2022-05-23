@@ -13,28 +13,25 @@ void GrailRepository::generateKey(const std::string& regionName,
   // Couple each site with its keypair.
   for (auto region : siteKeys) {
     if (region.first == regionName) {
-      region.second[siteName] = cipher;
+      region.second[siteName] = &cipher;
       return;
     }
   }
-  siteKeys.push_back(
-      std::make_pair(regionName, std::unordered_map<std::string, AESEncDec>()));
-  for (auto region : siteKeys) {
-    if (region.first == regionName) {
-      region.second[siteName] = cipher;
-      return;
-    }
-  }
+  siteKeys.push_back(std::make_pair(
+      regionName, std::unordered_map<std::string, AESEncDec*>()));
 }
 
 void GrailRepository::deleteKey(const std::string& siteName) {
-  for (int i = 0; i < siteKeys.size(); ++i)
-    if (siteKeys[i].first == siteName) {
-      siteKeys.erase(siteKeys.begin() + i);
-      return;
+  for (auto region : siteKeys) {
+    for (auto site : region.second) {
+      if (site.first == siteName) {
+        region.second.erase(site.first);
+        return;
+      }
     }
 
-  std::cerr << "Error: Site: " << siteName << " not in site list." << std::endl;
+    std::cerr << "Error: Site: " << siteName << " not in site list.\n";
+  }
 }
 
 void GrailRepository::backupToCloud(const std::string& service_name,
@@ -77,8 +74,8 @@ void GrailRepository::scramble(const std::string& area) {
 
 void GrailRepository::destroy() { std::fill(bytes.begin(), bytes.end(), 0); }
 
-// PubKey getPublicKey(const std::string& password, const Factor2& factor, const
-// std::string& area)
+// PubKey getPublicKey(const std::string& password, const Factor2& factor,
+// const std::string& area)
 // }
 
 // akin to gpg -s && gpg --verify
@@ -91,32 +88,9 @@ uint64_t GrailRepository::proveIdentity(const std::string& password,
 AESEncDec GrailRepository::get(const std::string& area, const std::string& name,
                                std::string& userid, std::string& passwd) {
   for (auto region : siteKeys)
-    if (region.first == area) return region.second[name];
+    if (region.first == area) return *region.second[name];
   return AESEncDec(NULL);
 };
 
 // TODO: Require hardware authentication (à la YubiKey)?
 void GrailRepository::recover2ndFactor(){};
-
-int main(int argc, char** argv) {
-  if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << " <add|upload|download>" << std::endl;
-    return 1;
-  }
-
-  GrailRepository repo(1024);
-  std::string img_name = "test.webp";
-
-  if (!strcmp(argv[1], "add")) {
-    repo.generateKey("main", "test.com");
-  } else if (!strcmp(argv[1], "upload")) {
-    repo.backupToCloud("google", "userid", "password", 0, 1, img_name);
-  } else if (!strcmp(argv[1], "download")) {
-    repo.restoreFromCloud("google", "userid", "password", 0, 1, img_name);
-  } else {
-    std::cerr << "Usage: " << argv[0] << " <add|upload|download>" << std::endl;
-    return 1;
-  }
-
-  return EXIT_SUCCESS;
-}

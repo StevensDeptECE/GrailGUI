@@ -1,4 +1,4 @@
-#include "aes.hh"
+#include "AES.hh"
 
 void close_files(std::ifstream *in, std::ofstream *out) {
   in->close();

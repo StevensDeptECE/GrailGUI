@@ -1,9 +1,9 @@
 set(grail-repo
-    stegano/steganography.cc
-    cloud/cloud.cc
-    template.cc
-    chat
-    aes256/aes.cc
+    stegano/Steganography.cc
+    cloud/Cloud.cc
+    ssl/SSLSocket.cc
+    aes/AES.cc
+    Repository.cc
 )
 
 list(TRANSFORM grail-repo PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)

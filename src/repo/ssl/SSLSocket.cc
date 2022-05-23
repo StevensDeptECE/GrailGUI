@@ -1,4 +1,5 @@
-#include "ssl_socket.h"
+#include "SSLSocket.h"
+
 #include <arpa/inet.h> /*for using ascii to network bit*/
 #include <netdb.h>     // definitions for network database operations
 #include <string.h>    /*using fgets funtions for geting input from user*/
@@ -73,7 +74,8 @@ SSLSocket SSLSocket::createServer(const char *port) {
 
   if (s.ctx == nullptr) {
     // ERR_print_errors_fp(stderr);
-    // Using an undefined error here because there weren't any in Errcode.hh that fit
+    // Using an undefined error here because there weren't any in Errcode.hh
+    // that fit
     throw Ex(__FILE__, __LINE__, Errcode::UNDEFINED);
   }
 
@@ -145,12 +147,13 @@ SSLSocket SSLSocket::createClient(const char *ip_addr, const char *port) {
   pid_t cpid; /* fork variable*/
 
   const SSL_METHOD *method =
-      TLS_client_method();            /* Create new client-method instance */
+      TLS_client_method();     /* Create new client-method instance */
   s.ctx = SSL_CTX_new(method); /* Create new context */
 
   if (s.ctx == nullptr) {
     ERR_print_errors_fp(stderr);
-    // Using an undefined error here because there weren't any in Errcode.hh that fit
+    // Using an undefined error here because there weren't any in Errcode.hh
+    // that fit
     throw Ex(__FILE__, __LINE__, Errcode::UNDEFINED);
   }
 
@@ -160,7 +163,7 @@ SSLSocket SSLSocket::createClient(const char *ip_addr, const char *port) {
     throw Ex(__FILE__, __LINE__, Errcode::SERVER_INVALID);
   }
 
-  s.ssl = SSL_new(s.ctx);   /* create new SSL connection state */
+  s.ssl = SSL_new(s.ctx);      /* create new SSL connection state */
   SSL_set_fd(s.ssl, s.socket); /* attach the socket descriptor */
 
   if (SSL_connect(s.ssl) == -1) /* perform the connection */ {
