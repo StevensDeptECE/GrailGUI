@@ -45,7 +45,7 @@ add_grail_executable(SRC maps/testFastMapLoad.cc LIBS grail)
 
 
 # Media
-if(${MPV_FOUND})
+if(${MPV_FOUND} AND ${PC_MPV_VERSION} VERSION_GREATER "1.26")
   add_grail_executable(SRC media/testSingleAudio.cc LIBS grail)
   add_grail_executable(SRC media/testAudio.cc LIBS grail)
   add_grail_executable(SRC media/testVideo.cc LIBS grail)

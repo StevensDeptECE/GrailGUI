@@ -20,7 +20,7 @@ if(${GRAIL_EXPERIMENTAL})
   list(APPEND grail-path ${grail-xp})
 endif()
 
-if(${MPV_FOUND})
+if(${MPV_FOUND} AND ${PC_MPV_VERSION} VERSION_GREATER "1.26")
   add_subdirectory(audio)
   add_subdirectory(video)
   list(APPEND grail-path ${grail-audio} ${grail-video})
@@ -60,7 +60,7 @@ target_link_libraries(grail ${CMAKE_DL_LIBS})
 # target_link_libraries(grailserver ${CMAKE_DL_LIBS})
 
 # MPV
-if(${MPV_FOUND})
+if(${MPV_FOUND} AND ${PC_MPV_VERSION} VERSION_GREATER "1.26")
   target_link_libraries(grail ${MPV_LIBRARY})
   target_include_directories(grail INTERFACE ${MPV_INCLUDE_DIR})
 
