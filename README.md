@@ -1,24 +1,34 @@
+<!-- omit in toc -->
 # Grail
+
+GrailGUI is a prototype of a replacement for web programming (HTTP, HTML, CSS,
+JavaScript) and GUI programming. It includes a client graphical API, a browser
+implemented in C++ and OpenGL, a protocol to transmit metadata and data in
+binary, a language (XDL) to describe the binary data, and local storage to
+retain data on the client should that be necessary. Encrypted communications
+(equivalent of TLS) have not yet been implemented.
+
+<!-- omit in toc -->
+## Table of Contents
 
 <!-- toc -->
 
-- [Grail](#grail)
-  - [How to build Grail on Linux and Windows](#how-to-build-grail-on-linux-and-windows)
-    - [Getting Set Up - Windows](#getting-set-up---windows)
-      - [MSYS2](#msys2)
-      - [Windows Subsystem for Linux (WSL2)](#windows-subsystem-for-linux-wsl2)
-    - [Getting Set Up - Ubuntu](#getting-set-up---ubuntu)
-      - [Ubuntu 18.04](#ubuntu-1804)
-      - [Ubuntu 20.04](#ubuntu-2004)
-    - [Getting Set Up - Arch-Based Linux](#getting-set-up---arch-based-linux)
-    - [Compiling](#compiling)
-    - [Running](#running)
-    - [Frequent Issues](#frequent-issues)
-      - [Need to create an SSH key to push into the repository](#need-to-create-an-ssh-key-to-push-into-the-repository)
-      - [Cloned the repository using HTTPS, but now have to push to the repository](#cloned-the-repository-using-https-but-now-have-to-push-to-the-repository)
-      - [Runtime Error: `Failed to open GLFW window`](#runtime-error-failed-to-open-glfw-window)
-      - [git: 'remote-https' is not found or can't run program](#git-remote-https-is-not-found-or-cant-run-program)
-      - [Everything Else](#everything-else)
+- [How to build Grail on Linux and Windows](#how-to-build-grail-on-linux-and-windows)
+  - [Getting Set Up - Windows](#getting-set-up---windows)
+    - [MSYS2](#msys2)
+    - [Windows Subsystem for Linux (WSL2)](#windows-subsystem-for-linux-wsl2)
+  - [Getting Set Up - Ubuntu](#getting-set-up---ubuntu)
+    - [Ubuntu 18.04](#ubuntu-1804)
+    - [Ubuntu 20.04](#ubuntu-2004)
+  - [Getting Set Up - Arch-Based Linux](#getting-set-up---arch-based-linux)
+  - [Compiling](#compiling)
+  - [Running](#running)
+  - [Frequent Issues](#frequent-issues)
+    - [Need to create an SSH key to push into the repository](#need-to-create-an-ssh-key-to-push-into-the-repository)
+    - [Cloned the repository using HTTPS, but now have to push to the repository](#cloned-the-repository-using-https-but-now-have-to-push-to-the-repository)
+    - [Runtime Error: `Failed to open GLFW window`](#runtime-error-failed-to-open-glfw-window)
+    - [git: 'remote-https' is not found or can't run program](#git-remote-https-is-not-found-or-cant-run-program)
+    - [Everything Else](#everything-else)
 
 <!-- tocstop -->
 
@@ -89,7 +99,8 @@ If the MSYS2 method does not work, or there are issues, try the method below.
 
 1. Follow [this guide](https://docs.microsoft.com/en-us/windows/wsl/install) to
    install WSL.
-2. In Windows Powershell, type the following command to install Ubuntu 20.04 as the default WSL distribution.
+2. In Windows Powershell, type the following command to install Ubuntu 20.04 as
+   the default WSL distribution.
 
    ```bash
    wsl --install -d Ubuntu-20.04
@@ -160,8 +171,7 @@ If the MSYS2 method does not work, or there are issues, try the method below.
    sudo apt install ninja-build libglfw3-dev libfreetype6-dev mpv libmpv-dev liblzma-dev flex bison pkg-config
    ```
 
-5. Refer to step 4 of [MSYS2](#msys2) to
-   set up the environment variables.
+5. Refer to step 4 of [MSYS2](#msys2) to set up the environment variables.
 
 #### Ubuntu 20.04
 
@@ -193,8 +203,7 @@ If the MSYS2 method does not work, or there are issues, try the method below.
    sudo apt install make cmake ninja-build libglfw3-dev libfreetype-dev mpv libmpv-dev liblzma-dev flex bison pkg-config
    ```
 
-3. Refer to step 4 of [MSYS2](#msys2) to
-   set up the environment variables.
+3. Refer to step 4 of [MSYS2](#msys2) to set up the environment variables.
 
 ### Getting Set Up - Arch-Based Linux
 
@@ -208,8 +217,7 @@ If the MSYS2 method does not work, or there are issues, try the method below.
    - If you are using Wayland, then install `glfw-wayland` instead of
      `glfw-x11`. Wayland support is currently unconfirmed.
 
-2. Refer to step 4 of [MSYS2](#msys2) to
-   set up the environment variables.
+2. Refer to step 4 of [MSYS2](#msys2) to set up the environment variables.
 
 ### Compiling
 
