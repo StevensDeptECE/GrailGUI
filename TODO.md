@@ -5,11 +5,11 @@
  GrailGUI is set of C++ classes providing a simple wrapper for OpenGL with
  a standard set of objects and shaders that currently renders:
    1. 2D shapes
-   2. 2D text,
-   3. Images
-   4. Support layers of objects (2.5D)
-   5. Portable GUI widgets using OpenGL primitives
-   6. 3D objects with textures
+   1. 2D text,
+   1. Images
+   1. Support layers of objects (2.5D)
+   1. Portable GUI widgets using OpenGL primitives
+   1. 3D objects with textures
 
 
   GrailGUI also attempts to make many aspects of GUI development more compact
@@ -23,11 +23,11 @@
   simulations, games, GUI interfaces and data visualization tools.
    1. Predefined time and standardized commands to reset,speed-up, slow-down,
       jump forward in time.
-   2. Ability to save screenshots
-   3. Ability to save a movie (though very slow)
-   4. Predefined move the camera
-   5. Configuration for internationalization
-   6. Network connection to servers using high-speed binary data using XDL,
+   1. Ability to save screenshots
+   1. Ability to save a movie (though very slow)
+   1. Predefined move the camera
+   1. Configuration for internationalization
+   1. Network connection to servers using high-speed binary data using XDL,
    a new language designed with efficient binary data, metadata, and
    internationalization. We hope to write a compiler to generate code in
    C++ and other languages from XDL, making data accessible like Google
@@ -42,7 +42,7 @@
  Eventual goals of Grail include
    1. Creating an efficient engine that can create a uniform graphical interface
    for any language (such as Java).
-   2. Extensible components
+   1. Extensible components
    
  Grail is not a game engine, and it is not a goal that Grail should become one.
  However, as the project continues, if a game engine could be incorporated into
@@ -84,24 +84,108 @@
  handled but if so the hope is that generic code can be implemented to work
  the same over all platforms.
 
- 2. Finding and eliminating all memory bugs with valgrind and similar tools.
+ 1. Finding and eliminating all memory bugs with valgrind and similar tools.
 
- 3. Supporting vector fonts and 3d fonts (as in http://oglft.sourceforge.net/
+ 1. Supporting vector fonts and 3d fonts (as in http://oglft.sourceforge.net/
  https://sourceforge.net/projects/ftgl/)
 
- 4. Heat Map component. Given arrays of x, y, and a separate array of values v,
+ 1. Heat Map component. Given arrays of x, y, and a separate array of values v,
  write a C++ component and corresponding shader to fill in colors mapped to
  the values. This is analogous to pcolor(x,y) and surf(x,y,z) in MATLAB.
 
- 5. Support for Webrtc https://webrtc.org/ to provide realtime video.
+ 1. Support for Webrtc https://webrtc.org/ to provide realtime video.
 
- 6. Selection/picking for objects.
+ 1. Selection/picking for objects.
 
- 7. Example implementing a JNI interface to Java, or perhaps a sockets
+ 1. Example implementing a JNI interface to Java, or perhaps a sockets
  connection to take a text-only program and turn it into a GUI using Grail as
  an external engine. Generate other language code such as Java from XDL.
 
- 8. Implement menus, buttons, lots of widgets.
+ 1. Implement menus, buttons, lots of widgets.
 
- 9. Creating a Rust interface to Grail. Alternatively at some point, porting
+ 1. Creating a Rust interface to Grail. Alternatively at some point, porting
  Grail to rust.
+
+# list below here must be merged into list above
+
+threaded universal list accepting input from both this machine and other grails using sockets as well as receiving messages via sockets
+* add thread to read in mouse and keyboard input, inject into thread-safe list
+* accept input from a socket into same thread-safe list
+* main wait loop waits on list to draw
+* to animate, send message at desired hz. to wake up main wait loop. Is there any way to do this in a continuous loop without the queue?
+* key/mouse event map to bind to functions
+* gui widgets: button, scrollbar, etc
+* wait on a socket for incoming XDL messages
+
+object-oriented cleanup
+* refactor graphs to have a common set of features, less code to set any one, reduction in total codebase
+* move graph code out of opengl to directory graphs
+* find bugs in GapMinder (and move to graphs from opengl)
+
+
+Data Structures
+* modify the Hashmap and make it serializable from a blockloader
+* integrate the hashmap into a map so that names can be added to maps
+
+Map
+* tessellate map to produce solid color map for non-convex shapes
+* remove the redundant points from maps
+
+
+OpenGL
+* heat map vertex and fragment shaders to create an efficient heatmap object
+* make it easier to manipulate projections and animation
+* add orientation to extrusion operation in CAD
+* cad drawing object that renders everyone in cad
+* group object that applies a projection and renders everyone inside
+
+data size reduction
+* In order to reduce the size of the grail github remove ASCII and large binary data and put in GrailData repository. Data should be acquired separately from the code.
+
+robustness
+* print out nice message for each thrown exception
+* support nice messages in more than one language
+* build in default files into executable and if file is not found, don't load (config? shaders, fonts?)
+* preload the fonts, generate the image, and hardcode into executable as well
+
+demos
+* client/server demo comparing speed of downloading ASCII data (and parsing) vs. incrementally downloading binary data and updating for stock quotes.
+* graphing demo that reads from server rendering the stock quotes above.
+* demo with multiple stock quotes simultaneously updating.
+* Johns Hopkins style COVID map.
+* Solar system simulation in 3d configurable from input file
+
+integration
+* add in grail compiled web files from original grail
+* add in parser to read markup language and generate compiled grail files
+
+xdl
+* default display list<object> on server in tabular form on client
+* default display object on server as name-value form
+
+object-oriented refactoring
+combine all graphics objects into a single unified family sharing attributes and simplifying setup
+combine calendar and other widgets into the same hierarchy
+make packages in src/ match the new organization in test
+
+debugging
+fix memory bugs and crashing in GapMinder
+
+benchmarking
+write client/server that loads a stock price (like AAPL) and sends a window of 400 readings in ASCII going through the whole file. compare that to sending 1 at a time and updating the remote window, sending in binary.
+
+Text
+* document class that renders different font sizes, same color
+* new shader and document class that renders different colors and embedded images?
+* document class that can display a language like Greek encoding the letters as bytes relative to a base * offset in unicode.
+* drawing primitives that can display hebrew, arabic right to left
+* rectangular formatting like html
+equation formatter supporting typical math, superscript, subscript, matrices, etc.
+
+
+simple graphical tasks
+* draw rectangular grid (done?)
+* draw button
+* draw triangle grid
+* draw hex grid
+* chessboard
