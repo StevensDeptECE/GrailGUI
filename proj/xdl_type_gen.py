@@ -30,6 +30,8 @@ def main():
 
 /*
    The list of XDL types specific to this application.
+   Note: When a comment says 'n byte length' it means that the type
+         has 2^(8*n) elements
  */
 enum class DataType {\n"""
         )
@@ -42,32 +44,32 @@ enum class DataType {\n"""
 
 #include "util/datatype1.hh"
 
- /*
-   The list of XDL types specific to this application.
- */
+/*
+  The list of XDL types specific to this application.
+*/
 using namespace std;
 
 const char* DataTypeNames[] = {\n"""
         )
 
         for type_name, name in type_dict.items():
-            types.write(f"  {type_name},\n")
-            names.write(f'    "{name}",\n')
+            types.write(f"  {type_name},  //{name['comment']}\n")
+            names.write(f'    "{name["name"]}",\n')
 
         types.write("};\n")
         names.write("};\n")
 
         names.write(
-            """\n
-unordered_map<string,DataType> mapnames;
-void loadmap(){
+            """
+unordered_map<string, DataType> mapnames;
+void loadmap() {
   for (int i = 0; i < int(DataType::ENUM_SIZE); i++)
     mapnames[DataTypeNames[i]] = (DataType)i;
 }"""
         )
 
         types.write(
-            """\n
+            """
 extern const char* DataTypeNames[];
 extern std::unordered_map<std::string, DataType> mapnames;
 extern void loadmap();"""

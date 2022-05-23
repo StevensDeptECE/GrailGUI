@@ -5,7 +5,6 @@
 using namespace std;
 #include <glad/glad.h>
 
-#include "opengl/Errcode.hh"
 #include "util/Ex.hh"
 #include "util/Prefs.hh"
 vector<Shader> Shader::shaders;

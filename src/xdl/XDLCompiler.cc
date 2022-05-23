@@ -1,5 +1,6 @@
-#include "util/datatype.hh"
 #include "xdl/XDLCompiler.hh"
+
+#include "util/datatype.hh"
 
 using namespace std;
 
@@ -27,7 +28,7 @@ void XDLCompiler::readfile() {
 }
 
 XDLCompiler::XDLCompiler(const char filename[])
-    : symbols(this),
+    : symbols(new SymbolTable(this)),
       errorCount(0),
       warningCount(0),
       filename(filename),
@@ -36,9 +37,8 @@ XDLCompiler::XDLCompiler(const char filename[])
 }
 
 XDLCompiler::XDLCompiler()
-    : symbols(this),
+    : symbols(new SymbolTable(this)),
       errorCount(0),
       warningCount(0),
       filename(""),
-      lineNumber(0) {
-}
+      lineNumber(0) {}

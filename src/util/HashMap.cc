@@ -4,11 +4,16 @@ uint32_t HashMapBase::bytewisehash(const char s[]) const {
   uint32_t i;
   uint32_t sum = s[0] ^ 0x56F392AC;
   for (i = 1; s[i] != '\0'; i++) {
-    sum = (((sum << r1) | (sum >> (32-r1))) ^ ((sum >> r2) | (sum >> (32-r2)))) + s[i];
-    sum = (((sum << r3) | (sum >> (32-r3))) ^ ((sum >> r4) | (sum >> (32-r4)))) + s[i];
+    sum = (((sum << r1) | (sum >> (32 - r1))) ^
+           ((sum >> r2) | (sum >> (32 - r2)))) +
+          s[i];
+    sum = (((sum << r3) | (sum >> (32 - r3))) ^
+           ((sum >> r4) | (sum >> (32 - r4)))) +
+          s[i];
   }
-  sum = ((sum << r5) | (sum >> (32-r5))) ^ sum ^ (i << 7);
-//  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >> (32-r6)))) + s[i];
+  sum = ((sum << r5) | (sum >> (32 - r5))) ^ sum ^ (i << 7);
+  //  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >>
+  //  (32-r6)))) + s[i];
   return sum & size;
 }
 
@@ -17,11 +22,16 @@ uint32_t HashMapBase::bytewisehash(const char s[], uint32_t len) const {
   uint32_t i;
   uint32_t sum = s[0] ^ 0x56F392AC;
   for (i = 1; i < len; i++) {
-    sum = (((sum << r1) | (sum >> (32-r1))) ^ ((sum >> r2) | (sum >> (32-r2)))) + s[i];
-    sum = (((sum << r3) | (sum >> (32-r3))) ^ ((sum >> r4) | (sum >> (32-r4)))) + s[i];
+    sum = (((sum << r1) | (sum >> (32 - r1))) ^
+           ((sum >> r2) | (sum >> (32 - r2)))) +
+          s[i];
+    sum = (((sum << r3) | (sum >> (32 - r3))) ^
+           ((sum >> r4) | (sum >> (32 - r4)))) +
+          s[i];
   }
-  sum = ((sum << r5) | (sum >> (32-r5))) ^ sum ^ (i << 7);
-//  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >> (32-r6)))) + s[i];
+  sum = ((sum << r5) | (sum >> (32 - r5))) ^ sum ^ (i << 7);
+  //  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >>
+  //  (32-r6)))) + s[i];
   return sum & size;
 }
 
@@ -29,8 +39,8 @@ uint32_t HashMapBase::fasthash1(const char s[]) const {
   uint64_t* p = (uint64_t*)s;
   uint64_t v;
   uint64_t sum = 0xF39A5EB6;
-  
-  //https://graphics.stanford.edu/~seander/bithacks.html#ZeroInWord
+
+  // https://graphics.stanford.edu/~seander/bithacks.html#ZeroInWord
   while (v = *p++, hasNoZero(v)) {
     // rotate might be better, preserve more bits in each operation
     sum = sum ^ v ^ (v << 12);

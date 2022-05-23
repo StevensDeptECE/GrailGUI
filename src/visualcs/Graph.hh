@@ -1,9 +1,10 @@
 #pragma once
 
 class Graph {
-public:
+ public:
   uint64_t V;
   uint64_t E;
-public:
+
+ public:
   Graph() : V(0), E(0) {}
 };

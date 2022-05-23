@@ -2,11 +2,14 @@
 
 #include <cstdint>
 #include <iostream>
-#include <unordered_map>
 #include <vector>
 
-using namespace std;
+#include "util/HashMap.hh"
 
+/**
+ * @brief An enumerated class of XDL types that can be transferred
+ *
+ */
 enum class DataType {
   U8,    // unsigned int 0..255
   U16,   // unsigned int 0..65535
@@ -60,7 +63,7 @@ enum class DataType {
   FUNC1,  // defines new id of function with up to 256 instructions (no zero
           // because a zero-length function is useless) When executed can run
           // sequence of commands, length = number of contained commands
-  FUNC2,       // same as FUNC1 with up to 65536 steps
+  FUNC2,  // same as FUNC1 with up to 65536 steps
   FUNCPARAM1,  // takes number of parameters (up to 256) and number of steps (up
                // to 256)
   FUNCPARAM2,  // takes number of parameters (up to 65536) and number of steps
@@ -84,11 +87,13 @@ enum class DataType {
   BLOB32,    // 4 byte length block of binary data (opaque to us)
   BLOB64,    // 8 byte length block of binary data
   BIGINT,
+  TYPEDEF,
+  UNIMPL,
   ENUM_SIZE
 };
 
 extern const char* DataTypeNames[];
-extern unordered_map<string, DataType> mapnames;
+extern HashMap<DataType> mapnames;
 extern void loadmap();
 
 /*
@@ -161,12 +166,12 @@ class List2 {
 
 class Record {
  private:
-  vector<DataType> fieldTypes;
+  std::vector<DataType> fieldTypes;
 
  public:
   Record() {}
   void add(DataType t) { fieldTypes.push_back(t); }
-  friend ostream& operator<<(ostream& s, const Record& r) {
+  friend std::ostream& operator<<(std::ostream& s, const Record& r) {
     DataType t = r.fieldTypes.size() < 256
                      ? DataType::STRUCT8
                      : (r.fieldTypes.size() < 65536 ? DataType::STRUCT16

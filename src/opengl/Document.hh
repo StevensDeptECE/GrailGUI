@@ -10,10 +10,10 @@
 
 class PageLayout {
  public:
-  float x0, x1;  // left and right margins
-  float xDropDead; // never go beyond this edge, even if no space is found
-  float y0, y1;  // top and botton margins
-  float w, h;    // width and height of the active part
+  float x0, x1;     // left and right margins
+  float xDropDead;  // never go beyond this edge, even if no space is found
+  float y0, y1;     // top and botton margins
+  float w, h;       // width and height of the active part
   float pageNumX, pageNumY;
   float paragraphSpacing;
   uint32_t linesPerPage;
@@ -34,8 +34,7 @@ class PageLayout {
         paragraphSpacing(paragraphSpacing),
         linesPerPage(linesPerPage),
         f(f),
-        xDropDead(dropDead != 0 ? dropDead : x1)
-        {}
+        xDropDead(dropDead != 0 ? dropDead : x1) {}
 };
 
 class Page {
@@ -60,7 +59,6 @@ class Page {
   uint32_t size() const { return lines.size(); }
 };
 
-
 class Document {
  private:
   // TODO: the buffer should be rope
@@ -70,15 +68,19 @@ class Document {
 
   PageLayout layout;  // size of the page to render to
   /*
-   precompute text with each line ending at flush margin, stopping in the middle of
-   a word if necessary
+   precompute text with each line ending at flush margin, stopping in the middle
+   of a word if necessary
   */
-  void buildJustifiedText(const PageLayout& layout, unsigned char* text, uint32_t len);
+  void buildJustifiedText(const PageLayout &layout, unsigned char *text,
+                          uint32_t len);
 
   /*
-   precompute text with each line ending at a space or - if that lies within margin range
+   precompute text with each line ending at a space or - if that lies within
+   margin range
   */
-  void buildRaggedText(const PageLayout& layout, unsigned char* text, uint32_t len);
+  void buildRaggedText(const PageLayout &layout, unsigned char *text,
+                       uint32_t len);
+
  public:
   Document(const PageLayout &layout) : layout(layout), text(nullptr) {}
   ~Document() { delete[] text; }

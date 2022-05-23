@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include "data/BlockMapLoader.hh"
+#include "data/BlockMapLoader2.hh"
 #include "opengl/Canvas.hh"
 #include "opengl/MultiShape2D.hh"
 
@@ -19,10 +19,11 @@ class MapView2D : public Shape {
   uint32_t numIndicesToDraw;
 
  public:
+  // TODO: Check if this should be setRender or setUpdate
   void setProjection() {
     transform = glm::ortho(centerX - scaleX, centerX + scaleX, centerY - scaleY,
                            centerY + scaleY);
-    getWin()->setDirty();
+    getWin()->setRender();
   }
   void translate(float percentX, float percentY) {
     centerX += percentX * scaleX;
@@ -31,9 +32,9 @@ class MapView2D : public Shape {
   void uniformZoom(float s) { scaleX *= s, scaleY *= s; }
   MapView2D(Canvas* parent, const Style* s, BlockMapLoader* bml = nullptr)
       : Shape(parent), style(s), bml(bml), transform(1.0f) {
-    const BlockMapLoader::BoundRect& bounds = bml->getBlockMapHeader()->bounds;
-    centerX = (bounds.xMin + bounds.xMax) * 0.5;
-    centerY = (bounds.yMin + bounds.yMax) * 0.5;
+    const BoundRect& bounds = bml->getBlockMapHeader()->bounds;
+    float centerX = (bounds.xMin + bounds.xMax) * 0.5;
+    float centerY = (bounds.yMin + bounds.yMax) * 0.5;
 
     double ySize = parent->getHeight();
     double xSize = parent->getWidth();

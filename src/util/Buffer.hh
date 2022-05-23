@@ -12,15 +12,14 @@
 #include <string>
 #include <vector>
 
-#include "csp/cspservlet/Student.hh"
 #include "csp/SocketIO.hh"
+#include "csp/csp.hh"
+#include "csp/cspservlet/Student.hh"
 #include "util/List1.hh"
 #include "util/datatype.hh"
-#include "csp/csp.hh"
 
 class XDLRaw;
 
-using namespace std;
 class Buffer {
  public:
   Buffer(size_t initialSize, bool writing);
@@ -28,7 +27,9 @@ class Buffer {
   Buffer(const char filename[], size_t initialSize, const char*);
   Buffer(const Buffer& c) = delete;
   ~Buffer() {
-    if (writing) flush();
+    if (writing && !isSockBuf) {
+      flush();
+    }
     delete[] preBuffer;
   }
   void operator=(const Buffer& orig) = delete;
@@ -46,25 +47,26 @@ class Buffer {
     readNext();
   }
 
-  void displayText(ostream& s) const;
+  void displayText(std::ostream& s) const;
   void displayRawRead() const;
   void displayRaw() const;
   void displayHTTPRaw();  // TODO: eliminate! die die die
 
   void flush() {  // TODO: this will fail if we overflow slightly
-    if(isSockBuf) 
-      SocketIO::send(fd, buffer, p - buffer, 0);
+    uint32_t writeSize = (p - buffer >= size) ? size : (p - buffer);
+    if (isSockBuf)
+      SocketIO::send(fd, buffer, writeSize, 0);
     else {
-      if(::write(fd, buffer, p-buffer) < 0)
-        throw Ex1(Errcode::FILE_WRITE);
+      if (::write(fd, buffer, writeSize) < 0) throw Ex1(Errcode::FILE_WRITE);
     }
     p = buffer;
     availSize = size;
   }
   void readNext();
   // write is binary
-  void write(const string& s);
+  void write(const std::string& s);
   void write(const char* s, uint32_t len);
+  void writeStructMeta(const char name[], uint32_t numMembers);
 
   // append is ASCII text
   void appendU8(uint8_t);
@@ -100,9 +102,9 @@ class Buffer {
     return v;
   }
 
-  bool parseRegex(const regex& r, const char*& start, int& len);
+  bool parseRegex(const std::regex& r, const char*& start, int& len);
   // if parse returns true, advance past the token
-  bool parseToken(const string& match);
+  bool parseToken(const std::string& match);
   bool getUrl(const char*& ptr, uint32_t& len);
   bool getHTTPVersion(const char*& ptr, uint32_t& len);
   bool getHost(const char*& ptr, uint32_t& len);
@@ -114,9 +116,9 @@ class Buffer {
      token
   */
   bool getNextTokenWithSpace(const char*& ptr, const uint32_t& len);
-  string readString8();
-  string readString16();
-  string readString32();
+  std::string readString8();
+  std::string readString16();
+  std::string readString32();
 
   /*
     Write out a data type as a single byte
@@ -144,12 +146,12 @@ class Buffer {
     availSize -= sizeof(T);
   }
 
-	/**
-	 * Special case for XDLRaw which will write out
-	 * a complete block of bytes directly without copying
-	 *
-	 */
-	void write(XDLRaw& v);
+  /**
+   * Special case for XDLRaw which will write out
+   * a complete block of bytes directly without copying
+   *
+   */
+  void write(const XDLRaw& v);
 
   // for writing big objects, don't copy into the buffer, write it to the socket
   // directly
@@ -193,26 +195,25 @@ class Buffer {
     }
   }
 
-	  //************ uint8_t uint16_t uint32_t uint64_t array *************//
+  //************ uint8_t uint16_t uint32_t uint64_t array *************//
   /*
     The fastest way to write 32k at a time is to write each object into
-		the buffer as long as it is less than the overflow size.
-		Then, after writing, if you have filled the buffer, flush
-		and move the remaining bytes to the beginning of the buffer and start over.
+                the buffer as long as it is less than the overflow size.
+                Then, after writing, if you have filled the buffer, flush
+                and move the remaining bytes to the beginning of the buffer and
+    start over.
    */
   void fastCheckSpace(size_t sz) {
-    if (p > buffer + size ) {  // p>buffer+size
-			uint32_t beyondEnd = p - (buffer+size);
+    if (p > buffer + size) {  // p>buffer+size
+      uint32_t beyondEnd = p - (buffer + size);
       flush();
-			memcpy(buffer, buffer+size, beyondEnd);
-			p += beyondEnd;
-			availSize -= beyondEnd;
+      memcpy(buffer, buffer + size, beyondEnd);
+      p += beyondEnd;
+      availSize -= beyondEnd;
     }
   }
 
-
-
-	//*********************************//
+  //*********************************//
   //************ uint8_t uint16_t uint32_t uint64_t array *************//
 
   template <typename T>
@@ -229,7 +230,7 @@ class Buffer {
   //*********************************//
   //************ uint8_t uint16_t uint32_t uint64_t vector *************//
   template <typename T>
-  void checkVectorSpace(const vector<T>& v) {
+  void checkVectorSpace(const std::vector<T>& v) {
     if (size < v.size() * sizeof(T)) {
       // TODO: buffer is not big enough to copy data, write directly
     }
@@ -430,6 +431,7 @@ class Buffer {
   int32_t availSize;  // how much space is left in the buffer
   char* p;            // cursor to current byte for reading/writing
   int fd;  // file descriptor for file backing this buffer (read or write)
+  uint32_t blockSize;  // Max block size for output
   void checkAvailableRead(size_t sz) {
     if (availSize < sz) {
       size_t overflowSize = availSize;
@@ -439,6 +441,8 @@ class Buffer {
       p = buffer - overflowSize;
     }
   }
+
+ public:
   void checkAvailableWrite() {
     if (p > buffer + size) {
       uint32_t overflow = p - (buffer + size);
@@ -448,6 +452,8 @@ class Buffer {
       availSize -= overflow;
     }
   }
+
+ private:
   void checkAvailableWrite(const char* ptr, uint32_t len) {
     if (p + len > buffer + size) {
       memcpy(p, ptr, availSize);

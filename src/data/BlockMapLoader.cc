@@ -24,21 +24,6 @@ void BlockLoader::init(uint64_t bytes, Type t, uint32_t version) {
       (SecurityHeaderV0*)((uint64_t*)mem + sizeof(GeneralHeader) / 8);
 }
 
-BlockLoader::BlockLoader(const char filename[]) {
-  int fh = open(filename, O_RDONLY);
-  if (fh < 0) throw "Can't open file";  // TODO: Use Ex.hh to report location
-  struct stat s;
-  fstat(fh, &s);
-  size = s.st_size;
-
-  mem = new uint64_t[(size + 7) / 8];
-  int bytesRead = read(fh, (char*)mem, size);
-  if (bytesRead != size)
-    throw "Could not read entire file";  // TODO: Use Ex.hh to report location
-  init(mem, size);
-  close(fh);
-}
-
 void BlockLoader::init(uint64_t* mem, uint64_t size) {
   this->mem = mem;
   this->size = size;
@@ -184,22 +169,19 @@ void BlockMapLoader::deltaUnEncode() {
 void BlockMapLoader::dumpSegment(uint32_t seg) {
   uint32_t numSegments = blockMapHeader->numSegments;
   if (seg >= numSegments) return;
-  const float* xPoints = points;
-  const float* yPoints = points + blockMapHeader->numPoints;
+  const float* xy = points;
 
   uint32_t pointIndex = 0;
   for (uint32_t i = 0; i < seg; i++) {
     pointIndex += segments[i].numPoints;
   }
+  pointIndex *= 2;  // xy points together, so double the number
   const uint32_t numPoints = segments[seg].numPoints;
-  for (uint32_t j = 0; j < numPoints; j++, pointIndex++) {
-    printf("%14.7lf%14.7lf\n", xPoints[pointIndex], yPoints[pointIndex]);
+  for (uint32_t j = 0; j < numPoints; j++, pointIndex += 2) {
+    printf("%14.7lf%14.7lf\n", xy[pointIndex], xy[pointIndex + 1]);
   }
 }
 
-inline bool approxeq(double a, double b) {
-  return abs(b - a) < abs(a * 1e-7);  // TODO: is this good?
-}
 void BlockMapLoader::diff(const BlockMapLoader& a, const BlockMapLoader& b) {
   const BlockMapHeader* ahead = a.getBlockMapHeader();
   const BlockMapHeader* bhead = b.getBlockMapHeader();

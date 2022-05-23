@@ -63,4 +63,5 @@ enum class Errcode {
   MPV_FAILURE,
   NONEXISTENT_ACTION,
   BAD_ARGUMENT,
+  UNIMPLEMENTED,
 };
