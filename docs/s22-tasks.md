@@ -2,7 +2,7 @@
 
 | Major Task                                               | Starter Task                                                                                        | Team   |
 | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ------ |
-| WebP Integration                                         | Reading/Writing WebP                                                                                |        |
+| WebP Integration                                         | Reading/Writing WebP                                                                                |        | Shiya
 | Improving 3D rendering                                   | Draw 3D shapes (DIY globe, solarsystem, etc)                                                        |      Daniil  |
 | Using ButtonWidgets to make other Widgets (navbar, menu) | Printing to the console on click                                                                    |        |
 | Refactor Graphs and/or Stock Graphs                      | Make a new graph (scatterplot?)                                                                     |        |
