@@ -53,5 +53,22 @@ xdl
 * default display list<object> on server in tabular form on client
 * default display object on server as name-value form
 
+object-oriented refactoring
+combine all graphics objects into a single unified family sharing attributes and simplifying setup
+combine calendar and other widgets into the same hierarchy
+make packages in src/ match the new organization in test
+
+debugging
+fix memory bugs and crashing in GapMinder
+
+benchmarking
+write client/server that loads a stock price (like AAPL) and sends a window of 400 readings in ASCII going through the whole file. compare that to sending 1 at a time and updating the remote window, sending in binary.
 
 
+
+simple graphical tasks
+draw rectangular grid
+draw button
+draw triangle grid
+draw hex grid
+chessboard
