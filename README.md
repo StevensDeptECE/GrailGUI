@@ -8,7 +8,7 @@ binary, a language (XDL) to describe the binary data, and local storage to
 retain data on the client should that be necessary. Encrypted communications
 (equivalent of TLS) have not yet been implemented.
 
-For more info see [our writeup from Summer 2021.](Grail.md)
+For more info see [our writeup from Summer 2021.](docs/Grail.md)
 
 <!-- omit in toc -->
 ## Table of Contents

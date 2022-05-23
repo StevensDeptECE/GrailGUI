@@ -18,4 +18,4 @@
 | Object oriented refactoring                              | Move widgets, graphs, etc. to match test/ folder structure                                          |        |
 | Chess game?                                              | Draw a simple chess grid                                                                            |        |
 
-See [this](../TODO.md) for more information. on each task.
+See [this](../TODO.md#todo) for more information. on each task.
