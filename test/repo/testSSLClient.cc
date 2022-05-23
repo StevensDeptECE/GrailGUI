@@ -1,4 +1,4 @@
-#include "repo/chat/ssl_socket.h"
+#include "repo/ssl/SSLSocket.h"
 
 int main(int argc, char *argv[]) {
   const char *addr = argc < 2 ? "127.0.0.1" : argv[1];

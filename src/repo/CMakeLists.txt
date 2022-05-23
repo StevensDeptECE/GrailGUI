@@ -1,5 +1,6 @@
 set(grail-repo
     stegano/Steganography.cc
+    stegano/base64.cpp
     cloud/Cloud.cc
     ssl/SSLSocket.cc
     aes/AES.cc

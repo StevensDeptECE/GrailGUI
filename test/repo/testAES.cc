@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-#include "repo/aes256/aes.hh"
+#include "repo/aes/AES.hh"
 
 void print_help_msg() { std::cout << "Usage: ./test_aes key" << std::endl; }
 

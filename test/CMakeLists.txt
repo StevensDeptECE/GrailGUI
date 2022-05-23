@@ -27,6 +27,9 @@ add_subdirectory(3d)
 # add_grail_executable(SRC CAD/testGear.cc LIBS grail)
 # add_grail_executable(SRC CAD/testTransform.cc LIBS grail)
 
+# Secure Repository
+add_subdirectory(repo)
+
 # Graphs
 add_subdirectory(graph)
 
@@ -38,7 +41,7 @@ add_grail_executable(SRC maps/convertESRItoBlockLoader.cc LIBS grail)
 # add_grail_executable(SRC maps/loadESRIShapefile.cc LIBS grail)
 # add_grail_executable(SRC maps/testESRIPolygon.cc LIBS grail)
 add_grail_executable(SRC maps/testDrawBlockMap.cc LIBS grail)
-# add_grail_executable(SRC maps/ESRIMapDemo.cc LIBS grail) 
+# add_grail_executable(SRC maps/ESRIMapDemo.cc LIBS grail)
 add_grail_executable(SRC maps/testLoadFromESRI.cc LIBS grail)
 add_grail_executable(SRC maps/testFastMapLoad.cc LIBS grail)
 
@@ -65,12 +68,12 @@ add_grail_executable(SRC xdl/testXDLButton.cc LIBS grail)
 add_grail_executable(SRC xp/testfmt.cc LIBS grail)
 add_grail_executable(SRC xp/testMultiTab.cc LIBS grail)
 
-# Unsorted 
+# Unsorted
 # add_grail_executable(SRC ../src/xp/decompressBlockLoader.cc LIBS grail lzma)
 add_grail_executable(SRC ../src/csp/GenericXDLClient.cc LIBS grail)
 add_grail_executable(SRC ../src/csp/SimpleXDLServer.cc LIBS grail)
 # add_grail_executable(SRC ../src/csp/GraphicalXDLClient.cc LIBS grailserver)
-# add_grail_executable(SRC testPopupMenu.cc LIBS grail) 
+# add_grail_executable(SRC testPopupMenu.cc LIBS grail)
 # add_grail_executable(SRC StockDemo.cc LIBS grail)
 
 
