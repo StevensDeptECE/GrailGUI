@@ -29,12 +29,15 @@ OpenGL
 * heat map vertex and fragment shaders to create an efficient heatmap object
 * make it easier to manipulate projections and animation
 * add orientation to extrusion operation in CAD
+* cad drawing object that renders everyone in cad
+* group object that applies a projection and renders everyone inside
 
 data size reduction
 * In order to reduce the size of the grail github remove ASCII and large binary data and put in GrailData repository. Data should be acquired separately from the code.
 
 robustness
 * print out nice message for each thrown exception
+* support nice messages in more than one language
 * build in default files into executable and if file is not found, don't load (config? shaders, fonts?)
 * preload the fonts, generate the image, and hardcode into executable as well
 
@@ -64,6 +67,13 @@ fix memory bugs and crashing in GapMinder
 benchmarking
 write client/server that loads a stock price (like AAPL) and sends a window of 400 readings in ASCII going through the whole file. compare that to sending 1 at a time and updating the remote window, sending in binary.
 
+Text
+document class that renders different font sizes, same color
+new shader and document class that renders different colors and embedded images?
+document class that can display a language like Greek encoding the letters as bytes relative to a base offset in unicode.
+drawing primitives that can display hebrew, arabic right to left
+rectangular formatting like html
+equation formatter supporting typical math, superscript, subscript, matrices, etc.
 
 
 simple graphical tasks
