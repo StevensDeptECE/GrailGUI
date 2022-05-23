@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "util/Ex.hh"
 #include "util/PlatFlags.hh"
 
 BlockLoader::BlockLoader(uint64_t bytes, Type t, uint16_t version)
@@ -29,8 +30,8 @@ BlockLoader::BlockLoader(const char filename[]) {
   mem = new uint64_t[(size + 7) / 8];
   int bytesRead = read(fh, (char*)mem, size);
   if (bytesRead != size)
-    throw "Could not read entire file";  // TODO: Use Ex.hh to report location
-  generalHeader = (GeneralHeader*)mem;   // header is the first chunk of bytes
+    throw Ex2(Errcode::FILE_READ, "Could not read entire file");
+  generalHeader = (GeneralHeader*)mem;  // header is the first chunk of bytes
   close(fh);
 }
 

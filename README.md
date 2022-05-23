@@ -15,6 +15,7 @@ For more info see [our writeup from Summer 2021.](Grail.md)
 
 <!-- toc -->
 
+- [Summer 2022 TODO's](#summer-2022-todos)
 - [How to build Grail on Linux and Windows](#how-to-build-grail-on-linux-and-windows)
   - [Getting Set Up - Windows](#getting-set-up---windows)
     - [MSYS2](#msys2)
@@ -33,6 +34,10 @@ For more info see [our writeup from Summer 2021.](Grail.md)
   - [Everything Else](#everything-else)
 
 <!-- tocstop -->
+
+## Summer 2022 TODO's
+
+See [this](docs/s22-tasks.md) for tasks to do.
 
 ## How to build Grail on Linux and Windows
 
