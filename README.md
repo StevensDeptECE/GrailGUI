@@ -8,6 +8,8 @@ binary, a language (XDL) to describe the binary data, and local storage to
 retain data on the client should that be necessary. Encrypted communications
 (equivalent of TLS) have not yet been implemented.
 
+For more info see [our writeup from Summer 2021.](Grail.md)
+
 <!-- omit in toc -->
 ## Table of Contents
 
@@ -23,12 +25,12 @@ retain data on the client should that be necessary. Encrypted communications
   - [Getting Set Up - Arch-Based Linux](#getting-set-up---arch-based-linux)
   - [Compiling](#compiling)
   - [Running](#running)
-  - [Frequent Issues](#frequent-issues)
-    - [Need to create an SSH key to push into the repository](#need-to-create-an-ssh-key-to-push-into-the-repository)
-    - [Cloned the repository using HTTPS, but now have to push to the repository](#cloned-the-repository-using-https-but-now-have-to-push-to-the-repository)
-    - [Runtime Error: `Failed to open GLFW window`](#runtime-error-failed-to-open-glfw-window)
-    - [git: 'remote-https' is not found or can't run program](#git-remote-https-is-not-found-or-cant-run-program)
-    - [Everything Else](#everything-else)
+- [Frequent Issues](#frequent-issues)
+  - [Need to create an SSH key to push into the repository](#need-to-create-an-ssh-key-to-push-into-the-repository)
+  - [Cloned the repository using HTTPS, but now have to push to the repository](#cloned-the-repository-using-https-but-now-have-to-push-to-the-repository)
+  - [Runtime Error: `Failed to open GLFW window`](#runtime-error-failed-to-open-glfw-window)
+  - [git: 'remote-https' is not found or can't run program](#git-remote-https-is-not-found-or-cant-run-program)
+  - [Everything Else](#everything-else)
 
 <!-- tocstop -->
 
@@ -262,16 +264,16 @@ cmake --build build
    - Cursors and other features might not work for other tests as they are not
      100% Linux/Windows compatible yet.
 
-### Frequent Issues
+## Frequent Issues
 
-#### Need to create an SSH key to push into the repository
+### Need to create an SSH key to push into the repository
 
 GitHub has a great guide on how to do this!
 [This guide](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
 will show you how to load `ssh-agent` when your terminal starts and add a new
 SSH key to `ssh-agent` and GitHub
 
-#### Cloned the repository using HTTPS, but now have to push to the repository
+### Cloned the repository using HTTPS, but now have to push to the repository
 
 In this instance, you'll need to change the remote url that git is pointing to.
 This can be done with a single git command that changes which website the remote
@@ -284,7 +286,7 @@ Git command:
 git remote set-url origin git@github.com:StevensDeptECE/GrailGUI.git
 ```
 
-#### Runtime Error: `Failed to open GLFW window`
+### Runtime Error: `Failed to open GLFW window`
 
 This error is most commonly seen when attempting to run Grail on a Windows
 virtual machine. If your use-case is different, please open an issue with the
@@ -297,14 +299,14 @@ Otherwise, until there is sufficient OpenGL support for virtual Windows, you
 will have to resort to a dual boot or alternative computer to run Grail and
 Grail-based programs.
 
-#### git: 'remote-https' is not found or can't run program
+### git: 'remote-https' is not found or can't run program
 
 This error could be a antivirus software quarantining your files. Avast is a
 common software that will prevent your PC from running the program properly. To
 fix this, go into the antivirus software and add an exception to the
 git-remote-https.exe file so that your computer can access it.
 
-#### Everything Else
+### Everything Else
 
 If you have an issue not on this list, and feel it should be included in the
 list of frequent issues, open an issue and let us know!
