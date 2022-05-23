@@ -7,7 +7,7 @@
 | Using ButtonWidgets to make other Widgets (navbar, menu) | Printing to the console on click                                                                    |        |
 | Refactor Graphs and/or Stock Graphs                      | Make a new graph (scatterplot?)                                                                     |        |
 | CAD project (preferably 3D)                              | Draw 2D shapes with existing CAD library                                                            |        |
-| Vector and 3D fonts                                      | Writing text to window                                                                              |        |
+| Vector and 3D fonts                                      | Writing text to window                                                                              | Audrey       |
 | Heatmaps                                                 | Shadertoy                                                                                           |        |
 | HashMap                                                  | Load dictionary, compress, and save it out (blockloader)                                            | Calvin |
 | 2D poly fill/tessellation                                | Test tesselation algorithm (ask Alice or Prof. Kruger                                               |        |
