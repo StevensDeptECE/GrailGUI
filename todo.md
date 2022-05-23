@@ -13,7 +13,7 @@ threaded universal list accepting input from both this machine and other grails 
 object-oriented cleanup
 * refactor graphs to have a common set of features, less code to set any one, reduction in total codebase
 * move graph code out of opengl to directory graphs
-* find bugs in GapMinder
+* find bugs in GapMinder (and move to graphs from opengl)
 
 
 Data Structures
