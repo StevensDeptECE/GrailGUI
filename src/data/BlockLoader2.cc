@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "fmt/core.h"
 #include "util/Ex.hh"
 #include "util/PlatFlags.hh"
 
@@ -21,14 +22,15 @@ BlockLoader::BlockLoader(uint64_t bytes, Type t, uint16_t version)
 }
 
 BlockLoader::BlockLoader(const char filename[]) {
-  int fh = open(filename, O_RDONLY);
-  if (fh < 0) throw "Can't open file";  // TODO: Use Ex.hh to report location
+  int fh = open(filename, O_RDONLY | O_BINARY);
+  if (fh < 0) throw Ex2(Errcode::FILE_READ, "Can't open file");
   struct stat s;
   fstat(fh, &s);
   size = s.st_size;
 
   mem = new uint64_t[(size + 7) / 8];
   int bytesRead = read(fh, (char*)mem, size);
+  fmt::print("{:d} bytes read, size is {:d}\n", bytesRead, size);
   if (bytesRead != size)
     throw Ex2(Errcode::FILE_READ, "Could not read entire file");
   generalHeader = (GeneralHeader*)mem;  // header is the first chunk of bytes

@@ -1,5 +1,6 @@
 #include "data/BlockMapLoader2.hh"
 
+#include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -7,6 +8,7 @@
 #include <cstdio>
 #include <iostream>
 
+#include "fmt/core.h"
 #include "util/Ex.hh"
 #include "util/PlatFlags.hh"
 
@@ -25,8 +27,12 @@ BlockMapLoader BlockMapLoader::loadCompressed(const char lzmaFile[]) {
   uint64_t:   b1 b2 b3 b4 b5 b6 b7 b8 --> b8 b7 b6 b5 b4 b3 b2 b1
 */
 void BlockMapLoader::save(const char filename[]) {
-  int fh = open(filename, O_WRONLY | O_TRUNC | O_CREAT | O_BINARY, 0644);
+  int fh = open(filename, O_BINARY | O_WRONLY | O_TRUNC | O_CREAT, 0644);
   int bytesWritten = write(fh, (char*)mem, size);
+  if (bytesWritten < 0) {
+    throw Ex2(Errcode::FILE_READ, strerror(errno));
+  }
+  fmt::print("{:d} bytes written\n", bytesWritten);
   close(fh);
 }
 
