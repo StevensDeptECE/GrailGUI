@@ -17,6 +17,15 @@
     "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 0}",
     "editor.formatOnSave": true,
     "editor.formatOnSaveMode": "modifications",
+    "files.associations": {
+      "*.cpp": "cpp",
+      "*.cc": "cpp",
+      "*.hh": "cpp",
+      "*.hpp": "cpp",
+      "*.h": "c",
+      "*.c": "c",
+      "**/stdhpp/**": "cpp"
+    },
   },
   "launch": {
     "configurations": [
