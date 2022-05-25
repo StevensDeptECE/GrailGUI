@@ -1,25 +1,39 @@
 #include <iostream>
-#include "util/HashMap.hh"
-// make a copy of util/Hashmap.hh into src/xp
+#include "HashMap.hh"
+#include "util/FileUtil.hh"
+#include "BlockLoader2.hh"
+#include <cstring>
+// make a copy of Hashmap.hh into src/xp
+
+using namespace std;
 
 void convertAsciiDictionaryToBlockLoader() {
-    HashMap<uint32_t> dict;
-  // while (!f.getline()) {
+  uint32_t count = 0;
+  uint32_t length;
+  char* f;
+
+  // read in the dictionary (213k words)
+  FileUtil::readComplete(&f, &length, "xp/dict.txt");
+  char* word = strtok(f, "\n");
+  // create hashmap and load dictionary in with a unique integer for each word
+  HashMap<uint32_t> dict = HashMap<uint32_t>(length/5, length);
+  while (word != NULL)
+  {
     dict.add(word, count++);
+    //cout << word << ": " << count << '\n';
+    word = strtok(NULL, "\n");
   }
-
+  
+  // test case to find word and return value
   uint32_t val;
-  if (dict.get("apple", &val)) {
-    cout << val
-    
+  char test[] = "zymotechnics";
+  if (dict.get(test, &val)) {
+    cout << test << "has value "<< val << '\n';
   } else {
-    cout << "Apple not found";
+    cout << test << " not found\n";
   }
-  // first create a hashmap and load dictionary in with a unique integer for each word
-  //for (each word) dict.add(word, count++);
+  
   // now, modify hash map to save the dictionary into a single block loader
-
-  // class HashMapBase : BlockLoader { ???
   // write out the block loader format
   // 4 bytes magic number, 2 bytes  type , ....
   // save here as "fastloaddict.bld"
@@ -38,5 +52,17 @@ int main() {
   convertAsciiDictionaryToBlockLoader();
 
 // make a fast dictionary loader that loads from the format you saved
-  HashMap<uint32_t> dict("fastloaddict.bld");
+//  HashMap<uint32_t> dict("fastloaddict.bld");
+
+/* using FileUtil
+  char* f = FileUtil::readComplete("xp/dict.txt");
+  char* word = strtok(f, "\n");
+  while (word != NULL)
+  {
+    cout << word << '\n';
+    word = strtok(NULL, "\n");
+  }
+*/
+
+return 0;
 }
