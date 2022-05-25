@@ -5,11 +5,22 @@
 
 class HashMapBase : BlockLoader {
  protected:
-  uint32_t size;
-  uint32_t symbolSize;
+  struct HashMapHeader {
+    uint32_t symbolCapacity; // size of memory block holding symbols
+    uint32_t tableCapacity;  // size of memory block holding table
+    uint32_t nodeCapacity;   // size of memory block holding nodes
+    uint32_t unused;         // make C++ align to 8 bytes (now guarantee 16 bytes)
+    HashMapHeader(uint32_t symbolCapacity, uint32_t tableCapacity, uint32_t nodeCapacity)
+     : symbolCapacity(symbolCapacity), tableCapacity(tableCapacity), nodeCapacity(nodeCapacity) {}
+  };
+  
+  uint32_t symbolCapacity; // size of memory block holding symbols
+  uint32_t tableCapacity;  // size of memory block holding table
   char* symbols;
   char* current;
   uint32_t* table;
+  HashMapHeader* hashMapHeader;
+
   constexpr static int r1 = 5, r2 = 7, r3 = 17, r4 = 13, r5 = 11,
                        r6 = 16;  // rotate values
 
@@ -36,10 +47,21 @@ class HashMapBase : BlockLoader {
   uint32_t hash(const char s[], uint32_t len) const {
     return bytewisehash(s, len);
   }
-  HashMapBase(uint32_t sz, uint32_t symbolSize)
-      : size(sz), symbolSize(symbolSize), table(new uint32_t[sz]) {
-    size--;
-    symbols = new char[symbolSize];
+  HashMapBase(uint32_t symbolCapacity, uint32_t tableCapacity)
+      : tableCapacity(tableCapacity), symbolCapacity(symbolCapacity), table(new uint32_t[tableCapacity]) {
+    tableCapacity--;
+    symbols = new char[symbolCapacity];
+  }
+
+  HashMapBase(uint32_t symbolCapacity, uint32_t tableCapacity, uint32_t nodeCapacity, uint32_t additional)
+     : BlockLoader(symbolCapacity + tableCapacity + nodeCapacity + additional, Type::namemap, 0x0001)
+  {
+    hashMapHeader = (HashMapHeader*)((char*)(mem) + sizeof(GeneralHeader));
+    symbolCapacity = hashMapHeader->symbolCapacity;
+    tableCapacity = hashMapHeader->tableCapacity;
+    symbols = (char*)hashMapHeader + sizeof(HashMapHeader);
+    table = (uint32_t*)(symbols + symbolCapacity);
+
   }
 
  public:
@@ -49,8 +71,7 @@ class HashMapBase : BlockLoader {
 
 template <typename Val>
 class HashMap : public HashMapBase {
-  class Node {
-   public:
+  struct Node {
     uint32_t offset;
     uint32_t next;  // relative pointer (offset into nodes)
     Val val;
@@ -59,19 +80,19 @@ class HashMap : public HashMapBase {
     Node(uint32_t offset, uint32_t next, Val v)
         : offset(offset), next(next), val(v) {}
   };
-  uint32_t nodeSize;   // how many nodes are preallocated
+  uint32_t nodeCapacity;   // how many nodes are preallocated
   uint32_t nodeCount;  // how many nodes are currently used
   Node* nodes;
 
  public:
-  HashMap(uint32_t sz, uint32_t symbolSize = 1024 * 1024)
-      : HashMapBase(sz, symbolSize),
-        nodeSize(sz / 2 + 2),
-        nodes(new Node[sz / 2 + 2]) {
+  HashMap(uint32_t symbolCapacity, uint32_t tableCapacity, uint32_t nodeCapacity)
+      : HashMapBase(symbolCapacity, tableCapacity, nodeCapacity*sizeof(Node), sizeof(HashMapBase))
+        nodeCapacity(nodeCapacity),
+        nodes(new Node[nodeCapacity]) {
     current = symbols;
     nodeCount = 1;  // zero is null
 
-    for (uint32_t i = 0; i <= size; i++)
+    for (uint32_t i = 0; i <= tableCapacity; i++)
       table[i] = 0;  // 0 means empty, at the moment the first node is unused
   }
   ~HashMap() {
@@ -84,21 +105,21 @@ class HashMap : public HashMapBase {
 
   // TODO: segment faults when trying to grow
   void checkGrow() {
-    if (nodeCount * 2 <= size) return;
+    if (nodeCount * 2 <= tableCapacity) return;
     const Node* old = nodes;
-    nodes = new Node[nodeSize * 2];  // TODO: need placement new
-    for (uint32_t i = 0; i < nodeSize; i++)
+    nodes = new Node[nodeCapacity * 2];  // TODO: need placement new
+    for (uint32_t i = 0; i < nodeCapacity; i++)
       nodes[i] = std::move(old[i]);  // TODO: this is broken for objects Val
                                      // without default constructor
-    nodeSize *= 2;
+    nodeCapacity *= 2;
     delete[](char*) old;  // get rid of the old block of memory
     uint32_t* oldTable = table;
-    uint32_t oldSize = size;
-    table = new uint32_t[size * 2 | 1];  // new size = power of 2 - 1
+    uint32_t oldSize = tableCapacity;
+    table = new uint32_t[tableCapacity * 2 | 1];  // new size = power of 2 - 1
 
     // remember size=last element, go up to AND INCLUDING
     // go through each element of existing table and copy to new one
-    for (uint32_t i = 0; i <= size; i++)
+    for (uint32_t i = 0; i <= tableCapacity; i++)
       if (oldTable[i] != 0) {
         uint32_t index = hash(
             symbols +
@@ -108,7 +129,7 @@ class HashMap : public HashMapBase {
     delete[] oldTable;
     size = size * 2 | 1;
     // TODO: grow the symbol table too
-    std::cerr << "HashMap growing size=" << size << " " << nodeSize << '\n';
+    std::cerr << "HashMap growing size=" << tableCapacity << " " << nodeCapacity << '\n';
   }
 
   void add(const char s[], const Val& v) {
@@ -202,7 +223,7 @@ class HashMap : public HashMapBase {
   uint64_t hist() const {
     constexpr int histsize = 20;
     int h[histsize] = {0};
-    for (uint32_t i = 0; i <= size; i++) {
+    for (uint32_t i = 0; i <= tableCapacity; i++) {
       uint32_t count = 0;
       for (uint32_t p = table[i]; p != 0; p = nodes[p].next) count++;
       if (count >= histsize - 1)

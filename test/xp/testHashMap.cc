@@ -16,7 +16,7 @@ void convertAsciiDictionaryToBlockLoader() {
   FileUtil::readComplete(&f, &length, "xp/dict.txt");
   char* word = strtok(f, "\n");
   // create hashmap and load dictionary in with a unique integer for each word
-  HashMap<uint32_t> dict = HashMap<uint32_t>(length/5, length);
+  HashMap<uint32_t> dict = HashMap<uint32_t>(length, length/5, length/5);
   while (word != NULL)
   {
     dict.add(word, count++);
