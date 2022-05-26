@@ -54,7 +54,7 @@ class Canvas {
     // z!=0
   }
   ~Canvas();
-  Canvas(const Canvas& orig) = delete;
+  Canvas(const Canvas&) = delete;
   Canvas& operator=(const Canvas& orig) = delete;
   uint32_t getWidth() const { return vpW; }
   uint32_t getHeight() const { return vpH; }
@@ -126,6 +126,7 @@ class MainCanvas : public Canvas {
   ~MainCanvas();
   MainCanvas(const MainCanvas&) = delete;
   MainCanvas& operator=(const MainCanvas&) = delete;
+  void copy(const MainCanvas&);
   StyledMultiShape2D* getGui() { return gui; }
   MultiText* getGuiText() { return guiText; }
   StyledMultiShape2D* getMenu() { return menu; }

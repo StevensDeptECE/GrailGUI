@@ -52,6 +52,7 @@ class GLWin {
   uint32_t frameNum;
   double lastRenderTime;  // Stores last time of render
   char frameName[32];
+  Tab* sharedTab;
   DynArray<Tab*> tabs;  // list of web pages, ie tabs
   uint32_t current;     // current (active) tab
   void checkUpdate();
@@ -124,6 +125,7 @@ class GLWin {
   MainCanvas* getMainCanvas();
 
   Tab* currentTab() { return tabs[current]; }
+  Tab* getSharedTab() { return sharedTab; }
 
   void setSize(uint32_t w, uint32_t h) {
     width = w;

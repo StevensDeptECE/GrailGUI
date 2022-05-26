@@ -17,6 +17,13 @@ Canvas::Canvas(Tab* tab) : Canvas(tab->getParentWin(), tab) {}
 
 Canvas::~Canvas() { cleanup(); }
 
+void MainCanvas::copy(const MainCanvas& orig) {
+  gui = orig.gui;
+  guiText = orig.guiText;
+  menu = orig.menu;
+  menuText = orig.menuText;
+}
+
 void Canvas::cleanup() {
   for (uint32_t i = 0; i < layers.size(); i++) delete layers[i];
   layers.clear();
@@ -86,8 +93,9 @@ void MainCanvas::init() {
   menuText->init();
   tab->registerCallback(Tab::Inputs::MOUSE0_PRESS, "Widget Callback- Press",
                         Tab::Security::SAFE, bind(&MainCanvas::click, this));
-  tab->registerCallback(Tab::Inputs::MOUSE0_RELEASE, "Widget Callback- Release",
-                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
+  // tab->registerCallback(Tab::Inputs::MOUSE0_RELEASE, "Widget Callback-
+  // Release",
+  //                       Tab::Security::SAFE, bind(&MainCanvas::click, this));
 }
 
 void MainCanvas::render() {

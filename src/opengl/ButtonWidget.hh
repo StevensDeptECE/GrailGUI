@@ -25,4 +25,6 @@ class ButtonWidget : public InteractiveWidget2D {
   void setAction(Func func) {
     this->func = func;
   }
+
+  void updateCanvas(MainCanvas* canvas) { c = canvas; };
 };

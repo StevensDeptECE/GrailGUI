@@ -64,6 +64,7 @@ add_grail_executable(SRC xdl/testXDLButton.cc LIBS grail)
 # XP (Experimental)
 add_grail_executable(SRC xp/testfmt.cc LIBS grail)
 add_grail_executable(SRC xp/testMultiTab.cc LIBS grail)
+add_grail_executable(SRC xp/test2Tabs.cc LIBS grail)
 
 # Unsorted 
 # add_grail_executable(SRC ../src/xp/decompressBlockLoader.cc LIBS grail lzma)
