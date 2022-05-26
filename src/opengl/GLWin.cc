@@ -490,7 +490,6 @@ void GLWin::prevTab() {
 Tab *GLWin::addTab() {
   Tab *newTab = new Tab(this);
   tabs.add(newTab);
-  // current = tabs.size() - 1;
   return newTab;
 }
 

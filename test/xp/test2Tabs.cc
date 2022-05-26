@@ -48,6 +48,5 @@ void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
   new Member1(defaultTab);
   MultiTab* m = new MultiTab(w);
   Tab* t2 = w->addTab();
-  //  m->addToTab(t2);
   new Member2(t2);
 }

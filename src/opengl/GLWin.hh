@@ -189,5 +189,6 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   void prevTab();
   Tab* addTab();
   void removeTab();
+  void toLastTab() { current = tabs.size() - 1; }
   void goToLink(const char ipaddr[], uint16_t port, uint32_t requestID);
 };
