@@ -14,6 +14,7 @@ class GLWin;
 class Font;
 typedef struct FT_LibraryRec_* FT_Library;
 typedef struct FT_FaceRec_* FT_Face;
+typedef struct FT_StrokerRec_* FT_Stroker;
 
 class FontFace {
  private:
@@ -65,6 +66,7 @@ class FontFace {
   static void emptyFaces();
   ~FontFace();
   static FT_Library ftLib;
+  FT_Stroker stroker;
   const Font* getFont(uint32_t size, int weight) const;
 
   static const FontFace* getFace(int i) { return faces.at(i); }

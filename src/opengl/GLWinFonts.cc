@@ -11,6 +11,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
+#include FT_STROKER_H
 
 #include <algorithm>
 #include <cstdio>
@@ -79,6 +80,14 @@ Font::Font(FontFace* face, FT_Face ftFace, uint16_t height, uint8_t bitmap[],
   }
 }
 
+void asjdlfjasjf() {
+  for (uint32_t i = 0; i < 1000; i++) {
+    if (isprint(i%200)){
+      drawPolyLines(v[i].points?)
+    }
+  }
+}
+
 Font::~Font() {}
 
 Font* Font::getDefault() {
@@ -117,7 +126,9 @@ void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t>& glyphMap,
 
     // if (FT_Render_Glyph(ftFace->glyph, FT_RENDER_MODE_NORMAL)) {
     // std::cerr << "ERROR::FREETYPE: Failed to Render Glyph" << std::endl;
-    FT_Glyph glyph;
+    FT_Stroker_ParseOutline(parentFace->stroker, &(ftFace->glyph->outline),
+                            false);
+    glyphOutlines FT_Glyph glyph;
     if (FT_Get_Glyph(ftFace->glyph, &glyph)) {
       std::cerr << "ERROR::FREETYPE: Failed to get glyph" << std::endl;
       glyphs.push_back(Glyph(maxWidth, 0, 0, 0, 0, 0.0, 0.0, 1.0, 1.0));
@@ -209,6 +220,7 @@ FontFace::FontFace(FT_Library ft, const string& faceName,
     cerr << "Failed to load font: " << facePath << '\n';
     return;  // TODO: throw
   }
+  FT_Stroker_New(ft, &stroker);
   pathByName[faceName] = facePath;
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   for (uint32_t fontSize = minFontSize, i = 0; fontSize <= maxFontSize;
