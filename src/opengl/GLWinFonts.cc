@@ -80,13 +80,14 @@ Font::Font(FontFace* face, FT_Face ftFace, uint16_t height, uint8_t bitmap[],
   }
 }
 
-void asjdlfjasjf() {
-  for (uint32_t i = 0; i < 1000; i++) {
-    if (isprint(i%200)){
-      drawPolyLines(v[i].points?)
-    }
-  }
-}
+// Example draw loop?
+// void asjdlfjasjf() {
+//   for (uint32_t i = 0; i < 1000; i++) {
+//     if (isprint(i%200)){
+//       drawPolyLines(v[i].points?)
+//     }
+//   }
+// }
 
 Font::~Font() {}
 
