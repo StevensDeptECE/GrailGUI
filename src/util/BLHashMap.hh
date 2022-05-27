@@ -1,23 +1,25 @@
 #pragma once
 #include <iostream>
 #include <utility>
+#include <sys/stat.h>
 #include "data/BlockLoader2.hh"
 
-class HashMapBase : BlockLoader {
+class BLHashMapBase : public BlockLoader {
  protected:
   struct HashMapHeader {
     uint32_t symbolCapacity; // size of memory block holding symbols
     uint32_t tableCapacity;  // size of memory block holding table
     uint32_t nodeCapacity;   // size of memory block holding nodes
-    uint32_t unused;         // make C++ align to 8 bytes (now guarantee 16 bytes)
-    HashMapHeader(uint32_t symbolCapacity, uint32_t tableCapacity, uint32_t nodeCapacity)
-     : symbolCapacity(symbolCapacity), tableCapacity(tableCapacity), nodeCapacity(nodeCapacity) {}
+    uint32_t nodeCount;      // number of nodes
+    // now HashMapHeader = 16 bytes
+    HashMapHeader(uint32_t symbolCapacity, uint32_t tableCapacity, uint32_t nodeCapacity, uint32_t nodeCount)
+     : symbolCapacity(symbolCapacity), tableCapacity(tableCapacity), nodeCapacity(nodeCapacity), nodeCount(nodeCount) {}
   };
   
   uint32_t symbolCapacity; // size of memory block holding symbols
   uint32_t tableCapacity;  // size of memory block holding table
   char* symbols;
-  char* current;
+  char* currentSymbol;
   uint32_t* table;
   HashMapHeader* hashMapHeader;
 
@@ -47,61 +49,123 @@ class HashMapBase : BlockLoader {
   uint32_t hash(const char s[], uint32_t len) const {
     return bytewisehash(s, len);
   }
+
+  static uint32_t getFileSize(const char filename[]) {
+      struct stat s;
+      stat(filename, &s);
+      return s.st_size;
+  }
+
+  /*
   HashMapBase(uint32_t symbolCapacity, uint32_t tableCapacity)
       : tableCapacity(tableCapacity), symbolCapacity(symbolCapacity), table(new uint32_t[tableCapacity]) {
     tableCapacity--;
     symbols = new char[symbolCapacity];
   }
+  */
 
-  HashMapBase(uint32_t symbolCapacity, uint32_t tableCapacity, uint32_t nodeCapacity, uint32_t additional)
-     : BlockLoader(symbolCapacity + tableCapacity + nodeCapacity + additional, Type::namemap, 0x0001)
+  // making it the first time
+  BLHashMapBase(uint32_t symbolCapacity, uint32_t tableCapacity, uint32_t nodeCapacity, uint32_t additional)
+     : BlockLoader(symbolCapacity + tableCapacity*sizeof(uint32_t) + nodeCapacity + additional, Type::namemap, 0x0001)
   {
+    hashMapHeader = (HashMapHeader*)((char*)(mem) + sizeof(GeneralHeader));
+    hashMapHeader->symbolCapacity = symbolCapacity;
+    hashMapHeader->tableCapacity = tableCapacity;
+    hashMapHeader->nodeCapacity = nodeCapacity;
+    hashMapHeader->nodeCount = 0;
+    this->symbolCapacity = symbolCapacity;
+    this->tableCapacity = tableCapacity;
+    symbols = (char*)hashMapHeader + sizeof(HashMapHeader);
+    table = (uint32_t*)(findNextAlign8(symbols + symbolCapacity));
+    currentSymbol = symbols;
+  }
+
+  // loading in from blockloader file
+  // TODO: how in c++ do we not have to write this twice
+  BLHashMapBase(const char filename[]) : BlockLoader(filename, getFileSize(filename), getFileSize(filename)*2) {
     hashMapHeader = (HashMapHeader*)((char*)(mem) + sizeof(GeneralHeader));
     symbolCapacity = hashMapHeader->symbolCapacity;
     tableCapacity = hashMapHeader->tableCapacity;
     symbols = (char*)hashMapHeader + sizeof(HashMapHeader);
-    table = (uint32_t*)(symbols + symbolCapacity);
-
+    table = (uint32_t*)(findNextAlign8(symbols + symbolCapacity));
+    currentSymbol = symbols;
   }
 
  public:
   const char* getWords() const { return symbols; }
-  uint32_t getWordsSize() const { return current - symbols; }
+  uint32_t getWordsSize() const { return currentSymbol - symbols; }
+
+  void writeFile(const char filename[]) {
+    BlockLoader::writeFile(filename, sizeof(GeneralHeader) + sizeof(HashMapHeader) + symbolCapacity);
+  }
 };
 
 template <typename Val>
-class HashMap : public HashMapBase {
-  struct Node {
-    uint32_t offset;
-    uint32_t next;  // relative pointer (offset into nodes)
-    Val val;
-    Node() {
-    }  // this is so the empty block can be initialized without doing anything
-    Node(uint32_t offset, uint32_t next, Val v)
-        : offset(offset), next(next), val(v) {}
-  };
-  uint32_t nodeCapacity;   // how many nodes are preallocated
-  uint32_t nodeCount;  // how many nodes are currently used
-  Node* nodes;
+class BLHashMap : public BLHashMapBase {
+  private:
+    struct Node {
+      uint32_t offset;
+      uint32_t next;  // relative pointer (offset into nodes)
+      Val val;
+      Node() {
+      }  // this is so the empty block can be initialized without doing anything
+      Node(uint32_t offset, uint32_t next, Val v)
+          : offset(offset), next(next), val(v) {}
+    };
+    uint32_t nodeCapacity;   // how many nodes are preallocated
+    uint32_t nodeCount;  // how many nodes are currently used
+    Node* nodes;
+  
+    // computes the next highest power of 2
+    static uint32_t nearestPower2 (uint32_t v) {
+      v--;
+      v |= v >> 1;
+      v |= v >> 2;
+      v |= v >> 4;
+      v |= v >> 8;
+      v |= v >> 16;
+      v++;
+      return v;
+    }
 
  public:
-  HashMap(uint32_t symbolCapacity, uint32_t tableCapacity, uint32_t nodeCapacity)
-      : HashMapBase(symbolCapacity, tableCapacity, nodeCapacity*sizeof(Node), sizeof(HashMapBase))
+  // making it for the first time
+  BLHashMap(uint32_t symbolCapacity, uint32_t tableCapacity, uint32_t nodeCapacity)
+      : BLHashMapBase(symbolCapacity, nearestPower2(tableCapacity), nodeCapacity*sizeof(Node), sizeof(HashMapHeader)),
         nodeCapacity(nodeCapacity),
-        nodes(new Node[nodeCapacity]) {
-    current = symbols;
+        nodes((Node*)(findNextAlign8((char*)table + nearestPower2(tableCapacity)*sizeof(uint32_t)))) {
+    currentSymbol = symbols;
     nodeCount = 1;  // zero is null
 
     for (uint32_t i = 0; i <= tableCapacity; i++)
       table[i] = 0;  // 0 means empty, at the moment the first node is unused
   }
-  ~HashMap() {
+
+  // reading in blockloader file
+  BLHashMap(const char filename[]) 
+    : BLHashMapBase(filename),
+      nodeCapacity(hashMapHeader->nodeCapacity),
+      nodes((Node*)(findNextAlign8((char*)table + nearestPower2(tableCapacity)*sizeof(uint32_t)))) {
+    uint32_t count = 0;
+    char* word = strtok(symbols, "\n");
+    // create hashmap and load dictionary in with a unique integer for each word
+    while (word != nullptr)
+    {
+      add(word, count++);
+      //cout << word << ": " << count << '\n';
+      word = strtok(nullptr, "\n");
+    }
+  }
+
+  #if 0
+  ~BLHashMap() {
     delete[] nodes;
     delete[] symbols;
     delete[] table;
   }
-  HashMap(const HashMap& orig) = delete;
-  HashMap& operator=(const HashMap& orig) = delete;
+  #endif
+  BLHashMap(const BLHashMap& orig) = delete;
+  BLHashMap& operator=(const BLHashMap& orig) = delete;
 
   // TODO: segment faults when trying to grow
   void checkGrow() {
@@ -129,7 +193,7 @@ class HashMap : public HashMapBase {
     delete[] oldTable;
     size = size * 2 | 1;
     // TODO: grow the symbol table too
-    std::cerr << "HashMap growing size=" << tableCapacity << " " << nodeCapacity << '\n';
+    std::cerr << "BLHashMap growing size=" << tableCapacity << " " << nodeCapacity << '\n';
   }
 
   void add(const char s[], const Val& v) {
@@ -145,11 +209,11 @@ class HashMap : public HashMapBase {
     checkGrow();
 
     int i;
-    for (i = 0; s[i] != '\0'; i++) current[i] = s[i];
-    current[i] = '\0';
-    nodes[nodeCount] = Node(current - symbols, table[index], v);
+    for (i = 0; s[i] != '\0'; i++) currentSymbol[i] = s[i];
+    currentSymbol[i] = '\0';
+    nodes[nodeCount] = Node(currentSymbol - symbols, table[index], v);
     table[index] = nodeCount;
-    current += i + 1;
+    currentSymbol += i + 1;
     nodeCount++;
   }
   Val add(const char s[], uint32_t len, const Val& v) {
@@ -164,11 +228,11 @@ class HashMap : public HashMapBase {
     checkGrow();
 
     int i;
-    for (i = 0; i < len; i++) current[i] = s[i];
-    current[i] = '\0';
-    nodes[nodeCount] = Node(current - symbols, table[index], v);
+    for (i = 0; i < len; i++) currentSymbol[i] = s[i];
+    currentSymbol[i] = '\0';
+    nodes[nodeCount] = Node(currentSymbol - symbols, table[index], v);
     table[index] = nodeCount;
-    current += i + 1;
+    currentSymbol += i + 1;
     nodeCount++;
     return v;
   }
@@ -242,7 +306,7 @@ class HashMap : public HashMapBase {
     }
     return totalQuality;
   }
-  friend std::ostream& operator<<(std::ostream& s, const HashMap& h) {
+  friend std::ostream& operator<<(std::ostream& s, const BLHashMap& h) {
     for (size_t i = 0; i <= h.size; i++) {
       s << "bin " << i << "\n";
       for (uint32_t p = h.table[i]; p != 0; p = h.nodes[p].next)
@@ -254,11 +318,11 @@ class HashMap : public HashMapBase {
 
   class Iterator {
    private:
-    HashMap* m;
+    BLHashMap* m;
     uint32_t current;
 
    public:
-    Iterator(const HashMap& list) : m(&list), current(1) {}
+    Iterator(const BLHashMap& list) : m(&list), current(1) {}
     bool operator!() const { return current < m->nodeCount; }
     void operator++() { ++current; }
     const char* key() const { return m->symbols[m->nodes[current].offset]; }
@@ -266,11 +330,11 @@ class HashMap : public HashMapBase {
   };
   class ConstIterator {
    private:
-    const HashMap* m;
+    const BLHashMap* m;
     uint32_t current;
 
    public:
-    ConstIterator(const HashMap& list) : m(&list), current(1) {}
+    ConstIterator(const BLHashMap& list) : m(&list), current(1) {}
     bool operator!() const { return current < m->nodeCount; }
     void operator++() { ++current; }
     const char* key() const { return m->symbols + m->nodes[current].offset; }

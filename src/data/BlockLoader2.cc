@@ -10,7 +10,7 @@
 #include "util/PlatFlags.hh"
 
 BlockLoader::BlockLoader(uint64_t bytes, Type t, uint16_t version)
-    : mem(new uint64_t[(getHeaderSize() + (bytes + 7) / 8)]), size(bytes) {
+    : mem((uint64_t*)(malloc((getHeaderSize() + ((bytes + 7) & ~7ULL))))), size(bytes) {
   generalHeader = (GeneralHeader*)mem;  // header is the first chunk of bytes
   generalHeader->magic = ((((('!' << 8) + 'B') << 8) + 'L') << 8) +
                          'd';  // magic number for all block loaders
@@ -21,21 +21,35 @@ BlockLoader::BlockLoader(uint64_t bytes, Type t, uint16_t version)
       0;  // document id not defined without getting a unique id from server
 }
 
-BlockLoader::BlockLoader(const char filename[]) {
+BlockLoader::BlockLoader(const char filename[], uint64_t fileSize, uint64_t memSize) {
   int fh = open(filename, O_RDONLY | O_BINARY);
   if (fh < 0) throw Ex2(Errcode::FILE_READ, "Can't open file");
   struct stat s;
-  fstat(fh, &s);
-  size = s.st_size;
-
-  mem = new uint64_t[(size + 7) / 8];
-  int bytesRead = read(fh, (char*)mem, size);
-  fmt::print("{:d} bytes read, size is {:d}\n", bytesRead, size);
-  if (bytesRead != size)
+  fstat(fh, &s); // get the size of the file
+  if (memSize != 0)
+    size = ((memSize + 7)/8)* 8; // if size is specified manually, round up to next multiple of 8 (byte alignment)
+  else
+    size = ((s.st_size + 7)/8)* 8; // if file size is not multiple of 8, round up to 8 for byte alignment
+  mem = (uint64_t*)malloc(size);
+  int bytesRead = read(fh, (char*)mem, fileSize); // read the entire file into RAM
+  fmt::print("{:d} bytes read, size is {:d}\n", bytesRead, fileSize);
+  if (bytesRead != fileSize)
     throw Ex2(Errcode::FILE_READ, "Could not read entire file");
   generalHeader = (GeneralHeader*)mem;  // header is the first chunk of bytes
   close(fh);
 }
+#if 0
+BlockLoader BlockLoader::readFile(const char filename[], uint64_t memSize = 0) {
+  int fh = open(filename, O_RDONLY | O_BINARY);
+  if (fh < 0) throw Ex2(Errcode::FILE_READ, "Can't open file");
+  struct stat s;
+  fstat(fh, &s);
+  if (memSize != 0)
+    return BlockLoader(fh, s.st_size, memSize); // for extra memory
+  else
+    return BlockLoader(fh, s.st_size, s.st_size); // fileSize = memSize
+}
+#endif
 
 /*
 ** TODO: Attempted security to make hash collisions much harder (unimplemented)
@@ -86,4 +100,18 @@ void BlockLoader::registerDocument(uint64_t author_id) const {
 
 bool BlockLoader::authenticateDocument() const {
   return false;  // TODO: authentication not implemented yet
+}
+
+void BlockLoader::writeFile(const char filename[], uint64_t fileSize) {
+  int fh = open(filename, O_BINARY | O_WRONLY | O_TRUNC | O_CREAT, 0644);
+  int bytesWritten = write(fh, (char*)mem, fileSize);
+  if (bytesWritten < 0) {
+    throw Ex2(Errcode::FILE_READ, strerror(errno));
+  }
+  fmt::print("{:d} bytes written\n", bytesWritten);
+  close(fh);
+}
+
+void BlockLoader::writeFile(const char filename[]) {
+  writeFile(filename, size);
 }

@@ -1,7 +1,6 @@
 #include <iostream>
-#include "HashMap.hh"
+#include "util/BLHashMap.hh"
 #include "util/FileUtil.hh"
-#include "BlockLoader2.hh"
 #include <cstring>
 // make a copy of Hashmap.hh into src/xp
 
@@ -16,12 +15,12 @@ void convertAsciiDictionaryToBlockLoader() {
   FileUtil::readComplete(&f, &length, "xp/dict.txt");
   char* word = strtok(f, "\n");
   // create hashmap and load dictionary in with a unique integer for each word
-  HashMap<uint32_t> dict = HashMap<uint32_t>(length, length/5, length/5);
-  while (word != NULL)
+  BLHashMap<uint32_t> dict = BLHashMap<uint32_t>(length, length/5, length/5);
+  while (word != nullptr)
   {
     dict.add(word, count++);
     //cout << word << ": " << count << '\n';
-    word = strtok(NULL, "\n");
+    word = strtok(nullptr, "\n");
   }
   
   // test case to find word and return value
@@ -33,6 +32,8 @@ void convertAsciiDictionaryToBlockLoader() {
     cout << test << " not found\n";
   }
   
+  dict.writeFile("fastloaddict.bdl");
+
   // now, modify hash map to save the dictionary into a single block loader
   // write out the block loader format
   // 4 bytes magic number, 2 bytes  type , ....
@@ -54,15 +55,5 @@ int main() {
 // make a fast dictionary loader that loads from the format you saved
 //  HashMap<uint32_t> dict("fastloaddict.bld");
 
-/* using FileUtil
-  char* f = FileUtil::readComplete("xp/dict.txt");
-  char* word = strtok(f, "\n");
-  while (word != NULL)
-  {
-    cout << word << '\n';
-    word = strtok(NULL, "\n");
-  }
-*/
-
-return 0;
+  return 0;
 }

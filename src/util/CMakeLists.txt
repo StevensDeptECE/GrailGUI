@@ -1,4 +1,4 @@
-set(grail-util Buffer.cc Callbacks.cc datatype1.cc HashMap.cc Prefs.cc
+set(grail-util BLHashMap.cc Buffer.cc Callbacks.cc datatype1.cc HashMap.cc Prefs.cc
                Timers.cc)
 
 list(TRANSFORM grail-util PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)

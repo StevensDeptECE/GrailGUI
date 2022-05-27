@@ -36,7 +36,13 @@ void BlockMapLoader::save(const char filename[]) {
   close(fh);
 }
 
-BlockMapLoader::BlockMapLoader(const char filename[]) : BlockLoader(filename) {
+static uint32_t getFileSize(const char filename[]) {
+    struct stat s;
+    stat(filename, &s);
+    return s.st_size;
+}
+
+BlockMapLoader::BlockMapLoader(const char filename[]) : BlockLoader(filename, getFileSize(filename)) {
   blockMapHeader =
       (BlockMapHeader*)getSpecificHeader();  //((char*)mem + getHeaderSize());
   // TODO: add RegionContainer and NamedEntities

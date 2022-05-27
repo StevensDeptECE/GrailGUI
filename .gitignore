@@ -174,5 +174,8 @@ compile_commands.json
 # Block Map Loader
 *.bml
 
+# Block Dictionary Loader
+*.bdl
+
 external/
 bin/

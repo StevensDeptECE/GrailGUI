@@ -68,7 +68,6 @@ class BlockLoader {
     requires knowing everything before call) This would require returning
     a structure with those 3 items. Should probably just do that.
   */
-  BlockLoader() {}
   struct Info {
     uint64_t bytes;
     Type t;
@@ -77,19 +76,24 @@ class BlockLoader {
   BlockLoader(const Info& info);
   uint64_t crc64(uint32_t start, uint32_t stride) const;
   void hashThisDocument() const;
-
+  BlockLoader(const char filename[], uint64_t fileSize, uint64_t memSize = 0);
  public:
-  BlockLoader(const char filename[]);
   ~BlockLoader() {
     // std::cerr << "destroying: " << mem << std::endl;
-    delete[] mem;
+    free(mem);
   }
   BlockLoader(const BlockLoader& orig) = delete;
   BlockLoader& operator=(const BlockLoader& orig) = delete;
   BlockLoader(BlockLoader&& orig)
       : mem(orig.mem), size(orig.size), generalHeader(orig.generalHeader) {
-    orig.mem = nullptr;
+    //orig.mem = nullptr;
+    free(orig.mem);
   }
+
+  static void* findNextAlign8(char* p){
+    return (void*)((uint64_t)(p + 7) / 8 * 8);
+  }
+  // static BlockLoader readFile(const char filename[], uint64_t memSize);
 
   // void init(uint64_t* mem, uint64_t size);
   // void init(uint64_t bytes, Type t, uint32_t version);
@@ -104,6 +108,9 @@ class BlockLoader {
   // register this document with a server under author's id
   bool authenticateDocument()
       const;  // return true if this document is correctly signed on server
+
+  void writeFile(const char filename[], uint64_t fileSize);
+  void writeFile(const char filename[]);
 
   BlockLoader(uint64_t bytes, Type t, uint16_t version);
 };
