@@ -33,7 +33,10 @@ Member::Member(Member&& orig) noexcept : tab(orig.tab), c(orig.c) {
   orig.tab = nullptr;
   orig.c = nullptr;
 }
-Member& Member::operator=(Member orig) { swap(*this, orig); return *this; }
+Member& Member::operator=(Member orig) {
+  swap(*this, orig);
+  return *this;
+}
 Member& Member::operator=(Member&& orig) noexcept {
   if (this != &orig) {
     tab = orig.tab;
@@ -42,8 +45,8 @@ Member& Member::operator=(Member&& orig) noexcept {
   return *this;
 }
 
-void swap(Member& a, Member& b){
+void swap(Member& a, Member& b) {
   using std::swap;
-  swap(a.tab,b.tab);
-  swap(a.c,b.c);
+  swap(a.tab, b.tab);
+  swap(a.c, b.c);
 }

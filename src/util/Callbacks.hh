@@ -43,8 +43,8 @@ class CallbackHandler {
   enum class Security {
     SAFE,        // safe for a remote server to trigger this function
     RESTRICTED,  // only the local user can execute this function
-    ASK  // a remote user or server may request this, but it will trigger a popup
-         // asking local user to approve
+    ASK  // a remote user or server may request this, but it will trigger a
+         // popup asking local user to approve
   };
   std::array<uint32_t, 3> numActions;  // keep track of how many of each kind of
                                        // operations there are

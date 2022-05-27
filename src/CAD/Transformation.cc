@@ -1,7 +1,8 @@
 #include "CAD/Transformation.hh"
+
 #include <glad/glad.h>
-// DO NOT REMOVE THIS COMMENT. IDIOTIC SORTING FORMAT WILL MOVE glad.h after glfw3 and screw up the build.
-// What genius made the headers order-dependent?
+// DO NOT REMOVE THIS COMMENT. IDIOTIC SORTING FORMAT WILL MOVE glad.h after
+// glfw3 and screw up the build. What genius made the headers order-dependent?
 
 #include <GLFW/glfw3.h>
 

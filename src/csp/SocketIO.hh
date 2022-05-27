@@ -32,7 +32,7 @@ constexpr int err_code = -1;
 #elif _WIN32
 constexpr int err_code = SOCKET_ERROR;
 #endif
-}  // anonymous namespace for errors
+}  // namespace
 
 ssize_t send(socket_t sckt, const char *buf, int size, int flags);
 ssize_t recv(socket_t sckt, char *buf, int size, int flags);

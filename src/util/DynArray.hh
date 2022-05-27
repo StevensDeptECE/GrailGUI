@@ -5,7 +5,7 @@
 #include <iostream>
 
 // The following disables clang-tidy from warning about pointer arithmetic
-// Since this is a container implementation, it is unavoidable that pointer 
+// Since this is a container implementation, it is unavoidable that pointer
 // arithmetic is used
 // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
@@ -77,8 +77,8 @@ class DynArray {
     if (index == size_ - 1) data[index].~T();
     --size_;
     return temp;
-}
-    template <class... Args>
+  }
+  template <class... Args>
   T& emplace_back(Args&&... args) {
     checkGrow();
     return *construct_at(data + size_++, std::forward<Args>(args)...);

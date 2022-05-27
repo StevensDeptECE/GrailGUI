@@ -5,14 +5,16 @@
 using namespace std;
 
 CallbackHandler::CallbackHandler() {
-  for (uint8_t i = 0; i < 3; i++) {numActions[i] = 1;}
+  for (uint8_t i = 0; i < 3; i++) {
+    numActions[i] = 1;
+  }
 }
 
 HashMap<uint32_t> CallbackHandler::actionNameMap(64, 4096);
 std::array<uint32_t, 32768> inputMap();
 
-uint32_t CallbackHandler::internalRegisterAction(const char name[], const Security s,
-                                                 const function<void()> action) {
+uint32_t CallbackHandler::internalRegisterAction(
+    const char name[], const Security s, const function<void()> action) {
   auto securityIndex = uint32_t(s);
   // SAFE = 0..999, RESTRICTED=1000.1999, ASK=2000..2999
   uint32_t actNum = 1000 * securityIndex + numActions[securityIndex]++;
@@ -30,7 +32,9 @@ uint32_t CallbackHandler::internalRegisterAction(const char name[], const Securi
 
 auto CallbackHandler::lookupAction(const char actionName[]) -> uint32_t {
   uint32_t *act_code = actionNameMap.get(actionName);
-  if (act_code) {return *act_code;}
+  if (act_code) {
+    return *act_code;
+  }
   cerr << "Input binding failed: " << actionName << '\n';
   return 0;
 }
@@ -57,7 +61,7 @@ uint32_t CallbackHandler::registerCallback(uint32_t input, const char name[],
   setEvent(input, lookupAction(name));
   return actNum;
 }
- auto CallbackHandler::doit(uint32_t input) -> void {
+auto CallbackHandler::doit(uint32_t input) -> void {
   uint32_t act = CallbackHandler::inputMap[input];
   if (act == 0) return;
   auto a = CallbackHandler::actionMap[act];
