@@ -20,6 +20,6 @@ MultiTab::MultiTab(GLWin* w) : NavigationBar(w, 0, 0, 200, 130, 20, true) {
 }
 
 void grailmain(int argc, char* argv[], GLWin* w) {
-  new Tab(w);
+  w->addTab();
   new MultiTab(w);
 }

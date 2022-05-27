@@ -78,7 +78,6 @@ void NavigationBar::setButtonAction(
 void NavigationBar::addNewTab() {
   Tab* t = parentWin->addTab();
   canvases.insert(t->getMainCanvas());
-  parentWin->toLastTab();
   // addToTab(t);
 }
 
