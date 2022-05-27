@@ -58,13 +58,18 @@ class NavigationBar : public Member {
    *
    * @param width width of the new button
    * @param height height of the new button
-   * @param axisOffset offset relative to the previous button
    * @param label the text to be shown on the button
    * @param action a description of the button's action
    * @return ButtonWidget& a reference to the new button
    */
-  ButtonWidget* addButton(float width, float height, float axisOffset,
-                          std::string label, const char action[]);
+  ButtonWidget* addButton(float width, float height, std::string label,
+                          const char action[]);
+
+  /**
+   * @brief Automatically calculate axis offset for new button on nav bar
+   *
+   */
+  float axisOffset();
 
   /**
    * @brief Set an action for a button in the nav bar

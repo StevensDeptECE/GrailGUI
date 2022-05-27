@@ -14,6 +14,7 @@ class Member {
 
  public:
   Member(Tab* tab, double frameRate = -1, double dt = 0.0001);
+  Member(GLWin* w, double frameRate = -1, double dt = 0.0001);
 
   void setFrameRate(double frameRate);
   void setModelDt(double dt, double defaultDt);

@@ -11,14 +11,15 @@ class MultiTab : public NavigationBar {
 };
 
 MultiTab::MultiTab(GLWin* w) : NavigationBar(w, 0, 0, 200, 130, 20, true) {
-  ButtonWidget* prev = addButton(200, 30, 0, "previous", "previous tab");
+  ButtonWidget* prev = addButton(200, 30, "previous", "previous tab");
   prev->setAction(bind(&GLWin::prevTab, w));
-  ButtonWidget* next = addButton(200, 30, 50, "next", "next tab");
+  ButtonWidget* next = addButton(200, 30, "next", "next tab");
   next->setAction(bind(&GLWin::nextTab, w));
-  ButtonWidget* add = addButton(200, 30, 100, "+", "add tab");
+  ButtonWidget* add = addButton(200, 30, "+", "add tab");
   add->setAction(bind(&MultiTab::addNewTab, this));
 }
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+void grailmain(int argc, char* argv[], GLWin* w) {
+  new Tab(w);
   new MultiTab(w);
 }

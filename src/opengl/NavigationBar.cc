@@ -46,26 +46,28 @@ NavigationBar::NavigationBar(GLWin* w, float x, float y, float width,
   parentWin = w;
 }
 
-ButtonWidget* NavigationBar::addButton(float width, float height,
-                                       float axisOffset, string label,
+ButtonWidget* NavigationBar::addButton(float width, float height, string label,
                                        const char action[]) {
   if (isVertical) {
-    // TODO: emplace_back failing to copy m
-    // buttons.emplace_back(currentCanvas, xPos, yPos + axisOffset, width,
-    // height, label, action);
-    buttons.push_back(new ButtonWidget(currentCanvas, xPos, yPos + axisOffset,
+    buttons.push_back(new ButtonWidget(currentCanvas, xPos, yPos + axisOffset(),
                                        width, height, label, action));
   } else {
-    // TODO: ditto
-    // buttons.emplace_back(currentCanvas, xPos + axisOffset, yPos, width,
-    // height, label, action);
-    buttons.push_back(new ButtonWidget(currentCanvas, xPos + axisOffset, yPos,
+    buttons.push_back(new ButtonWidget(currentCanvas, xPos + axisOffset(), yPos,
                                        width, height, label, action));
   }
-  // buttons.back().setStyledMultiShape(&m);
-  // buttons.back().setMultiText(&t);
-  // buttons.back().redraw();
   return buttons.back();
+}
+
+float NavigationBar::axisOffset() {
+  if (buttons.empty()) {
+    return 0;
+  } else {
+    if (isVertical) {
+      return buttons.back()->getY() + buttons.back()->getH() + axisPadding;
+    } else {
+      return buttons.back()->getX() + buttons.back()->getW() + axisPadding;
+    }
+  }
 }
 
 void NavigationBar::setButtonAction(
@@ -80,6 +82,7 @@ void NavigationBar::addNewTab() {
   // addToTab(t);
 }
 
+/*
 void NavigationBar::addToTab(Tab* tab) {
   tab->addMember(this);
   MainCanvas* newCanvas = tab->getMainCanvas();
@@ -88,5 +91,6 @@ void NavigationBar::addToTab(Tab* tab) {
   tab->setUpdate();
   tab->setRender();
 }
+*/
 
 void NavigationBar::balanceButtons(int numButtons) {}

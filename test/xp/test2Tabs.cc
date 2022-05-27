@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "fmt/core.h"
 #include "opengl/GrailGUI.hh"
 #include "opengl/NavigationBar.hh"
@@ -8,23 +6,19 @@
 using namespace std;
 using namespace grail;
 
-class Member1 : public Member {
+class Square : public Member {
  public:
-  Member1(Tab* tab) : Member(tab, 0, 0) {
-    MainCanvas* c = tab->getMainCanvas();
-    StyledMultiShape2D* gui = c->getGui();
-
+  Square(GLWin* w) : Member(w, 0, 0) {
+    StyledMultiShape2D* gui = tab->getMainCanvas()->getGui();
     gui->fillRectangle(500, 600, 200, 200, red);
   }
 };
 
-class Member2 : public Member {
+class Circle : public Member {
  public:
-  Member2(Tab* tab) : Member(tab, 0, 0) {
-    MainCanvas* c = tab->getMainCanvas();
-    StyledMultiShape2D* gui = c->getGui();
-
-    gui->drawCircle(450, 50, 45, 5, purple);
+  Circle(GLWin* w) : Member(w, 0, 0) {
+    StyledMultiShape2D* gui = tab->getMainCanvas()->getGui();
+    gui->fillCircle(600, 700, 100, 5, purple);
   }
 };
 
@@ -33,20 +27,20 @@ class MultiTab : public NavigationBar {
   MultiTab(GLWin* w);
 };
 
-MultiTab::MultiTab(GLWin* w) : NavigationBar(w, 0, 0, 200, 130, 20, true) {
-  ButtonWidget* hi = addButton(200, 30, 0, "hi", "print hi");
-  auto action = []() { fmt::print("hi\n"); };
-  hi->setAction(action);
+MultiTab::MultiTab(GLWin* w) : NavigationBar(w, 0, 0, 250, 200, 20, true) {
+  ButtonWidget* square = addButton(250, 50, "Square", "tab 1");
+  square->setAction([w]() { w->switchTab(0); });
 
-  ButtonWidget* next = addButton(200, 30, 50, "next", "next tab");
-  auto action2 = [w]() { w->nextTab(); };
-  next->setAction(action2);
+  ButtonWidget* circle = addButton(250, 50, "Circle", "tab 2");
+  circle->setAction([w]() { w->switchTab(1); });
+
+  ButtonWidget* next = addButton(250, 50, "Next", "next tab");
+  next->setAction([w]() { w->nextTab(); });
 }
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+void grailmain(int argc, char* argv[], GLWin* w) {
   w->setTitle("Test Tabs");
-  new Member1(defaultTab);
+  new Square(w);
   MultiTab* m = new MultiTab(w);
-  Tab* t2 = w->addTab();
-  new Member2(t2);
+  new Circle(w);
 }

@@ -13,6 +13,9 @@ Member::Member(Tab* tab, double frameRate, double dt)
   tab->addMember(this);
 }
 
+Member::Member(GLWin* w, double frameRate, double dt)
+    : Member(w->addTab(), frameRate, dt) {}
+
 void Member::setFrameRate(double frameRate) { tab->setFrameRate(frameRate); }
 
 void Member::setModelDt(double dt, double defaultDt) {

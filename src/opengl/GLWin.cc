@@ -251,8 +251,8 @@ void GLWin::startWindow() {
   menuStyle = new Style(menuFont, 0.5, 0.5, 0.5, 0, 0, 0, 1, COMMON_SHADER);
   menuTextStyle = new Style(menuFont, 0.5, 0.5, 0.5, 0, 0, 0, 1, COMMON_SHADER);
   sharedTab = new Tab(this);
-  tabs.add(new Tab(this));
-  current = 0;
+  // tabs.add(new Tab(this));
+  current = -1;
   hasBeenInitialized = true;
 }
 void GLWin::baseInit() {
@@ -313,9 +313,13 @@ void GLWin::cleanup() {
 }
 
 void GLWin::init() {}
-void GLWin::render() { currentTab()->render(); }
+void GLWin::render() {
+  if (current >= 0) currentTab()->render();
+}
 // default is no animation. Override if you want your class to animate
-void GLWin::update() { currentTab()->update(); }
+void GLWin::update() {
+  if (current >= 0) currentTab()->update();
+}
 
 // declare prototype access to static function in other file which calls
 // FaceFont::cleanup()
@@ -490,6 +494,7 @@ void GLWin::prevTab() {
 Tab *GLWin::addTab() {
   Tab *newTab = new Tab(this);
   tabs.add(newTab);
+  current = tabs.size() - 1;
   return newTab;
 }
 

@@ -54,7 +54,7 @@ class GLWin {
   char frameName[32];
   Tab* sharedTab;
   DynArray<Tab*> tabs;  // list of web pages, ie tabs
-  uint32_t current;     // current (active) tab
+  int32_t current;      // current (active) tab
   void checkUpdate();
 
  public:
@@ -189,6 +189,7 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   void prevTab();
   Tab* addTab();
   void removeTab();
-  void toLastTab() { current = tabs.size() - 1; }
+  void switchTab(int tabIndex) { current = tabIndex; };
+  void toLastTab() { current = tabs.size() - 1; };
   void goToLink(const char ipaddr[], uint16_t port, uint32_t requestID);
 };
