@@ -41,6 +41,19 @@ class TestDrawBlockMap : public Member {
   ~TestDrawBlockMap() { delete mv; }
   TestDrawBlockMap(const TestDrawBlockMap& orig) = delete;
   TestDrawBlockMap& operator=(const TestDrawBlockMap& orig) = delete;
+  TestDrawBlockMap(TestDrawBlockMap&& orig)
+      : Member(orig), filename(orig.filename), mv(orig.mv) {
+    orig.mv = nullptr;  // TODO: should filename be set to nullptr?
+  }
+  TestDrawBlockMap& operator=(const TestDrawBlockMap&& orig) {
+    if (this != &orig) {
+      delete mv;  // TODO: Not deleting filename as its usually passed on the
+                  // stack
+      mv = orig.mv;
+      filename = orig.filename;
+    }
+    return *this;
+  }
 
   constexpr static float zoomVal = 1.2;
   void mapZoomIn() {
