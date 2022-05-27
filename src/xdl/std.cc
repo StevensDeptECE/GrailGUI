@@ -117,7 +117,7 @@ void Struct::addSymCheckNull(const string& name, const XDLType* t2) {
   const XDLType* t = getMemberType(name);
   if (t == nullptr) {  // undefined symbol
     compiler->undefinedSymbol(name);
-    // throw Ex2(Errcode::UNDEFINED_TYPE, std::string("Type : ") + name);
+    // throw Ex2(Errcode::UNDEFINED_TYPE, string("Type : ") + name);
     return;
   }
   addSym(name, t2);
@@ -132,10 +132,10 @@ void Struct::addSymCheckDup(const string& name, const XDLType* t2) {
   addSym(name, t2);
 }
 
-void Struct::addMember(const std::string& memberName, const XDLType* type) {
+void Struct::addMember(const string& memberName, const XDLType* type) {
   if (type == nullptr) {
     compiler->undefinedSymbol(memberName);
-    // throw Ex2(Errcode::UNDEFINED_TYPE, std::string("Type : " + name));
+    // throw Ex2(Errcode::UNDEFINED_TYPE, string("Type : " + name));
     return;
   }
   byName.add(
@@ -148,7 +148,7 @@ void Struct::addMember(const std::string& memberName, const XDLType* type) {
   memberNames += memberName;
 }
 
-void Struct::addBuiltin(const std::string& memberName, DataType t) {
+void Struct::addBuiltin(const string& memberName, DataType t) {
   addMember(memberName, types[uint32_t(t)]);
 }
 
@@ -156,19 +156,19 @@ void Struct::addTypedef(const char name[], const char type[]) {
   const XDLType* t = getMemberType(type);
   if (t == nullptr) {  // undefined symbol
     compiler->undefinedSymbol(name);
-    // throw Ex2(Errcode::UNDEFINED_TYPE, std::string("Type : ") + name);
+    // throw Ex2(Errcode::UNDEFINED_TYPE, string("Type : ") + name);
     return;
   }
   addSymCheckDup(name, new TypeDef(name, t));
 }
 
 #if 0
-void Struct::addRegex(const std::string& name, const std::string& regex) {
+void Struct::addRegex(const string& name, const string& regex) {
   addSymCheckDup(name, new Regex(name, regex));
 }
 #endif
 
-inline void Struct::addStructMember(const std::string& memberName,
+inline void Struct::addStructMember(const string& memberName,
                                     const Struct* memberStruct) {
   members.add(Member(memberNames.length(), memberName.length(), memberStruct));
 }

@@ -8,11 +8,11 @@ class XDLCompiler {
   SymbolTable* symbols;
   uint32_t errorCount;
   uint32_t warningCount;
-  string filename;
+  std::string filename;
   uint32_t lineNumber;
   void displayMessage(const std::string& msg) {
     // TODO use log? switch from string to integer message number
-    cerr << filename << ": " << lineNumber << '\t' << msg << '\n';
+    std::cerr << filename << ": " << lineNumber << '\t' << msg << '\n';
   }
   void readfile();
 
@@ -32,15 +32,15 @@ class XDLCompiler {
   }
 
   void duplicateSymbol(const std::string& name) {
-    error(string("Duplicate Symbol ") + name);
+    error(std::string("Duplicate Symbol ") + name);
   }
 
   void undefinedSymbol(const std::string& name) {
-    error(string("Undefined Symbol ") + name);
+    error(std::string("Undefined Symbol ") + name);
   }
 
   void internalError(const std::string& name) {
-    error(string("InternalError") + name);
+    error(std::string("InternalError") + name);
   }
 
   void warning(const std::string& msg) {

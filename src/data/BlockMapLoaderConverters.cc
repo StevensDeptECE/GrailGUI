@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-#include "data/BlockMapLoader.hh"
+#include "data/BlockMapLoader2.hh"
 #include "libshape/shapefil.h"
 using namespace std;
 

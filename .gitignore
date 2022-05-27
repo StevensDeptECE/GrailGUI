@@ -42,6 +42,8 @@ external/xerces-c-3.2.2
 libs/libgrail.a
 *.lib
 
+libs/
+
 # Executables
 *.exe
 *.out
@@ -195,7 +197,7 @@ CompiledWebPointerOpCodes.cc
 codesummary
 *.png
 # in general we don't want your vscode settings, manually override when you need to
-.vscode/* 
+.vscode/
 lib/*
 BIGMAP.png
 errlog
@@ -209,6 +211,9 @@ docs/man
 # Clang Language Server Cache
 .ccls-cache
 compile_commands.json
+
+# Clangd Cache
+.cache/
 
 # Block Map Loader
 *.bml

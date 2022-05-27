@@ -1,4 +1,5 @@
 #include "opengl/PopupMenu.hh"
+
 #include "opengl/Colors.hh"
 
 void PopupMenu::init() {
@@ -7,5 +8,3 @@ void PopupMenu::init() {
   for (uint32_t i = 0; i < menuItems.size(); i++, y += menuFont->getHeight())
     t->add(x, y, menuFont, menuItems[i]);
 }
-
-

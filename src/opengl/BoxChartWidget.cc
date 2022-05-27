@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
-#include <numbers> //For C++20 constants
+#include <numbers>  //For C++20 constants
 
 #include "stats/stats.hh"
 #include "util/Ex.hh"
@@ -19,7 +19,6 @@ void BoxChartWidget::setData(const vector<double>& data) { this->data = data; }
 void BoxChartWidget::setNames(const ::vector<std::string>& names) {
   this->names = names;
 }
-
 
 void BoxChartWidget::init() {
   xAxis->setTickLabels(names);
@@ -42,7 +41,8 @@ void BoxChartWidget::init() {
 
   StyledMultiShape2D* whiskers =
       c->addLayer(new StyledMultiShape2D(c, &s->whiskerStyle));
-  StyledMultiShape2D* boxes = c->addLayer(new StyledMultiShape2D(c, &s->boxStyle));
+  StyledMultiShape2D* boxes =
+      c->addLayer(new StyledMultiShape2D(c, &s->boxStyle));
 
   double min = yAxis->getMinBound();
   double max = yAxis->getMaxBound();
@@ -103,7 +103,8 @@ void BoxChartWidget::init() {
     currentWhiskerColor++;
     currentOutlineColor++;
 
-    if (currentBoxColor == s->boxColors.end()) currentBoxColor = s->boxColors.begin();
+    if (currentBoxColor == s->boxColors.end())
+      currentBoxColor = s->boxColors.begin();
     if (currentWhiskerColor == s->whiskerColors.end())
       currentWhiskerColor = s->whiskerColors.begin();
     if (currentOutlineColor == s->outlineColors.end())

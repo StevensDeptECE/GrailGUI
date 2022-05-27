@@ -17,19 +17,17 @@ class AxisWidget : public Widget2D {
   bool showTicks;         // whether or not to show the ticks
   bool isVert;            // whether the axis will be drawn vertically
   std::string axisTitle;  // axis title
-	glm::vec4 axisColor;
+  glm::vec4 axisColor;
   glm::vec4 tickColor;
   double bottomOffset;
   void addAxisTitle();
 
  public:
-  AxisWidget(StyledMultiShape2D* m, MultiText* t,
-						 double x, double y, double w, double h,
-						 double minBound = 0, double maxBound = 0,
+  AxisWidget(StyledMultiShape2D* m, MultiText* t, double x, double y, double w,
+             double h, double minBound = 0, double maxBound = 0,
              double tickInterval = 1, double tickDrawSize = 5,
              bool showTicks = true, bool isVert = false,
-             const std::string& axisTitle = "",
-						 int tickFormatWidth = 2,
+             const std::string& axisTitle = "", int tickFormatWidth = 2,
              int tickFormatPrecision = 2, double bottomOffset = 0);
 
   virtual ~AxisWidget();

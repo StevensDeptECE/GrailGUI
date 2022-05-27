@@ -242,7 +242,7 @@ void XDLRequest::addPage(const char metaDataFilename[], const char filename[]) {
 }
 #if 1
 void XDLRequest::addPage(const char filename[]) {
-  int fh = open(filename, readBinFlags);
+  int fh = open(filename, O_RDONLY | O_BINARY);
   if (fh < 0) {
     cerr << "Error opening file " << filename << '\n';
     throw Ex1(Errcode::FILE_NOT_FOUND);

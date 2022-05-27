@@ -12,9 +12,10 @@
 
 using namespace std;
 
-uint32_t StyledMultiShape25D::addSector(float x, float y, float z, float xRad, float yRad,
-                                       float fromAngle, float toAngle,
-                                       float angleInc, const glm::vec4& c) {
+uint32_t StyledMultiShape25D::addSector(float x, float y, float z, float xRad,
+                                        float yRad, float fromAngle,
+                                        float toAngle, float angleInc,
+                                        const glm::vec4& c) {
   for (float i = fromAngle; i <= toAngle; i += angleInc) {
     float px = x + xRad * cos(-i * DEG2RAD<float>);
     float py = y + yRad * sin(-i * DEG2RAD<float>);
@@ -121,8 +122,8 @@ void StyledMultiShape25D::updateIndices() {
 }
 
 // Solid Primitives
-void StyledMultiShape25D::fillRectangle(float x, float y, float z, float w, float h,
-                                       const glm::vec4& c) {
+void StyledMultiShape25D::fillRectangle(float x, float y, float z, float w,
+                                        float h, const glm::vec4& c) {
   uint32_t points = 0;
   addStyledPoint(x, y, z, c);
   addStyledPoint(x, y + h, z, c);  // goes in counter-clockwise order
@@ -135,8 +136,9 @@ void StyledMultiShape25D::fillRectangle(float x, float y, float z, float w, floa
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape25D::fillRoundRect(float x, float y, float z, float w, float h,
-                                       float rx, float ry, const glm::vec4& c) {
+void StyledMultiShape25D::fillRoundRect(float x, float y, float z, float w,
+                                        float h, float rx, float ry,
+                                        const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t cur = getPointIndex();
   uint32_t centerIndex = getPointIndex();
@@ -184,8 +186,9 @@ void StyledMultiShape25D::fillRoundRect(float x, float y, float z, float w, floa
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape25D::fillTriangle(float x1, float y1, float z, float x2, float y2,
-                                      float x3, float y3, const glm::vec4& c) {
+void StyledMultiShape25D::fillTriangle(float x1, float y1, float z, float x2,
+                                       float y2, float x3, float y3,
+                                       const glm::vec4& c) {
   uint32_t points = 0;
   addStyledPoint(x1, y1, z, c);
   addStyledPoint(x2, y2, z, c);
@@ -197,18 +200,19 @@ void StyledMultiShape25D::fillTriangle(float x1, float y1, float z, float x2, fl
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape25D::fillPolygon(float x, float y, float z, float xRad, float yRad,
-                                     float n, const glm::vec4& c) {
+void StyledMultiShape25D::fillPolygon(float x, float y, float z, float xRad,
+                                      float yRad, float n, const glm::vec4& c) {
   fillEllipse(x, y, z, xRad, yRad, 360 / n, c);
 }
 
-void StyledMultiShape25D::fillCircle(float x, float y, float z, float rad, float angleInc,
-                                    const glm::vec4& c) {
+void StyledMultiShape25D::fillCircle(float x, float y, float z, float rad,
+                                     float angleInc, const glm::vec4& c) {
   fillEllipse(x, y, z, rad, rad, angleInc, c);
 }
 
-void StyledMultiShape25D::fillEllipse(float x, float y, float z, float xRad, float yRad,
-                                     float angleInc, const glm::vec4& c) {
+void StyledMultiShape25D::fillEllipse(float x, float y, float z, float xRad,
+                                      float yRad, float angleInc,
+                                      const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t cur = getPointIndex();
   uint32_t centerIndex = getPointIndex();
@@ -224,8 +228,8 @@ void StyledMultiShape25D::fillEllipse(float x, float y, float z, float xRad, flo
 }
 
 // Line Primitives
-void StyledMultiShape25D::drawRectangle(float x, float y, float z, float w, float h,
-                                       const glm::vec4& c) {
+void StyledMultiShape25D::drawRectangle(float x, float y, float z, float w,
+                                        float h, const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t cur = getPointIndex();
   addStyledPoint(x, y, z, c);
@@ -239,8 +243,9 @@ void StyledMultiShape25D::drawRectangle(float x, float y, float z, float w, floa
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape25D::drawRoundRect(float x, float y, float z, float w, float h,
-                                       float rx, float ry, const glm::vec4& c) {
+void StyledMultiShape25D::drawRoundRect(float x, float y, float z, float w,
+                                        float h, float rx, float ry,
+                                        const glm::vec4& c) {
   uint32_t points = 0;
 
   uint32_t cur = getPointIndex();
@@ -285,8 +290,9 @@ void StyledMultiShape25D::drawRoundRect(float x, float y, float z, float w, floa
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape25D::drawTriangle(float x1, float y1, float z, float x2, float y2,
-                                      float x3, float y3, const glm::vec4& c) {
+void StyledMultiShape25D::drawTriangle(float x1, float y1, float z, float x2,
+                                       float y2, float x3, float y3,
+                                       const glm::vec4& c) {
   uint32_t points = 0;
 
   addStyledPoint(x1, y1, z, c);
@@ -300,22 +306,23 @@ void StyledMultiShape25D::drawTriangle(float x1, float y1, float z, float x2, fl
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape25D::drawPolygon(float x, float y, float z, float xRad, float yRad,
-                                     float n, const glm::vec4& c) {
+void StyledMultiShape25D::drawPolygon(float x, float y, float z, float xRad,
+                                      float yRad, float n, const glm::vec4& c) {
   drawEllipse(x, y, z, xRad, yRad, 360 / n, c);
 }
 
-void StyledMultiShape25D::drawCompletePolygon(float x, float y, float z, float xRad,
-                                             float yRad, float n,
-                                             const glm::vec4& c) {}
+void StyledMultiShape25D::drawCompletePolygon(float x, float y, float z,
+                                              float xRad, float yRad, float n,
+                                              const glm::vec4& c) {}
 
-void StyledMultiShape25D::drawCircle(float x, float y, float z, float rad, float angleInc,
-                                    const glm::vec4& c) {
+void StyledMultiShape25D::drawCircle(float x, float y, float z, float rad,
+                                     float angleInc, const glm::vec4& c) {
   drawEllipse(x, y, z, rad, rad, angleInc, c);
 }
 
-void StyledMultiShape25D::drawEllipse(float x, float y, float z, float xRad, float yRad,
-                                     float angleInc, const glm::vec4& c) {
+void StyledMultiShape25D::drawEllipse(float x, float y, float z, float xRad,
+                                      float yRad, float angleInc,
+                                      const glm::vec4& c) {
   uint32_t points = 0;
 
   uint32_t cur = getPointIndex();
@@ -333,8 +340,8 @@ void StyledMultiShape25D::drawEllipse(float x, float y, float z, float xRad, flo
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape25D::drawLine(float x1, float y1, float z, float x2, float y2,
-                                  const glm::vec4& c) {
+void StyledMultiShape25D::drawLine(float x1, float y1, float z, float x2,
+                                   float y2, const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t ind = getPointIndex();
 
@@ -350,9 +357,9 @@ void StyledMultiShape25D::drawLine(float x1, float y1, float z, float x2, float 
 }
 
 // rectangular grid
-void StyledMultiShape25D::drawGrid(float x0, float y0, float z, float w, float h,
-                                  uint32_t numHoriz, uint32_t numVert,
-                                  const glm::vec4& c) {
+void StyledMultiShape25D::drawGrid(float x0, float y0, float z, float w,
+                                   float h, uint32_t numHoriz, uint32_t numVert,
+                                   const glm::vec4& c) {
   // draw vertical lines
   float x = x0;
   drawLine(x, y0, z, x, y0 + h, c);
@@ -364,9 +371,9 @@ void StyledMultiShape25D::drawGrid(float x0, float y0, float z, float w, float h
     drawLine(x0, y, z, x0 + w, y, c);
 }
 
-void StyledMultiShape25D::fillGrid(float x0, float y0, float z, float w, float h,
-                                  uint32_t numHoriz, uint32_t numVert,
-                                  const glm::vec4& lc, const glm::vec4& bc) {
+void StyledMultiShape25D::fillGrid(float x0, float y0, float z, float w,
+                                   float h, uint32_t numHoriz, uint32_t numVert,
+                                   const glm::vec4& lc, const glm::vec4& bc) {
   // fill background
   fillRectangle(x0, y0, z, w, h, bc);
   // draw vertical lines
@@ -384,8 +391,8 @@ void StyledMultiShape25D::fillGrid(float x0, float y0, float z, float w, float h
 
 // draw an equilateral triangle broken into equilateral triangles
 void StyledMultiShape25D::drawTriGrid(float x0, float y0, float z, float s,
-                                     uint32_t trianglesPerSide,
-                                     const glm::vec4& c) {
+                                      uint32_t trianglesPerSide,
+                                      const glm::vec4& c) {
   double xmid = x0 + s / 2, side = s / trianglesPerSide;
   double h = side * (sqrt(3) / 2);
   const float yend = y0 + s * (sqrt(3) / 2);
@@ -393,33 +400,33 @@ void StyledMultiShape25D::drawTriGrid(float x0, float y0, float z, float s,
     drawLine(x, y, z, x + len, y0, c);
 }
 
-void StyledMultiShape25D::drawHexGrid(float x, float y, float z, float w, float h,
-                                     uint32_t numHorizHexagons,
-                                     const glm::vec4& c) {}
+void StyledMultiShape25D::drawHexGrid(float x, float y, float z, float w,
+                                      float h, uint32_t numHorizHexagons,
+                                      const glm::vec4& c) {}
 
 // Markers for Graphs
-void StyledMultiShape25D::drawCircleMarker(float x, float y, float z, float size,
-                                          glm::vec4& color) {
+void StyledMultiShape25D::drawCircleMarker(float x, float y, float z,
+                                           float size, glm::vec4& color) {
   fillCircle(x, y, z, size, 3, color);
 }
-void StyledMultiShape25D::drawTriangleMarker(float x, float y, float z, float size,
-                                            glm::vec4& color) {
+void StyledMultiShape25D::drawTriangleMarker(float x, float y, float z,
+                                             float size, glm::vec4& color) {
   fillPolygon(x, y, z, size, size, 3, color);
 }
-void StyledMultiShape25D::drawSquareMarker(float x, float y, float z, float size,
-                                          glm::vec4& color) {
+void StyledMultiShape25D::drawSquareMarker(float x, float y, float z,
+                                           float size, glm::vec4& color) {
   fillPolygon(x, y, z, size, size, 4, color);
 }
-void StyledMultiShape25D::drawPentagonMarker(float x, float y, float z, float size,
-                                            glm::vec4& color) {
+void StyledMultiShape25D::drawPentagonMarker(float x, float y, float z,
+                                             float size, glm::vec4& color) {
   fillPolygon(x, y, z, size, size, 5, color);
 }
-void StyledMultiShape25D::drawHexagonMarker(float x, float y, float z, float size,
-                                           glm::vec4& color) {
+void StyledMultiShape25D::drawHexagonMarker(float x, float y, float z,
+                                            float size, glm::vec4& color) {
   fillPolygon(x, y, z, size, size, 6, color);
 }
 void StyledMultiShape25D::drawCrossMarker(float x, float y, float z, float size,
-                                         glm::vec4& color) {
+                                          glm::vec4& color) {
   drawLine(x, y + size, z, x, y - size, color);
   drawLine(x - size, y, z, x + size, y, color);
 }
@@ -427,10 +434,11 @@ void StyledMultiShape25D::drawCrossMarker(float x, float y, float z, float size,
 // drawBezier, end bezier,grid
 
 void StyledMultiShape25D::drawPolyline(const float xy[], float z, uint32_t n,
-                                      const glm::vec4& c) {
+                                       const glm::vec4& c) {
   uint32_t ind = getPointIndex();
   uint32_t j = 0;
-  for (uint32_t i = n; i > 0; i--, j += 2) addStyledPoint(xy[j], xy[j + 1], z, c);
+  for (uint32_t i = n; i > 0; i--, j += 2)
+    addStyledPoint(xy[j], xy[j + 1], z, c);
   for (uint32_t i = n; i > 1; i--) {
     lineIndices.push_back(ind++);
     lineIndices.push_back(ind);
@@ -438,7 +446,7 @@ void StyledMultiShape25D::drawPolyline(const float xy[], float z, uint32_t n,
 }
 
 void StyledMultiShape25D::fillPolygon(const float xy[], float z, uint32_t n,
-                                     const glm::vec4& c) {
+                                      const glm::vec4& c) {
   uint32_t ind = getPointIndex();
   uint32_t start = ind++;
   double mid_x = 0;
@@ -464,13 +472,13 @@ void StyledMultiShape25D::fillPolygon(const float xy[], float z, uint32_t n,
 }
 
 void StyledMultiShape25D::drawPolygon(const std::vector<float>& xy, float z,
-                                     const glm::vec4& c) {
+                                      const glm::vec4& c) {
   if (xy.size() == 0) return;
   drawPolygon(&xy[0], xy.size() / 2, z, c);
 }
 
 void StyledMultiShape25D::drawPolygon(const float xy[], float z, uint32_t n,
-                                     const glm::vec4& c) {
+                                      const glm::vec4& c) {
   uint32_t ind = getPointIndex();
   uint32_t start = ind;
   for (uint32_t i = 1, j = 0; i < n; i++, j += 2) {
@@ -484,8 +492,8 @@ void StyledMultiShape25D::drawPolygon(const float xy[], float z, uint32_t n,
 }
 
 // Point Primitives
-void StyledMultiShape25D::rectanglePoints(float x, float y, float z, float w, float h,
-                                         const glm::vec4& c) {
+void StyledMultiShape25D::rectanglePoints(float x, float y, float z, float w,
+                                          float h, const glm::vec4& c) {
   uint32_t points = 0;
 
   addStyledPoint(x, y, z, c);
@@ -500,9 +508,9 @@ void StyledMultiShape25D::rectanglePoints(float x, float y, float z, float w, fl
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape25D::roundRectPoints(float x, float y, float z, float w, float h,
-                                         float rx, float ry,
-                                         const glm::vec4& c) {
+void StyledMultiShape25D::roundRectPoints(float x, float y, float z, float w,
+                                          float h, float rx, float ry,
+                                          const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t cur = getPointIndex();
   uint32_t centerIndex = getPointIndex();
@@ -534,9 +542,9 @@ void StyledMultiShape25D::roundRectPoints(float x, float y, float z, float w, fl
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape25D::trianglePoints(float x1, float y1, float z, float x2, float y2,
-                                        float x3, float y3,
-                                        const glm::vec4& c) {
+void StyledMultiShape25D::trianglePoints(float x1, float y1, float z, float x2,
+                                         float y2, float x3, float y3,
+                                         const glm::vec4& c) {
   uint32_t points = 0;
 
   addStyledPoint(x1, y1, z, c);
@@ -550,8 +558,9 @@ void StyledMultiShape25D::trianglePoints(float x1, float y1, float z, float x2, 
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape25D::polygonPoints(float x, float y, float z, float xRad, float yRad,
-                                       float n, const glm::vec4& c) {
+void StyledMultiShape25D::polygonPoints(float x, float y, float z, float xRad,
+                                        float yRad, float n,
+                                        const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t cur = getPointIndex();
   uint32_t centerIndex = getPointIndex();
@@ -568,7 +577,7 @@ void StyledMultiShape25D::polygonPoints(float x, float y, float z, float xRad, f
 }
 
 void StyledMultiShape25D::circlePoints(float x, float y, float z, float rad,
-                                      float angleInc, const glm::vec4& c) {
+                                       float angleInc, const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t cur = getPointIndex();
   uint32_t centerIndex = getPointIndex();
@@ -584,8 +593,9 @@ void StyledMultiShape25D::circlePoints(float x, float y, float z, float rad,
   startIndices.push_back(currentIndex);
 }
 
-void StyledMultiShape25D::ellipsePoints(float x, float y, float z, float xRad, float yRad,
-                                       float angleInc, const glm::vec4& c) {
+void StyledMultiShape25D::ellipsePoints(float x, float y, float z, float xRad,
+                                        float yRad, float angleInc,
+                                        const glm::vec4& c) {
   uint32_t points = 0;
   uint32_t cur = getPointIndex();
   uint32_t centerIndex = getPointIndex();
@@ -601,7 +611,7 @@ void StyledMultiShape25D::ellipsePoints(float x, float y, float z, float xRad, f
 }
 
 void StyledMultiShape25D::updateColors(const uint64_t pos, const float r,
-                                      const float g, const float b) {
+                                       const float g, const float b) {
   for (uint32_t i = 0; i < numIndices[pos]; ++i) {
     vertices[startIndices[pos] * 5 + 5 * i + 2] = r;
     vertices[startIndices[pos] * 5 + 5 * i + 3] = g;
@@ -637,9 +647,10 @@ void StyledMultiShape25D::bezierSegment(const Bezier* b, float z) {
 }
 
 void StyledMultiShape25D::bezierSegmentByPoints(float p1x, float p1y, float p2x,
-                                               float p2y, float p3x, float p3y,
-                                               float p4x, float p4y, float z, int n,
-                                               bool end, const glm::vec4& c) {
+                                                float p2y, float p3x, float p3y,
+                                                float p4x, float p4y, float z,
+                                                int n, bool end,
+                                                const glm::vec4& c) {
   float ax = -p1x + 3 * p2x - 3 * p3x + p4x;
   float ay = -p1y + 3 * p2y - 3 * p3y + p4y;
   float bx = 3 * p1x - 6 * p2x + 3 * p3x;
@@ -650,8 +661,8 @@ void StyledMultiShape25D::bezierSegmentByPoints(float p1x, float p1y, float p2x,
   bezierSegment(&b, z);
 }
 
-void StyledMultiShape25D::spline(const std::vector<double>& points, float z, int n,
-                                const glm::vec4& c) {
+void StyledMultiShape25D::spline(const std::vector<double>& points, float z,
+                                 int n, const glm::vec4& c) {
   uint32_t num = points.size() / 2 - 1;
   std::vector<double> parameter, dx, dy;
 

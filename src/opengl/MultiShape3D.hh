@@ -5,16 +5,16 @@
 
 #include "glad/glad.h"
 //#include "grail/Grail.hh"
-#include "opengl/Style.hh"
 #include "obj/loader.h"
 #include "opengl/Canvas.hh"
 #include "opengl/GLMath.hh"
 #include "opengl/GLWin.hh"
-#include "opengl/Shader.hh"
 #include "opengl/MultiShape.hh"
+#include "opengl/Shader.hh"
+#include "opengl/Style.hh"
 #include "opengl/util/Camera.hh"
-#include "opengl/util/Transformation.hh"
 #include "opengl/util/TextureArray.hh"
+#include "opengl/util/Transformation.hh"
 
 class MultiShape3D : public MultiShape {
   // Stores x,y pairs for texture coordinates
@@ -34,7 +34,7 @@ class MultiShape3D : public MultiShape {
                float x3, float y3, float z3, float x4, float y4, float z4);
 
  private:
-//  Style* style;
+  //  Style* style;
   Camera* camera;
   Transformation* transform;
   std::vector<const char*> textureFiles;
@@ -56,8 +56,8 @@ class MultiShape3D : public MultiShape {
   uint32_t getPointIndex() { return vertices.size() / elemPerVert; }
 
  public:
-  MultiShape3D(Canvas* canv, Camera* c, const std::vector<const char*>& textureFiles,
-               Transformation* t, 
+  MultiShape3D(Canvas* canv, Camera* c,
+               const std::vector<const char*>& textureFiles, Transformation* t,
                uint32_t elemPerVert = 3, uint32_t vertCount = 1024,
                uint32_t solidIndCount = 1024, uint32_t lineIndCount = 1024,
                uint32_t pointIndCount = 1024, uint32_t colorIndCount = 1024)
@@ -70,13 +70,13 @@ class MultiShape3D : public MultiShape {
     textureIndices.reserve(textureFiles.size());
   }
   MultiShape3D(Canvas* canv, Camera* c, const char textureFile[],
-               Transformation* t,
-               uint32_t elemPerVert = 3, uint32_t vertCount = 1024,
-               uint32_t solidIndCount = 1024, uint32_t lineIndCount = 1024,
-               uint32_t pointIndCount = 1024, uint32_t colorIndCount = 1024)
+               Transformation* t, uint32_t elemPerVert = 3,
+               uint32_t vertCount = 1024, uint32_t solidIndCount = 1024,
+               uint32_t lineIndCount = 1024, uint32_t pointIndCount = 1024,
+               uint32_t colorIndCount = 1024)
       : MultiShape3D(canv, c, std::vector<const char*>({textureFile}), t,
-       elemPerVert, vertCount,
-       solidIndCount, lineIndCount, pointIndCount, colorIndCount) {}
+                     elemPerVert, vertCount, solidIndCount, lineIndCount,
+                     pointIndCount, colorIndCount) {}
 
   void init() override;
   void render() override;
@@ -101,30 +101,35 @@ class MultiShape3D : public MultiShape {
                Transformation* t, const char modelFile[],
                uint32_t elemPerVert = 3, uint32_t vertCount = 1024,
                uint32_t solidIndCount = 1024, uint32_t lineIndCount = 1024,
-               uint32_t pointIndCount = 1024, uint32_t colorIndCount = 1024) :
-               MultiShape3D(canv, c, textureFile, t, elemPerVert, vertCount,
-               solidIndCount, lineIndCount, pointIndCount, colorIndCount) {
-                this->genOBJModel(modelFile);
-               }
+               uint32_t pointIndCount = 1024, uint32_t colorIndCount = 1024)
+      : MultiShape3D(canv, c, textureFile, t, elemPerVert, vertCount,
+                     solidIndCount, lineIndCount, pointIndCount,
+                     colorIndCount) {
+    this->genOBJModel(modelFile);
+  }
 
   ~MultiShape3D();
 
   // static uint32_t addTransformedVert(std::vector<float>& vert,
-  // 									double x, double y, double
-  // z, 									const Transform* t);
+  // 									double x, double y,
+  // double
+  // z, 									const Transform*
+  // t);
 
   // static void genSphere(std::vector<float>& vert,
   // 											std::vector<uint32_t>&
-  // ind, 											uint32_t latRes, uint32_t lonRes, 											const Transform* t); static void
-  // genCylinder(std::vector<float>& vert, 												std::vector<uint32_t>& ind, 												uint32_t
-  // lonRes, 												const Transform* t); static void cube(std::vector<float>& vert,
-  // const Transform* t); static void tetrahedron(std::vector<float>& vert,
-  // const Transform* t); static void dodecahedron(std::vector<float>& vert,
-  // const Transform* t); static void icosahedron(std::vector<float>& vert,const
-  // Transform* t); void textureSphere(double r, uint32_t resLat, uint32_t
-  // resLon, int imgTexture); void wireframeSphere(double r, uint32_t resLat,
-  // uint32_t resLon); void pointSphere(double r, uint32_t resLat, uint32_t
-  // resLon);
+  // ind, 											uint32_t latRes, uint32_t lonRes,
+  // const Transform* t); static void genCylinder(std::vector<float>& vert,
+  // std::vector<uint32_t>& ind,
+  // uint32_t
+  // lonRes, 												const Transform* t); static
+  // void cube(std::vector<float>& vert, const Transform* t); static void
+  // tetrahedron(std::vector<float>& vert, const Transform* t); static void
+  // dodecahedron(std::vector<float>& vert, const Transform* t); static void
+  // icosahedron(std::vector<float>& vert,const Transform* t); void
+  // textureSphere(double r, uint32_t resLat, uint32_t resLon, int imgTexture);
+  // void wireframeSphere(double r, uint32_t resLat, uint32_t resLon); void
+  // pointSphere(double r, uint32_t resLat, uint32_t resLon);
 
   // void textureCylinder(double r, double h, uint32_t resLon, int imgTexture);
   // void wireframeCylinder(double r, double h, uint32_t resLon);

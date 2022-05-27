@@ -88,6 +88,7 @@ class Tab : public CallbackHandler {
 
   MainCanvas* getMainCanvas() { return &mainCanvas; }
 
+  const Style* getDefaultStyle() const { return parent->getDefaultStyle(); }
   const Font* getDefaultFont() const { return parent->getDefaultFont(); }
   const Font* getGuiFont() const { return parent->getGuiFont(); }
   const Font* getMenuFont() const { return parent->getMenuFont(); }

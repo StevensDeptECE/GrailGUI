@@ -7,35 +7,33 @@ float LinearScale::transform(double x) { return scale * x + shift; }
 
 float LogScale::transform(double x) { return scale * log10(x) + shift; }
 
-void LinearScale::init(double min, double max, double shift,
-                       double axisSize, double tickInterval) {
+void LinearScale::init(double min, double max, double shift, double axisSize,
+                       double tickInterval) {
   this->min = min;
   this->max = max;
   this->tickInterval = tickInterval;
   this->numInterval = tickInterval;
   scale = axisSize / (max - min);
-  this->shift = scale*(-min)+shift;
+  this->shift = scale * (-min) + shift;
 }
 
-void LogScale::init(double min, double max, double shift,
-                    double axisSize, double tickInterval) {
+void LogScale::init(double min, double max, double shift, double axisSize,
+                    double tickInterval) {
   this->min = min;
   this->max = max;
   this->tickInterval = tickInterval;
   this->numInterval = tickInterval;
-  if(min == 0){
+  if (min == 0) {
     min = 1;
   }
   scale = axisSize / (log10(max) - log10(min));
   this->shift = shift;
 }
 
-float LinearScale::next(float v) {
-  return v + tickInterval;
-}
+float LinearScale::next(float v) { return v + tickInterval; }
 
 float LogScale::next(float v) {
-  if (v == 0){
+  if (v == 0) {
     return 1;
   }
   return v * tickInterval;

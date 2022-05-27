@@ -1,45 +1,55 @@
+#include "CSVParser.hh"
+
 #include <fstream>
 #include <string>
 #include <vector>
-#include "CSVParser.hh"
 using namespace std;
 
 vector<string> CSVParser::readCSVRow(const string &row) {
   CSVState state = CSVState::UnquotedField;
-  vector<string> fields {""};
-  size_t i = 0; // index of the current field
+  vector<string> fields{""};
+  size_t i = 0;  // index of the current field
   for (char c : row) {
     switch (state) {
       case CSVState::UnquotedField:
         switch (c) {
-          case ',': // end of field
-            fields.push_back(""); i++;
+          case ',':  // end of field
+            fields.push_back("");
+            i++;
             break;
-          case '"': state = CSVState::QuotedField;
-                    break;
-          default:  fields[i].push_back(c);
-                    break; }
+          case '"':
+            state = CSVState::QuotedField;
+            break;
+          default:
+            fields[i].push_back(c);
+            break;
+        }
         break;
       case CSVState::QuotedField:
         switch (c) {
-          case '"': state = CSVState::QuotedQuote;
-                    break;
-          default:  fields[i].push_back(c);
-                    break; }
+          case '"':
+            state = CSVState::QuotedQuote;
+            break;
+          default:
+            fields[i].push_back(c);
+            break;
+        }
         break;
       case CSVState::QuotedQuote:
         switch (c) {
-          case ',': // , after closing quote
-            fields.push_back(""); i++;
+          case ',':  // , after closing quote
+            fields.push_back("");
+            i++;
             state = CSVState::UnquotedField;
             break;
-          case '"': // "" -> "
+          case '"':  // "" -> "
             fields[i].push_back('"');
             state = CSVState::QuotedField;
             break;
           default:  // end of quote
             state = CSVState::UnquotedField;
-            break; }
+            break;
+        }
         break;
     }
   }

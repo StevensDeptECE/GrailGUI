@@ -51,7 +51,8 @@ IPV4Socket::IPV4Socket(uint16_t port) : Socket(port) {
   int yes = 1;
   testResult(sckt = socket(AF_INET, SOCK_STREAM, 0), __FILE__, __LINE__,
              Errcode::SOCKET);
-  testResult(setsockopt(sckt, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(yes)),
+  testResult(setsockopt(sckt, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes,
+                        sizeof(yes)),
              __FILE__, __LINE__, Errcode::SETSOCKOPT);
   memset(sockaddress, 0, sizeof(sockaddress));
   auto *sockAddr = (sockaddr_in *)sockaddress;
@@ -94,8 +95,8 @@ void IPV4Socket::wait() {
     cout << "WAITING CONNECTION." << endl;
     int returnsckt =
         accept(sckt, (struct sockaddr *)&client_addrconfig, &client_length);
-    //		int senderSock = accept(listenSock, (struct sockaddr *) &sockaddress,
-    //&senderNameLen);
+    //		int senderSock = accept(listenSock, (struct sockaddr *)
+    //&sockaddress, &senderNameLen);
     if (returnsckt >= 0) {
       cout << "CONNECT SUCCESSFULLY"
            << "\n";

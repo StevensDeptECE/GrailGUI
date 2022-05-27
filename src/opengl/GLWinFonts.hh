@@ -12,8 +12,8 @@
 
 class GLWin;
 class Font;
-typedef struct FT_LibraryRec_  *FT_Library;
-typedef struct FT_FaceRec_*  FT_Face;
+typedef struct FT_LibraryRec_* FT_Library;
+typedef struct FT_FaceRec_* FT_Face;
 
 class FontFace {
  private:

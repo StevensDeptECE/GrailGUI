@@ -4,8 +4,94 @@
       "path": "."
     }
   ],
+  "extensions": {
+    "recommendations": [
+      "ms-vscode.cpptools-extension-pack",
+      "notskm.clang-tidy",
+      "visualstudioexptteam.vscodeintellicode",
+      "ms-vsliveshare.vsliveshare"
+    ],
+  },
   "settings": {
+    "editor.tabSize": 2,
+    "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 0}",
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "modifications",
+    "files.associations": {
+      "*.cpp": "cpp",
+      "*.cc": "cpp",
+      "*.hh": "cpp",
+      "*.hpp": "cpp",
+      "*.h": "c",
+      "*.c": "c",
+      "**/stdhpp/**": "cpp"
+    },
     "C_Cpp.default.cppStandard": "c++20",
     "C_Cpp.default.cStandard": "c17",
+  },
+  "launch": {
+    "configurations": [
+      {
+        "name": "g++ - Build and debug active file",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${fileDirname}/${fileBasenameNoExtension}",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ],
+        "preLaunchTask": "C/C++: g++ build active file",
+        "miDebuggerPath": "/usr/bin/gdb"
+      }
+    ],
+    "compounds": []
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "build",
+        "type": "shell",
+        "command": "./build.sh",
+        "args": [],
+        "group": "build",
+        "presentation": {
+          "reveal": "silent",
+          "panel": "dedicated",
+          "clear": false
+        },
+        "options": {
+          "cwd": "${workspaceFolder}"
+        }
+      },
+      {
+        "label": "clean and build",
+        "type": "shell",
+        "command": "ninja clean",
+        "args": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "presentation": {
+          "reveal": "silent",
+          "panel": "dedicated",
+          "clear": false
+        },
+        "options": {
+          "cwd": "${workspaceFolder}/build"
+        },
+        "problemMatcher": []
+      }
+    ]
   }
 }

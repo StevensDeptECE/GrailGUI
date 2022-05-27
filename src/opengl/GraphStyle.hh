@@ -2,9 +2,6 @@
 
 #include "opengl/GrailGUI.hh"
 
-using namespace std;
-using namespace grail;
-
 class GraphStyle : public Member {
  public:
   Style baseStyle;
@@ -18,12 +15,12 @@ class GraphStyle : public Member {
   Style barStyle;
   Style boxStyle;
   Style dataStyle;
-  vector<glm::vec4> boxColors;
-  vector<glm::vec4> whiskerColors;
-  vector<glm::vec4> outlineColors;
-  vector<glm::vec4>
+  std::vector<glm::vec4> boxColors;
+  std::vector<glm::vec4> whiskerColors;
+  std::vector<glm::vec4> outlineColors;
+  std::vector<glm::vec4>
       barColors;  // TODO: eliminate redundant colors, use style instead?
-  vector<glm::vec4> barOutlineColors;
+  std::vector<glm::vec4> barOutlineColors;
   glm::vec4 lineColor;
   glm::vec4 pointColor;
 
