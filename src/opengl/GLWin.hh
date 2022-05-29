@@ -12,6 +12,7 @@
 #include "opengl/GLWinFonts.hh"
 #include "opengl/Shader.hh"
 #include "util/DynArray.hh"
+#include "util/Ex.hh"
 #include "util/HashMap.hh"
 class GLFWwindow;  // forward declaration, simplify: include file not needed
                    // here
@@ -124,10 +125,18 @@ class GLWin {
   }
   MainCanvas* getMainCanvas();
 
-  Tab* currentTab() { return tabs[current]; }
-  Tab* getSharedTab() { return sharedTab; }
+  constexpr Tab* currentTab() {
+    if (current != -1) {
+      return tabs[current];
+    } else {
+      throw Ex2(
+          Errcode::UNDEFINED,
+          "A tab must be created before trying to access the current tab");
+    }
+  }
+  constexpr Tab* getSharedTab() { return sharedTab; }
 
-  void setSize(uint32_t w, uint32_t h) {
+  constexpr void setSize(uint32_t w, uint32_t h) {
     width = w;
     height = h;
   }
