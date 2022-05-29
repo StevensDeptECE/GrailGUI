@@ -5,7 +5,7 @@ using namespace grail;
 
 class TestTriangle : public Member {
  public:
-  TestTriangle(Tab* tab) : Member(tab, 0, 0) {}
+  TestTriangle(GLWin* w) : Member(w, 0, 0) {}
 
   void init() {
     MainCanvas* c = tab->getMainCanvas();
@@ -15,7 +15,7 @@ class TestTriangle : public Member {
   }
 };
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+void grailmain(int argc, char* argv[], GLWin* w) {
   w->setTitle("Solar System");
-  new TestTriangle(defaultTab);
+  new TestTriangle(w);
 }

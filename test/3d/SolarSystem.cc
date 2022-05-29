@@ -86,9 +86,8 @@ class SolarSystem : public Member {
   constexpr static double SIDEREAL_DAY =
       0.9972;  // number of 24-hour "days" it takes earth to rotate once
  public:
-  SolarSystem(Tab* tab) : Member(tab, 0, .0125), bodies(10) {
+  SolarSystem(GLWin* w) : Member(w, 0, .0125), bodies(10) {
     cam = c->setLookAtProjection(2, 3, 40, 0, 0, 0, 0, 0, 1);
-    GLWin* w = tab->getParentWin();
     const Style* s = w->getDefaultStyle();
     const Font* font = w->getDefaultFont();
     defineBindings();
@@ -153,7 +152,7 @@ void SolarSystem::defineBindings() {
   tab->bindEvent(Tab::Inputs::HOME, &Tab::gotoStartTime, tab);
 }
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+void grailmain(int argc, char* argv[], GLWin* w) {
   w->setTitle("Solar System");
-  new SolarSystem(defaultTab);
+  new SolarSystem(w);
 }

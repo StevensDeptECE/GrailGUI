@@ -5,7 +5,7 @@ using namespace std;
 using namespace grail;
 class TestStyledMultishape : public Member {
  public:
-  TestStyledMultishape(Tab* tab) : Member(tab, 0, 0) {
+  TestStyledMultishape(GLWin* w) : Member(w, 0, 0) {
     MainCanvas* c = tab->getMainCanvas();
     StyledMultiShape2D* gui = c->getGui();
 
@@ -48,9 +48,9 @@ class TestStyledMultishape : public Member {
   }
 };
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+void grailmain(int argc, char* argv[], GLWin* w) {
   w->setTitle("Test StyledMultiShape");
-  new TestStyledMultishape(defaultTab);
+  new TestStyledMultishape(w);
 }
 
 #if 0

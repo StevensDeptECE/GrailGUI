@@ -4,7 +4,7 @@
 class TestSingleAudio : public Member {
  public:
   AudioPlayer *a;
-  TestSingleAudio(Tab *tab) : Member(tab) {
+  TestSingleAudio(GLWin *w) : Member(w) {
     a = new AudioPlayer();
 
     a->setCurrentContext("default");
@@ -14,6 +14,4 @@ class TestSingleAudio : public Member {
   }
 };
 
-void grailmain(int argc, char *argv[], GLWin *w, Tab *defaultTab) {
-  defaultTab->addMember(new TestSingleAudio(defaultTab));
-}
+void grailmain(int argc, char *argv[], GLWin *w) { new TestSingleAudio(w); }

@@ -48,7 +48,7 @@ class TestText3 : public Member {
     return yStart + 50;
   }
 
-  TestText3(Tab* tab) : Member(tab, 0, 0.1) {
+  TestText3(GLWin* w) : Member(w, 0, 0.1) {
     Canvas* c = tab->getMainCanvas();
     uint32_t width = c->getWidth(), height = c->getHeight();
 
@@ -72,7 +72,7 @@ class TestText3 : public Member {
   }
 };
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+void grailmain(int argc, char* argv[], GLWin* w) {
   w->setTitle("Test Text3");
-  new TestText3(defaultTab);
+  new TestText3(w);
 }
