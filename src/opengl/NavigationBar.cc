@@ -14,7 +14,7 @@ NavigationBar::NavigationBar(MainCanvas* initialCanvas,
                              const Style* initialStyle, float x, float y,
                              float width, float height, float axisPadding,
                              bool isVertical)
-    : Member(initialCanvas->getTab()),
+    : Member(initialCanvas->getTab(), 0),
       currentCanvas(initialCanvas),
       m(initialCanvas, initialStyle),
       t(initialCanvas, initialStyle),
