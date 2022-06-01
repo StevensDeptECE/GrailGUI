@@ -32,7 +32,7 @@ BlockLoader::BlockLoader(const char filename[], uint64_t fileSize, uint64_t memS
     size = ((s.st_size + 7)/8)* 8; // if file size is not multiple of 8, round up to 8 for byte alignment
   mem = (uint64_t*)malloc(size);
   int bytesRead = read(fh, (char*)mem, fileSize); // read the entire file into RAM
-  fmt::print("{:d} bytes read, size is {:d}\n", bytesRead, fileSize);
+//  fmt::print("{:d} bytes read, size is {:d}\n", bytesRead, fileSize);
   if (bytesRead != fileSize)
     throw Ex2(Errcode::FILE_READ, "Could not read entire file");
   generalHeader = (GeneralHeader*)mem;  // header is the first chunk of bytes
@@ -108,7 +108,7 @@ void BlockLoader::writeFile(const char filename[], uint64_t fileSize) {
   if (bytesWritten < 0) {
     throw Ex2(Errcode::FILE_READ, strerror(errno));
   }
-  fmt::print("{:d} bytes written\n", bytesWritten);
+//  fmt::print("{:d} bytes written\n", bytesWritten);
   close(fh);
 }
 
