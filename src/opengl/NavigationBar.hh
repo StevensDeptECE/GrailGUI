@@ -66,6 +66,17 @@ class NavigationBar : public Member {
                           const char action[]);
 
   /**
+   * @brief Create a new button and return a reference to it. Button
+   * width/height are automatically determined based on the text and buttonStyle
+   * font
+   *
+   * @param label the text to be shown on the button
+   * @param action a description of the button's action
+   * @return ButtonWidget& a reference to the new button
+   */
+  ButtonWidget* addButton(std::string label, const char action[]);
+
+  /**
    * @brief Automatically calculate axis offset for new button on nav bar
    *
    */
@@ -79,6 +90,17 @@ class NavigationBar : public Member {
    */
   void setButtonAction(int buttonIndex,
                        std::optional<std::function<void(void)>> func);
+
+  /**
+   * @brief Redefine the style of all buttons in the nav bar
+   *
+   * @param f font of button text
+   * @param borderColor color of button border
+   * @param buttonColor main color of button
+   * @param borderThickness thickness of button border
+   */
+  void setButtonStyle(const Font* f, glm::vec4 borderColor,
+                      glm::vec4 buttonColor, float borderThickness);
 
   /**
    * @brief Balance n buttons on the nav bar

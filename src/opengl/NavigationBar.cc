@@ -27,10 +27,13 @@ NavigationBar::NavigationBar(MainCanvas* initialCanvas,
   canvases.insert(initialCanvas);
 
   this->isVertical = isVertical;
+  parentWin = initialCanvas->getWin();
 
   defaultButtonHeight = min(48_f32, height);
   defaultButtonWidth = min(90_f32, width);
   defaultEdgeWidth = min(16_f32, width / 3);
+  buttonStyle =
+      new Style(parentWin->getMenuFont(), grail::black, grail::red, 1);
   /*
   addButton(defaultButtonWidth, defaultButtonHeight, axisPadding, "+",
             "add tab")
@@ -42,18 +45,29 @@ NavigationBar::NavigationBar(GLWin* w, float x, float y, float width,
                              float height, float axisPadding, bool isVertical)
     : NavigationBar(w->getSharedTab()->getMainCanvas(),
                     w->getSharedTab()->getMainCanvas()->getStyle(), x, y, width,
-                    height, axisPadding, isVertical) {
-  parentWin = w;
-}
+                    height, axisPadding, isVertical) {}
 
 ButtonWidget* NavigationBar::addButton(float width, float height, string label,
                                        const char action[]) {
   if (isVertical) {
-    buttons.push_back(new ButtonWidget(currentCanvas, xPos, yPos + axisOffset(),
-                                       width, height, label, action));
+    buttons.push_back(new ButtonWidget(currentCanvas, buttonStyle, xPos,
+                                       yPos + axisOffset(), width, height,
+                                       label, action));
   } else {
-    buttons.push_back(new ButtonWidget(currentCanvas, xPos + axisOffset(), yPos,
-                                       width, height, label, action));
+    buttons.push_back(new ButtonWidget(currentCanvas, buttonStyle,
+                                       xPos + axisOffset(), yPos, width, height,
+                                       label, action));
+  }
+  return buttons.back();
+}
+
+ButtonWidget* NavigationBar::addButton(string label, const char action[]) {
+  if (isVertical) {
+    buttons.push_back(new ButtonWidget(currentCanvas, buttonStyle, xPos,
+                                       yPos + axisOffset(), label, action));
+  } else {
+    buttons.push_back(new ButtonWidget(
+        currentCanvas, buttonStyle, xPos + axisOffset(), yPos, label, action));
   }
   return buttons.back();
 }
@@ -73,6 +87,15 @@ float NavigationBar::axisOffset() {
 void NavigationBar::setButtonAction(
     int buttonIndex, std::optional<std::function<void(void)>> func) {
   buttons[buttonIndex]->setAction(func);
+}
+
+void NavigationBar::setButtonStyle(const Font* f, glm::vec4 borderColor,
+                                   glm::vec4 buttonColor,
+                                   float borderThickness) {
+  buttonStyle->f = f;
+  buttonStyle->bg = borderColor;
+  buttonStyle->fg = buttonColor;
+  buttonStyle->lineWidth = borderThickness;
 }
 
 void NavigationBar::addNewTab() {

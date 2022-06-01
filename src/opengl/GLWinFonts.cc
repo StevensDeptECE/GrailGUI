@@ -197,6 +197,10 @@ float Font::getWidth(const char text[], uint32_t len) const {
   return w;
 }
 
+float Font::getWidth(const string& text) const {
+  return getWidth(text.c_str(), text.length());
+}
+
 FontFace::FontFace(FT_Library ft, const string& faceName,
                    const string& facePath, uint32_t minFontSize, uint32_t inc,
                    uint32_t maxFontSize, uint8_t bitmap[], uint32_t& sizeX,

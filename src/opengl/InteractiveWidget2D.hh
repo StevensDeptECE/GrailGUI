@@ -10,12 +10,15 @@
 class InteractiveWidget2D : public Widget2D {
  protected:
   MainCanvas* c;
+  const Style* s;
   bool isPressed;
 
  public:
-  InteractiveWidget2D(MainCanvas* c, float x, float y, float w, float h)
+  InteractiveWidget2D(MainCanvas* c, const Style* s, float x, float y, float w,
+                      float h)
       : Widget2D(c->getGui(), c->getGuiText(), x, y, w, h),
         c(c),
+        s(s),
         isPressed(false) {
     c->addClickableWidget(this);
   }

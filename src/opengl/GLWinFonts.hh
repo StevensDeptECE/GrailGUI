@@ -140,6 +140,7 @@ class Font {
     return textureId;
   }  // get the texture shared by all Fonts within the FontFace
   float getWidth(const char text[], const uint32_t len) const;
+  float getWidth(const std::string& text) const;
   friend std::ostream& operator<<(std::ostream& s, const Font& f) {
     return s << "Font height=" << f.height << " numGlyphs=" << f.glyphs.size();
     // return s << "Font " << f.parentFace->faceName << " height=" << f.height

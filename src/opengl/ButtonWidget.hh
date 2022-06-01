@@ -12,10 +12,13 @@ class ButtonWidget : public InteractiveWidget2D {
   std::optional<std::function<void(void)>> func;
 
  public:
-  ButtonWidget(MainCanvas* c, float x, float y, float w, float h,
-               const std::string& text, const char action[]);
-  ButtonWidget(StyledMultiShape2D* m, MultiText* t, float x, float y, float w,
+  ButtonWidget(MainCanvas* c, const Style* s, float x, float y, float w,
                float h, const std::string& text, const char action[]);
+  ButtonWidget(StyledMultiShape2D* m, MultiText* t, const Style* s, float x,
+               float y, float w, float h, const std::string& text,
+               const char action[]);
+  ButtonWidget(MainCanvas* c, const Style* s, float x, float y,
+               const std::string& text, const char action[]);
   void click(float mouseX, float mouseY) override;
   void init() override;
 
