@@ -7,6 +7,10 @@ using namespace std;
 
 #include "util/Ex.hh"
 #include "util/Prefs.hh"
+#include <sys/stat.h>
+#include <unistd.h>
+#include "util/FileUtil.hh"
+
 vector<Shader> Shader::shaders;
 uint32_t Shader::format;
 string Shader::shaderDir;
@@ -64,13 +68,14 @@ void Shader::save(const char shaderName[]) {
     cerr << "Driver does not support any binary formats.\n";
     return;
   }
-  // Get the binary length
-  GLint length = 0;
+  // preallocate 1Mb to hold the shader (more than enough)
+  GLint length = 1024*1024;
   glGetProgramiv(progID, GL_PROGRAM_BINARY_LENGTH, &length);
 
   // Retrieve the binary code
   std::vector<GLubyte> buffer(length);
-  glGetProgramBinary(progID, length, nullptr, &format, buffer.data());
+  GLuint actualLen;
+  glGetProgramBinary(progID, length, &actualLen, &format, buffer.data());
 
   // Write the binary to a file.
   cout << "Writing to " << shaderName << ", binary format = " << format
@@ -85,6 +90,23 @@ Shader::Shader(const char shaderName[], const char vertexPath[],
                const char fragmentPath[], const char geometryPath[]) {
   if (vertexPath == nullptr || fragmentPath == nullptr) return;
   try {
+    struct stat vertexStats, fragmentStats, shaderStats;
+    stat(shaderName, &shaderStats);
+    stat(vertexPath, &vertexStats);
+    stat(fragmentPath, &fragmentStats);
+    time_t shaderLastModified = shaderStats.st_mtim;
+    if (shaderLastModified >= vertexStats.st_mtim && shaderLastModified >= fragmentStats.st_mtim) {
+      // shader is up to date, no need to recompile it
+      struct stat geometryStats;
+      stat(geometryPath, &geometryStats);
+      // don't bother to check geometry path unless it exists (usually does not!)
+      if (geometryPath == nullptr || (geometryPath != nullptr && shaderLastModified >= geometryStats.st_mtim)) {
+        // shade completely up to date, just load from binary file
+        progID = glCreateProgram();
+        fastLoad(shaderName);
+      }
+    }
+compile_shaders:
     // if (prefs.getFastLoadShaders()) {
     //   fastLoad(shaderName);
     //   return;
@@ -118,7 +140,8 @@ Shader::Shader(const char shaderName[], const char vertexPath[],
     glDeleteShader(fragmentShaderID);
     if (geometryPath != nullptr) glDeleteShader(geometryShaderID);
     //		if (prefs.trySavingShader)
-    // save(shaderName);
+    save(shaderName);
+
   } catch (const ifstream::failure &e) {
     cout << "HI  "
          << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ\n";

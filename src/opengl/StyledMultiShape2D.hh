@@ -26,7 +26,7 @@ class StyledMultiShape2D : public MultiShape2D {
 
   uint32_t addSector(float x, float y, float xRad, float yRad, float fromAngle,
                      float toAngle, float angleInc, const glm::vec4& c);
-
+//TODO: why is addColor public? Surely used only internally?
   void addColor(const glm::vec4& rgb) {
     vertices.push_back(rgb.x);
     vertices.push_back(rgb.y);
