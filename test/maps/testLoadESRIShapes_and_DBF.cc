@@ -1,5 +1,5 @@
-#include <functional>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 #include "libshape/shapefil.h"
@@ -102,22 +102,23 @@ void statsESRI(const char filename[], PointInfo* info) {
   SHPClose(shapeHandle);
 }
 
-void loadESRIDBF(const char filename[]) {
+void loadESRIDBF(const char filename[], string& output) {
   DBFHandle dbf = DBFOpen(filename, "rb");
   int numFields = DBFGetFieldCount(dbf);
   char fieldName[12];  // must be at least 12 bytes
   int fieldWidth;
   int precision;
+  stringstream s;
   for (int i = 0; i < numFields; i++) {
     DBFFieldType t =
         DBFGetFieldInfo(dbf, i, fieldName, &fieldWidth, &precision);
-    cout << fieldName << '\t' << fieldWidth << '\t' << precision << '\n';
+    s << fieldName << '\t' << fieldWidth << '\t' << precision << '\n';
   }
 
   int recordCount = DBFGetRecordCount(dbf);
   int SQMI = DBFGetFieldIndex(dbf, "SQMI");  // get index of this field
   for (int i = 0; i < recordCount; i++) {
-    cout << DBFReadStringAttribute(dbf, i, 0) << '\t'
+    s << DBFReadStringAttribute(dbf, i, 0) << '\t'
          << DBFReadStringAttribute(dbf, i, 1) << '\t'
          << DBFReadStringAttribute(dbf, i, 2) << '\t'
          << DBFReadStringAttribute(dbf, i, 3) << '\t'
@@ -130,6 +131,7 @@ void loadESRIDBF(const char filename[]) {
          << DBFReadStringAttribute(dbf, i, SQMI) << '\n';
   }
   DBFClose(dbf);
+  output = s.str();
 }
 #if 0
 template<typename... Args>
@@ -159,9 +161,18 @@ int main() {
   CBenchmark<>::benchmark("stats", 1,
                           std::bind(statsESRI, counties_shp.c_str(), &info));
   const string counties_dbf = dir + "/test/res/maps/USA_Counties.dbf";
+  #if 0
+  //TODO eventually remove. Here as a reminder. lambdas are easier for just calling benchmarks
   CBenchmark<>::benchmark("names", 10,
-                          std::bind(loadESRIDBF, counties_dbf, &info));
+                          std::bind(loadESRIDBF, counties_dbf.c_str()));
+  #endif
+  string output;
+  output.reserve(1024*1024);
+
+  CBenchmark<>::benchmark("names", 10,
+                          [counties_dbf, &output]() { loadESRIDBF(counties_dbf.c_str(), output); });
   string countyNameInfo;
+  cout << output << '\n';// comment me if you don't feel like seeing the huge dump of all names!
 #if 0
   CBenchmark<>::benchmark(
       "extract names", 1,
