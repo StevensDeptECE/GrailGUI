@@ -1,6 +1,4 @@
 #pragma once
-#include "opengl/GrailGUI.hh"
-#include "opengl/GraphStyle.hh"
 #include "opengl/LineGraphWidget.hh"
 
 using namespace std;

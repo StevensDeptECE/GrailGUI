@@ -16,7 +16,7 @@ MultiTab::MultiTab(GLWin* w) : NavigationBar(w, 0, 0, 200, 130, 20, true) {
   ButtonWidget* next = addButton(200, 30, "next", "next tab");
   next->setAction(bind(&GLWin::nextTab, w));
   ButtonWidget* add = addButton(200, 30, "+", "add tab");
-  add->setAction(bind(&MultiTab::addNewTab, this));
+  add->setAction(bind(&GLWin::addTab, w));
 }
 
 void grailmain(int argc, char* argv[], GLWin* w) {

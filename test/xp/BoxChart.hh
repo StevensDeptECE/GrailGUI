@@ -1,7 +1,5 @@
 #pragma once
 #include "opengl/BoxChartWidget.hh"
-#include "opengl/GrailGUI.hh"
-#include "opengl/GraphStyle.hh"
 
 using namespace std;
 

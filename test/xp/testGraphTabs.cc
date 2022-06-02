@@ -8,12 +8,12 @@
 using namespace std;
 using namespace grail;
 
-class Menu : public NavigationBar {
+class ChartNavBar : public NavigationBar {
  public:
-  Menu(GLWin* w);
+  ChartNavBar(GLWin* w);
 };
 
-Menu::Menu(GLWin* w) : NavigationBar(w, 2, 2, 300, 50, 10) {
+ChartNavBar::ChartNavBar(GLWin* w) : NavigationBar(w, 0, 0, 400, 50, 10) {
   setButtonStyle((Font*)FontFace::get("TIMES", 28, FontFace::BOLD),
                  grail::black, grail::yellow, 2);
 
@@ -28,12 +28,15 @@ Menu::Menu(GLWin* w) : NavigationBar(w, 2, 2, 300, 50, 10) {
 
   ButtonWidget* cstick = addButton("CStick", "tab 4");
   cstick->setAction([w]() { w->switchTab(0); });
+
+  fitBarDimensions(5, 5);
+  drawBarBox(grail::black, grail::gray, 2);
 }
 
 void grailmain(int argc, char* argv[], GLWin* w) {
+  new ChartNavBar(w);
   new CandlestickChart(w);
   new LineGraph(w);
   new BoxChart(w);
   new BarChart(w);
-  new Menu(w);
 }

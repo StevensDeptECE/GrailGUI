@@ -8,11 +8,8 @@
 class NavigationBar : public Member {
  private:
   std::vector<ButtonWidget*> buttons;
-  std::unordered_set<MainCanvas*> canvases;
   GLWin* parentWin;
-  MainCanvas* currentCanvas;
-  StyledMultiShape2D m;
-  MultiText t;
+  MainCanvas* c;
 
   float defaultButtonWidth;
   float defaultButtonHeight;
@@ -103,6 +100,27 @@ class NavigationBar : public Member {
                       glm::vec4 buttonColor, float borderThickness);
 
   /**
+   * @brief Draw a box around the dimension of the nav bar
+   *
+   * @param borderColor color of box border
+   * @param buttonColor main color of box
+   * @param borderThickness thickness of box border
+   */
+  void drawBarBox(glm::vec4 borderColor, glm::vec4 boxColor,
+                  float borderThickness);
+
+  /**
+   * @brief Updates the dimensions of the nav bar to fit around the buttons.
+   * Option to add padding between the buttons and nav bar edges
+   *
+   * @param widthPadding horizontal distance between nav bar edge and closest
+   * button
+   * @param heightPadding vertical distance between nav bar edge and closest
+   * button
+   */
+  void fitBarDimensions(float widthPadding = 0, float heightPadding = 0);
+
+  /**
    * @brief Balance n buttons on the nav bar
    *
    * This is particularly useful in scenarios where a screen can fit n tabs
@@ -117,12 +135,11 @@ class NavigationBar : public Member {
   /**
    * @brief Adds a new tab to the window and adds the navigation bar to the tab
    *
-   */
+   *
+  /*
   void addNewTab();
 
   void addToTab(Tab* tab);
-
-  /*
   void render() {
     std::cout << "printing from NavigationBar::render()" << std::endl;
   }
