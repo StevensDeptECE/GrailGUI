@@ -5,7 +5,7 @@ using namespace std;
 
 class BoxChart : public GraphStyle {
  public:
-  BoxChart(GLWin* w) : GraphStyle(w->addTab(), "TIMES", 20, 12) {
+  BoxChart(GLWin* w) : GraphStyle(w->addTab(), "TIMES", 20, 12, "Box") {
     MainCanvas* c = tab->getMainCanvas();
 
     vector<double> data = {150, 350, 222, 100, 300,  //

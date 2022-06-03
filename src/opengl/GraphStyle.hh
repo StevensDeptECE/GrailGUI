@@ -42,8 +42,8 @@ class GraphStyle : public Member {
    * @param axisSize size of the axis font
    */
   GraphStyle(Tab* tab, const char faceName[], uint32_t titleSize,
-             uint32_t axisSize)
-      : Member(tab),
+             uint32_t axisSize, const char name[])
+      : Member(tab, name),
         // two lines and the overall title
         baseStyle(faceName, axisSize, 1, 0, 0, 0, 0.3, 0.3, 0.3, 5),
         titleStyle(faceName, titleSize, 1, 0, 0, 0, 0, 0, 0, 5),
@@ -91,8 +91,8 @@ class GraphStyle : public Member {
    * @param axisSize size of the axis font
    */
   GraphStyle(GLWin* w, const char faceName[], uint32_t titleSize,
-             uint32_t axisSize)
-      : GraphStyle(w->addTab(), faceName, titleSize, axisSize) {}
+             uint32_t axisSize, const char name[])
+      : GraphStyle(w->addTab(), faceName, titleSize, axisSize, name) {}
 
   /**
    * @brief Summary

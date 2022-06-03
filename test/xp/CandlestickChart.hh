@@ -5,7 +5,7 @@ using namespace std;
 
 class CandlestickChart : public GraphStyle {
  public:
-  CandlestickChart(GLWin* w) : GraphStyle(w->addTab(), "TIMES", 20, 12) {
+  CandlestickChart(GLWin* w) : GraphStyle(w, "TIMES", 20, 12, "CStick") {
     MainCanvas* c = tab->getMainCanvas();
 
     vector<double> data = {

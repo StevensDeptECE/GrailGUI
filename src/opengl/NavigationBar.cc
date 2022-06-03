@@ -10,11 +10,10 @@ using namespace std;
 // TODO: make this confirm to some design guide, maybe use material's design
 // guide on tabs?
 
-NavigationBar::NavigationBar(MainCanvas* initialCanvas,
-                             const Style* initialStyle, float x, float y,
+NavigationBar::NavigationBar(MainCanvas* initialCanvas, float x, float y,
                              float width, float height, float axisPadding,
                              bool isVertical)
-    : Member(initialCanvas->getTab(), 0),
+    : Member(initialCanvas->getTab(), "NavBar", 0),
       c(initialCanvas),
       parentWin(initialCanvas->getWin()),
       xPos(x),
@@ -25,6 +24,7 @@ NavigationBar::NavigationBar(MainCanvas* initialCanvas,
       isVertical(isVertical) {
   buttonStyle =
       new Style(parentWin->getMenuFont(), grail::black, grail::red, 1);
+  barStyle = new Style(parentWin->getMenuFont(), grail::black, grail::gray, 1);
 
   /*
   defaultButtonHeight = min(48_f32, height);
@@ -39,9 +39,8 @@ NavigationBar::NavigationBar(MainCanvas* initialCanvas,
 
 NavigationBar::NavigationBar(GLWin* w, float x, float y, float width,
                              float height, float axisPadding, bool isVertical)
-    : NavigationBar(w->getSharedTab()->getMainCanvas(),
-                    w->getSharedTab()->getMainCanvas()->getStyle(), x, y, width,
-                    height, axisPadding, isVertical) {}
+    : NavigationBar(w->getSharedTab()->getMainCanvas(), x, y, width, height,
+                    axisPadding, isVertical) {}
 
 ButtonWidget* NavigationBar::addButton(float width, float height, string label,
                                        const char action[]) {
@@ -93,13 +92,20 @@ void NavigationBar::setButtonStyle(const Font* f, glm::vec4 borderColor,
   buttonStyle->lineWidth = borderThickness;
 }
 
-void NavigationBar::drawBarBox(glm::vec4 borderColor, glm::vec4 boxColor,
-                               float borderSize) {
+void NavigationBar::setBarStyle(glm::vec4 borderColor, glm::vec4 barColor,
+                                float borderThickness) {
+  barStyle->bg = borderColor;
+  barStyle->fg = barColor;
+  barStyle->lineWidth = borderThickness;
+}
+
+void NavigationBar::drawBarBox() {
   StyledMultiShape2D* m = c->getGui();
+  float borderSize = barStyle->lineWidth;
   m->fillRectangle(xPos - borderSize, yPos - borderSize,
                    barWidth + (borderSize * 2), barHeight + (borderSize * 2),
-                   borderColor);
-  m->fillRectangle(xPos, yPos, barWidth, barHeight, boxColor);
+                   barStyle->bg);
+  m->fillRectangle(xPos, yPos, barWidth, barHeight, barStyle->fg);
 
   for (ButtonWidget* b : buttons) {
     b->redraw();

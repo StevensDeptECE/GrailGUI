@@ -5,7 +5,7 @@ using namespace std;
 
 class BarChart : public GraphStyle {
  public:
-  BarChart(GLWin* w) : GraphStyle(w->addTab(), "TIMES", 20, 12) {
+  BarChart(GLWin* w) : GraphStyle(w->addTab(), "TIMES", 20, 12, "Bar") {
     MainCanvas* c = tab->getMainCanvas();
     vector<double> values = {4, 6, 8, 10, 12, 14};
     vector<double> logValues = {4, 8, 16, 32, 64, 128};

@@ -30,7 +30,7 @@ ChartNavBar::ChartNavBar(GLWin* w) : NavigationBar(w, 0, 0, 400, 50, 10) {
   cstick->setAction([w]() { w->switchTab(0); });
 
   fitBarDimensions(5, 5);
-  drawBarBox(grail::black, grail::gray, 2);
+  drawBarBox();
 }
 
 void grailmain(int argc, char* argv[], GLWin* w) {

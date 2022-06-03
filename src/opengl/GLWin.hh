@@ -23,6 +23,7 @@ class Style;
 class Font;
 class XDLIterator;
 class MainCanvas;
+class AutoNavBar;
 
 class GLWin {
  protected:
@@ -67,6 +68,7 @@ class GLWin {
   uint32_t width, height;  // width and height of the window in pixels
   bool needsUpdate, needsRender;
   bool focused;
+  AutoNavBar* autoNavBar;
   uint32_t exitAfter;  // if not zero, will terminate
 
  private:

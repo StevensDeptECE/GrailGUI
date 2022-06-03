@@ -6,7 +6,7 @@
 #include "opengl/ButtonWidget.hh"
 
 class NavigationBar : public Member {
- private:
+ protected:
   std::vector<ButtonWidget*> buttons;
   GLWin* parentWin;
   MainCanvas* c;
@@ -16,6 +16,7 @@ class NavigationBar : public Member {
   float defaultEdgeWidth;
 
   Style* buttonStyle;
+  Style* barStyle;
   float xPos, yPos, barWidth, barHeight, axisPadding;
   bool isVertical;
 
@@ -31,9 +32,8 @@ class NavigationBar : public Member {
    * @param axisPadding distance between the edges of two buttons
    * @param isVertical allow vertical navigation bars (e.x. Ubuntu's task bar)
    */
-  NavigationBar(MainCanvas* initialCanvas, const Style* initialStyle, float x,
-                float y, float width, float height, float axisPadding,
-                bool isVertical);
+  NavigationBar(MainCanvas* initialCanvas, float x, float y, float width,
+                float height, float axisPadding, bool isVertical);
 
  public:
   /**
@@ -100,14 +100,20 @@ class NavigationBar : public Member {
                       glm::vec4 buttonColor, float borderThickness);
 
   /**
-   * @brief Draw a box around the dimension of the nav bar
+   * @brief Redefine the style for the nav bar box
    *
    * @param borderColor color of box border
-   * @param buttonColor main color of box
+   * @param barColor main color of box
    * @param borderThickness thickness of box border
    */
-  void drawBarBox(glm::vec4 borderColor, glm::vec4 boxColor,
-                  float borderThickness);
+  void setBarStyle(glm::vec4 borderColor, glm::vec4 barColor,
+                   float borderThickness);
+
+  /**
+   * @brief Draw a box around the dimension of the nav bar
+   *
+   */
+  void drawBarBox();
 
   /**
    * @brief Updates the dimensions of the nav bar to fit around the buttons.

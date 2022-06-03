@@ -1,4 +1,5 @@
 set(grail-opengl
+    AutoNavBar.cc
     AxisWidget.cc
     BarChartWidget.cc
     BoxChartWidget.cc

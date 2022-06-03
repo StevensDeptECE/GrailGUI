@@ -168,7 +168,8 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const string &title,
       faces(16),
       dragMode(false),
       mousePressX(0),
-      mousePressY(0) {
+      mousePressY(0),
+      autoNavBar(nullptr) {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
