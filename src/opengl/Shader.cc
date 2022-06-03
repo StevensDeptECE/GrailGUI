@@ -69,13 +69,15 @@ void Shader::save(const char shaderName[]) {
     return;
   }
   // preallocate 1Mb to hold the shader (more than enough)
-  GLint length = 1024*1024;
+  GLint length;
   glGetProgramiv(progID, GL_PROGRAM_BINARY_LENGTH, &length);
 
   // Retrieve the binary code
   std::vector<GLubyte> buffer(length);
-  GLuint actualLen;
-  glGetProgramBinary(progID, length, &actualLen, &format, buffer.data());
+  GLubyte buf[65536]; // raw array of 64k bytes to test
+  GLsizei actualLen;
+  glGetProgramBinary(progID, length, &actualLen, &format, buf);
+//  glGetProgramBinary(progID, length, &actualLen, &format, buffer.data());
 
   // Write the binary to a file.
   cout << "Writing to " << shaderName << ", binary format = " << format
@@ -86,6 +88,10 @@ void Shader::save(const char shaderName[]) {
   prefs.setFastLoadShaders(format);
 }
 
+inline bool operator >=(const struct timespec& a, const struct timespec& b) {
+  return a.tv_nsec >= b.tv_nsec;
+}
+
 Shader::Shader(const char shaderName[], const char vertexPath[],
                const char fragmentPath[], const char geometryPath[]) {
   if (vertexPath == nullptr || fragmentPath == nullptr) return;
@@ -94,7 +100,7 @@ Shader::Shader(const char shaderName[], const char vertexPath[],
     stat(shaderName, &shaderStats);
     stat(vertexPath, &vertexStats);
     stat(fragmentPath, &fragmentStats);
-    time_t shaderLastModified = shaderStats.st_mtim;
+    timespec shaderLastModified = shaderStats.st_mtim;
     if (shaderLastModified >= vertexStats.st_mtim && shaderLastModified >= fragmentStats.st_mtim) {
       // shader is up to date, no need to recompile it
       struct stat geometryStats;
@@ -134,13 +140,13 @@ compile_shaders:
            << infoLog
            << "\n -- --------------------------------------------------- --\n";
     }
+    //TODO: save is crashing so commented out: save(shaderName);
 
     // delete the shaders as they're linked in now and no longer necessary
     glDeleteShader(vertexShaderID);
     glDeleteShader(fragmentShaderID);
     if (geometryPath != nullptr) glDeleteShader(geometryShaderID);
     //		if (prefs.trySavingShader)
-    save(shaderName);
 
   } catch (const ifstream::failure &e) {
     cout << "HI  "
