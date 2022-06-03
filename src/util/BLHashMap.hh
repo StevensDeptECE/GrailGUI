@@ -82,7 +82,7 @@ class BLHashMapBase : public BlockLoader {
 
   // loading in from blockloader file
   // TODO: how in c++ do we not have to write this twice
-  BLHashMapBase(const char filename[]) : BlockLoader(filename, getFileSize(filename), getFileSize(filename)*2) {
+  BLHashMapBase(const char filename[]) : BlockLoader(filename, getFileSize(filename), getFileSize(filename)*4) {
     hashMapHeader = (HashMapHeader*)((char*)(mem) + sizeof(GeneralHeader));
     symbolCapacity = hashMapHeader->symbolCapacity;
     tableCapacity = hashMapHeader->tableCapacity;

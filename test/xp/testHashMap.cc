@@ -1,13 +1,25 @@
 #include <iostream>
 #include <fstream>
+#include <random>
 #include "util/BLHashMap.hh"
 #include "util/FileUtil.hh"
 #include "util/Benchmark.hh"
 #include <cstring>
-// make a copy of Hashmap.hh into src/xp
 
 using namespace std;
 using namespace grail::utils;
+
+default_random_engine generator;
+
+string generateRandomString(const string &prefix, int n) {
+  string randString = prefix;
+  uniform_int_distribution<int> distribution(0,25);
+  for (int i = 0; i < n; i++) {
+    char c = 'a' + distribution(generator);
+    randString += c;
+  }
+  return randString;
+}
 
 // function to test loading in the ASCII dictonary to BLHashMap
 void loadAsciiDictionary(const char filename[]) {
@@ -15,7 +27,7 @@ void loadAsciiDictionary(const char filename[]) {
   uint32_t length;
   char* f;
 
-  // read in the dictionary (213k words)
+  // read in the dictionary
   FileUtil::readComplete(&f, &length, filename);
   char* word = strtok(f, "\n");
   // create hashmap and load dictionary in with a unique integer for each word
@@ -30,21 +42,62 @@ void loadAsciiDictionary(const char filename[]) {
 
 // given a BLHashMap (containing the dictionary), test cases
 template<typename T>
-void testAsciiDictionary(BLHashMap<T> &dict) {
-  // TODO: add test cases
-  // pull out the same word _ times
-  // check for commonly misspelled words
-  // compare similar words (might hash to the same)
-  // check word for word
+void testAsciiDictionary(BLHashMap<T> &dict, const char filename[]) {
 
-  // test case to find word and return value
+  // check dictionary word for word
   uint32_t val;
+  uint32_t length;
+  char* f;
+  FileUtil::readComplete(&f, &length, filename);
+  char* word = strtok(f, "\n");
+  while (word != nullptr)
+  {
+    if (!dict.get(word, &val))
+      cout << word << " not found.\n";
+    word = strtok(nullptr, "\n");
+  }
+
+  // pull out the same word _ times
+  for (int i = 0; i < 100; i++) {
+    if (!dict.get("zymotechnics", &val))
+      cout << "zymotechnics not found.\n";
+  }
+
+  // check for bad words (should not exist)
+  uint32_t count = 0;
+  FileUtil::readComplete(&f, &length, "xp/badwords.txt");
+  word = strtok(f, "\n");
+  while (word != nullptr)
+  {
+    if (dict.get(word, &val)) {
+      cout << word << " has value "<< val << '\n';
+      count++;
+    }
+    word = strtok(nullptr, "\n");
+  }
+  cout << count << " bad words found. (BAD)\n";
+
+  // compare similar words (might hash to the same)
+  string s;
+  count = 0;
+  for (int i = 0; i < 100000; i++) {
+    s = generateRandomString("#", 8);
+    if (dict.get(s.c_str(), &val)) {// SHOULD NEVER HAPPEN
+      cout << s << "has value "<< val << '\n';
+      count++;
+    }
+  }
+  cout << count << " random words found. (BAD)\n";
+
+  #if 0
+  // test case to find word and return value
   char test[] = "zymotechnics";
   if (dict.get(test, &val)) {
     cout << test << "has value "<< val << '\n';
   } else {
     cout << test << " not found\n";
   }
+  #endif
 }
 
 // benchmark against C++ unordered_map
@@ -120,8 +173,24 @@ void fastLoad() {
 }
 
 void benchmarkEverything(const char filename[]) {
-  loadAsciiDictionary(filename); // to warm up
+  // to warm up
+  uint32_t count = 0;
+  uint32_t length;
+  char* f;
 
+  // read in the dictionary
+  FileUtil::readComplete(&f, &length, filename);
+  char* word = strtok(f, "\n");
+  // create hashmap and load dictionary in with a unique integer for each word
+  BLHashMap<uint32_t> dict = BLHashMap<uint32_t>(length, length/5, length/5);
+  while (word != nullptr)
+  {
+    dict.add(word, count++);
+    //cout << word << ": " << count << '\n';
+    word = strtok(nullptr, "\n");
+  }
+
+#if 1
   CBenchmark<>::benchmark(
       "Loading ASCII Dictionary (Makes BLHashMap)", 1e2, [&]() { loadAsciiDictionary(filename); });
 
@@ -130,25 +199,19 @@ void benchmarkEverything(const char filename[]) {
 
   CBenchmark<>::benchmark(
       "Loading unordered_map + ifstream", 10, [&]() { testLoadUnorderedMapIfstream(filename); });
-  
-  #if 0
-  CBenchmark<>::benchmark(
-      "Loading unordered_map", 1e2, [&]() { testAsciiDictionary(filename); });
-  #endif
 
   CBenchmark<>::benchmark(
       "Convert ASCII Dictionary to BLHashMap", 1e2, [&]() { convertAsciiDictionaryToBlockLoader(filename); });
 
 // TODO: more benchmarks for bigger dictionaries
-
+#endif
   CBenchmark<>::benchmark(
       "Loading BLHashMap from disk", 1e2, [&]() { fastLoad(); });
 
+  testAsciiDictionary(dict, filename);
 }
 int main() {
   benchmarkEverything("xp/dict.txt");
 //  benchmarkEverything("xp/biggerdict.txt");
-
-//TODO: Segmentation fault in release mdoe
   return 0;
 }
