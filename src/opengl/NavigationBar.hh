@@ -51,30 +51,31 @@ class NavigationBar : public Member {
                 float axisPadding, bool isVertical = false);
 
   /**
-   * @brief Create a new button and return a reference to it
+   * @brief Create a new button and return a pointer to it
    *
    * @param width width of the new button
    * @param height height of the new button
    * @param label the text to be shown on the button
    * @param action a description of the button's action
-   * @return ButtonWidget& a reference to the new button
+   * @return ButtonWidget* a pointer to the new button
    */
   ButtonWidget* addButton(float width, float height, std::string label,
                           const char action[]);
 
   /**
-   * @brief Create a new button and return a reference to it. Button
+   * @brief Create a new button and return a pointer to it. Button
    * width/height are automatically determined based on the text and buttonStyle
    * font
    *
    * @param label the text to be shown on the button
    * @param action a description of the button's action
-   * @return ButtonWidget& a reference to the new button
+   * @return ButtonWidget* a pointer to the new button
    */
   ButtonWidget* addButton(std::string label, const char action[]);
 
   /**
-   * @brief Automatically calculate axis offset for new button on nav bar
+   * @brief Automatically calculate and return the axis offset for new button on
+   * nav bar
    *
    */
   float axisOffset();

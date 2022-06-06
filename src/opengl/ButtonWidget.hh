@@ -32,7 +32,9 @@ class ButtonWidget : public InteractiveWidget2D {
   void updateCanvas(MainCanvas* canvas) { c = canvas; };
 
   float getX() { return x; };
+  void setX(float newX) { x = newX; };
   float getY() { return y; };
+  void setY(float newY) { y = newY; };
   float getW() { return w; };
   float getH() { return h; };
 };

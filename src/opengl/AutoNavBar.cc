@@ -6,70 +6,69 @@ AutoNavBar::AutoNavBar(GLWin* w, float x, float y, float axisPadding,
                        float horizontalPadding, float verticalPadding,
                        bool isVertical, bool isReverseOrder)
     : NavigationBar(w, x, y, 0, 0, axisPadding, isVertical),
-      currentX(x),
-      currentY(y),
       horizontalPadding(horizontalPadding),
       verticalPadding(verticalPadding),
       isReverseOrder(isReverseOrder) {
   w->autoNavBar = this;
 }
 
-/*
-  1. how to add left-to-right, right-to-left automatically
-
-
-  2. how to set button actions properly
-
-*/
 void AutoNavBar::addButton(Member* m) {
   int index = buttons.size();
-  ButtonWidget* bw;
-  if (isVertical) {
-    bw = new ButtonWidget(c, buttonStyle, xPos, yPos + axisOffset(),
-                          m->getName(), "action");
-  } else {
-    bw = new ButtonWidget(c, buttonStyle, xPos + axisOffset(), yPos,
-                          m->getName(), "action");
-  }
-  buttons.push_back(bw);
+  ButtonWidget* bw = NavigationBar::addButton(m->getName(), "action");
   bw->setAction(bind(&GLWin::switchTab, parentWin, index));
 
-#if 0
-
   if (isReverseOrder) {
-    if (isVertical) {
-      // TODO: New positioning algorithm for when isLeftToRight is true
-      // axisOffset() will not work
-      buttons.insert(buttons.begin(),
-                     bw = new ButtonWidget(c, buttonStyle, xPos, yPos + axisOffset(),
-                                      m->getName(), "action"));
-    } else {
-      buttons.insert(buttons.begin(),
-                     bw = new ButtonWidget(c, buttonStyle, xPos + axisOffset(), yPos,
-                                      m->getName(), "action"));
-    }
-    updateButtonPositions();
-  } else {
-    if (isVertical) {
-      buttons.push_back(bw = new ButtonWidget(
-          c, buttonStyle, xPos, yPos + axisOffset(), m->getName(), "action"));
-    } else {
-      buttons.push_back(bw = new ButtonWidget(c, buttonStyle, xPos + axisOffset(),
-                                         yPos, m->getName(), "action"));
-    }
+    reverseButtonOrder();
+    c->getGuiText()->clear();
   }
 
-  int index = buttons.size() - 1; // get the index of the current button so we can activate the corresponding tab
-  bw->setAction(bind(GLWin::switchTab(index), parentWin));
-#endif
   fitBarDimensions(horizontalPadding, verticalPadding);
   drawBarBox();
 }
 
-void AutoNavBar::advancePosition() {
-  if (isVertical) {
-    currentY += axisOffset();
-  } else {
-    currentX += axisOffset();
+void AutoNavBar::reverseButtonOrder() {
+  float currentX = xPos;
+  float currentY = yPos;
+  for (int i = buttons.size() - 1; i >= 0; i--) {
+    if (isVertical) {
+      buttons[i]->setY(currentY);
+      currentY += buttons[i]->getH() + axisPadding;
+    } else {
+      buttons[i]->setX(currentX);
+      currentX += buttons[i]->getW() + axisPadding;
+    }
   }
+}
+
+void AutoNavBar::fitBarDimensions(float widthPadding, float heightPadding) {
+  if (isVertical) {
+    barWidth = buttons[0]->getW();
+    for (ButtonWidget* b : buttons) {
+      barWidth = max(b->getW(), barWidth);
+    }
+
+    if (isReverseOrder) {
+      barHeight = buttons.front()->getY() + buttons.front()->getH() -
+                  buttons.back()->getY();
+    } else {
+      barHeight = buttons.back()->getY() + buttons.back()->getH() -
+                  buttons.front()->getY();
+    }
+  } else {
+    if (isReverseOrder) {
+      barWidth = buttons.front()->getX() + buttons.front()->getW() -
+                 buttons.back()->getX();
+    } else {
+      barWidth = buttons.back()->getX() + buttons.back()->getW() -
+                 buttons.front()->getX();
+    }
+
+    barHeight = buttons[0]->getH();
+    for (ButtonWidget* b : buttons) {
+      barHeight = max(b->getH(), barHeight);
+    }
+  }
+
+  barWidth += widthPadding;
+  barHeight += heightPadding;
 }
