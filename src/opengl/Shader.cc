@@ -140,6 +140,7 @@ compile_shaders:
            << infoLog
            << "\n -- --------------------------------------------------- --\n";
     }
+    save(shaderName);
     //TODO: save is crashing so commented out: save(shaderName);
 
     // delete the shaders as they're linked in now and no longer necessary
