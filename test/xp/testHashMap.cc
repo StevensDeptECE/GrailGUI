@@ -38,6 +38,7 @@ void loadAsciiDictionary(const char filename[]) {
     //cout << word << ": " << count << '\n';
     word = strtok(nullptr, "\n");
   }
+  delete[] f;
 }
 
 // given a BLHashMap (containing the dictionary), test cases
@@ -98,6 +99,8 @@ void testAsciiDictionary(BLHashMap<T> &dict, const char filename[]) {
     cout << test << " not found\n";
   }
   #endif
+
+  delete[] f;
 }
 
 // benchmark against C++ unordered_map
@@ -116,6 +119,7 @@ void testLoadUnorderedMap(const char filename[]) {
     //cout << word << ": " << count << '\n';
     word = strtok(nullptr, "\n");
   }
+  delete[] f;
 }
 
 // benchmark against C++ unordered_map (using inefficient ifstream)
@@ -152,6 +156,8 @@ void convertAsciiDictionaryToBlockLoader(const char filename[]) {
   }
   
   dict.writeFile("fastloaddict.bdl");
+
+  delete[] f;
 
   // now, modify hash map to save the dictionary into a single block loader
   // write out the block loader format
@@ -190,10 +196,9 @@ void benchmarkEverything(const char filename[]) {
     word = strtok(nullptr, "\n");
   }
 
-#if 1
   CBenchmark<>::benchmark(
       "Loading ASCII Dictionary (Makes BLHashMap)", 1e2, [&]() { loadAsciiDictionary(filename); });
-
+#if 1
   CBenchmark<>::benchmark(
       "Loading unordered_map", 10, [&]() { testLoadUnorderedMap(filename); });
 
@@ -206,9 +211,11 @@ void benchmarkEverything(const char filename[]) {
 // TODO: more benchmarks for bigger dictionaries
 #endif
   CBenchmark<>::benchmark(
-      "Loading BLHashMap from disk", 1e2, [&]() { fastLoad(); });
+      "Loading BLHashMap from disk", 1e3, [&]() { fastLoad(); });
 
   testAsciiDictionary(dict, filename);
+
+  delete[] f;
 }
 int main() {
   benchmarkEverything("xp/dict.txt");

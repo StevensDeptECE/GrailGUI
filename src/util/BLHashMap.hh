@@ -50,6 +50,27 @@ class BLHashMapBase : public BlockLoader {
     return bytewisehash(s, len);
   }
 
+  struct hashReturn {
+    uint32_t val;
+    const char* next;
+  };
+  hashReturn hashAndReturn(const char s[]) const {
+    uint32_t i;
+    uint32_t sum = s[0] ^ 0x56F392AC;
+    for (i = 1; s[i] != '\0'; i++) {
+      sum = (((sum << r1) | (sum >> (32 - r1))) ^
+            ((sum >> r2) | (sum >> (32 - r2)))) +
+            s[i];
+      sum = (((sum << r3) | (sum >> (32 - r3))) ^
+            ((sum >> r4) | (sum >> (32 - r4)))) +
+            s[i];
+    }
+    sum = ((sum << r5) | (sum >> (32 - r5))) ^ sum ^ (i << 7);
+    //  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >>
+    //  (32-r6)))) + s[i];
+    return {sum & (tableCapacity - 1), s + i + 1};
+  }
+
   static uint32_t getFileSize(const char filename[]) {
       struct stat s;
       stat(filename, &s);
@@ -141,11 +162,13 @@ class BLHashMap : public BLHashMapBase {
       table[i] = 0;  // 0 means empty, at the moment the first node is unused
   }
 
+  #if 0
   // reading in blockloader file
   BLHashMap(const char filename[]) 
     : BLHashMapBase(filename),
       nodeCapacity(hashMapHeader->nodeCapacity),
       nodes((Node*)(findNextAlign8((char*)table + nearestPower2(tableCapacity)*sizeof(uint32_t)))) {
+    nodeCount = 1;
     uint32_t count = 0;
     char* word = strtok(symbols, "\n");
     // create hashmap and load dictionary in with a unique integer for each word
@@ -156,6 +179,23 @@ class BLHashMap : public BLHashMapBase {
       word = strtok(nullptr, "\n");
     }
   }
+  #endif
+
+  #if 1 // SLOWER THAN strtok()
+  // reading in blockloader file
+  BLHashMap(const char filename[]) 
+    : BLHashMapBase(filename),
+      nodeCapacity(hashMapHeader->nodeCapacity),
+      nodes((Node*)(findNextAlign8((char*)table + nearestPower2(tableCapacity)*sizeof(uint32_t)))) {
+    nodeCount = 1;
+    uint32_t count = 0;
+    const char* word = symbols;
+    while (word < symbols + symbolCapacity)
+    {
+      word = addAndAdvance(word, count++);
+    }
+  }
+  #endif
 
   #if 0
   ~BLHashMap() {
@@ -216,6 +256,30 @@ class BLHashMap : public BLHashMapBase {
     currentSymbol += i + 1;
     nodeCount++;
   }
+
+  const char* addAndAdvance(const char s[], const Val& v) {
+    hashReturn r = hashAndReturn(s);
+    uint32_t index = r.val;
+    for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {
+      const char* w = symbols + nodes[p].offset;
+      for (int i = 0; *w == s[i]; i++)
+        if (*w == '\0') {
+          nodes[p].val = v;
+          return r.next;
+        }
+    }
+    checkGrow();
+
+    int i;
+    for (i = 0; s[i] != '\0'; i++) currentSymbol[i] = s[i];
+    currentSymbol[i] = '\0';
+    nodes[nodeCount] = Node(currentSymbol - symbols, table[index], v);
+    table[index] = nodeCount;
+    currentSymbol += i + 1;
+    nodeCount++;
+    return r.next;
+  }
+
   Val add(const char s[], uint32_t len, const Val& v) {
     uint32_t index = hash(s, len);
     for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {
