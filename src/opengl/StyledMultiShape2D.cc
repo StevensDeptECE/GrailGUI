@@ -699,6 +699,14 @@ void StyledMultiShape2D::spline(const std::vector<double>& points, int n,
   }
 }
 
+// Solid + Edge Primitives
+void StyledMultiShape2D::fillDrawRectangle(float x, float y, float w, float h,
+                                        const glm::vec4& fc, const glm::vec4& dc) {
+  fillRectangle(x,y,w,h,fc);
+  drawRectangle(x,y,w,h,dc);
+}
+
+
 void StyledMultiShape2D::dump() {
   fprintf(stderr, "\nVertices\n%12c%12c%7c%7c%7c\n", 'x', 'y', 'r', 'g', 'b');
 
@@ -733,3 +741,4 @@ void StyledMultiShape2D::dump() {
   char buffer[3];
   cin.getline(buffer, 3);
 }
+

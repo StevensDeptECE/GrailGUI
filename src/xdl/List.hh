@@ -20,6 +20,10 @@ class List : public CompoundType {
  public:
   List(const std::string listName, uint32_t size = 16)
       : CompoundType(listName), impl(size) {}
+  void setSize(uint32_t size) {
+    impl = size;
+    impl.setSize(size);
+  }
   /**
    * @brief Get the DataType of the List
    *
@@ -98,6 +102,34 @@ class List : public CompoundType {
   void writeXDLMeta(Buffer& buf) const;
   const T& operator[](uint32_t i) const { return impl[i]; }
   T& operator[](uint32_t i) { return impl[i]; }
+  /*
+    Update the local data type to be in synch with the remote data.
+    For a list, this means the first time reading in the list from the server
+    and in subsquent times, updating the local list to have the same elements.
+
+    Theoretically, this could mean adding new elements to the end (usual case)
+    could also be deleting elements, changing elements in the middle, potentially all kinds of difficult updates.
+   TODO: if this works, needs to be put in every XDL type? Or just compound ones?
+
+
+    our limited example for now:
+    the first time, read in the list.
+    subsequent times add on any new elements.
+
+    Problem with delta encoding: the list is not aware of delta encoding. 
+    TODO: how to figure out when data is sent delta encoded. For now
+    JUST DON'T USE IT.
+
+
+  */
+  void getUpdate(Buffer& buf) {
+    uint32_t len = buf._readU16();
+    T val;
+    for (uint32_t i = 0; i < len; i++) {
+      val.read(buf);
+      add(val);
+    }
+  }
 };
 
 template <typename T>

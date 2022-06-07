@@ -37,9 +37,10 @@ int main(int argc, char* argv[]) {
   try {
     IPV4Socket s(port);
     List<const StockQuote> quotes("AAPL");
-    for (int i = 0; i < 70; i++) {
-      quotes.add(StockQuote(i, i, i, i));
-    }
+
+    //for (int i = 0; i < 70; i++) {
+     //      quotes.add(StockQuote(i, i, i, i));
+    //}
     XDLRequest req(&quotes);
     s.attach(&req);
     s.wait();  // main server wait loop

@@ -5,6 +5,19 @@
 #include "opengl/Canvas.hh"
 #include "opengl/MultiShape2D.hh"
 
+/*
+  Draw 2d shapes efficiently bundled together where each point has an associated color
+  StyledMultiShape2d can draw Gouraud-shaded triangles, lines, and points
+  and many primitives are provided that are implemented using these three underlying lists
+
+  The graphics card is loaded at init() time
+  The shape is drawn using render()
+  The base class of this hierarchy is Shape which contains the integer handles used to refer to the data on the graphics card
+  Once the points and indices are loaded, changing them in your computer has NO EFFECT.
+  If you want to change the shape on screen you must update the memory in the graphics card 
+  (which we haven't implemented well yet) and then call render again.
+
+*/
 class StyledMultiShape2D : public MultiShape2D {
  private:
   glm::mat4 transform;

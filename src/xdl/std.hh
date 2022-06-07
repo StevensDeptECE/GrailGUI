@@ -38,6 +38,18 @@ class ArrayOfBytes;
 
 class UnImpl;
 
+#if 0
+class XDLBase {
+  public:
+  void writeXDL(Buffer& buf) const {}
+  virtual void writeXDLMeta(Buffer& buf) const {}
+  virtual void addData(ArrayOfBytes* data) const {}
+  virtual void addMeta(ArrayOfBytes* meta) const {}
+  virtual uint32_t size() const {}
+  virtual DataType getDataType() const {}
+};
+#endif
+
 /**
  * @brief XDLType is the base class of all XDL-generated code.
  *
