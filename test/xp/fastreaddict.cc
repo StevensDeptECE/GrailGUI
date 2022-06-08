@@ -64,7 +64,7 @@ uint32_t fastArithmeticEncodedCountWords(const char* dict, uint32_t len) {
 int main() {
   uint32_t len;
   char* dict;
-  FileUtil::readComplete(&dict,  &len, "dict.txt");
+  FileUtil::readComplete(&dict,  &len, "xp/dict.txt");
   //Assumption: dict is allocated on even 8-byte boundary
   //dictionary contains words separated by \n
   // aa\naal\n...
