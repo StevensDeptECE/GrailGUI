@@ -24,23 +24,23 @@ QuoteTable::QuoteTable(const char filename[]) : quotes("quotes") {
   load a file of quotes in textFile into memory as a List and register under the name objName
 
 */
-List<Quote> Quote::loadASCII(const char objName[], const char textFile[]) {
+List<Quote>* Quote::loadASCII(const char objName[], const char textFile[]) {
   ifstream in(textFile);
   in.seekg(0, ios::end);
   uint32_t len = in.tellg();
   in.seekg(0, std::ios::beg);
   char buf[4096];
-  List<Quote> quotes("AAPL", len / 30);
+  List<Quote>* quotes = new List<Quote>("AAPL", len / 30);
   in.getline(buf, sizeof(buf));  // throw out first line of metadata
   while (in.getline(buf, sizeof(buf))) {
     Quote q(buf);
-    quotes.add(q);
+    quotes->add(q);
   }
   return quotes;
 }
 
-void Quote::convertASCIIToBinary(const char objName[], const char textFile[], const char binFile) {
-  List<Quote> quotes = loadASCII(objName, textFile);
+void Quote::convertASCIIToBinary(const char objName[], const char textFile[], const char binFile[]) {
+  List<Quote>* quotes = loadASCII(objName, textFile);
   Buffer out(binFile, 32768);
   /**
    * TODO:
@@ -56,18 +56,18 @@ void Quote::convertASCIIToBinary(const char objName[], const char textFile[], co
    */
   out.write(uint8_t(2));  // total number of elements in the symbol table (would
                           // be nice to use SymbolTable to generate this later)
-  quotes[0].writeMeta(out);  // first item, define "quote"
+  (*quotes)[0].writeMeta(out);  // first item, define "quote"
   out.write(DataType::STRUCT8,
             "root");      // then define "root" that is the top level object
   out.write(uint8_t(1));  // 1 member in root (a list of quotes)
   out.write(DataType::LIST16,
             "quotes");  // a list called quotes, maximum 65535 elements
-  out.write(uint16_t(quotes.size()));  // the size of the list (about 14k)
+  out.write(uint16_t(quotes->size()));  // the size of the list (about 14k)
   out.write("quote", 5);                   // the type of the object in the list
   // write metadata first
 
-  for (uint32_t i = 0; i < quotes.size(); i++) {
-    quotes[i].write(out);
+  for (uint32_t i = 0; i < quotes->size(); i++) {
+    (*quotes)[i].write(out);
   }
 
   string binFile2 = string(binFile);
@@ -87,19 +87,22 @@ void Quote::convertASCIIToBinary(const char objName[], const char textFile[], co
    */
   out.write(uint8_t(2));  // total number of elements in the symbol table (would
                           // be nice to use SymbolTable to generate this later)
-  quotes[0].writeMeta(out);  // first item, define "quote"
+  (*quotes)[0].writeMeta(out);  // first item, define "quote"
   out.write(DataType::STRUCT8,
             "root");      // then define "root" that is the top level object
   out.write(uint8_t(1));  // 1 member in root (a list of quotes)
   out.write(DataType::LIST16,
             "quotes");  // a list called quotes, maximum 65535 elements
-  out.write(uint16_t(tempQuotes.size()));  // the size of the list (about 14k)
+  out.write(uint16_t(quotes->size()));  // the size of the list (about 14k)
   out.write("quote", 5);                   // the type of the object in the list
                                            // write metadata first
 
-  tempQuotes[0].write(out);
-  for (uint32_t i = 1; i < tempQuotes.size(); i++) {
-    DeltaQuoteNoDate* dq = (DeltaQuoteNoDate*)&tempQuotes[i];
-    dq->write(dq[-1], out);
+  (*quotes)[0].write(out);
+  for (uint32_t i = 1; i < quotes->size(); i++) {
+    //TODO: How to implement writing out delta quotes? Whole system could know about deltas but would have a tough time understanding dates, weekends, holidays, etc.
+    // not to mention how do you compute a delta, you need to know the quote who came before.
+    //DeltaQuoteNoDate* dq = (DeltaQuoteNoDate*)&tempQuotes[i];
+    //dq->write(dq[-1], out);
+    (*quotes)[i].write(out);
   }
 }

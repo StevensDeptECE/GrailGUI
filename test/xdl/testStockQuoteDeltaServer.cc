@@ -18,15 +18,14 @@ int main(int argc, char* argv[]) {
   int port = argc > 1 ? atoi(argv[2]) : 8060;
   // client specifies symbol name and perhaps later, we can accept that as a parameter. Right now we are hardcoded to AAPL
   const char* symbolName = "AAPL";
-  const char loopback[] = "127.0.0.1";
   try {
     GLWin::classInit();
-    List<Quote> quotes("test", 16); // = Quote::loadASCII("AAPL", "res/aapl.txt");
-    IPV4Socket s(loopback, port);
-    XDLRequest req(&quotes);
+    List<Quote>* quotes = Quote::loadASCII("AAPL", "res/aapl.txt");
+    IPV4Socket s(port);
+    XDLRequest req(quotes);
     s.attach(&req);
     s.wait();  // main server wait loop
-    cerr << "Read " << quotes.size() << "delta stock quotes from server\n";
+    cerr << "Read " << quotes->size() << "delta stock quotes from server\n";
   } catch (const Ex& e) {
     cerr << e << '\n';
   }

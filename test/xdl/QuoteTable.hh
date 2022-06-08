@@ -139,8 +139,8 @@ class Quote {
     return size_;  // number of non-aligned bytes to represent this object
   }
   DataType getDataType() const { return DataType::STRUCT8; }
-  static List<Quote> loadASCII(const char objName[], const char textFile[]);
-  static void convertASCIIToBinary(const char textFile[], const char binFile[]);
+  static List<Quote>* loadASCII(const char objName[], const char textFile[]);
+  static void convertASCIIToBinary(const char objName[],const char textFile[], const char binFile[]);
   static void sendQuote(const List<Quote>* quotes, uint32_t start, uint32_t end);
   static void sendDeltaQuote(const List<Quote>* quotes, uint32_t start, uint32_t end);
 };
