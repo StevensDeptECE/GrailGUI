@@ -227,13 +227,13 @@ void StyledMultiShape2D::fillEllipse(float x, float y, float xRad, float yRad,
 void StyledMultiShape2D::drawRectangle(float x, float y, float w, float h,
                                        const glm::vec4& c) {
   uint32_t points = 0;
-  uint32_t cur = getPointIndex();
+  // uint32_t cur = getPointIndex();
   addStyledPoint(x, y, c);
   addStyledPoint(x, y + h, c);  // goes in counter-clockwise order
   addStyledPoint(x + w, y + h, c);
   addStyledPoint(x + w, y, c);
   lAddQuadIndices();
-  points += 4;
+  points = 4;
   numIndices.push_back(points);
   currentIndex += points;
   startIndices.push_back(currentIndex);
@@ -349,13 +349,79 @@ void StyledMultiShape2D::drawLine(float x1, float y1, float x2, float y2,
   lineIndices.push_back(ind);
 }
 
+// solid + draw primtives
+
+void StyledMultiShape2D::fillDrawRectangle(float x, float y, float w, float h,
+                                           const glm::vec4& fc,
+                                           const glm::vec4& dc) {
+  fillRectangle(x, y, w, h, fc);
+  drawRectangle(x, y, w, h, dc);
+  /*uint32_t points = 0;
+
+  addStyledPoint(x, y, dc);
+  addStyledPoint(x, y + h, dc);  // goes in counter-clockwise order
+  addStyledPoint(x + w, y + h, dc);
+  addStyledPoint(x + w, y, dc);
+  lAddQuadIndices();
+  addStyledPoint(x, y, fc);
+  addStyledPoint(x, y + h, fc);  // goes in counter-clockwise order
+  addStyledPoint(x + w, y + h, fc);
+  addStyledPoint(x + w, y, fc);
+  sAddQuadIndices();
+  points = 4;
+  numIndices.push_back(points);
+  currentIndex += points;
+  startIndices.push_back(currentIndex);*/
+}
+
+void StyledMultiShape2D::fillDrawRoundRect(float x, float y, float w, float h,
+                                           float rx, float ry,
+                                           const glm::vec4& fc,
+                                           const glm::vec4& dc) {
+  fillRoundRect(x, y, w, h, rx, ry, fc);
+  drawRoundRect(x, y, w, h, rx, ry, dc);
+}
+
+void StyledMultiShape2D::fillDrawTriangle(float x1, float y1, float x2,
+                                          float y2, float x3, float y3,
+                                          const glm::vec4& fc,
+                                          const glm::vec4& dc) {
+  fillTriangle(x1, y1, x2, y2, x3, y3, fc);
+  drawTriangle(x1, y1, x2, y2, x3, y3, dc);
+}
+
+void StyledMultiShape2D::fillDrawPolygon(float x, float y, float xRad,
+                                         float yRad, float n,
+                                         const glm::vec4& fc,
+                                         const glm::vec4& dc) {
+  fillPolygon(x, y, xRad, yRad, n, fc);
+  drawPolygon(x, y, xRad, yRad, n, dc);
+}
+
+void StyledMultiShape2D::fillDrawCircle(float x, float y, float rad,
+                                        float angleInc, const glm::vec4& fc,
+                                        const glm::vec4& dc) {
+  fillCircle(x, y, rad, angleInc, fc);
+  drawCircle(x, y, rad, angleInc, dc);
+}
+
+void StyledMultiShape2D::fillDrawEllipse(float x, float y, float xRad,
+                                         float yRad, float angleInc,
+                                         const glm::vec4& fc,
+                                         const glm::vec4& dc) {
+  fillEllipse(x, y, xRad, yRad, angleInc, fc);
+  drawEllipse(x, y, xRad, yRad, angleInc, dc);
+}
+
 // rectangular grid
 void StyledMultiShape2D::drawGrid(float x0, float y0, float w, float h,
                                   uint32_t numHoriz, uint32_t numVert,
                                   const glm::vec4& c) {
   // draw vertical lines
   float x = x0;
-  drawLine(x, y0, x, y0 + h, c);
+  const float dx = (w / numVert);
+  for (uint32_t indexVert = numVert + 1; indexVert > 0; indexVert--, x += dx)
+    drawLine(x, y0, x, y0 + h, c);
   // draw horizontal lines
   float y = y0;
   const float dy = (h / numHoriz);
@@ -382,7 +448,45 @@ void StyledMultiShape2D::fillGrid(float x0, float y0, float w, float h,
     drawLine(x0, y, x0 + w, y, lc);
 }
 
-// draw an equilateral triangle broken into equilateral triangles
+// Checkered Grid
+
+void StyledMultiShape2D::CheckeredGrid(float x0, float y0, float w, float h,
+                                       uint32_t numHoriz, uint32_t numVert,
+                                       const glm::vec4& lc,
+                                       const glm::vec4& bc1,
+                                       const glm::vec4& bc2) {
+  drawGrid(x0, y0, w, h, numHoriz, numVert, lc);
+
+  float wRectangles = w / numVert;
+  float hRectangles = h / numHoriz;
+  float currentX = x0;
+  float currentY = y0;
+  int CheckCounter = 1;
+  int ColumnCounter = 0;
+
+  for (int i = 0; i < numHoriz; i++) {
+    if (ColumnCounter > 0) {
+      currentY += hRectangles;
+      currentX = x0;
+    }
+    for (int i = 0; i < numVert; i++) {
+      if (CheckCounter % 2 == 0) {
+        fillRectangle(currentX, currentY, wRectangles, hRectangles, bc1);
+        currentX += wRectangles;
+        CheckCounter++;
+      } else {
+        fillRectangle(currentX, currentY, wRectangles, hRectangles, bc2);
+        currentX += wRectangles;
+        CheckCounter++;
+      }
+    }
+    ColumnCounter++;
+    CheckCounter--;  // to switch color when transitioning rows
+  }
+}
+
+// draw an equilateral triangle broken
+// into equilateral triangles
 void StyledMultiShape2D::drawTriGrid(float x0, float y0, float s,
                                      uint32_t trianglesPerSide,
                                      const glm::vec4& c) {

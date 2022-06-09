@@ -125,6 +125,10 @@ class StyledMultiShape2D : public MultiShape2D {
 
   void fillGrid(float x0, float y0, float w, float h, uint32_t numHoriz,
                 uint32_t numVert, const glm::vec4& lc, const glm::vec4& bc);
+  // Checkered Rectangular Grid
+  void CheckeredGrid(float x0, float y0, float w, float h, uint32_t numHoriz,
+                     uint32_t numVert, const glm::vec4& lc,
+                     const glm::vec4& bc1, const glm::vec4& bc2);
 
   // draw an equilateral triangle broken into equilateral triangles
   void drawTriGrid(float x, float y, float s, uint32_t trianglesPerSide,
