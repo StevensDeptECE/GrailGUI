@@ -9,7 +9,8 @@ DropDownMenu::DropDownMenu(GLWin* w, float x, float y, float menuWidth,
     : Member(w->getSharedMenuTab(), "DDMenu", 0),
       w(w),
       buttonStyle(buttonStyle),
-      isVertical(isVertical) {
+      isVertical(isVertical),
+      isOpen(false) {
   menuButton = new ButtonWidget(tab->getMainCanvas(), buttonStyle, x, y, label,
                                 "open menu");
   menuButton->setAction([this]() { this->openClose(); });
@@ -23,9 +24,6 @@ DropDownMenu::DropDownMenu(GLWin* w, float x, float y, float menuWidth,
   }
   nav->setButtonStyle(buttonStyle->f, buttonStyle->bg, buttonStyle->fg,
                       buttonStyle->lineWidth);
-
-  // closeMenu();
-  isOpen = true;
 }
 
 // TODO: fix menu breaking when isReverseOrder is true
@@ -36,7 +34,8 @@ DropDownMenu::DropDownMenu(GLWin* w, float x, float y, const char label[],
     : Member(w->getSharedMenuTab(), "DDMenu", 0),
       w(w),
       buttonStyle(buttonStyle),
-      isVertical(isVertical) {
+      isVertical(isVertical),
+      isOpen(false) {
   menuButton = new ButtonWidget(tab->getMainCanvas(), buttonStyle, x, y, label,
                                 "open menu");
   menuButton->setAction([this]() { this->openClose(); });
@@ -52,9 +51,6 @@ DropDownMenu::DropDownMenu(GLWin* w, float x, float y, const char label[],
   }
   nav->setButtonStyle(buttonStyle->f, buttonStyle->bg, buttonStyle->fg,
                       buttonStyle->lineWidth);
-
-  // closeMenu();
-  isOpen = true;
 }
 
 void DropDownMenu::openMenu() {
@@ -64,11 +60,10 @@ void DropDownMenu::openMenu() {
 void DropDownMenu::closeMenu() {
   std::cout << "Closing menu!" << std::endl;
   isOpen = false;
-  /*
+
   MainCanvas* c = w->getSharedTab()->getMainCanvas();
   c->getGui()->clear();
   c->getGuiText()->clear();
-  */
 }
 
 /*

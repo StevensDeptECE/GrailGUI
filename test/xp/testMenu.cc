@@ -24,7 +24,8 @@ void grailmain(int argc, char* argv[], GLWin* w) {
   w->setTitle("Test Tabs");
   Style* s = new Style(FontFace::get("TIMES", 28, FontFace::BOLD), grail::black,
                        grail::lightblue, 2);
-  new DropDownMenu(w, 0, 0, "Tabs", 5, 0, 0, s);
+  DropDownMenu* menu = new DropDownMenu(w, 0, 0, "Tabs", 5, 0, 0, s);
   new Square(w);
   new Circle(w);
+  menu->closeMenu();
 }

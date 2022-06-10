@@ -4,12 +4,10 @@
 
 using namespace std;
 
-CallbackHandler::CallbackHandler() {
+CallbackHandler::CallbackHandler() : actionNameMap(64, 4096) {
+  inputMap.fill(0);
   for (int i = 0; i < 3; i++) numActions[i] = 1;
 }
-
-HashMap<uint32_t> CallbackHandler::actionNameMap(64, 4096);
-std::array<uint32_t, 32768> inputMap();
 
 uint32_t CallbackHandler::internalRegisterAction(const char name[], Security s,
                                                  function<void()> action) {
