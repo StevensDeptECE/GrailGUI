@@ -35,7 +35,7 @@ add_subdirectory(graph)
 
 # Maps
 add_grail_executable(SRC maps/convertESRItoBlockLoader.cc LIBS grail)
-# add_grail_executable(SRC maps/loadESRIShapefile.cc LIBS grail)
+add_grail_executable(SRC maps/loadESRIShapefile.cc LIBS grail)
 # add_grail_executable(SRC maps/testESRIPolygon.cc LIBS grail)
 add_grail_executable(SRC maps/testDrawBlockMap.cc LIBS grail)
 # add_grail_executable(SRC maps/ESRIMapDemo.cc LIBS grail) 
