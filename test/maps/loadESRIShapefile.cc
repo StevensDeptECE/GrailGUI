@@ -114,7 +114,7 @@ void loadESRIDBF(const char filename[]) {
     cout << fieldName << '\t' << fieldWidth << '\t' << precision << '\n';
   }
 
-  int recordCount = DBFGetRecordCount(dbf);
+  int recordCount = 3; //DBFGetRecordCount(dbf);
   int SQMI = DBFGetFieldIndex(dbf, "SQMI");  // get index of this field
   for (int i = 0; i < recordCount; i++) {
     cout << DBFReadStringAttribute(dbf, i, 0) << '\t'
@@ -159,7 +159,7 @@ int main() {
   CBenchmark<>::benchmark("stats", 1,
                           std::bind(statsESRI, counties_shp.c_str(), &info));
   const string counties_dbf = dir + "/test/res/maps/USA_Counties.dbf";
-  CBenchmark<>::benchmark("names", 10,
+  CBenchmark<>::benchmark("names", 1,
                           std::bind(loadESRIDBF, counties_dbf.c_str()));
   string countyNameInfo;
 #if 0

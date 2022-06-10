@@ -43,7 +43,6 @@ add_grail_executable(SRC maps/testLoadFromESRI.cc LIBS grail)
 add_grail_executable(SRC maps/testFastMapLoad.cc LIBS grail)
 
 
-
 # Media
 if(${MPV_FOUND} AND ${PC_MPV_VERSION} VERSION_GREATER "1.26")
   add_grail_executable(SRC media/testSingleAudio.cc LIBS grail)
@@ -65,6 +64,7 @@ add_grail_executable(SRC xdl/testXDLButton.cc LIBS grail)
 add_grail_executable(SRC xp/testfmt.cc LIBS grail)
 add_grail_executable(SRC xp/testMultiTab.cc LIBS grail)
 add_grail_executable(SRC xp/testHashMap.cc LIBS grail)
+add_grail_executable(SRC xp/buildCountyNames.cc LIBS grail)
 
 # Unsorted 
 # add_grail_executable(SRC ../src/xp/decompressBlockLoader.cc LIBS grail lzma)
