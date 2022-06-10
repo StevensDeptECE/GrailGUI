@@ -42,33 +42,30 @@ void AutoNavBar::reverseButtonOrder() {
 
 void AutoNavBar::fitBarDimensions(float widthPadding, float heightPadding) {
   if (isVertical) {
-    barWidth = buttons[0]->getW();
-    for (ButtonWidget* b : buttons) {
-      barWidth = max(b->getW(), barWidth);
-    }
+    barWidth = buttonsWidth() + widthPadding;
+    barHeight = buttonsLength() + heightPadding;
+  } else {
+    barWidth = buttonsLength() + widthPadding;
+    barHeight = buttonsWidth() + heightPadding;
+  }
+}
 
+float AutoNavBar::buttonsLength() {
+  if (isVertical) {
     if (isReverseOrder) {
-      barHeight = buttons.front()->getY() + buttons.front()->getH() -
-                  buttons.back()->getY();
+      return buttons.front()->getY() + buttons.front()->getH() -
+             buttons.back()->getY();
     } else {
-      barHeight = buttons.back()->getY() + buttons.back()->getH() -
-                  buttons.front()->getY();
+      return buttons.back()->getY() + buttons.back()->getH() -
+             buttons.front()->getY();
     }
   } else {
     if (isReverseOrder) {
-      barWidth = buttons.front()->getX() + buttons.front()->getW() -
-                 buttons.back()->getX();
+      return buttons.front()->getX() + buttons.front()->getW() -
+             buttons.back()->getX();
     } else {
-      barWidth = buttons.back()->getX() + buttons.back()->getW() -
-                 buttons.front()->getX();
-    }
-
-    barHeight = buttons[0]->getH();
-    for (ButtonWidget* b : buttons) {
-      barHeight = max(b->getH(), barHeight);
+      return buttons.back()->getX() + buttons.back()->getW() -
+             buttons.front()->getX();
     }
   }
-
-  barWidth += widthPadding;
-  barHeight += heightPadding;
 }

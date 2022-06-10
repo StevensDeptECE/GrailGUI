@@ -128,6 +128,18 @@ class NavigationBar : public Member {
   void fitBarDimensions(float widthPadding = 0, float heightPadding = 0);
 
   /**
+   * @brief Calculates and returns the lengthwise distance of the list of
+   * buttons in the nav bar
+   */
+  float buttonsLength();
+
+  /**
+   * @brief Calculates and returns the crosswise distance of the list of
+   * buttons in the nav bar
+   */
+  float buttonsWidth();
+
+  /**
    * @brief Balance n buttons on the nav bar
    *
    * This is particularly useful in scenarios where a screen can fit n tabs
@@ -138,6 +150,8 @@ class NavigationBar : public Member {
    * @param numButtons number of buttons to display
    */
   void balanceButtons(int numButtons);
+
+  MainCanvas* getCanvas() { return c; };
 
   /**
    * @brief Adds a new tab to the window and adds the navigation bar to the tab

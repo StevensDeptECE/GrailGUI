@@ -95,6 +95,7 @@ void GLWin::keyCallback(GLFWwindow *win, int key, int scancode, int action,
   uint32_t input = (mods << 11) | (action << 9) | key;
   cerr << "key: " << key << " mods: " << mods << " input=" << input << '\n';
   winMap[win]->sharedTab->doit(input);
+  winMap[win]->sharedMenuTab->doit(input);
   winMap[win]->currentTab()->doit(input);
 }
 
@@ -109,6 +110,7 @@ void GLWin::mouseButtonCallback(GLFWwindow *win, int button, int action,
   fmt::print("mouse!{}, action={}, location=({}, {}), input={}\n", button,
              action, w->mouseX, w->mouseY, input);
   winMap[win]->sharedTab->doit(input);
+  winMap[win]->sharedMenuTab->doit(input);
   winMap[win]->currentTab()->doit(input);
 }
 
@@ -117,6 +119,7 @@ void GLWin::scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
   // todo: we would have to copy offsets into the object given the way this is
   uint32_t input = 400;
   winMap[win]->sharedTab->doit(input + int(yoffset));
+  winMap[win]->sharedMenuTab->doit(input + int(yoffset));
   winMap[win]->currentTab()->doit(input + int(yoffset));
 }
 
@@ -252,7 +255,8 @@ void GLWin::startWindow() {
   menuStyle = new Style(menuFont, 0.5, 0.5, 0.5, 0, 0, 0, 1, COMMON_SHADER);
   menuTextStyle = new Style(menuFont, 0.5, 0.5, 0.5, 0, 0, 0, 1, COMMON_SHADER);
   sharedTab = new Tab(this);
-  // tabs.add(new Tab(this));
+  sharedMenuTab = new Tab(this);
+  //  tabs.add(new Tab(this));
   current = -1;
   hasBeenInitialized = true;
 }
@@ -277,6 +281,7 @@ void GLWin::baseInit() {
   for (int i = 0; i < tabs.size(); ++i) {
     tabs[i]->init();
   }
+  sharedMenuTab->init();
   sharedTab->init();
 }
 
@@ -308,6 +313,8 @@ void GLWin::cleanup() {
   tabs.clear();
   delete sharedTab;
   sharedTab = nullptr;
+  delete sharedMenuTab;
+  sharedMenuTab = nullptr;
   delete defaultStyle;
   defaultStyle = nullptr;
   Shader::cleanAll();
@@ -362,6 +369,7 @@ void GLWin::mainLoop() {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       render();
       sharedTab->render();
+      sharedMenuTab->render();
       renderTime += glfwGetTime() - startRender;
       glfwSwapBuffers(win);  // Swap buffer so the scene shows on screen
       if (frameCount >= 150) {
@@ -381,11 +389,13 @@ void GLWin::mainLoop() {
     currentTab()->tick();  // update time in current tab for any models using
                            // simulation time
     sharedTab->tick();
+    sharedMenuTab->tick();
     needsUpdate = false;
     glfwPollEvents();  // Check and call events
     // note: any events needing a refresh should set dirty = true
     if (currentTab()->checkUpdate()) setUpdate();
     if (sharedTab->checkUpdate()) setUpdate();
+    if (sharedMenuTab->checkUpdate()) setUpdate();
     if (needsUpdate) {
       update();
       needsRender = true;

@@ -59,4 +59,11 @@ class AutoNavBar : public NavigationBar {
    * button
    */
   void fitBarDimensions(float widthPadding = 0, float heightPadding = 0);
+
+  /**
+   * @brief Calculates and returns the lengthwise distance of the list of
+   * buttons in the nav bar. Override of buttonsLength function from
+   * NavigationBar that accounts for isReverseOrder
+   */
+  float buttonsLength();
 };

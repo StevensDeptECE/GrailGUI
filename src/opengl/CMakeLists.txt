@@ -9,6 +9,7 @@ set(grail-opengl
     Colors.cc
     Document.cc
     DocView.cc
+    DropDownMenu.cc
     ErrNames.cc
     ESRIPolygon.cc
     ESRIShape.cc

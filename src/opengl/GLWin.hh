@@ -54,7 +54,8 @@ class GLWin {
   uint32_t frameNum;
   double lastRenderTime;  // Stores last time of render
   char frameName[32];
-  Tab* sharedTab;
+  Tab* sharedTab;       // For nav bars
+  Tab* sharedMenuTab;   // For buttons that open/close menus
   DynArray<Tab*> tabs;  // list of web pages, ie tabs
   int32_t current;      // current (active) tab
   void checkUpdate();
@@ -137,6 +138,7 @@ class GLWin {
     }
   }
   constexpr Tab* getSharedTab() { return sharedTab; }
+  constexpr Tab* getSharedMenuTab() { return sharedMenuTab; }
 
   constexpr void setSize(uint32_t w, uint32_t h) {
     width = w;

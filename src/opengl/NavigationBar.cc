@@ -114,25 +114,39 @@ void NavigationBar::drawBarBox() {
 
 void NavigationBar::fitBarDimensions(float widthPadding, float heightPadding) {
   if (isVertical) {
-    barWidth = buttons[0]->getW();
+    barWidth = buttonsWidth() + widthPadding;
+    barHeight = buttonsLength() + heightPadding;
+  } else {
+    barWidth = buttonsLength() + widthPadding;
+    barHeight = buttonsWidth() + heightPadding;
+  }
+}
+
+float NavigationBar::buttonsLength() {
+  if (isVertical) {
+    return buttons.back()->getY() + buttons.back()->getH() -
+           buttons.front()->getY();
+  } else {
+    return buttons.back()->getX() + buttons.back()->getW() -
+           buttons.front()->getX();
+  }
+}
+
+float NavigationBar::buttonsWidth() {
+  float width;
+  if (isVertical) {
+    width = buttons[0]->getW();
     for (ButtonWidget* b : buttons) {
-      barWidth = max(b->getW(), barWidth);
+      width = max(b->getW(), width);
     }
 
-    barHeight = buttons.back()->getY() + buttons.back()->getH() -
-                buttons.front()->getY();
   } else {
-    barWidth = buttons.back()->getX() + buttons.back()->getW() -
-               buttons.front()->getX();
-
-    barHeight = buttons[0]->getH();
+    width = buttons[0]->getH();
     for (ButtonWidget* b : buttons) {
-      barHeight = max(b->getH(), barHeight);
+      width = max(b->getH(), width);
     }
   }
-
-  barWidth += widthPadding;
-  barHeight += heightPadding;
+  return width;
 }
 
 /*
