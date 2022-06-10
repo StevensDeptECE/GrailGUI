@@ -18,7 +18,7 @@ class List : public CompoundType {
   DynArray<T> impl;
 
  public:
-  List(const std::string listName, uint32_t size = 16)
+  List(const std::string& listName, uint32_t size = 16) //TODO: should listName be a reference?
       : CompoundType(listName), impl(size) {}
   void setSize(uint32_t size) {
     impl = size;
@@ -122,11 +122,14 @@ class List : public CompoundType {
 
 
   */
-  void getUpdate(Buffer& buf) {
-    uint32_t len = buf._readU16();
+  void getUpdate(Buffer& out, Buffer& in) {
+    out.write(uint32_t(0)); //TODO: local data object should know where the connection is, and know what page to send to
+    out.write(getTypeName()); //  4 A A P L
+    out.flush(); 
+    uint32_t len = in._readU16();
     T val;
     for (uint32_t i = 0; i < len; i++) {
-      val.read(buf);
+      val.read(in);
       add(val);
     }
   }

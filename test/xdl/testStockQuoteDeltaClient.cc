@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
   uint32_t roundTrips = argc > 4 ? atoi(argv[4]) : 100;
   uint32_t req = 0;
   GLWin::classInit();
-  List<Quote> quotes("generic"); // create a list of quotes. We don't know what is coming.
+  List<Quote>* quotes = new List<Quote>("AAPL"); // create a pointer to a list of quotes
   #if 0
    // calendar.getUpdate(); // potentially lots of objects requesting updates?
 //  then send single request to get it done      
@@ -45,14 +45,15 @@ int main(int argc, char* argv[]) {
 #endif
   try {
     IPV4Socket s(ip, port);
+    Buffer& out = s.getOut();
     Buffer& in = s.getIn(); // TODO: do we have to get a new input buffer every time?
     for (uint32_t trials = 0; trials < roundTrips; trials++) {
-      quotes.getUpdate(in);
+      quotes->getUpdate(out, in);
 
 //      quotes.addToUpdateRequest(); // add to current update but don't send it out, batch together with others
 //      calendar.getUpdate();
      
-      cerr << "Read " << quotes.size() << "delta stock quotes from server\n";
+      cerr << "Read " << quotes->size() << "delta stock quotes from server\n";
     }
   } catch (const Ex& e) {
     cerr << e << '\n';
