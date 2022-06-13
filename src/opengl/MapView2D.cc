@@ -23,7 +23,7 @@ void MapView2D::init() {
   // Create a buffer object for indices of lines
   uint32_t numSegments = bml->getNumSegments();
   constexpr uint32_t endIndex = 0xFFFFFFFF;
-  numIndicesToDraw = numPoints + numSegments;
+  numIndicesToDraw = numPoints + numSegments * 3;
   uint32_t* lineIndices = new uint32_t[numIndicesToDraw];
   for (uint32_t i = 0, j = 0, c = 0; i < numSegments; i++) {
     uint32_t startSegment = j;

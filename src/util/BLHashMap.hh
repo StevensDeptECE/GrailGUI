@@ -257,9 +257,17 @@ class BLHashMap : public BLHashMapBase {
     nodeCount++;
   }
 
+  uint32_t addSymbol(const char s[], const Val& v) {
+    uint32_t offset = currentSymbol - symbols;
+    add(s, v);
+    return offset;
+  }
+
+  // THIS FUNCTION SHOULD ONLY BE CALLED IF WE CAN GUARANTEE A UNIQUE DICTIONARY
   const char* addAndAdvance(const char s[], const Val& v) {
     hashReturn r = hashAndReturn(s);
     uint32_t index = r.val;
+    #if 0 // if we can guarantee uniqueness, no longer need to check
     for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {
       const char* w = symbols + nodes[p].offset;
       for (int i = 0; *w == s[i]; i++)
@@ -268,14 +276,18 @@ class BLHashMap : public BLHashMapBase {
           return r.next;
         }
     }
+    #endif
     checkGrow();
 
+    #if 0
     int i;
     for (i = 0; s[i] != '\0'; i++) currentSymbol[i] = s[i];
     currentSymbol[i] = '\0';
+    currentSymbol += i + 1;
+    #endif
     nodes[nodeCount] = Node(currentSymbol - symbols, table[index], v);
     table[index] = nodeCount;
-    currentSymbol += i + 1;
+    currentSymbol = (char*)r.next;
     nodeCount++;
     return r.next;
   }

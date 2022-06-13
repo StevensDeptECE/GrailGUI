@@ -114,7 +114,7 @@ void loadESRIDBF(const char filename[]) {
     cout << fieldName << '\t' << fieldWidth << '\t' << precision << '\n';
   }
 
-  int recordCount = 3; //DBFGetRecordCount(dbf);
+  int recordCount = DBFGetRecordCount(dbf);
   int SQMI = DBFGetFieldIndex(dbf, "SQMI");  // get index of this field
   for (int i = 0; i < recordCount; i++) {
     cout << DBFReadStringAttribute(dbf, i, 0) << '\t'
@@ -123,8 +123,7 @@ void loadESRIDBF(const char filename[]) {
          << DBFReadStringAttribute(dbf, i, 3) << '\t'
          << DBFReadStringAttribute(dbf, i, 4) << '\t'
          << DBFReadStringAttribute(dbf, i, 5) << '\t'
-         << DBFReadStringAttribute(dbf, i, 7)
-         << '\t'  // population
+         << DBFReadStringAttribute(dbf, i, 7) << '\t'  // population
          //<< DBFReadStringAttribute(dbf, i, 7) << '\t' // lat?
          //<< DBFReadStringAttribute(dbf, i, 7) << '\t' // lon?
          << DBFReadStringAttribute(dbf, i, SQMI) << '\n';
