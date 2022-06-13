@@ -4,8 +4,9 @@
 #include <sys/stat.h>
 #include "data/BlockLoader2.hh"
 
-class BLHashMapBase : public BlockLoader {
- protected:
+template<typename Val>
+class BLHashMap : public BlockLoader {
+ private:
   struct HashMapHeader {
     uint32_t symbolCapacity; // size of memory block holding symbols
     uint32_t tableCapacity;  // size of memory block holding table
@@ -16,15 +17,41 @@ class BLHashMapBase : public BlockLoader {
      : symbolCapacity(symbolCapacity), tableCapacity(tableCapacity), nodeCapacity(nodeCapacity), nodeCount(nodeCount) {}
   };
   
+  struct Node {
+    uint32_t offset;
+    uint32_t next;  // relative pointer (offset into nodes)
+    Val val;
+    Node() {
+    }  // this is so the empty block can be initialized without doing anything
+    Node(uint32_t offset, uint32_t next, Val v)
+        : offset(offset), next(next), val(v) {}
+  };
+
   uint32_t symbolCapacity; // size of memory block holding symbols
+  uint32_t nodeCapacity;   // how many nodes are preallocated
   uint32_t tableCapacity;  // size of memory block holding table
   char* symbols;
   char* currentSymbol;
+  uint32_t nodeCount;  // how many nodes are currently used
+  Node* nodes;
   uint32_t* table;
   HashMapHeader* hashMapHeader;
 
   constexpr static int r1 = 5, r2 = 7, r3 = 17, r4 = 13, r5 = 11,
                        r6 = 16;  // rotate values
+
+
+  // computes the next highest power of 2
+    static uint32_t nearestPower2 (uint32_t v) {
+      v--;
+      v |= v >> 1;
+      v |= v >> 2;
+      v |= v >> 4;
+      v |= v >> 8;
+      v |= v >> 16;
+      v++;
+      return v;
+    }
 
   static bool hasNoZero(uint32_t v) {
     return (v & 0xff) && (v & 0xff00) && (v & 0xff0000) && (v & 0xff000000);
@@ -42,9 +69,73 @@ class BLHashMapBase : public BlockLoader {
     return ~(((v & MASK) + MASK) | v) | MASK;
   }
 
-  uint32_t fasthash1(const char s[]) const;
-  uint32_t bytewisehash(const char s[], uint32_t len) const;
-  uint32_t bytewisehash(const char s[]) const;
+  uint32_t fasthash1(const char s[]) const {
+  uint64_t* p = (uint64_t*)s;
+  uint64_t v;
+  uint64_t sum = 0xF39A5EB6;
+
+  // https://graphics.stanford.edu/~seander/bithacks.html#ZeroInWord
+  while (v = *p++, hasNoZero(v)) {
+    // rotate might be better, preserve more bits in each operation
+    sum = sum ^ v ^ (v << 12);
+    sum = (sum << 3) ^ (sum >> 5);
+    sum = (sum << 7) ^ (sum >> 13);
+    sum = (sum >> 17) ^ (sum << 23);
+  }
+  // do the last chunk which is somewhere less than 8 bytes
+  // this is for little-endian CPUs like intel, from bottom byte to the right
+  uint64_t wipe = 0xFF;
+  uint64_t M = 0xFFULL;
+  for (int i = 8; i > 0; i--) {
+    if ((v & M) == 0) {
+      v &= wipe;
+      break;
+    }
+    M <<= 8;
+    wipe = (wipe << 8) | 0xFF;
+  }
+  sum = sum ^ v ^ (sum >> 3);
+  sum = (sum >> 7) ^ (sum << 9);
+  sum = (sum >> 13) ^ (sum << 17);
+  sum = (sum >> 31) ^ (sum >> 45);
+  return sum & (tableCapacity - 1);
+}
+
+  // do not call with len = 0, or die.
+  uint32_t bytewisehash(const char s[], uint32_t len) const {
+    uint32_t i;
+    uint32_t sum = s[0] ^ 0x56F392AC;
+    for (i = 1; i < len; i++) {
+      sum = (((sum << r1) | (sum >> (32 - r1))) ^
+            ((sum >> r2) | (sum >> (32 - r2)))) +
+            s[i];
+      sum = (((sum << r3) | (sum >> (32 - r3))) ^
+            ((sum >> r4) | (sum >> (32 - r4)))) +
+            s[i];
+    }
+    sum = ((sum << r5) | (sum >> (32 - r5))) ^ sum ^ (i << 7);
+    //  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >>
+    //  (32-r6)))) + s[i];
+    return sum & (tableCapacity - 1);
+  }
+
+  uint32_t bytewisehash(const char s[]) const {
+    uint32_t i;
+    uint32_t sum = s[0] ^ 0x56F392AC;
+    for (i = 1; s[i] != '\0'; i++) {
+      sum = (((sum << r1) | (sum >> (32 - r1))) ^
+            ((sum >> r2) | (sum >> (32 - r2)))) +
+            s[i];
+      sum = (((sum << r3) | (sum >> (32 - r3))) ^
+            ((sum >> r4) | (sum >> (32 - r4)))) +
+            s[i];
+    }
+    sum = ((sum << r5) | (sum >> (32 - r5))) ^ sum ^ (i << 7);
+    //  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >>
+    //  (32-r6)))) + s[i];
+    return sum & (tableCapacity - 1);
+  }
+
   uint32_t hash(const char s[]) const { return bytewisehash(s); }
   uint32_t hash(const char s[], uint32_t len) const {
     return bytewisehash(s, len);
@@ -85,90 +176,46 @@ class BLHashMapBase : public BlockLoader {
   }
   */
 
+ // setting up for constructors to avoid replicating code
+  void constructorSetup(uint32_t symbolCapacity) {
+    symbols = (char*)hashMapHeader + sizeof(HashMapHeader);
+    nodes = (Node*)(findNextAlign8(symbols + symbolCapacity));
+    table = (uint32_t*)(findNextAlign8((char*)nodes + hashMapHeader->nodeCapacity));
+    currentSymbol = symbols;
+    nodeCount = 1; // zero is null
+  }
+
+  public:
   // making it the first time
-  BLHashMapBase(uint32_t symbolCapacity, uint32_t tableCapacity, uint32_t nodeCapacity, uint32_t additional)
-     : BlockLoader(symbolCapacity + tableCapacity*sizeof(uint32_t) + nodeCapacity + additional, Type::namemap, 0x0001)
+  BLHashMap(uint32_t symbolCapacity, uint32_t tableCapacity, uint32_t nodeCapacity)
+     : BlockLoader(symbolCapacity + nearestPower2(tableCapacity)*sizeof(uint32_t) + nodeCapacity*sizeof(Node) + sizeof(HashMapHeader), Type::namemap, 0x0001)
   {
     hashMapHeader = (HashMapHeader*)((char*)(mem) + sizeof(GeneralHeader));
     hashMapHeader->symbolCapacity = symbolCapacity;
-    hashMapHeader->tableCapacity = tableCapacity;
-    hashMapHeader->nodeCapacity = nodeCapacity;
+    hashMapHeader->tableCapacity = nearestPower2(tableCapacity);
+    hashMapHeader->nodeCapacity = nodeCapacity*sizeof(Node);
     hashMapHeader->nodeCount = 0;
-    this->symbolCapacity = symbolCapacity;
-    this->tableCapacity = tableCapacity;
-    symbols = (char*)hashMapHeader + sizeof(HashMapHeader);
-    table = (uint32_t*)(findNextAlign8(symbols + symbolCapacity));
-    currentSymbol = symbols;
-  }
-
-  // loading in from blockloader file
-  // TODO: how in c++ do we not have to write this twice
-  BLHashMapBase(const char filename[]) : BlockLoader(filename, getFileSize(filename), getFileSize(filename)*4) {
-    hashMapHeader = (HashMapHeader*)((char*)(mem) + sizeof(GeneralHeader));
-    symbolCapacity = hashMapHeader->symbolCapacity;
-    tableCapacity = hashMapHeader->tableCapacity;
-    symbols = (char*)hashMapHeader + sizeof(HashMapHeader);
-    table = (uint32_t*)(findNextAlign8(symbols + symbolCapacity));
-    currentSymbol = symbols;
-  }
-
- public:
-  const char* getWords() const { return symbols; }
-  uint32_t getWordsSize() const { return currentSymbol - symbols; }
-
-  void writeFile(const char filename[]) {
-    BlockLoader::writeFile(filename, sizeof(GeneralHeader) + sizeof(HashMapHeader) + symbolCapacity);
-  }
-};
-
-template <typename Val>
-class BLHashMap : public BLHashMapBase {
-  private:
-    struct Node {
-      uint32_t offset;
-      uint32_t next;  // relative pointer (offset into nodes)
-      Val val;
-      Node() {
-      }  // this is so the empty block can be initialized without doing anything
-      Node(uint32_t offset, uint32_t next, Val v)
-          : offset(offset), next(next), val(v) {}
-    };
-    uint32_t nodeCapacity;   // how many nodes are preallocated
-    uint32_t nodeCount;  // how many nodes are currently used
-    Node* nodes;
-  
-    // computes the next highest power of 2
-    static uint32_t nearestPower2 (uint32_t v) {
-      v--;
-      v |= v >> 1;
-      v |= v >> 2;
-      v |= v >> 4;
-      v |= v >> 8;
-      v |= v >> 16;
-      v++;
-      return v;
-    }
-
- public:
-  // making it for the first time
-  BLHashMap(uint32_t symbolCapacity, uint32_t tableCapacity, uint32_t nodeCapacity)
-      : BLHashMapBase(symbolCapacity, nearestPower2(tableCapacity), nodeCapacity*sizeof(Node), sizeof(HashMapHeader)),
-        nodeCapacity(nodeCapacity),
-        nodes((Node*)(findNextAlign8((char*)table + nearestPower2(tableCapacity)*sizeof(uint32_t)))) {
-    currentSymbol = symbols;
-    nodeCount = 1;  // zero is null
+    this->symbolCapacity = hashMapHeader->symbolCapacity;
+    this->nodeCapacity = hashMapHeader->nodeCapacity;
+    this->tableCapacity = hashMapHeader->tableCapacity;
+    constructorSetup(symbolCapacity);
 
     for (uint32_t i = 0; i <= tableCapacity; i++)
       table[i] = 0;  // 0 means empty, at the moment the first node is unused
   }
 
+  // loading in from blockloader file
   #if 0
+  // TODO: why does this report to be < 1ms?
   // reading in blockloader file
   BLHashMap(const char filename[]) 
-    : BLHashMapBase(filename),
-      nodeCapacity(hashMapHeader->nodeCapacity),
-      nodes((Node*)(findNextAlign8((char*)table + nearestPower2(tableCapacity)*sizeof(uint32_t)))) {
-    nodeCount = 1;
+    : BlockLoader(filename, getFileSize(filename), getFileSize(filename)*5)
+  {
+    hashMapHeader = (HashMapHeader*)((char*)(mem) + sizeof(GeneralHeader));
+    symbolCapacity = hashMapHeader->symbolCapacity;
+    nodeCapacity = hashMapHeader->nodeCapacity;
+    tableCapacity = hashMapHeader->tableCapacity;
+    constructorSetup(symbolCapacity);
     uint32_t count = 0;
     char* word = strtok(symbols, "\n");
     // create hashmap and load dictionary in with a unique integer for each word
@@ -184,10 +231,13 @@ class BLHashMap : public BLHashMapBase {
   #if 1 // SLOWER THAN strtok()
   // reading in blockloader file
   BLHashMap(const char filename[]) 
-    : BLHashMapBase(filename),
-      nodeCapacity(hashMapHeader->nodeCapacity),
-      nodes((Node*)(findNextAlign8((char*)table + nearestPower2(tableCapacity)*sizeof(uint32_t)))) {
-    nodeCount = 1;
+    : BlockLoader(filename, getFileSize(filename), getFileSize(filename)*5)
+  {
+    hashMapHeader = (HashMapHeader*)((char*)(mem) + sizeof(GeneralHeader));
+    symbolCapacity = hashMapHeader->symbolCapacity;
+    nodeCapacity = hashMapHeader->nodeCapacity;
+    tableCapacity = hashMapHeader->tableCapacity;
+    constructorSetup(symbolCapacity);
     uint32_t count = 0;
     const char* word = symbols;
     while (word < symbols + symbolCapacity)
@@ -196,6 +246,13 @@ class BLHashMap : public BLHashMapBase {
     }
   }
   #endif
+
+  const char* getWords() const { return symbols; }
+  uint32_t getWordsSize() const { return currentSymbol - symbols; }
+
+  void writeFile(const char filename[]) {
+    BlockLoader::writeFile(filename, sizeof(GeneralHeader) + sizeof(HashMapHeader) + symbolCapacity);
+  }
 
   #if 0
   ~BLHashMap() {
@@ -257,10 +314,8 @@ class BLHashMap : public BLHashMapBase {
     nodeCount++;
   }
 
-  uint32_t addSymbol(const char s[], const Val& v) {
-    uint32_t offset = currentSymbol - symbols;
-    add(s, v);
-    return offset;
+  uint32_t getSymbolSize() {
+    return currentSymbol - symbols;
   }
 
   // THIS FUNCTION SHOULD ONLY BE CALLED IF WE CAN GUARANTEE A UNIQUE DICTIONARY
