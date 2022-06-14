@@ -4,7 +4,7 @@
 #include "xdl/std.hh"
 using namespace std;
 
-HashMap<uint32_t> Quote::symTab(1024);
+//HashMap<uint32_t> Quote::symTab(1024);
 
 QuoteTable::QuoteTable(const char filename[]) : quotes("quotes") {
   ifstream t(filename);

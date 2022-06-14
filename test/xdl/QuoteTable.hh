@@ -19,7 +19,7 @@ class Quote {
   static constexpr uint32_t size_ = 28;
 
  public:
-  static HashMap<uint32_t> symTab;
+  //static HashMap<uint32_t> symTab;
   Quote() : date(0), open(0), hi(0), low(0), close(0), volume(0) {}
   Quote(const char buf[]) {
     char symbol[32];
