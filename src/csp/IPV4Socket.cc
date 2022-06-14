@@ -57,6 +57,7 @@ IPV4Socket::IPV4Socket(uint16_t port) : Socket(port) {
   int yes = 1;
   testResult(sckt = socket(AF_INET, SOCK_STREAM, 0), __FILE__, __LINE__,
              Errcode::SOCKET);
+  setFD(sckt);
   testResult(setsockopt(sckt, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes,
                         sizeof(yes)),
              __FILE__, __LINE__, Errcode::SETSOCKOPT);
@@ -74,6 +75,7 @@ IPV4Socket::IPV4Socket(const char *addr, uint16_t port) : Socket(addr, port) {
   struct hostent *server;
   testResult(sckt = socket(AF_INET, SOCK_STREAM, 0), __FILE__, __LINE__,
              Errcode::SOCKET);
+  setFD(sckt);
   server = gethostbyname(address);
 
   if (server == nullptr) {

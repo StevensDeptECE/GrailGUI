@@ -157,10 +157,9 @@ int main() {
   const string dir = getenv("GRAIL");
   const string counties_shp = dir + "/test/res/maps/USA_Counties.shp";
   CBenchmark<>::benchmark("stats", 1,
-                          std::bind(statsESRI, counties_shp.c_str(), &info));
+                          [&](){statsESRI(counties_shp.c_str(), &info);});
   const string counties_dbf = dir + "/test/res/maps/USA_Counties.dbf";
-  CBenchmark<>::benchmark("names", 10,
-                          std::bind(loadESRIDBF, counties_dbf, &info));
+  // //CBenchmark<>::benchmark("names", 10,[&](){loadESRIDBF( counties_dbf.c_str();} );
   string countyNameInfo;
 #if 0
   CBenchmark<>::benchmark(

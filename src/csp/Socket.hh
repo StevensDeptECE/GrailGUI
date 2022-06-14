@@ -52,7 +52,9 @@ class Socket {
   static void classCleanup();
   static void classInit();
   void attach(Request* r) { req = r; }
-
+  void setFD(int sckt)  noexcept { out.setFD(sckt);
+    in.setFD(sckt);
+  }
   Buffer& getOut() { return out; }
   Buffer& getIn() { return in; }
   virtual void wait() = 0;

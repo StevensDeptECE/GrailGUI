@@ -107,7 +107,7 @@ Shader::Shader(const char shaderName[], const char vertexPath[],
       stat(geometryPath, &geometryStats);
       // don't bother to check geometry path unless it exists (usually does not!)
       if (geometryPath == nullptr || (geometryPath != nullptr && shaderLastModified >= geometryStats.st_mtim)) {
-        // shade completely up to date, just load from binary file
+        // shader completely up to date, just load from binary file
         progID = glCreateProgram();
         fastLoad(shaderName);
       }
