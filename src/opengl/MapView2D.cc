@@ -23,14 +23,16 @@ void MapView2D::init() {
   // Create a buffer object for indices of lines
   uint32_t numSegments = bml->getNumSegments();
   constexpr uint32_t endIndex = 0xFFFFFFFF;
-  numIndicesToDraw = numPoints + numSegments * 3;
+  // xy1 xy2 xy3 xy4 xy5 ... (xy points on the map)
+  // 1 2 3 4 5 ... 1 0xFFFFFFFF 6 7 8 ... 6 0xFFFFFFFF (connect the points)
+  numIndicesToDraw = numPoints + numSegments * 2;
   uint32_t* lineIndices = new uint32_t[numIndicesToDraw];
   for (uint32_t i = 0, j = 0, c = 0; i < numSegments; i++) {
     uint32_t startSegment = j;
     for (uint32_t k = 0; k < bml->getSegment(i).numPoints; k++)
       lineIndices[c++] = j++;
-    lineIndices[c++] = startSegment;
-    lineIndices[c++] = endIndex;
+    lineIndices[c++] = startSegment; // copy the first index to the end (closes the shape)
+    lineIndices[c++] = endIndex; // add the seperator (0xFFFFFFFF)
   }
   glGenBuffers(1, &lbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);

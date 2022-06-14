@@ -8,11 +8,12 @@ template<typename Val>
 class BLHashMap : public BlockLoader {
  private:
   struct HashMapHeader {
-    uint32_t symbolCapacity; // size of memory block holding symbols
-    uint32_t tableCapacity;  // size of memory block holding table
-    uint32_t nodeCapacity;   // size of memory block holding nodes
+    uint32_t symbolCapacity; // number of elements holding symbols
+    uint32_t tableCapacity;  // number of elements holding table
+    uint32_t nodeCapacity;   // number of elements holding nodes
     uint32_t nodeCount;      // number of nodes
-    // now HashMapHeader = 16 bytes
+    uint32_t symbolCount;    // number of bytes used by symbols in block of memory
+    // now HashMapHeader = 24 bytes (with 4 bytes padding)
     HashMapHeader(uint32_t symbolCapacity, uint32_t tableCapacity, uint32_t nodeCapacity, uint32_t nodeCount)
      : symbolCapacity(symbolCapacity), tableCapacity(tableCapacity), nodeCapacity(nodeCapacity), nodeCount(nodeCount) {}
   };
@@ -27,9 +28,9 @@ class BLHashMap : public BlockLoader {
         : offset(offset), next(next), val(v) {}
   };
 
-  uint32_t symbolCapacity; // size of memory block holding symbols
+  uint32_t symbolCapacity; // number of elements holding symbols
   uint32_t nodeCapacity;   // how many nodes are preallocated
-  uint32_t tableCapacity;  // size of memory block holding table
+  uint32_t tableCapacity;  // number of elements  holding table
   char* symbols;
   char* currentSymbol;
   uint32_t nodeCount;  // how many nodes are currently used
@@ -142,7 +143,7 @@ class BLHashMap : public BlockLoader {
   }
 
   struct hashReturn {
-    uint32_t val;
+    uint32_t index;
     const char* next;
   };
   hashReturn hashAndReturn(const char s[]) const {
@@ -180,28 +181,28 @@ class BLHashMap : public BlockLoader {
   void constructorSetup(uint32_t symbolCapacity) {
     symbols = (char*)hashMapHeader + sizeof(HashMapHeader);
     nodes = (Node*)(findNextAlign8(symbols + symbolCapacity));
-    table = (uint32_t*)(findNextAlign8((char*)nodes + hashMapHeader->nodeCapacity));
+    table = (uint32_t*)(findNextAlign8((char*)nodes + hashMapHeader->nodeCapacity*sizeof(Node)));
     currentSymbol = symbols;
     nodeCount = 1; // zero is null
+
+    for (uint32_t i = 0; i <= tableCapacity; i++)
+      table[i] = 0;  // 0 means empty, at the moment the first node is unused
   }
 
   public:
   // making it the first time
-  BLHashMap(uint32_t symbolCapacity, uint32_t tableCapacity, uint32_t nodeCapacity)
+  BLHashMap(uint32_t symbolCapacity, uint32_t nodeCapacity, uint32_t tableCapacity)
      : BlockLoader(symbolCapacity + nearestPower2(tableCapacity)*sizeof(uint32_t) + nodeCapacity*sizeof(Node) + sizeof(HashMapHeader), Type::namemap, 0x0001)
   {
     hashMapHeader = (HashMapHeader*)((char*)(mem) + sizeof(GeneralHeader));
     hashMapHeader->symbolCapacity = symbolCapacity;
     hashMapHeader->tableCapacity = nearestPower2(tableCapacity);
-    hashMapHeader->nodeCapacity = nodeCapacity*sizeof(Node);
+    hashMapHeader->nodeCapacity = nodeCapacity;
     hashMapHeader->nodeCount = 0;
     this->symbolCapacity = hashMapHeader->symbolCapacity;
     this->nodeCapacity = hashMapHeader->nodeCapacity;
     this->tableCapacity = hashMapHeader->tableCapacity;
     constructorSetup(symbolCapacity);
-
-    for (uint32_t i = 0; i <= tableCapacity; i++)
-      table[i] = 0;  // 0 means empty, at the moment the first node is unused
   }
 
   // loading in from blockloader file
@@ -238,11 +239,10 @@ class BLHashMap : public BlockLoader {
     nodeCapacity = hashMapHeader->nodeCapacity;
     tableCapacity = hashMapHeader->tableCapacity;
     constructorSetup(symbolCapacity);
-    uint32_t count = 0;
     const char* word = symbols;
-    while (word < symbols + symbolCapacity)
+    while (word < symbols + hashMapHeader->symbolCount)
     {
-      word = addAndAdvance(word, count++);
+      word = addAndAdvance(word);
     }
   }
   #endif
@@ -251,7 +251,8 @@ class BLHashMap : public BlockLoader {
   uint32_t getWordsSize() const { return currentSymbol - symbols; }
 
   void writeFile(const char filename[]) {
-    BlockLoader::writeFile(filename, sizeof(GeneralHeader) + sizeof(HashMapHeader) + symbolCapacity);
+    hashMapHeader->symbolCount = currentSymbol - symbols;
+    BlockLoader::writeFile(filename, sizeof(GeneralHeader) + sizeof(HashMapHeader) + symbolCapacity + nodeCapacity*sizeof(Node));
   }
 
   #if 0
@@ -319,9 +320,9 @@ class BLHashMap : public BlockLoader {
   }
 
   // THIS FUNCTION SHOULD ONLY BE CALLED IF WE CAN GUARANTEE A UNIQUE DICTIONARY
-  const char* addAndAdvance(const char s[], const Val& v) {
+  const char* addAndAdvance(const char s[]) {
     hashReturn r = hashAndReturn(s);
-    uint32_t index = r.val;
+    uint32_t index = r.index;
     #if 0 // if we can guarantee uniqueness, no longer need to check
     for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {
       const char* w = symbols + nodes[p].offset;
@@ -340,7 +341,7 @@ class BLHashMap : public BlockLoader {
     currentSymbol[i] = '\0';
     currentSymbol += i + 1;
     #endif
-    nodes[nodeCount] = Node(currentSymbol - symbols, table[index], v);
+//    nodes[nodeCount] = Node(currentSymbol - symbols, table[index], v);
     table[index] = nodeCount;
     currentSymbol = (char*)r.next;
     nodeCount++;

@@ -1,38 +1,10 @@
 #include <iostream>
-#include "util/BLHashMap.hh"
-#include "data/BlockMapLoader2.hh"
-#include "libshape/shapefil.h"
-#include "util/FileUtil.hh"
 #include "util/Benchmark.hh"
+#include "mapNames.hh"
 
 using namespace std;
 using namespace grail::utils;
 
-struct NamedEntry {
-    uint32_t nameOffset;  // starting byte of the name;
-    uint8_t len;          // length of the name (< 256 bytes)
-    uint8_t entityType;   // entity cast as 8 bit number
-    uint8_t type;         // feature type of name (could be used to choose font)
-    uint32_t offset;      // if entityType=REGION_CONTAINER, then offset into
-                          // regionContainers, ...
-    //TODO: uint32_t displayNameOffset; // possible offset to local name without postal abbr.
-    // for now, we know all US postal abbrs are size 2
-  };
-
-enum class MapFeatureType {
-  LOCAL,
-  STATE,
-  COUNTRY,
-  CITY,
-  ROAD,
-  TRAIN,
-  RIVER
-};
-
-const uint8_t FEAT_LOCAL = (uint8_t)MapFeatureType::LOCAL;
-const uint8_t FEAT_STATE = (uint8_t)MapFeatureType::STATE;
-const uint8_t ENT_COUNTY = (uint8_t)BlockMapLoader::EntityType::REGION;
-const uint8_t ENT_STATE = (uint8_t)BlockMapLoader::EntityType::REGION_CONTAINER;
 
 const char* FIPsToPostal[100];
 BLHashMap<uint32_t> postalToFIPs(200, 128, 128);
@@ -113,8 +85,8 @@ void buildPostalAbbr() {
 void buildMapDict(const char filename[]) {
   buildPostalAbbr();
   uint32_t itemCount = 10000;
-  uint32_t symbolCapacity = 1000000;
-  BLHashMap<NamedEntry> mapDict = BLHashMap<NamedEntry>(symbolCapacity, itemCount, itemCount); 
+  uint32_t symbolCapacity = 100000;
+  BLHashMap<MapEntry> mapDict = BLHashMap<MapEntry>(symbolCapacity, itemCount, itemCount); 
   // loading in from .dbf file
   DBFHandle dbf = DBFOpen(filename, "rb");
 
@@ -136,15 +108,19 @@ void buildMapDict(const char filename[]) {
          << county << '\t'
          << state << '\t'
          << stateNum << '\n';
-    uint32_t symbolSize = mapDict.getSymbolSize();
-    mapDict.add(county, NamedEntry(symbolSize, (uint32_t)strlen(county), ENT_COUNTY, FEAT_LOCAL, fieldNum));
+//    uint32_t symbolSize = mapDict.getSymbolSize();
+    mapDict.add(county, MapEntry(
+      //symbolSize, (uint32_t)strlen(county), 
+      ENT_COUNTY, FEAT_LOCAL, fieldNum));
     if (mapDict.get(state) == nullptr) {
-      symbolSize = mapDict.getSymbolSize();
-      mapDict.add(state, NamedEntry(symbolSize, (uint32_t)strlen(state), ENT_STATE, FEAT_STATE, stateNum));
+//      symbolSize = mapDict.getSymbolSize();
+      mapDict.add(state, MapEntry(
+        //symbolSize, (uint32_t)strlen(state), 
+        ENT_STATE, FEAT_STATE, stateNum));
     }
   }
-  //TODO: need to write table to blockloader as well (we need to know the collisions for the map)
-  mapDict.writeFile("uscounties.bdl");
+  //TODO: crashes and doesnt write to a file anymore
+  mapDict.writeFile("uscountiestest.bdl");
   DBFClose(dbf);
 }
 

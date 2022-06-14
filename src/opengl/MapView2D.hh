@@ -5,6 +5,7 @@
 #include "data/BlockMapLoader2.hh"
 #include "opengl/Canvas.hh"
 #include "opengl/MultiShape2D.hh"
+#include "../test/xp/mapNames.hh"
 
 class Style;
 class MapView2D : public Shape {
@@ -16,6 +17,7 @@ class MapView2D : public Shape {
   // pointer to map loader object has advantage of opaqueness in header file
   // and we can have a null map and draw nothing, and change maps
   BlockMapLoader* bml;
+  BLHashMap<MapEntry>* bdl;
   uint32_t numIndicesToDraw;
 
  public:
@@ -30,8 +32,8 @@ class MapView2D : public Shape {
     centerY += percentY * scaleY;
   }
   void uniformZoom(float s) { scaleX *= s, scaleY *= s; }
-  MapView2D(Canvas* parent, const Style* s, BlockMapLoader* bml = nullptr)
-      : Shape(parent), style(s), bml(bml), transform(1.0f) {
+  MapView2D(Canvas* parent, const Style* s, BlockMapLoader* bml = nullptr, BLHashMap<MapEntry>* bdl = nullptr)
+      : Shape(parent), style(s), bml(bml), bdl(bdl), transform(1.0f) {
     const BoundRect& bounds = bml->getBlockMapHeader()->bounds;
     float centerX = (bounds.xMin + bounds.xMax) * 0.5;
     float centerY = (bounds.yMin + bounds.yMax) * 0.5;
@@ -55,6 +57,12 @@ class MapView2D : public Shape {
     this->scaleX = 70 / 2, this->scaleY = 70 / 2;
     setProjection();
   }
+  ~MapView2D() {
+    delete bml;
+    delete bdl;
+  }
+  MapView2D(const MapView2D& orig) = delete;
+  MapView2D& operator= (const MapView2D& orig) = delete;
   glm::mat4& getTransform() { return transform; }
   void init() override;
   void render() override;

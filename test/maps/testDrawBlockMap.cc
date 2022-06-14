@@ -2,6 +2,7 @@
 #include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/MapView2D.hh"
+#include "../xp/mapNames.hh"
 
 using namespace std;
 using namespace grail;
@@ -12,7 +13,7 @@ class TestDrawBlockMap : public Member {
   MapView2D* mv;
 
  public:
-  TestDrawBlockMap(Tab* tab, const char filename[])
+  TestDrawBlockMap(Tab* tab, const char bmlfile[], const char bdlfile[])
       : Member(tab),  // GLWin(0x000000, 0xCCCCCC, "Block Loader: Map Demo"),
         filename(filename),
         mv(nullptr) {
@@ -21,8 +22,9 @@ class TestDrawBlockMap : public Member {
     Style* s2 = new Style(tab->getDefaultFont(), grail::white, grail::black);
     //    c->addClickableWidget(
     // new ButtonWidget(c, 0, 0, 200, 100, "Click Me!", "mapZoomIn"));
-    BlockMapLoader* bml = new BlockMapLoader(filename);
-    mv = c->addLayer(new MapView2D(c, s2, bml));
+    BlockMapLoader* bml = new BlockMapLoader(bmlfile);
+    BLHashMap<MapEntry>* bdl = new BLHashMap<MapEntry>(bdlfile);
+    mv = c->addLayer(new MapView2D(c, s2, bml, bdl));
     cout << "num points loaded: " << bml->getNumPoints() << '\n';
 
     tab->bindEvent(Tab::Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);
@@ -98,5 +100,5 @@ class TestDrawBlockMap : public Member {
 };
 
 void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
-  new TestDrawBlockMap(defaultTab, "res/maps/uscounties.bml");
+  new TestDrawBlockMap(defaultTab, "res/maps/uscounties.bml", "uscounties.bdl");
 }
