@@ -176,3 +176,4 @@ compile_commands.json
 
 external/
 bin/
+*.bin
