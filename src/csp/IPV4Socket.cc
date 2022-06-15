@@ -60,6 +60,8 @@ IPV4Socket::IPV4Socket(uint16_t port) : Socket(port) {
   testResult(setsockopt(sckt, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes,
                         sizeof(yes)),
              __FILE__, __LINE__, Errcode::SETSOCKOPT);
+  setBufFD(sckt);
+
   memset(sockaddress, 0, sizeof(sockaddress));
   sockaddr_in *sockAddr = (sockaddr_in *)sockaddress;
   sockAddr->sin_family = AF_INET;
@@ -74,6 +76,7 @@ IPV4Socket::IPV4Socket(const char *addr, uint16_t port) : Socket(addr, port) {
   struct hostent *server;
   testResult(sckt = socket(AF_INET, SOCK_STREAM, 0), __FILE__, __LINE__,
              Errcode::SOCKET);
+  setBufFD(sckt);
   server = gethostbyname(address);
 
   if (server == nullptr) {

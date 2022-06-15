@@ -55,5 +55,9 @@ class Socket {
 
   Buffer& getOut() { return out; }
   Buffer& getIn() { return in; }
+  void setBufFD(int fd) {
+    in.setFD(fd);
+    out.setFD(fd);
+  }
   virtual void wait() = 0;
 };

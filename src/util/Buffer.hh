@@ -34,6 +34,8 @@ class Buffer {
   }
   void operator=(const Buffer& orig) = delete;
 
+  void setFD(int fd){this->fd=fd;}
+
   void attachWrite(int sockfd) {
     fd = sockfd;
     p = buffer;

@@ -1,7 +1,10 @@
 #pragma once
 
 #include "opengl/GrailGUI.hh"
-
+/*
+  Configure any graph with a look/theme
+  TODO: should not inherit from Member (so if we want to have multiple graphs/tab)
+*/
 class GraphStyle : public Member {
  public:
   Style baseStyle;
