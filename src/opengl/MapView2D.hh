@@ -5,6 +5,7 @@
 #include "data/BlockMapLoader2.hh"
 #include "opengl/Canvas.hh"
 #include "opengl/MultiShape2D.hh"
+#include "opengl/MultiText.hh"
 #include "../test/xp/mapNames.hh"
 
 class Style;
@@ -19,6 +20,7 @@ class MapView2D : public Shape {
   BlockMapLoader* bml;
   BLHashMap<MapEntry>* bdl;
   uint32_t numIndicesToDraw;
+  MultiText* mt;
 
  public:
   // TODO: Check if this should be setRender or setUpdate
@@ -33,7 +35,8 @@ class MapView2D : public Shape {
   }
   void uniformZoom(float s) { scaleX *= s, scaleY *= s; }
   MapView2D(Canvas* parent, const Style* s, BlockMapLoader* bml = nullptr, BLHashMap<MapEntry>* bdl = nullptr)
-      : Shape(parent), style(s), bml(bml), bdl(bdl), transform(1.0f) {
+      : Shape(parent), style(s), bml(bml), bdl(bdl), mt(new MultiText(parent, s, 12)), transform(1.0f) {
+    parent->addLayer(mt);
     const BoundRect& bounds = bml->getBlockMapHeader()->bounds;
     float centerX = (bounds.xMin + bounds.xMax) * 0.5;
     float centerY = (bounds.yMin + bounds.yMax) * 0.5;
@@ -60,6 +63,7 @@ class MapView2D : public Shape {
   ~MapView2D() {
     delete bml;
     delete bdl;
+    delete mt;
   }
   MapView2D(const MapView2D& orig) = delete;
   MapView2D& operator= (const MapView2D& orig) = delete;

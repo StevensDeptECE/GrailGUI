@@ -25,13 +25,15 @@ void MapView2D::init() {
   constexpr uint32_t endIndex = 0xFFFFFFFF;
   // xy1 xy2 xy3 xy4 xy5 ... (xy points on the map)
   // 1 2 3 4 5 ... 1 0xFFFFFFFF 6 7 8 ... 6 0xFFFFFFFF (connect the points)
+  // TODO: not sure why we need numSegments * 3 (crashes with *2 or *1)
   numIndicesToDraw = numPoints + numSegments * 2;
   uint32_t* lineIndices = new uint32_t[numIndicesToDraw];
-  for (uint32_t i = 0, j = 0, c = 0; i < numSegments; i++) {
+  uint32_t c = 0;
+  for (uint32_t i = 0, j = 0; i < numSegments; i++) {
     uint32_t startSegment = j;
     for (uint32_t k = 0; k < bml->getSegment(i).numPoints; k++)
       lineIndices[c++] = j++;
-    lineIndices[c++] = startSegment; // copy the first index to the end (closes the shape)
+//    lineIndices[c++] = startSegment; // copy the first index to the end (closes the shape)
     lineIndices[c++] = endIndex; // add the seperator (0xFFFFFFFF)
   }
   glGenBuffers(1, &lbo);
@@ -40,6 +42,22 @@ void MapView2D::init() {
                lineIndices, GL_STATIC_DRAW);
 
   delete[] lineIndices;
+
+  const Font* f = mt->getStyle()->f;
+  const BlockMapLoader::Region* regions = bml->getRegions();
+  // TODO: need to implement to get states
+  //const BlockMapLoader::RegionContainer* regionContainer = bml->getRegionContainer();
+  for (uint32_t i = 1; i < bdl->getNodeCount(); i++) {
+    const char* name = bdl->getNameAt(i);
+    uint32_t len = strlen(name);
+    const MapEntry* mapInfo = bdl->getValueAt(i);
+    if (mapInfo->entityType == ENT_COUNTY) {
+      const BlockMapLoader::Region& r = regions[mapInfo->offset];
+      float x = (r.bounds.xMax + r.bounds.xMin)/2;
+      float y = (r.bounds.yMax + r.bounds.yMin)/2;
+      mt->addCentered(x, y, f, name, len);
+    }
+  }
 }
 
 void debug(const glm::mat4& m, float x, float y, float z) {

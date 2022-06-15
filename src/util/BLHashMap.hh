@@ -249,6 +249,9 @@ class BLHashMap : public BlockLoader {
 
   const char* getWords() const { return symbols; }
   uint32_t getWordsSize() const { return currentSymbol - symbols; }
+  const char* getNameAt(uint32_t i) const { return symbols + nodes[i].offset; }
+  const Val* getValueAt(uint32_t i) const { return &nodes[i].val;}
+  uint32_t getNodeCount() const { return nodeCount; }
 
   void writeFile(const char filename[]) {
     hashMapHeader->symbolCount = currentSymbol - symbols;
