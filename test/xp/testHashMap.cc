@@ -39,6 +39,7 @@ void loadAsciiDictionary(const char filename[]) {
     word = strtok(nullptr, "\n");
   }
   delete[] f;
+  return;
 }
 
 // given a BLHashMap (containing the dictionary), test cases
