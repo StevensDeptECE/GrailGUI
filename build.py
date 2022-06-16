@@ -6,6 +6,8 @@ import logging
 import shutil
 import subprocess
 import os
+import re
+import textwrap
 
 console_log_level = logging.INFO
 file_log_level = logging.DEBUG
@@ -36,6 +38,10 @@ def parse():
     generate.add_argument(
         "-G", help="Use a different generator for CMake", default="", dest="generator"
     )
+
+    generate.add_argument("-b", help="Change the build mode",
+                          default="", dest="mode")
+
     generate.add_argument(
         "cmake_args", nargs="*", default=[], type=str, help="Additional CMake arguments"
     )
@@ -49,6 +55,8 @@ def parse():
     build.add_argument(
         "-d", "--dir", action="store_true", help="Compile test subdirectory"
     )
+    build.add_argument('-l', '--list', action='store_true',
+                       help="List available targets")
     build.add_argument(
         "target",
         nargs="?",
@@ -97,8 +105,11 @@ def execute_generate(args: argparse.Namespace, rest: list[str]):
 
     # Generate a new configuration if no build files are generated
     if "build" not in os.listdir():
+        logger.debug("Build folder does not exist, generating from scratch")
         gen = args.generator if args.generator else "Ninja"
         _args = ["cmake", "-B", "build", "-G", gen]
+        if args.mode:
+            _args.append("-DCMAKE_BUILD_TYPE="+args.mode)
         _args = _args + args.cmake_args + rest
         logger.debug(f"Generating with {_args}")
         status = subprocess.run(_args)
@@ -106,9 +117,15 @@ def execute_generate(args: argparse.Namespace, rest: list[str]):
         if status.returncode != 0:
             exit(status)
     # Modify an existing configuration
-    elif args.cmake_args or rest:
+    elif any([args.cmake_args, args.mode, rest]):
         logger.info("build/ exists but cmake_args were specified")
-        _args = ["cmake", "-B", "build"] + args.cmake_args + rest
+        _args = ["cmake", "-B", "build"]
+        if args.mode:
+            if args.mode.lower() not in ["debug", "release", "relwithdebinfo", "minsizerel"]:
+                raise ValueError(
+                    "Unknown build mode, please specify one of the following [Debug, Release, RelWithDebInfo, MinSizeRel]")
+            _args.append("-DCMAKE_BUILD_TYPE="+args.mode)
+        _args = _args + args.cmake_args + rest
         logger.debug(f"Generating with {_args}")
         status = subprocess.run(_args)
         logger.debug(f"Generation status: ${status}")
@@ -151,12 +168,27 @@ def check_grail_dir(dir: str = ".", has_logging: bool = True):
     assert (
         dir != "/"
     ), "Grail Workspace is not in any parent directory from here to root"
-    if "Grail_Workspace.code-workspace" not in os.listdir(dir):
+    if "build.py" not in os.listdir(dir):
         check_grail_dir(os.path.dirname(dir))
     else:
         if has_logging:
             logger.info(f"Grail_Wordspace.code-workspace found in {dir}")
         os.chdir(dir)
+
+
+def get_target_list() -> (list[str], list[str]):
+    _cache_dump = []
+    with open("build/CMakeCache.txt", 'r') as f:
+        _cache_dump = f.readlines()
+    target_regex = re.compile(r"(\S+):.+=(.+)\n")
+
+    _caches = filter(lambda x: x is not None, map(lambda x:  y.groups() if (y := target_regex.match(x)) else None, filter(lambda x: not any(
+        [x.startswith('//'), x == '\n']), _cache_dump)))
+    _cache_dict = dict(_caches)
+
+    targets = _cache_dict["GRAIL_TEST_TARGETS"].split(';')
+    dirs = _cache_dict["GRAIL_TEST_DIRS_REL"].split(';')
+    return targets, dirs
 
 
 def execute_build(target: str, args: argparse.Namespace, rest:list[str]):
@@ -172,6 +204,20 @@ def execute_build(target: str, args: argparse.Namespace, rest:list[str]):
         execute_generate(args, rest)
     else:
         check_grail_dir()
+
+    if args.list:
+        logger.debug("Listing targets that can be compiled")
+        _line_size: int = 64
+        _char_lim = re.compile(fr'(.{_line_size})')
+        _targets, _dirs = get_target_list()
+        _target_str = _char_lim.sub(r'\1\n', ' '.join(_targets))
+        _spacing = max(len(x) for x in _targets)+1
+        for i in range(0, len(targets), 3):
+
+        logger.critical(
+            "To compile all targets in a directory, specify one of the following:\n{0}".format('\n'.join(dirs)))
+        logger.critical("To compile a specific target, specify one of the following:{0}".format(
+            '\n'.join(targets)))
 
     _args = ["cmake", "--build", "build", "-t", target]
     logger.debug(f"Generating with {_args}")
