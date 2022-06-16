@@ -703,7 +703,7 @@ uint32_t GenericList::size() const { return 0; }
 void writeMeta(Buffer& buf, const GenericList& list) {
   buf.write(list.getDataType());
   buf.write(list.getTypeName());
-  buf.write(list.listType);
+  list.listType->writeXDL(buf);
   // TODO: check for overflow of buffer!
 }
 

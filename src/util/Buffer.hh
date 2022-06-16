@@ -142,6 +142,7 @@ class Buffer {
    */
   //************ uint8_t uint16_t uint32_t uint64_t *************//
   template <typename T>
+  requires std::integral<T> || std::floating_point<T>
   void write(T v) {
     *(T*)p = v;
     p = p + sizeof(T);

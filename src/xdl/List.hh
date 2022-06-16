@@ -141,6 +141,19 @@ void writeMeta(Buffer& buf, const List<T>& list) {
   buf.write(list.getTypeName());
   writeMeta(buf, list[0]);
 }
+ template <typename T>
+concept hasBufWrite= requires (T c,Buffer& buf) {
+  c.write(buf);
+ };
+
+template <typename T>
+requires hasBufWrite<T>
+void write(Buffer& buf, const List<T>& list) {
+  buf.write(uint16_t(list.size()));
+  for (uint32_t i = 0; i < list.size(); i++) {
+    list[i].write(buf);
+  }
+}
 
 template <typename T>
 void write(Buffer& buf, const List<T>& list) {
@@ -149,7 +162,6 @@ void write(Buffer& buf, const List<T>& list) {
     write(buf, (list[i]));
   }
 }
-
 // TODO: Implement
 template <typename T>
 void List<T>::display(Buffer& binaryIn, Buffer& asciiOut) const {}

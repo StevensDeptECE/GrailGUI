@@ -41,14 +41,14 @@ class Quote {
     low = decLow * 10000;
     close = decClose * 10000;
   }
-  void write(Buffer& out) const {
-    out.write(date);
-    out.write(open);
-    out.write(hi);
-    out.write(low);
-    out.write(close);
-    out.write(volume);
-    out.fastCheckSpace(size_);
+void write(Buffer& out) const {
+  out.write(date);
+  out.write(open);
+  out.write(hi);
+  out.write(low);
+  out.write(close);
+  out.write(volume);
+  out.fastCheckSpace(size_);
   }
   /*
     compress 64-bit volume by taking only the most significant 1 byte of the number 
@@ -191,7 +191,7 @@ class Quote {
 class QuoteTable {
  private:
   unsigned char* data;
-  List<Quote*> quotes;
+  List<Quote> quotes;
 
  public:
   QuoteTable(const char filename[]);
