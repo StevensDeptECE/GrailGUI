@@ -36,15 +36,13 @@ add_subdirectory(xdl)
 # XP (Experimental)
 add_subdirectory(xp)
 
-
+message(STATUS "Finding all targets, this may take a while")
 get_all_targets(GRAIL_TEST_TARGETS ".")
-message(STATUS "${GRAIL_TEST_TARGETS}")
 get_property(GRAIL_TEST_DIRS DIRECTORY "." PROPERTY SUBDIRECTORIES)
 
-message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "Shortening all targets, this may take a while")
 
 foreach(i ${GRAIL_TEST_DIRS})
-	message(STATUS "${i}")
 	file(RELATIVE_PATH
 		ITEM_PATH_REL # Output variable
 		${CMAKE_CURRENT_SOURCE_DIR} # Base directory
@@ -53,8 +51,7 @@ foreach(i ${GRAIL_TEST_DIRS})
 	list(APPEND GRAIL_TEST_DIRS_REL ${ITEM_PATH_REL})
 endforeach(i ${GRAIL_TEST_DIRS})
 
-message(STATUS "${GRAIL_TEST_TARGETS}")
-message(STATUS "${GRAIL_TEST_DIRS_REL}")
+message(STATUS "Caching all targets, this may take a while")
 set(GRAIL_TEST_TARGETS ${GRAIL_TEST_TARGETS} CACHE STRING "List of valid test targets" FORCE)
 set(GRAIL_TEST_DIRS_REL ${GRAIL_TEST_DIRS_REL} CACHE STRING "List of test subdirectories relative to test/" FORCE)
 

@@ -60,7 +60,7 @@ def parse():
     build.add_argument(
         "target",
         nargs="?",
-        default="all",
+        default="",
         type=str,
         help="Target to execute",
         metavar="target",
@@ -162,18 +162,19 @@ def check_grail_dir(dir: str = ".", has_logging: bool = True):
         dir (str, optional): The starting directory. Defaults to ".".
         has_logging (bool, optional): Enables logging. Defaults to True.
     """
-    dir = os.path.abspath(dir)
-    if has_logging:
-        logger.debug(f"Checking directory: {dir}")
-    assert (
-        dir != "/"
-    ), "Grail Workspace is not in any parent directory from here to root"
-    if "build.py" not in os.listdir(dir):
-        check_grail_dir(os.path.dirname(dir))
-    else:
-        if has_logging:
-            logger.info(f"Grail_Wordspace.code-workspace found in {dir}")
-        os.chdir(dir)
+    # dir = os.path.abspath(dir)
+    # if has_logging:
+    #     logger.debug(f"Checking directory: {dir}")
+    # assert (
+    #     dir != "/"
+    # ), "Build script is not in any parent directory from current working directory to root"
+    # if "build.py" not in os.listdir(dir):
+    #     check_grail_dir(os.path.dirname(dir))
+    # else:
+    #     if has_logging:
+    #         logger.info(f"{dir} found in {dir}")
+    print(os.path.dirname(__file__))
+    os.chdir(os.path.dirname(__file__))
 
 
 def get_target_list() -> (list[str], list[str]):
@@ -188,6 +189,7 @@ def get_target_list() -> (list[str], list[str]):
 
     targets = _cache_dict["GRAIL_TEST_TARGETS"].split(';')
     dirs = _cache_dict["GRAIL_TEST_DIRS_REL"].split(';')
+    print(_cache_dict["CMAKE_BUILD_TYPE"])
     return targets, dirs
 
 
@@ -207,17 +209,32 @@ def execute_build(target: str, args: argparse.Namespace, rest:list[str]):
 
     if args.list:
         logger.debug("Listing targets that can be compiled")
-        _line_size: int = 64
+        _line_size: int = 72
         _char_lim = re.compile(fr'(.{_line_size})')
         _targets, _dirs = get_target_list()
-        _target_str = _char_lim.sub(r'\1\n', ' '.join(_targets))
-        _spacing = max(len(x) for x in _targets)+1
-        for i in range(0, len(targets), 3):
+        _max_target_len = max(len(x) for x in _targets)+2
+        _num_per_target = _line_size // _max_target_len
+        _max_dir_len = max(len(x) for x in _dirs)+2
+        _num_per_dir = _line_size // _max_dir_len
+
+        _dir_str = ''
+        for i, _dir in enumerate(_dirs):
+            if i % _num_per_dir == 0:
+                _dir_str += '\n'
+            _dir_str += f'{_dir:<{_max_dir_len}}'
 
         logger.critical(
-            "To compile all targets in a directory, specify one of the following:\n{0}".format('\n'.join(dirs)))
-        logger.critical("To compile a specific target, specify one of the following:{0}".format(
-            '\n'.join(targets)))
+            f"\nTo compile all targets in a directory, specify one of the following with -d:{_dir_str}")
+
+        _target_str = ''
+        for i, target in enumerate(_targets):
+            if i % _num_per_target == 0:
+                _target_str += '\n'
+            _target_str += f'{target:<{_max_target_len}}'
+
+        logger.critical(
+            f"\nTo compile a specific target, specify one of the following:{_target_str}")
+        return
 
     _args = ["cmake", "--build", "build", "-t", target]
     logger.debug(f"Generating with {_args}")
@@ -253,6 +270,7 @@ def execute_clean(args: argparse.Namespace):
         args (argparse.Namespace): A parsed namespace to work from
     """
     logger.debug("Cleaning all targets")
+    args.list = None
     execute_build("clean", args,[])
 
 
@@ -274,6 +292,7 @@ def execute_nuke():
 
 def main():
     args, rest = parse()
+    print(__file__)
     logger.debug(f"Command args: {args}")
     logger.debug(f"Leftover args: {rest}")
     if args.subcommand == "generate":

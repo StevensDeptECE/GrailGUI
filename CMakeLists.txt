@@ -53,7 +53,7 @@ else()
 
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
   include(CheckIPOSupported)
-  check_ipo_supported(RESULT supported OUTPUT error)
+  check_ipo_supported(RESULT supported OUTPUT supported_output LANGUAGES C CXX)
 
   if(supported)
     message(STATUS "IPO / LTO enabled")
