@@ -64,6 +64,8 @@ void testAsciiDictionary(BLHashMap<T> &dict, const char filename[]) {
     if (!dict.get("zymotechnics", &val))
       cout << "zymotechnics not found.\n";
   }
+  
+  delete [] f;
 
   // check for bad words (should not exist)
   uint32_t count = 0;

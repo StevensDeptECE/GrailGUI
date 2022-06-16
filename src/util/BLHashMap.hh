@@ -99,7 +99,7 @@ class BLHashMap : public BlockLoader {
   sum = (sum >> 7) ^ (sum << 9);
   sum = (sum >> 13) ^ (sum << 17);
   sum = (sum >> 31) ^ (sum >> 45);
-  return sum & (tableCapacity - 1);
+  return sum & tableCapacity;
 }
 
   // do not call with len = 0, or die.
@@ -117,7 +117,7 @@ class BLHashMap : public BlockLoader {
     sum = ((sum << r5) | (sum >> (32 - r5))) ^ sum ^ (i << 7);
     //  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >>
     //  (32-r6)))) + s[i];
-    return sum & (tableCapacity - 1);
+    return sum & tableCapacity; // tableCapacity MUST BE power of 2 - 1!!! No EXCEPTIONS!!
   }
 
   uint32_t bytewisehash(const char s[]) const {
@@ -134,7 +134,7 @@ class BLHashMap : public BlockLoader {
     sum = ((sum << r5) | (sum >> (32 - r5))) ^ sum ^ (i << 7);
     //  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >>
     //  (32-r6)))) + s[i];
-    return sum & (tableCapacity - 1);
+    return sum & tableCapacity;
   }
 
   uint32_t hash(const char s[]) const { return bytewisehash(s); }
@@ -160,7 +160,7 @@ class BLHashMap : public BlockLoader {
     sum = ((sum << r5) | (sum >> (32 - r5))) ^ sum ^ (i << 7);
     //  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >>
     //  (32-r6)))) + s[i];
-    return {sum & (tableCapacity - 1), s + i + 1};
+    return {sum & tableCapacity, s + i + 1};
   }
 
   static uint32_t getFileSize(const char filename[]) {
@@ -168,14 +168,6 @@ class BLHashMap : public BlockLoader {
       stat(filename, &s);
       return s.st_size;
   }
-
-  /*
-  HashMapBase(uint32_t symbolCapacity, uint32_t tableCapacity)
-      : tableCapacity(tableCapacity), symbolCapacity(symbolCapacity), table(new uint32_t[tableCapacity]) {
-    tableCapacity--;
-    symbols = new char[symbolCapacity];
-  }
-  */
 
  // setting up for constructors to avoid replicating code
   void constructorSetup(uint32_t symbolCapacity) {
@@ -192,13 +184,13 @@ class BLHashMap : public BlockLoader {
   public:
   // making it the first time
   BLHashMap(uint32_t symbolCapacity, uint32_t nodeCapacity, uint32_t tableCapacity)
-     : BlockLoader(symbolCapacity + nearestPower2(tableCapacity)*sizeof(uint32_t) + nodeCapacity*sizeof(Node) + sizeof(HashMapHeader), Type::namemap, 0x0001)
+     : BlockLoader(symbolCapacity + nearestPower2(tableCapacity)*sizeof(uint32_t) + nodeCapacity*sizeof(Node) + sizeof(HashMapHeader), Type::namemap, 0x0002)
   {
     hashMapHeader = (HashMapHeader*)((char*)(mem) + sizeof(GeneralHeader));
     hashMapHeader->symbolCapacity = symbolCapacity;
-    hashMapHeader->tableCapacity = nearestPower2(tableCapacity);
     hashMapHeader->nodeCapacity = nodeCapacity;
     hashMapHeader->nodeCount = 0;
+    hashMapHeader->tableCapacity = nearestPower2(tableCapacity)-1; // power of 2 -1 so we can AND to keep it in range [0,n-1]
     this->symbolCapacity = hashMapHeader->symbolCapacity;
     this->nodeCapacity = hashMapHeader->nodeCapacity;
     this->tableCapacity = hashMapHeader->tableCapacity;

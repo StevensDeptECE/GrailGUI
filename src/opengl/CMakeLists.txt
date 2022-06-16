@@ -11,7 +11,7 @@ set(grail-opengl
     ErrNames.cc
     ESRIPolygon.cc
     ESRIShape.cc
-    GapMinderWidget.cc
+#    GapMinderWidget.cc
     GraphWidget.cc
     GLWin.cc
     GLWinFonts.cc
