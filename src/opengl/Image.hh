@@ -12,22 +12,21 @@
 class Image : public Shape {
  private:
   float x, y, width, height;
+  uint32_t vbo;  // handle to the point data on the graphics card
+  // TODO: get rid of sbo and just darw the whole vbo array (2 triangles)
   int textureWidth, textureHeight,
-      nrChannels; /**< Variables that stb_load will put values into */
-  unsigned char *data /**< Where stb_load will store the data it loads */;
-  uint32_t textureID; /**< ID associated with the texture we will create */
-  std::vector<float> vertices;
-  std::vector<uint32_t> indices;
-
+      nrChannels;      /**< Variables that stb_load will put values into */
+  uint32_t textureID;  /**< ID associated with the texture we will create */
+  float vertices[16];  // x,y,u,v, x,y,u,v
   /**
-   * @brief Set up the vertices and indices buffers
+   * @brief Set up the rectangle to be drawn within the image
    *
    * @param u0
    * @param v0
    * @param u1
    * @param v1
    */
-  void setupBuffers(float u0 = 0, float v0 = 0, float u1 = 1, float v1 = 1);
+  void setRect(float u0 = 0, float v0 = 0, float u1 = 1, float v1 = 1);
 
   /**
    * @brief Set up the texture object for this image.
@@ -37,55 +36,54 @@ class Image : public Shape {
 
  public:
   /**
-   * @brief Construct a new Image object
+   * @brief Construct a new Image object from an existing texture
    *
-   * @param c Pointer to a Canvas.
-   * @param x X coord of the top left corner.
-   * @param y Y coord of the top left corner.
-   * @param width Width of the drawn image in pixels.
-   * @param height Height of the drawn image in pixels
+   * @param x coord of the top left corner.
+   * @param y coord of the top left corner.
+   * @param width of the drawn image in pixels.
+   * @param height of the drawn image in pixels
    * @param textureID A desired ID for the texture, don't use 0.
    */
-  Image(Canvas *c, float x, float y, float width, float height,
+  Image(Canvas* c, float x, float y, float width, float height,
         uint32_t textureID = 1);
 
   /**
    * @brief Construct a new Image object
    *
-   * @param c Pointer to a Canvas.
-   * @param x X coord of the top left corner.
-   * @param y Y coord of the top left corner.
+   * @param x coord of the top left corner.
+   * @param y coord of the top left corner.
    * @param width Width of the drawn image in pixels.
    * @param height Height of the drawn image in pixels
    * @param filePath Path to the image to load.
-   * @param textureID A desired ID for the texture, don't use 0.
    */
-  Image(Canvas *c, float x, float y, float width, float height,
-        const char *filePath, uint32_t textureID = 1);
+  Image(Canvas* c, float x, float y, float width, float height,
+        const char* filePath);
 
   /**
-   * @brief Add an image to the object. This will overwrite a previously added
-   * image.
+   * @brief set the image of the object.
+   * This will overwrite the previous image.
    *
    * @param filePath Path to the image to load.
    */
-  void addImage(const char *filePath);
+  void setImage(const char filePath[]);
 
   /**
-   * @brief OpenGL setup that will be called by GLWin.
+   * @brief OpenGL setup that will be called by GLWin to load the image.
    *
    */
-  void init();
+  void init() override;
 
   /**
-   * @brief Artifact of subclassing from Shape, this is not used.
+   * @brief Renders the image to the screen, called by the parent tab
    *
    */
-  void update() {}
+  void render() override;
 
   /**
-   * @brief Renders the image, this will be called by GLWin.
+   * @brief If the image is to be modified, update may be written
    *
    */
-  void render();
+  void update() override;
+
+  void setupBuffers(float u0, float v0, float u1, float v1);
 };

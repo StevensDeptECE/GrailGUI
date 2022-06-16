@@ -76,6 +76,9 @@ target_link_libraries(grail fmt::fmt)
 # Shapelib
 target_link_libraries(grail shpgrail)
 
+#Webp
+target_link_libraries(grail webp)
+
 # target_link_libraries(grailserver shpgrail)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")

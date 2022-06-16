@@ -129,7 +129,7 @@ void StyledMultiShape2D::fillRectangle(float x, float y, float w, float h,
   addStyledPoint(x + w, y + h, c);
   addStyledPoint(x + w, y, c);
   sAddQuadIndices();
-  points = 4;
+  points += 4;
   numIndices.push_back(points);
   currentIndex += points;
   startIndices.push_back(currentIndex);
