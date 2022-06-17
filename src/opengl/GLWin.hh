@@ -160,7 +160,10 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   void mainLoop();
   void setUpdate() { needsUpdate = true; }
   void setRender() { needsRender = true; }
-  const Style* getDefaultStyle() const { return defaultStyle; }
+  const Style* getDefaultStyle() const {
+    auto a = new int[10];
+     return defaultStyle;
+  }
   const Style* getGuiStyle() const { return guiStyle; }
   const Style* getGuiTextStyle() const { return guiTextStyle; }
   const Style* getMenuStyle() const { return menuStyle; }

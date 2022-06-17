@@ -13,7 +13,15 @@ class Member {
   MainCanvas* c;
 
  public:
-  Member(Tab* tab, double frameRate = -1, double dt = 0.0001);
+  explicit Member(Tab* tab, double frameRate = -1, double dt = 0.0001);
+  Member(const Member& orig);
+  Member(Member&& orig) noexcept;
+
+  Member& operator=(Member orig);
+  Member& operator=(Member&& orig) noexcept;
+
+  virtual ~Member() = default;
+  friend void swap(Member& a, Member& b);
 
   void setFrameRate(double frameRate);
   void setModelDt(double dt, double defaultDt);

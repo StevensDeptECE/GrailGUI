@@ -1,0 +1,13 @@
+# Allow custom line endings during checkout, but enforce LF on checkin
+*.cc text
+*.c  text
+*.hh text
+*.h  text
+
+*.py text
+*.md text
+
+*.txt text
+
+*.bml binary
+
