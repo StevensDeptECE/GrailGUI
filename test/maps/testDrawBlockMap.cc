@@ -2,6 +2,7 @@
 #include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/MapView2D.hh"
+#include "opengl/MultiText.hh"
 #include "../xp/mapNames.hh"
 
 using namespace std;
@@ -24,7 +25,14 @@ class TestDrawBlockMap : public Member {
     // new ButtonWidget(c, 0, 0, 200, 100, "Click Me!", "mapZoomIn"));
     BlockMapLoader* bml = new BlockMapLoader(bmlfile);
     BLHashMap<MapEntry>* bdl = new BLHashMap<MapEntry>(bdlfile);
-    mv = c->addLayer(new MapView2D(c, s2, bml, bdl));
+    
+    // TODO: MultiText is drawing using Map coordinates but with a projection of web coordinates
+    MultiText* mt = new MultiText(c, s2, 12);
+    c->addLayer(mt);
+    const Font* f = mt->getStyle()->f;
+    mt->addCentered(0,0,f,"testing", 7);
+//    mv = c->addLayer(new MapView2D(c, s2, bml, bdl));
+
     cout << "num points loaded: " << bml->getNumPoints() << '\n';
 
     tab->bindEvent(Tab::Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);
