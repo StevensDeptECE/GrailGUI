@@ -7,55 +7,70 @@ import shutil
 import subprocess
 import os
 import re
-import textwrap
 
 console_log_level = logging.INFO
 file_log_level = logging.DEBUG
 
+
 class MyParser(argparse.ArgumentParser):
-    def error(self, message:str):
-        logger.error('error: %s' % message)
+    def error(self, message: str):
+        logger.error("error: %s" % message)
         self.print_help()
         exit(2)
-        
+
+
 def parse():
     """Creates a new ArgumentParser and parses sys.argv
 
     Returns:
-        tuple[Namespace, list[str]]: A namespace of matched flags and a list of unmatched flags
+        tuple[Namespace, list[str]]: A namespace of matched flags and a list of
+        unmatched flags
     """
 
     parser = MyParser(description="Build and run GrailGUI")
-    subparsers = parser.add_subparsers(
-        help="subcommands", required=True, dest="subcommand"
-    )
+    subparsers = parser.add_subparsers(help="subcommands",
+                                       required=True,
+                                       dest="subcommand")
 
     generate = subparsers.add_parser(
         "generate",
         help="generates configurations for CMake",
-        description="When called with no additional arguments, generates a valid configuration for Grail using the Ninja build system.",
+        description="When called with no additional arguments, generates a\
+        valid configuration for Grail using the Ninja build system.",
     )
-    generate.add_argument(
-        "-G", help="Use a different generator for CMake", default="", dest="generator"
-    )
+    generate.add_argument("-G",
+                          help="Use a different generator for CMake",
+                          default="",
+                          dest="generator")
 
-    generate.add_argument("-b", help="Change the build mode",
-                          default="", dest="mode")
+    generate.add_argument("-b",
+                          help="Change the build mode",
+                          default="",
+                          dest="mode")
 
     generate.add_argument(
-        "cmake_args", nargs="*", default=[], type=str, help="Additional CMake arguments"
+        "cmake_args",
+        nargs="*",
+        default=[],
+        type=str,
+        help="Additional CMake arguments",
     )
 
     build = subparsers.add_parser(
         "build",
         help="compiles library and tests",
-        description="When called with no additional arguments, builds all valid targets (libraries and executables). If no configuration exists, then a new one will be generated using the NInja build system.",
+        description="""When called with no additional arguments, builds all
+            valid targets (libraries and executables). If no configuration
+            exists, then a new one will be generated using the Ninja build
+            system.""",
     )
-    # group.add_argument('-l','--list', action='store_true', help='List available targets')
-    build.add_argument(
-        "-d", "--dir", action="store_true", help="Compile test subdirectory"
-    )
-    build.add_argument('-l', '--list', action='store_true',
+    build.add_argument("-d",
+                       "--dir",
+                       action="store_true",
+                       help="Compile test subdirectory")
+    build.add_argument("-l",
+                       "--list",
+                       action="store_true",
                        help="List available targets")
     build.add_argument(
         "target",
@@ -69,7 +84,9 @@ def parse():
     run = subparsers.add_parser(
         "run",
         help="run compiled tests",
-        description="When called with one argument, runs an executable with the target's name in Grail's bin folder. Additional arguments can be passed in for the target.",
+        description="When called with one argument, runs an executable with\
+            the target's name in Grail's bin folder. Additional arguments can\
+            be passed in for the target.",
     )
     run.add_argument("target", nargs=1, type=str, help="Target to execute")
     run.add_argument(
@@ -80,15 +97,24 @@ def parse():
         help="Arguments for running target",
     )
 
-    _clean = subparsers.add_parser(
+    subparsers.add_parser(
         "clean",
         help="clean all targets (rarely needed with CMake)",
-        description="Cleans all targets (libraries and executables) in one command. This is rarely needed, as most issues that are believed to require a clean build are usually due to a malformed config file (ex. forgetting to add a .cc file toa CMakeLists.txt file. To modify the base CMake configuration (ie. changing generators or compilers), see the nuke subcommand.",
+        description="""Cleans all targets (libraries and executables) in one
+        command. This is rarely needed, as most issues that are believed to
+        require a clean build are usually due to a malformed config file (ex.
+        forgetting to add a .cc file toa CMakeLists.txt file. To modify the
+        base CMake configuration (ie. changing generators or compilers), see
+        the nuke subcommand.""",
     )
-    _nuke = subparsers.add_parser(
+    subparsers.add_parser(
         "nuke",
-        help="deletes all ephemeral build files (to the best of our knowledge)",
-        description='Deep cleans or "nukes" the generated and compiled files. Any artifacts in common directories are likely to be destroyed. This currently includes: bin/, build/, buildbuild/, external/, and libs/. logs/ is not included in this list because logs are sometimes necessary to keep and deleting them automatically seems counterintuitive.',
+        help="deletes all ephemeral build files (to the best of ourknowledge)",
+        description="""Deep cleans or "nukes" the generated and compiled files.
+        Any artifacts in common directories are likely to be destroyed. This
+        currently includes: bin/, build/, buildbuild/, external/, and libs/.
+        logs/ is not included in this list because logs are sometimes necessary
+        to keep and deleting them automatically seems counterintuitive.""",
     )
     args = parser.parse_known_args()
     return args
@@ -109,7 +135,7 @@ def execute_generate(args: argparse.Namespace, rest: list[str]):
         gen = args.generator if args.generator else "Ninja"
         _args = ["cmake", "-B", "build", "-G", gen]
         if args.mode:
-            _args.append("-DCMAKE_BUILD_TYPE="+args.mode)
+            _args.append("-DCMAKE_BUILD_TYPE=" + args.mode)
         _args = _args + args.cmake_args + rest
         logger.debug(f"Generating with {_args}")
         status = subprocess.run(_args)
@@ -121,10 +147,16 @@ def execute_generate(args: argparse.Namespace, rest: list[str]):
         logger.info("build/ exists but cmake_args were specified")
         _args = ["cmake", "-B", "build"]
         if args.mode:
-            if args.mode.lower() not in ["debug", "release", "relwithdebinfo", "minsizerel"]:
+            if args.mode.lower() not in [
+                    "debug",
+                    "release",
+                    "relwithdebinfo",
+                    "minsizerel",
+            ]:
                 raise ValueError(
-                    "Unknown build mode, please specify one of the following [Debug, Release, RelWithDebInfo, MinSizeRel]")
-            _args.append("-DCMAKE_BUILD_TYPE="+args.mode)
+                    """Unknown build mode, please specify one of the following
+                    [Debug, Release, RelWithDebInfo, MinSizeRel]""")
+            _args.append("-DCMAKE_BUILD_TYPE=" + args.mode)
         _args = _args + args.cmake_args + rest
         logger.debug(f"Generating with {_args}")
         status = subprocess.run(_args)
@@ -179,21 +211,27 @@ def check_grail_dir(dir: str = ".", has_logging: bool = True):
 
 def get_target_list() -> (list[str], list[str]):
     _cache_dump = []
-    with open("build/CMakeCache.txt", 'r') as f:
+    with open("build/CMakeCache.txt", "r") as f:
         _cache_dump = f.readlines()
     target_regex = re.compile(r"(\S+):.+=(.+)\n")
 
-    _caches = filter(lambda x: x is not None, map(lambda x:  y.groups() if (y := target_regex.match(x)) else None, filter(lambda x: not any(
-        [x.startswith('//'), x == '\n']), _cache_dump)))
+    _caches = filter(
+        lambda x: x is not None,
+        map(
+            lambda x: y.groups() if (y := target_regex.match(x)) else None,
+            filter(lambda x: not any([x.startswith("//"), x == "\n"]),
+                   _cache_dump),
+        ),
+    )
     _cache_dict = dict(_caches)
 
-    targets = _cache_dict["GRAIL_TEST_TARGETS"].split(';')
-    dirs = _cache_dict["GRAIL_TEST_DIRS_REL"].split(';')
+    targets = _cache_dict["GRAIL_TEST_TARGETS"].split(";")
+    dirs = _cache_dict["GRAIL_TEST_DIRS_REL"].split(";")
     print(_cache_dict["CMAKE_BUILD_TYPE"])
     return targets, dirs
 
 
-def execute_build(target: str, args: argparse.Namespace, rest:list[str]):
+def execute_build(target: str, args: argparse.Namespace, rest: list[str]):
     """Builds a target
 
     Args:
@@ -210,30 +248,32 @@ def execute_build(target: str, args: argparse.Namespace, rest:list[str]):
     if args.list:
         logger.debug("Listing targets that can be compiled")
         _line_size: int = 72
-        _char_lim = re.compile(fr'(.{_line_size})')
+        _char_lim = re.compile(rf"(.{_line_size})")
         _targets, _dirs = get_target_list()
-        _max_target_len = max(len(x) for x in _targets)+2
+        _max_target_len = max(len(x) for x in _targets) + 2
         _num_per_target = _line_size // _max_target_len
-        _max_dir_len = max(len(x) for x in _dirs)+2
+        _max_dir_len = max(len(x) for x in _dirs) + 2
         _num_per_dir = _line_size // _max_dir_len
 
-        _dir_str = ''
+        _dir_str = ""
         for i, _dir in enumerate(_dirs):
             if i % _num_per_dir == 0:
-                _dir_str += '\n'
-            _dir_str += f'{_dir:<{_max_dir_len}}'
+                _dir_str += "\n"
+            _dir_str += f"{_dir:<{_max_dir_len}}"
 
         logger.critical(
-            f"\nTo compile all targets in a directory, specify one of the following with -d:{_dir_str}")
+            f"\nTo compile all targets in a directory, specify one of the following with -d:{_dir_str}"
+        )
 
-        _target_str = ''
+        _target_str = ""
         for i, target in enumerate(_targets):
             if i % _num_per_target == 0:
-                _target_str += '\n'
-            _target_str += f'{target:<{_max_target_len}}'
+                _target_str += "\n"
+            _target_str += f"{target:<{_max_target_len}}"
 
         logger.critical(
-            f"\nTo compile a specific target, specify one of the following:{_target_str}")
+            f"\nTo compile a specific target, specify one of the following:{_target_str}"
+        )
         return
 
     _args = ["cmake", "--build", "build", "-t", target]
@@ -271,7 +311,7 @@ def execute_clean(args: argparse.Namespace):
     """
     logger.debug("Cleaning all targets")
     args.list = None
-    execute_build("clean", args,[])
+    execute_build("clean", args, [])
 
 
 def execute_nuke():
@@ -284,7 +324,7 @@ def execute_nuke():
     )
     if status.lower() != "y":
         logger.info("Canceling nuke")
-    logger.debug(f'Deleting the following directories: {dirs}')
+    logger.debug(f"Deleting the following directories: {dirs}")
     status = subprocess.run(["rm", "-rf"] + dirs)
     if status.returncode != 0:
         exit(status)
@@ -301,7 +341,7 @@ def main():
     elif args.subcommand == "build":
         logger.debug("Entering build state")
         target = process_target(args)
-        execute_build(target, args,rest)
+        execute_build(target, args, rest)
     elif args.subcommand == "run":
         logger.debug("Entering run state")
         execute_run(args.target[0], args.target_args)
@@ -312,7 +352,8 @@ def main():
         logger.debug("Entering nuke state")
         execute_nuke()
     else:
-        raise NotImplementedError(f"command '{args.subcommand}' is not yet supported")
+        raise NotImplementedError(
+            f"command '{args.subcommand}' is not yet supported")
 
 
 if __name__ == "__main__":
@@ -337,8 +378,7 @@ if __name__ == "__main__":
 
         # Create formatter
         formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
         # Add formatter to fh
         fh.setFormatter(formatter)
