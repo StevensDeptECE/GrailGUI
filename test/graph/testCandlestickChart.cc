@@ -7,7 +7,7 @@ using namespace grail;
 
 class TestCandlestickChart : public GraphStyle {
  public:
-  TestCandlestickChart(Tab* tab) : GraphStyle(tab, "TIMES", 20, 12) {
+  TestCandlestickChart(GLWin* w) : GraphStyle(w, "TIMES", 20, 12, "Candlestick Chart") {
     MainCanvas* c = tab->getMainCanvas();
 
     vector<double> data = {
@@ -72,6 +72,6 @@ class TestCandlestickChart : public GraphStyle {
   }
 };
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* tab) {
-  tab->addMember(new TestCandlestickChart(tab));
+void grailmain(int argc, char* argv[], GLWin* w) {
+  new TestCandlestickChart(w);
 }

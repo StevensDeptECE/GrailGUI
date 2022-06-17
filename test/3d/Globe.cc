@@ -10,7 +10,7 @@ class Globe : public Member {
   float earthRotationAngle;
 
  public:
-  Globe(Tab* tab) : Member(tab, 0, 0.1) {
+  Globe(GLWin* w) : Member(w, 0, 0.1) {
     earthRotationAngle = .01;
     Canvas* c = tab->getMainCanvas();
     Camera* cam = c->setLookAtProjection(2, 3, 40, 0, 0, 0, 0, 0, 1);
@@ -26,7 +26,7 @@ class Globe : public Member {
   }
 };
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
+void grailmain(int argc, char* argv[], GLWin* w) {
   w->setTitle("Globe");
-  new Globe(defaultTab);
+  new Globe(w);
 }

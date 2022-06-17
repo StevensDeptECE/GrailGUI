@@ -12,8 +12,8 @@ class TestDrawBlockMap : public Member {
   MapView2D* mv;
 
  public:
-  TestDrawBlockMap(Tab* tab, const char filename[])
-      : Member(tab),  // GLWin(0x000000, 0xCCCCCC, "Block Loader: Map Demo"),
+  TestDrawBlockMap(GLWin* w, const char filename[])
+      : Member(w),  // GLWin(0x000000, 0xCCCCCC, "Block Loader: Map Demo"),
         filename(filename),
         mv(nullptr) {
     MainCanvas* c = tab->getMainCanvas();
@@ -97,6 +97,6 @@ class TestDrawBlockMap : public Member {
   }
 };
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
-  new TestDrawBlockMap(defaultTab, "res/maps/uscounties.bml");
+void grailmain(int argc, char* argv[], GLWin* w) {
+  new TestDrawBlockMap(w, "res/maps/uscounties.bml");
 }

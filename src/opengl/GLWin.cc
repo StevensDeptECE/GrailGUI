@@ -94,6 +94,8 @@ void GLWin::keyCallback(GLFWwindow *win, int key, int scancode, int action,
                         int mods) {
   uint32_t input = (mods << 11) | (action << 9) | key;
   cerr << "key: " << key << " mods: " << mods << " input=" << input << '\n';
+  winMap[win]->sharedTab->doit(input);
+  winMap[win]->sharedMenuTab->doit(input);
   winMap[win]->currentTab()->doit(input);
 }
 
@@ -107,6 +109,8 @@ void GLWin::mouseButtonCallback(GLFWwindow *win, int button, int action,
   uint32_t input = (mods << 9) | (action << 3) | button;
   fmt::print("mouse!{}, action={}, location=({}, {}), input={}\n", button,
              action, w->mouseX, w->mouseY, input);
+  winMap[win]->sharedTab->doit(input);
+  winMap[win]->sharedMenuTab->doit(input);
   winMap[win]->currentTab()->doit(input);
 }
 
@@ -114,6 +118,8 @@ void GLWin::scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
   // cout << "xoffset=" << xoffset << " yoffset=" << yoffset << '\n';
   // todo: we would have to copy offsets into the object given the way this is
   uint32_t input = 400;
+  winMap[win]->sharedTab->doit(input + int(yoffset));
+  winMap[win]->sharedMenuTab->doit(input + int(yoffset));
   winMap[win]->currentTab()->doit(input + int(yoffset));
 }
 
@@ -165,7 +171,8 @@ GLWin::GLWin(uint32_t bgColor, uint32_t fgColor, const string &title,
       faces(16),
       dragMode(false),
       mousePressX(0),
-      mousePressY(0) {
+      mousePressY(0),
+      autoNavBar(nullptr) {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -247,8 +254,10 @@ void GLWin::startWindow() {
   guiTextStyle = new Style(guiFont, 0.5, 0.5, 0.5, 0, 0, 0, 1, COMMON_SHADER);
   menuStyle = new Style(menuFont, 0.5, 0.5, 0.5, 0, 0, 0, 1, COMMON_SHADER);
   menuTextStyle = new Style(menuFont, 0.5, 0.5, 0.5, 0, 0, 0, 1, COMMON_SHADER);
-  tabs.add(new Tab(this));
-  current = 0;
+  sharedTab = new Tab(this);
+  sharedMenuTab = new Tab(this);
+  //  tabs.add(new Tab(this));
+  current = -1;
   hasBeenInitialized = true;
 }
 void GLWin::baseInit() {
@@ -272,6 +281,8 @@ void GLWin::baseInit() {
   for (int i = 0; i < tabs.size(); ++i) {
     tabs[i]->init();
   }
+  sharedMenuTab->init();
+  sharedTab->init();
 }
 
 int GLWin::init(GLWin *g, uint32_t w, uint32_t h, uint32_t exitAfter) {
@@ -300,15 +311,23 @@ void GLWin::cleanup() {
     delete tabs[i];  // TODO:cw[i]->cleanup();
   }
   tabs.clear();
+  delete sharedTab;
+  sharedTab = nullptr;
+  delete sharedMenuTab;
+  sharedMenuTab = nullptr;
   delete defaultStyle;
   defaultStyle = nullptr;
   Shader::cleanAll();
 }
 
 void GLWin::init() {}
-void GLWin::render() { currentTab()->render(); }
+void GLWin::render() {
+  if (current >= 0) currentTab()->render();
+}
 // default is no animation. Override if you want your class to animate
-void GLWin::update() { currentTab()->update(); }
+void GLWin::update() {
+  if (current >= 0) currentTab()->update();
+}
 
 // declare prototype access to static function in other file which calls
 // FaceFont::cleanup()
@@ -349,6 +368,8 @@ void GLWin::mainLoop() {
                    bgColor.a);  // Clear the colorbuffer and depth
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       render();
+      sharedTab->render();
+      sharedMenuTab->render();
       renderTime += glfwGetTime() - startRender;
       glfwSwapBuffers(win);  // Swap buffer so the scene shows on screen
       if (frameCount >= 150) {
@@ -367,10 +388,14 @@ void GLWin::mainLoop() {
     }
     currentTab()->tick();  // update time in current tab for any models using
                            // simulation time
+    sharedTab->tick();
+    sharedMenuTab->tick();
     needsUpdate = false;
     glfwPollEvents();  // Check and call events
     // note: any events needing a refresh should set dirty = true
     if (currentTab()->checkUpdate()) setUpdate();
+    if (sharedTab->checkUpdate()) setUpdate();
+    if (sharedMenuTab->checkUpdate()) setUpdate();
     if (needsUpdate) {
       update();
       needsRender = true;

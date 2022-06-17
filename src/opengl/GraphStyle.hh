@@ -30,9 +30,20 @@ class GraphStyle : public Member {
   float pointSize;
 
  public:
+  /**
+   * @brief Construct a new Graph Style object
+   *
+   * A graph style provides a series of defaults for drawing graphs and their
+   * components
+   *
+   * @param tab A tab to add the graph style to
+   * @param faceName name of the font face
+   * @param titleSize size of the title font
+   * @param axisSize size of the axis font
+   */
   GraphStyle(Tab* tab, const char faceName[], uint32_t titleSize,
-             uint32_t axisSize)
-      : Member(tab),
+             uint32_t axisSize, const char name[])
+      : Member(tab, name),
         // two lines and the overall title
         baseStyle(faceName, axisSize, 1, 0, 0, 0, 0.3, 0.3, 0.3, 5),
         titleStyle(faceName, titleSize, 1, 0, 0, 0, 0, 0, 0, 5),
@@ -63,6 +74,25 @@ class GraphStyle : public Member {
                  grail::darkblue, grail::darkgreen, grail::darkred};
     barOutlineColors = {grail::gray, grail::black, grail::yellow};
   }
+
+  /**
+   * @brief Construct a new Graph Style object, by creating a new tab
+   *
+   * A graph style provides a series of defaults for drawing graphs and their
+   * components
+   *
+   * TODO: See if this can use Member's GLWin constructor instead of manually
+   * adding a new tab. I had a feeling doing so would lead to double
+   * construction.
+   *
+   * @param w  A window to draw on
+   * @param faceName name of the font face
+   * @param titleSize size of the title font
+   * @param axisSize size of the axis font
+   */
+  GraphStyle(GLWin* w, const char faceName[], uint32_t titleSize,
+             uint32_t axisSize, const char name[])
+      : GraphStyle(w->addTab(), faceName, titleSize, axisSize, name) {}
 
   /**
    * @brief Summary

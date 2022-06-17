@@ -22,13 +22,13 @@ class CallbackHandler {
   template <typename T>
   using CallbackFunc = void (T::*)(void);
 
-  inline static std::array<uint32_t, 32768> inputMap;
+  std::array<uint32_t, 32768> inputMap;
   /*
         map an integer code to a function to execute
         the actions are all the publicly available performance the code can DO
   */
-  inline static std::array<std::function<void(void)>, 4096> actionMap;
-  static HashMap<uint32_t> actionNameMap;
+  std::array<std::function<void(void)>, 4096> actionMap;
+  HashMap<uint32_t> actionNameMap;
   uint32_t lookupAction(const char actionName[]);
   //	static GLWin* w;
   void setEvent(uint32_t e, uint32_t a) { inputMap[e] = a; }

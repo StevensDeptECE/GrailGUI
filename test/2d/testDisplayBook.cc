@@ -11,7 +11,7 @@ class BookViewer : public Member {
   const char *filename;
 
  public:
-  BookViewer(Tab *tab, const char filename[]);
+  BookViewer(GLWin *w, const char filename[]);
 
   void advance();
   void back();
@@ -41,8 +41,8 @@ void BookViewer::bottom() {
   tab->setRender();
 }
 
-BookViewer::BookViewer(Tab *tab, const char filename[])
-    : Member(tab), filename(filename) {
+BookViewer::BookViewer(GLWin *w, const char filename[])
+    : Member(w), filename(filename) {
   tab->bindEvent(264, &BookViewer::bottom, this);
   tab->bindEvent(265, &BookViewer::top, this);
   tab->bindEvent(262, &BookViewer::advance, this);
@@ -68,7 +68,7 @@ BookViewer::BookViewer(Tab *tab, const char filename[])
   // c->addLayer(new Image(400, 400, 400, 400, "res/trumpmelania.png", s));
 }
 
-void grailmain(int argc, char *argv[], GLWin *w, Tab *defaultTab) {
+void grailmain(int argc, char *argv[], GLWin *w) {
   const char *filename = argc < 2 ? "res/Annatest.txt" : argv[1];
-  new BookViewer(defaultTab, filename);
+  new BookViewer(w, filename);
 }

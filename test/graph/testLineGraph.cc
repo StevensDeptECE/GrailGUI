@@ -7,7 +7,7 @@ using namespace grail;
 
 class TestLineGraph : public GraphStyle {
  public:
-  TestLineGraph(Tab* tab) : GraphStyle(tab, "TIMES", 24, 12) {
+  TestLineGraph(GLWin* w) : GraphStyle(w, "TIMES", 24, 12,"Line Graph") {
     MainCanvas* c = tab->getMainCanvas();
 
     vector<double> times = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -65,6 +65,4 @@ class TestLineGraph : public GraphStyle {
   }
 };
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* tab) {
-  tab->addMember(new TestLineGraph(tab));
-}
+void grailmain(int argc, char* argv[], GLWin* w) { new TestLineGraph(w); }

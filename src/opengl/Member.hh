@@ -11,12 +11,19 @@ class Member {
  protected:
   Tab* tab;
   MainCanvas* c;
+  std::string name;
 
  public:
-  Member(Tab* tab, double frameRate = -1, double dt = 0.0001);
+  Member(Tab* tab, std::string name = "Member", double frameRate = -1,
+         double dt = 0.0001);
+  Member(GLWin* w, std::string name = "Member", double frameRate = -1,
+         double dt = 0.0001);
 
   void setFrameRate(double frameRate);
   void setModelDt(double dt, double defaultDt);
+
+  std::string getName();
+  void setName(std::string newName);
 
   // Allow members to override init, render, and update
   // Tabs iterate through each of these manually

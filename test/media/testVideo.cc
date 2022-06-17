@@ -6,7 +6,7 @@ using namespace grail;
 
 class TestVideoPlayer : public Member {
  public:
-  TestVideoPlayer(Tab* tab) : Member(tab, 0) {
+  TestVideoPlayer(GLWin* w) : Member(w, 0) {
     VideoPlayer* v = c->addLayer(new VideoPlayer(c, 100, 100, 500, 500));
 
     // playing a link from youtube (and maybe other places idk) requires you to
@@ -21,6 +21,4 @@ class TestVideoPlayer : public Member {
   }
 };
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
-  new TestVideoPlayer(defaultTab);
-}
+void grailmain(int argc, char* argv[], GLWin* w) { new TestVideoPlayer(w); }

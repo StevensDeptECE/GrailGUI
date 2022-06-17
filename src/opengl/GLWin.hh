@@ -12,6 +12,7 @@
 #include "opengl/GLWinFonts.hh"
 #include "opengl/Shader.hh"
 #include "util/DynArray.hh"
+#include "util/Ex.hh"
 #include "util/HashMap.hh"
 class GLFWwindow;  // forward declaration, simplify: include file not needed
                    // here
@@ -22,6 +23,7 @@ class Style;
 class Font;
 class XDLIterator;
 class MainCanvas;
+class AutoNavBar;
 
 class GLWin {
  protected:
@@ -52,8 +54,10 @@ class GLWin {
   uint32_t frameNum;
   double lastRenderTime;  // Stores last time of render
   char frameName[32];
+  Tab* sharedTab;       // For nav bars
+  Tab* sharedMenuTab;   // For buttons that open/close menus
   DynArray<Tab*> tabs;  // list of web pages, ie tabs
-  uint32_t current;     // current (active) tab
+  int32_t current;      // current (active) tab
   void checkUpdate();
 
  public:
@@ -65,6 +69,7 @@ class GLWin {
   uint32_t width, height;  // width and height of the window in pixels
   bool needsUpdate, needsRender;
   bool focused;
+  AutoNavBar* autoNavBar;
   uint32_t exitAfter;  // if not zero, will terminate
 
  private:
@@ -123,9 +128,19 @@ class GLWin {
   }
   MainCanvas* getMainCanvas();
 
-  Tab* currentTab() { return tabs[current]; }
+  constexpr Tab* currentTab() {
+    if (current != -1) {
+      return tabs[current];
+    } else {
+      throw Ex2(
+          Errcode::UNDEFINED,
+          "A tab must be created before trying to access the current tab");
+    }
+  }
+  constexpr Tab* getSharedTab() { return sharedTab; }
+  constexpr Tab* getSharedMenuTab() { return sharedMenuTab; }
 
-  void setSize(uint32_t w, uint32_t h) {
+  constexpr void setSize(uint32_t w, uint32_t h) {
     width = w;
     height = h;
   }
@@ -187,5 +202,7 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   void prevTab();
   Tab* addTab();
   void removeTab();
+  void switchTab(int tabIndex) { current = tabIndex; };
+  void toLastTab() { current = tabs.size() - 1; };
   void goToLink(const char ipaddr[], uint16_t port, uint32_t requestID);
 };

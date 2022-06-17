@@ -15,7 +15,7 @@ class TestGapMinderWidget : public GraphStyle {
   GapMinderWidget* chart;
 
  public:
-  TestGapMinderWidget(Tab* tab) : GraphStyle(tab, "TIMES", 24, 12) {
+  TestGapMinderWidget(GLWin* w) : GraphStyle(w, "TIMES", 24, 12, "Gapninder graph") {
     MainCanvas* c = tab->getMainCanvas();
     const Style* s =
         new Style("TIMES", 24, 1, 0, 0, 0,  // black background (unused)
@@ -42,7 +42,7 @@ class TestGapMinderWidget : public GraphStyle {
   void update() { chart->animate(10000, 2); }
 };
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* tab) {
+void grailmain(int argc, char* argv[], GLWin* w) {
   w->setTitle("Test Gap Minder Widget");
-  tab->addMember(new TestGapMinderWidget(tab));
+  new TestGapMinderWidget(w);
 }

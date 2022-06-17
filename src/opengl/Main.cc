@@ -4,13 +4,12 @@
 
 using namespace std;
 
-void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab);
+void grailmain(int argc, char* argv[], GLWin* w);
 
 int main(int argc, char* argv[]) {
   try {
     GLWin w(1024, 800, 0xFFFFFFFF, 0x000000FF, "Grail Window");
-    Tab* tab = w.currentTab();
-    grailmain(argc, argv, &w, tab);
+    grailmain(argc, argv, &w);
     w.mainLoop();
     // g->t = thread(crun, g);
     // TODO: move this to GLWin::cleanup or destructor?  FontFace::emptyFaces();

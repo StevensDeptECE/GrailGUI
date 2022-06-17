@@ -22,8 +22,7 @@ class TestAudioPlayer : public Member {
   }
 
  public:
-  TestAudioPlayer(Tab *tab)
-      : Member(tab, 0), startTime(0), a(nullptr), step(0) {}
+  TestAudioPlayer(GLWin *w) : Member(w, 0), startTime(0), a(nullptr), step(0) {}
 
   // required to ensure that the memory of the audio player is freed
   ~TestAudioPlayer() { delete a; }
@@ -136,6 +135,4 @@ class TestAudioPlayer : public Member {
   }
 };
 
-void grailmain(int argc, char *argv[], GLWin *w, Tab *defaultTab) {
-  new TestAudioPlayer(defaultTab);
-}
+void grailmain(int argc, char *argv[], GLWin *w) { new TestAudioPlayer(w); }
