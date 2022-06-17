@@ -10,7 +10,7 @@ class NetworkedButton : public Member {
 
  public:
   NetworkedButton(GLWin* w)
-      : Member(w), button(c, 0, 0, 100, 100, "", "click!") {
+      : Member(w), button(c, w->getDefaultStyle(),0, 0, 100, 100, "", "click!") {
     button.setAction(
         bind(&GLWin::goToLink, tab->getParentWin(), "127.0.0.1", 8060, 0));
   }

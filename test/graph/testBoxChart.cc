@@ -7,7 +7,7 @@ using namespace grail;
 
 class TestBoxChart : public GraphStyle {
  public:
-  TestBoxChart(GLWin* w) : GraphStyle(w, "TIMES", 20, 12) {
+  TestBoxChart(GLWin* w) : GraphStyle(w, "TIMES", 20, 12, "Box Chart") {
     MainCanvas* c = tab->getMainCanvas();
 
     vector<double> data = {150, 350, 222, 100, 300,  //

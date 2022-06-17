@@ -15,7 +15,7 @@ class TestGapMinderWidget : public GraphStyle {
   GapMinderWidget* chart;
 
  public:
-  TestGapMinderWidget(GLWin* w) : GraphStyle(w, "TIMES", 24, 12) {
+  TestGapMinderWidget(GLWin* w) : GraphStyle(w, "TIMES", 24, 12, "Gapninder graph") {
     MainCanvas* c = tab->getMainCanvas();
     const Style* s =
         new Style("TIMES", 24, 1, 0, 0, 0,  // black background (unused)
