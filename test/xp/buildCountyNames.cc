@@ -119,7 +119,6 @@ void buildMapDict(const char filename[]) {
         ENT_STATE, FEAT_STATE, stateNum));
     }
   }
-  //TODO: crashes and doesnt write to a file anymore
   mapDict.writeFile("res/maps/uscounties.bdl");
   DBFClose(dbf);
 }

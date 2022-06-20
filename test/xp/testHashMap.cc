@@ -183,6 +183,8 @@ void fastLoad() {
 
 void benchmarkEverything(const char filename[]) {
   // to warm up
+  // same as loadAsciiDictionary(const char filename[])
+  // but we don't call it because we need to create dict and keep it
   uint32_t count = 0;
   uint32_t length;
   char* f;

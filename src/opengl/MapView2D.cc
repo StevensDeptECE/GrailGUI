@@ -44,6 +44,7 @@ void MapView2D::init() {
   delete[] lineIndices;
 
   const Font* f = mt->getStyle()->f;
+  #if 0
   const BlockMapLoader::Region* regions = bml->getRegions();
   // TODO: need to implement to get states
   //const BlockMapLoader::RegionContainer* regionContainer = bml->getRegionContainer();
@@ -58,6 +59,8 @@ void MapView2D::init() {
       mt->addCentered(x, y, f, name, len);
     }
   }
+  #endif
+  mt->addCentered(0,0,f,"testing", 7);
 }
 
 void debug(const glm::mat4& m, float x, float y, float z) {
