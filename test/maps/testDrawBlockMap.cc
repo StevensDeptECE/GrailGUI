@@ -100,5 +100,5 @@ class TestDrawBlockMap : public Member {
 };
 
 void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
-  new TestDrawBlockMap(defaultTab, "res/maps/uscounties.bml", "uscounties.bdl");
+  new TestDrawBlockMap(defaultTab, "res/maps/uscounties.bml", "res/maps/uscounties.bdl");
 }

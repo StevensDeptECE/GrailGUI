@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include "util/Prefs.hh"
 
 class Camera {
  private:
@@ -84,12 +85,14 @@ class Camera {
     // << std::endl;
     glm::mat4 temp = projection * view;
     // std::cout << std::string glm::to_string(temp) << std::endl;
-    std::cout << "-------------------" << std::endl;
-    for (int i = 0; i < temp.length(); i++) {
-      std::cout << "column " << i << ": " << temp[i].x << ", " << temp[i].y
-                << ", " << temp[i].z << std::endl;
+    if(prefs.shouldDisplay(LogLevel::ALL)){
+      std::cout << "-------------------" << std::endl;
+      for (int i = 0; i < temp.length(); i++) {
+        std::cout << "column " << i << ": " << temp[i].x << ", " << temp[i].y
+                  << ", " << temp[i].z << std::endl;
+      }
+      std::cout << "-------------------" << std::endl;
     }
-    std::cout << "-------------------" << std::endl;
     return temp;
   }
 };

@@ -120,7 +120,7 @@ void buildMapDict(const char filename[]) {
     }
   }
   //TODO: crashes and doesnt write to a file anymore
-  mapDict.writeFile("uscountiestest.bdl");
+  mapDict.writeFile("res/maps/uscounties.bdl");
   DBFClose(dbf);
 }
 

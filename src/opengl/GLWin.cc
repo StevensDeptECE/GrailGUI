@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "util/Benchmark.hh"
 #include "util/Ex.hh"
 
 // glad seems "unhappy" if you include it after glfw. Why?
@@ -36,6 +37,7 @@
 #include "xdl/XDLCompiler.hh"
 #include "xdl/std.hh"
 using namespace std;
+using namespace grail::utils;
 string GLWin::baseDir;
 
 unordered_map<GLFWwindow *, GLWin *> GLWin::winMap;
@@ -231,7 +233,9 @@ void GLWin::startWindow() {
   // TODO: is there any more elegant way?
   if (!hasBeenInitialized) {
     baseDir = prefs.getBaseDir();
-    FontFace::initAll();
+    CBenchmark<>::benchOnce("Grail load fonts", prefs.shouldDisplay(LogLevel::INFO),
+    []() { FontFace::initAll(); }
+    );
   }
   defaultFont = (Font *)FontFace::get("TIMES", 40, FontFace::BOLD);
   Font *bigFont = (Font *)FontFace::get("TIMES", 20, FontFace::BOLD);
@@ -251,7 +255,7 @@ void GLWin::startWindow() {
   current = 0;
   hasBeenInitialized = true;
 }
-void GLWin::baseInit() {
+void GLWin::shaderInit() {
   glLineWidth(1);
   Shader::setDir(prefs.getShaderDir());
   Shader::load("solid.bin", "common.vert", "common.frag");  // Solid Color
@@ -264,14 +268,11 @@ void GLWin::baseInit() {
                "common.frag");  // Texture for images
   Shader::load("multiText.bin", "MultiTexture.vert",
                "MultiTexture.frag");  // MultiTexture for shapes
+  // Shader::load("heatmap.bin", "heatmap.vert", "heatmap.frag");
 #if 0
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback(messageCallback, 0);
 #endif
-
-  for (int i = 0; i < tabs.size(); ++i) {
-    tabs[i]->init();
-  }
 }
 
 int GLWin::init(GLWin *g, uint32_t w, uint32_t h, uint32_t exitAfter) {
@@ -328,8 +329,21 @@ GLWin::~GLWin() {
 
 void GLWin::mainLoop() {
   needsRender = true;
-  init();      // call the child class method to set up
-  baseInit();  // call grails initialization for shaders
+  CBenchmark<>::benchOnce("Grail GLWin init",
+                          prefs.shouldDisplay(LogLevel::INFO), [this]() {
+                            init(); /* call the child class method to set up */
+                          });
+  CBenchmark<>::benchOnce(
+      "Grail GLWin shaders", prefs.shouldDisplay(LogLevel::INFO), [this]() {
+        shaderInit(); /* call grails initialization for shaders */
+      });
+
+  CBenchmark<>::benchOnce("Grail init tabs",
+                          prefs.shouldDisplay(LogLevel::INFO), [this]() {
+                            for (auto i = 0; i < tabs.size(); i++) {
+                              tabs[i]->init();
+                            }
+                          });
 
   float lastFrame = 0;
 
@@ -354,8 +368,11 @@ void GLWin::mainLoop() {
       if (frameCount >= 150) {
         double endTime = glfwGetTime();
         double elapsed = endTime - startTime;
-        cerr << "Elapsed=" << elapsed << " FPS= " << frameCount / elapsed
-             << " render=" << renderTime << '\n';
+        if (prefs.shouldDisplay(LogLevel::INFO)) {
+          cerr << "Elapsed=" << elapsed << " FPS= " << frameCount / elapsed
+               << " render=" << renderTime << '\n';
+        }
+
         frameCount = 0;
         renderTime = 0;
         startTime = endTime;

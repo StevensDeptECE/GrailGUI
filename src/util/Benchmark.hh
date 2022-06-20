@@ -8,6 +8,7 @@
 #include <functional>
 #include <iostream>
 
+#include "util/Prefs.hh"
 #include "util/Ex.hh"
 
 namespace grail {
@@ -49,11 +50,24 @@ class CBenchmark {
   }
 
   auto elapsed() const { return elapsedTime; }
+
+  auto endAndDisplay(auto shouldPrint) {end(); if(shouldPrint){display();}}
+
   void display() const {
     fmt::print("{} elapsed time: {}\n", msg, elapsedTime);
   }
   void displayavg(uint64_t iterations) const {
     fmt::print("{} elapsed time: {}\n", msg, elapsedTime / iterations);
+  }
+
+  template <typename Func>
+  static void benchOnce(const std::string_view msg, bool doesPrint,  Func func) {
+    CBenchmark<Ratio> b(msg);
+    b.start();
+    func();
+    b.end();
+    if(doesPrint)
+      b.display();
   }
 
   template <typename Func>
