@@ -69,7 +69,7 @@ class MapView2D : public Shape {
   MapView2D& operator= (const MapView2D& orig) = delete;
   glm::mat4& getTransform() { return transform; }
   void init() override;
-  void render() override;
+  void render(glm::mat4& trans) override;
   void update() override;
   void dump();
 };

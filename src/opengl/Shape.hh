@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <vector>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 #if 0
 namespace std {
@@ -64,5 +66,5 @@ class Shape {
   // overhaul in the meantime, I just made the parent implement a default nop
   virtual void process_input(Inputs* in, float dt) {}
   virtual void update() = 0;
-  virtual void render() = 0;
+  virtual void render(glm::mat4& trans) = 0;
 };

@@ -11,7 +11,9 @@ using namespace grail;
 class TestDrawBlockMap : public Member {
  private:
   const char* filename;
-  MapView2D* mv;
+  // both these components must be fed the same coordinates
+  MapView2D* mv; // map view  displays the map lines and filled regions
+  MultiText* mt; // multi text displays the text labels on top of the map
 
  public:
   TestDrawBlockMap(Tab* tab, const char bmlfile[], const char bdlfile[])
@@ -19,6 +21,7 @@ class TestDrawBlockMap : public Member {
         filename(filename),
         mv(nullptr) {
     MainCanvas* c = tab->getMainCanvas();
+    c->setOrthoProjection(-180, 180, 0, 90);
     //    const Style* s = tab->getDefaultStyle();
     Style* s2 = new Style(tab->getDefaultFont(), grail::white, grail::black);
     //    c->addClickableWidget(
@@ -27,8 +30,7 @@ class TestDrawBlockMap : public Member {
     BLHashMap<MapEntry>* bdl = new BLHashMap<MapEntry>(bdlfile);
     
     // TODO: MultiText is drawing using Map coordinates but with a projection of web coordinates
-    MultiText* mt = new MultiText(c, s2, 12);
-    c->addLayer(mt);
+    MultiText* mt = c->addLayer(new MultiText(c, s2, 12));
     const Font* f = mt->getStyle()->f;
     mt->addCentered(0,0,f,"testing", 7);
 //    mv = c->addLayer(new MapView2D(c, s2, bml, bdl));

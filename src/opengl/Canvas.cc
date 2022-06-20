@@ -28,10 +28,12 @@ void Canvas::cleanup() {
 
 void Canvas::render() {
   // std::cout << projection << std::endl;
-  Shader::useShader(style->getShaderIndex())->setMat4("projection", projection);
+  
+  //TODO: All objects using OpenGL must call Shader::useShader to select.
+  Shader::useShader(style->getShaderIndex())->setMat4("projection", trans);
   glViewport(vpX, w->height - vpH - vpY, vpW, vpH);
 
-  for (uint32_t i = 0; i < layers.size(); i++) layers[i]->render();
+  for (uint32_t i = 0; i < layers.size(); i++) layers[i]->render(trans);
 }
 
 Camera* Canvas::setLookAtProjection(float eyeX, float eyeY, float eyeZ,
@@ -93,10 +95,10 @@ void MainCanvas::init() {
 void MainCanvas::render() {
   Canvas::render();  // call parent's render
   // then render the GUI layer on top of everything
-  gui->render();
-  guiText->render();
-  menu->render();
-  menuText->render();
+  gui->render(trans);
+  guiText->render(trans);
+  menu->render(trans);
+  menuText->render(trans);
 }
 
 void MainCanvas::cleanup() {

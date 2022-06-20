@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
-
+#include <iomanip>
 /*
   wrap a glm::Mat4 and provide all the methods to cleanly transform
   https://open.gl/transformations
@@ -46,8 +46,8 @@ class Transformation {
       0 0 2 0    z    0x+0y+2z
       0 0 0 1    1
     */
-  void scale(float x, float y, float z) {
-    transform = glm::scale(transform, glm::vec3(x, y, z));
+  void scale(float sx, float sy, float sz) {
+    transform = glm::scale(transform, glm::vec3(sx, sy, sz));
   }
   void scale(float s) {
     transform = transform = glm::scale(transform, glm::vec3(s, s, s));
@@ -85,5 +85,28 @@ class Transformation {
              << m[8] << '\t' << m[9] << '\t' << m[10] << '\t' << m[11] << '\n'
              << m[12] << '\t' << m[13] << '\t' << m[14] << '\t' << m[15]
              << '\n';
+  }
+  static void dump(glm::mat4& mat) {
+    // TODO: I suspect we are printing the matrix transposed
+    const float* m = &mat[0][0];
+    std::cerr << std::setprecision(7);
+    for (int i = 0, c = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++, c++)
+        std::cerr << std::setw(14) << m[c];
+      std::cerr << '\n';
+    }
+  }
+
+  static void apply(glm::mat4& m, double x, double y, double z) {
+    std::cerr <<
+     "x'=" << (m[0][0] * x + m[1][0] * y + m[2][0] * z + m[3][0]) <<
+     "\ty'=" << (m[0][1] * x + m[1][1] * y + m[2][1] * z + m[3][1]) <<
+     "\tz'=" << (m[0][2] * x + m[1][2] * y + m[2][2] * z + m[3][2]) << '\n';
+
+    std::cerr <<
+     "x'=" << (m[0][0] * x + m[0][1] * y + m[0][2] * z + m[0][3]) <<
+     "\ty'=" << (m[1][0] * x + m[1][1] * y + m[1][2] * z + m[1][3]) <<
+     "\tz'=" << (m[2][0] * x + m[2][1] * y + m[2][2] * z + m[2][3]) << '\n';
+
   }
 };

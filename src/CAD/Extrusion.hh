@@ -35,6 +35,6 @@ class Extrusion : public Vec3D, public Shape2D {
 
   void extrude();
 
-  void init();
-  void render();
+  void init() override;
+  void render(glm::mat4& trans) override;
 };

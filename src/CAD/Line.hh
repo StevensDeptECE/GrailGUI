@@ -28,8 +28,8 @@ class Line : public Vec3D, public Shape2D {
     points.push_back(stop);
   }
 
-  void init();
-  void render();
+  void init() override;
+  void render(glm::mat4& trans) override;
 
   Vec3D getPoint(double step);
   //  void getPoints();

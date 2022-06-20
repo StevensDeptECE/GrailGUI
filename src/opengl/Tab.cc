@@ -85,9 +85,12 @@ void Tab::cleanup() {
 }
 
 void Tab::render() {
+//TODO: does it make sense to render a member? They normally just assemble components, they don't render anything themselves
+#if 0
   for (int i = 0; i < members.size(); ++i) {
     members[i]->render();
   }
+#endif
 
   for (int i = 0; i < canvases.size(); ++i) {
     canvases[i]->render();

@@ -9,6 +9,7 @@
 #include "opengl/GLWinFonts.hh"
 #include "opengl/Shader.hh"
 #include "opengl/Style.hh"
+#include "opengl/util/Transformation.hh"
 
 using namespace std;
 // todo: fix render to pass everything in the text vert to draw it
@@ -391,14 +392,19 @@ const Style* MultiText::getStyle() { return style; }
 
 void MultiText::update() {}
 
-void MultiText::render() {
+void MultiText::render(glm::mat4& trans) {
   glBindVertexArray(vao);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
 
   Shader* s = Shader::useShader(GLWin::TEXT_SHADER);
   s->setVec4("textColor", style->getFgColor());
-  s->setMat4("projection", *parentCanvas->getProjection() * transform);
+  Transformation::dump(transform);
+  Transformation::apply(transform,-73.9, 40.6,0);
+  glm::mat4 m = *parentCanvas->getProjection() * transform;
+  Transformation::dump(m);
+  Transformation::apply(m, -73.9, 40.6,0);
+  s->setMat4("projection", m);
   s->setInt("ourTexture", 0);
 
   // glPushAttrib(GL_CURRENT_BIT);

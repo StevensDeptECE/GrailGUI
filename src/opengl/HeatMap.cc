@@ -54,7 +54,7 @@ void HeatMap::init() {
   // Desctribe how information is recieved in shaders
   // no indices for now.  Not the most efficient way to do this.... gen(sbo,
   // indices);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+  //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 #if 0
   //Create LBO

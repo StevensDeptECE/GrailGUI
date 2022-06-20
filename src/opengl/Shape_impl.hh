@@ -21,16 +21,16 @@ inline void Shape::gen(uint32_t& vb, std::vector<T>& list) {
 template <typename T>
 inline void Shape::gen(uint32_t& vb, std::vector<T>& list, uint32_t stride,   uint32_t shaderParam, uint32_t numElements, uint32_t offset) {
   get(vb, list);
-	glVertexAttribPointer(shaderParam, numElements, GL_FLOAT, GL_FALSE, stride, offset);
+	glVertexAttribPointer(shaderParam, numElements, GL_FLOAT, GL_FALSE, stride, (void*)offset);
 }
 
 
 // generic function to generate a vertex buffer and set up two vertex attrib pointers
 template <typename T>
 inline void Shape::gen(uint32_t& vb, std::vector<T>& list, uint32_t stride,
-                       uint32_t shaderParam1, uint32_t numElements1, uint32_t offset1,
+                       uint32_t shaderParam1, uint32_t numElements1,  uint32_t offset1,
                        uint32_t shaderParam2, uint32_t numElements2, uint32_t offset2) {
   get(vb, list);
-	glVertexAttribPointer(shaderParam1, numElements1, GL_FLOAT, GL_FALSE, stride, offset1);
-	glVertexAttribPointer(shaderParam2, numElements2, GL_FLOAT, GL_FALSE, stride, offset2);
+	glVertexAttribPointer(shaderParam1, numElements1, GL_FLOAT, GL_FALSE, stride, (void*)offset1);
+	glVertexAttribPointer(shaderParam2, numElements2, GL_FLOAT, GL_FALSE, stride, (void*)offset2);
 }

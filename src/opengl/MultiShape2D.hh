@@ -47,7 +47,7 @@ class MultiShape2D : public MultiShape {
 
   // override Shape methods to draw us
   void init() override;
-  void render() override;
+  void render(glm::mat4& trans) override;
 
   // Solid Primitives
   void fillRectangle(float x, float y, float w, float h);

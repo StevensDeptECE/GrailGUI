@@ -79,7 +79,7 @@ class MultiShape3D : public MultiShape {
                      pointIndCount, colorIndCount) {}
 
   void init() override;
-  void render() override;
+  void render(glm::mat4& trans) override;
 
   // Experimental, trying to send less than 36 vertices to gpu
   void genFastRectPrism(float x, float y, float z, uint32_t width,

@@ -7,6 +7,7 @@
 #include "opengl/GLWin.hh"
 #include "opengl/Shape.hh"
 #include "util/DynArray.hh"
+#include "opengl/util/Transformation.hh"
 
 class Camera;
 class Style;
@@ -18,9 +19,8 @@ class Canvas {
   DynArray<Shape*> layers;
   uint32_t vpX, vpY, vpW, vpH;  // viewport
   uint32_t pX, pY;              // projection
-  glm::mat4 projection;         // the projection currently used
-  glm::mat4
-      originalProjection;  // keep safe so you can reset to the original view
+  glm::mat4 trans;              // the projection currently used
+  glm::mat4 originalTrans;  // keep safe so you can reset to the original view
   const Style* style;
   Camera* cam;
 
@@ -45,9 +45,9 @@ class Canvas {
         pX(pX),
         pY(pY),
         cam(nullptr) {
-    projection =
+    trans =
         glm::ortho(0.0f, static_cast<float>(pX), static_cast<float>(pY), 0.0f);
-    originalProjection = projection;
+    originalTrans = trans;
     //    projection = glm::scale(projection, glm::vec3(16, -16, 1));
     //    projection = glm::translate(projection, glm::vec3(180, -90, 0));
     // calling glm::ortho..., show init and render, works with z=0 and not with
@@ -60,18 +60,18 @@ class Canvas {
   uint32_t getHeight() const { return vpH; }
   GLWin* getWin() const { return w; };
   Tab* getTab() const { return tab; }
-  glm::mat4* getProjection() { return &projection; }
+  glm::mat4* getProjection() { return &trans; }
   Camera* getCamera() { return cam; }
-  void setProjection(const glm::mat4& proj) { projection = proj; }
+  void setProjection(const glm::mat4& t) { trans = t; }
 
   void setOrthoProjection(float xLeft, float xRight, float yBottom,
                           float yTop) {
-    projection = glm::ortho(xLeft, xRight, yBottom, yTop);
+    trans = glm::ortho(xLeft, xRight, yBottom, yTop);
   }
   Camera* setLookAtProjection(float eyeX, float eyeY, float eyeZ, float lookAtX,
                               float lookAtY, float lookAtZ, float upX,
                               float upY, float upZ);
-  void resetProjection() { projection = originalProjection; }
+  void resetProjection() { trans = originalTrans; }
 
   // Add layer pointer and return its index
   template <typename S>

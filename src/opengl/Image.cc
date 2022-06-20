@@ -117,7 +117,7 @@ void Image::init() {
                         (void*)(2 * sizeof(float)));
 }
 
-void Image::render() {
+void Image::render(glm::mat4& trans) {
   glBindVertexArray(vao);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);

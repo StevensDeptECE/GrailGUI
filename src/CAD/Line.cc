@@ -52,7 +52,7 @@ void Line::init() {
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 }
 
-void Line::render() {
+void Line::render(glm::mat4& trans) {
   Shader* shader = Shader::useShader(GLWin::COMMON_SHADER);
   shader->setMat4("projection", *(parentCanvas->getProjection()));
   shader->setVec4("solidColor", style->getFgColor());

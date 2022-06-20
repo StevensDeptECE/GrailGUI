@@ -65,6 +65,7 @@ add_grail_executable(SRC xp/testfmt.cc LIBS grail)
 add_grail_executable(SRC xp/testMultiTab.cc LIBS grail)
 add_grail_executable(SRC xp/testHashMap.cc LIBS grail)
 add_grail_executable(SRC xp/buildCountyNames.cc LIBS grail)
+add_grail_executable(SRC xp/testCompileMapView.cc LIBS grail)
 
 # Unsorted 
 # add_grail_executable(SRC ../src/xp/decompressBlockLoader.cc LIBS grail lzma)

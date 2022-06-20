@@ -75,17 +75,17 @@ class Image : public Shape {
    * @brief OpenGL setup that will be called by GLWin.
    *
    */
-  void init();
+  void init() override;
 
   /**
    * @brief Artifact of subclassing from Shape, this is not used.
    *
    */
-  void update() {}
+  void update() override {}
 
   /**
    * @brief Renders the image, this will be called by GLWin.
    *
    */
-  void render();
+  void render(glm::mat4& trans) override;
 };
