@@ -11,7 +11,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
-#include FT_STROKER_H
+//#include FT_STROKER_H
+#include FT_IMAGE_H  //TODO: Added for getting outline points, might not be needed in GLWinFOnts if separated into different class
 
 #include <algorithm>
 #include <cstdio>
@@ -71,7 +72,10 @@ Font::Font(FontFace* face, FT_Face ftFace, uint16_t height, uint8_t bitmap[],
      placeholder rectangle for characters not supported by the font
   */
   const uint32_t startGlyph = 0;
-  const uint32_t endGlyph = 200;
+  const uint32_t endGlyph =
+      1000;  // endGlyph determines how many glyphs are rendered, by default it
+             // is 200, but for this demo it was changed to 1000. When we
+             // separate out thsi code, it should be set back to 200.
   unordered_map<uint32_t, uint32_t> glyphMap;
   maxWidth = 0;
   spaceWidth = height / 2;
@@ -79,15 +83,6 @@ Font::Font(FontFace* face, FT_Face ftFace, uint16_t height, uint8_t bitmap[],
     addGlyph(ftFace, glyphMap, c, bitmap, sizeX, sizeY, currX, currY, rowSize);
   }
 }
-
-// Example draw loop?
-// void asjdlfjasjf() {
-//   for (uint32_t i = 0; i < 1000; i++) {
-//     if (isprint(i%200)){
-//       drawPolyLines(v[i].points?)
-//     }
-//   }
-// }
 
 Font::~Font() {}
 
@@ -127,9 +122,17 @@ void Font::addGlyph(FT_Face ftFace, unordered_map<uint32_t, uint32_t>& glyphMap,
 
     // if (FT_Render_Glyph(ftFace->glyph, FT_RENDER_MODE_NORMAL)) {
     // std::cerr << "ERROR::FREETYPE: Failed to Render Glyph" << std::endl;
-    FT_Stroker_ParseOutline(parentFace->stroker, &(ftFace->glyph->outline),
-                            false);
-    glyphOutlines FT_Glyph glyph;
+    FT_Glyph glyph;
+    FT_Vector* points = ftFace->glyph->outline.points;
+    // store the outline points. TODO: Move this code so GLWin
+    // fonts can render bitmap fonts separately
+    std::vector<float> pointStorage;
+    for (uint32_t i = 0; i < ftFace->glyph->outline.n_points; i++) {
+      pointStorage.push_back(points->x);
+      pointStorage.push_back(points->y);
+      points++;
+    }
+    Font::addOutlinePoints(c, pointStorage);
     if (FT_Get_Glyph(ftFace->glyph, &glyph)) {
       std::cerr << "ERROR::FREETYPE: Failed to get glyph" << std::endl;
       glyphs.push_back(Glyph(maxWidth, 0, 0, 0, 0, 0.0, 0.0, 1.0, 1.0));
@@ -221,7 +224,6 @@ FontFace::FontFace(FT_Library ft, const string& faceName,
     cerr << "Failed to load font: " << facePath << '\n';
     return;  // TODO: throw
   }
-  FT_Stroker_New(ft, &stroker);
   pathByName[faceName] = facePath;
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   for (uint32_t fontSize = minFontSize, i = 0; fontSize <= maxFontSize;

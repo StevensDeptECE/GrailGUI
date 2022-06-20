@@ -1,13 +1,13 @@
 #pragma once
 
-// #include <ft2build.h>
+//#include <ft2build.h>
 
 #include <glm/glm.hpp>
 #include <iostream>
 #include <string>
 #include <unordered_map>
 #include <vector>
-// #include FT_FREETYPE_H
+//#include FT_FREETYPE_H
 // #include FT_GLYPH_H
 
 class GLWin;
@@ -15,6 +15,7 @@ class Font;
 typedef struct FT_LibraryRec_* FT_Library;
 typedef struct FT_FaceRec_* FT_Face;
 typedef struct FT_StrokerRec_* FT_Stroker;
+// typedef struct FT_Vector_* FT_Vector;
 
 class FontFace {
  private:
@@ -111,6 +112,9 @@ class Font {
   };
 
  private:
+  std::unordered_map<uint8_t, std::vector<float>>
+      outlinePoints;  // Used to store the points used to draw the outline of a
+                      // glyph.
   FontFace* parentFace;
   // TODO:uint32_t parentFace;   // offset of parent into the static fontface
   // table for ease of serialization to disk
@@ -132,6 +136,12 @@ class Font {
   ~Font();
 
   uint32_t getStartGlyph() const { return startGlyph; }
+  std::unordered_map<uint8_t, std::vector<float>> getOutlinePoints() const {
+    return outlinePoints;
+  }
+  void addOutlinePoints(uint8_t name, std::vector<float> addChar) {
+    outlinePoints.insert(std::make_pair(name, addChar));
+  }
   void addGlyph(FT_Face ftFace,
                 std::unordered_map<uint32_t, uint32_t>& glyphMap, uint8_t c,
                 uint8_t bitmap[], uint32_t& sizeX, uint32_t& sizeY,
