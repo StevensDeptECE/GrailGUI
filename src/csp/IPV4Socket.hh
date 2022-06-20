@@ -31,7 +31,8 @@ class IPV4Socket : public Socket {
   void listenOnPort();
   //	void send(const char data[], size_t bytes);
   //	size_t receive(char data[], size_t bytes);
-  void wait();
+  void wait() override;
+  void connect() override;
   void send(const char* command);  // For HTTP
   void send(uint32_t reqn);        // For CSP
   static int send(socket_t sckt, const char* buf, int size, int flags);

@@ -91,7 +91,7 @@ class Point : public CompoundType {
   }
 };
 
-XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
+XDLRequest::XDLRequest(Socket* sckt,const char filename[]) : Request(sckt), xdlData(3) {
   // buildData(xdlData, Point(1, 2, 3));
 
   // Create list later
@@ -115,7 +115,7 @@ XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
   // 4bach
   //
   Struct* s = new Struct(compiler);  // name encoded as 0""
-  s->addMember("x", new U32(1));
+  s->addMember("x", new U32(1)); 
   s->addMember("y", new U64(2));
   Struct* s2 = new Struct(compiler, "Point");
   s2->addMember("x", new F32(1.5));
@@ -165,6 +165,7 @@ XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
 
   // load page 1
   addPage("res/aapl.bin");
+  sckt->attach(this); 
   //  List<StockQuote> quotes;
 
   //  out.write(quote);
@@ -203,9 +204,18 @@ XDLRequest::XDLRequest(const char filename[]) : Request(), xdlData(3) {
 #endif
 }
 
-XDLRequest::XDLRequest(const XDLType* xdl) : xdlData(1) { xdlData.add(xdl); }
+XDLRequest::XDLRequest(Socket* sckt) : Request(sckt), xdlData(1),compiler(null) {}
+
+void XDLRequest::connect() const {sckt->connect();}
+
+
+XDLRequest::XDLRequest(Socket* sckt, const XDLType* xdl) : Request(sckt), xdlData(1) { xdlData.add(xdl);
+  sckt->attach(this);
+}
 
 void XDLRequest::handle(int fd) {
+  auto& in = sckt->getIn();
+  auto& out = sckt->getOut();
   cout << "handling XDL request" << endl;
   out.attachWrite(fd);
   in.attachRead(fd);

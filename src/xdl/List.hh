@@ -126,7 +126,7 @@ class List : public CompoundType {
     out.write(uint32_t(0)); //TODO: local data object should know where the connection is, and know what page to send to
     out.write(getTypeName()); //  4 A A P L
     out.flush(); 
-    uint32_t len = in._readU16();
+    uint32_t len = in.readU16();
     T val;
     for (uint32_t i = 0; i < len; i++) {
       val.read(in);

@@ -41,11 +41,6 @@ class Socket {
  public:
   Socket(const char* addr, uint16_t port);
 
-  // TODO: simplify
-  // below two constructors could be merged depends on the location of variable
-  // "req" Constructor for CSP server
-  Socket(uint16_t port, Request* req);
-
   Socket(uint16_t port);  // Constructor for server (addres not specified)
   ~Socket();
 
@@ -60,4 +55,5 @@ class Socket {
     out.setFD(fd);
   }
   virtual void wait() = 0;
+  virtual void connect() = 0;
 };

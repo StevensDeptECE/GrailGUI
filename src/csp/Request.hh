@@ -8,6 +8,7 @@
  */
 #include <cstdlib>
 #include <string>
+#include "csp/Socket.hh"
 
 #include "util/Buffer.hh"
 
@@ -17,13 +18,13 @@ constexpr size_t BUFSIZE = 1500 * 30;
 // Buffer &in, Buffer &out)
 class Request {
  protected:
-  Buffer in, out;
+ Socket* sckt; // Socket used to send and receive requests
 
  public:
-  Request() : in(BUFSIZE, false), out(BUFSIZE, true) {}
+  Request(Socket* sckt) : sckt(sckt) {}
   virtual ~Request() = 0;
   virtual void handle(int sckt) = 0;
   virtual void handle(int sckt, const char* command) = 0;
-  Buffer& getOut() { return out; }
-  Buffer& getIn() { return in; }
+  Buffer& getOut()  { return sckt->getOut(); }
+  Buffer& getIn()  { return sckt->getIn(); }
 };

@@ -22,8 +22,7 @@ int main(int argc, char* argv[]) {
     GLWin::classInit();
     List<Quote>* quotes = Quote::loadASCII("AAPL", "res/aapl.txt");
     IPV4Socket s(port);
-    XDLRequest req(quotes);
-    s.attach(&req);
+    XDLRequest req(&s, quotes);
     s.wait();  // main server wait loop
     cerr << "Read " << quotes->size() << "delta stock quotes from server\n";
   } catch (const Ex& e) {

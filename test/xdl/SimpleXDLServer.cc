@@ -18,8 +18,7 @@ int main(int argc, char* argv[]) {
   GLWin::classInit();
   try {
     IPV4Socket s(port);
-    XDLRequest req("conf/test1.xdl");
-    s.attach(&req);
+    XDLRequest req(&s,"conf/test1.xdl");
     s.wait();  // main server wait loop
   } catch (const Ex& e) {
     cerr << e << '\n';

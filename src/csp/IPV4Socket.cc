@@ -73,26 +73,10 @@ IPV4Socket::IPV4Socket(uint16_t port) : Socket(port) {
 
 // Constructor for csp/http client
 IPV4Socket::IPV4Socket(const char *addr, uint16_t port) : Socket(addr, port) {
-  struct hostent *server;
   testResult(sckt = socket(AF_INET, SOCK_STREAM, 0), __FILE__, __LINE__,
              Errcode::SOCKET);
   setBufFD(sckt);
-  server = gethostbyname(address);
-
-  if (server == nullptr) {
-    throw Ex(__FILE__, __LINE__, Errcode::SERVER_INVALID);
-  }
-
-  sockaddr_in *sockAddr = (sockaddr_in *)sockaddress;
-  sockAddr->sin_family = AF_INET;
-  //    bcopy((char *)server->h_addr, (char *)&sockaddress.sin_addr.s_addr,
-  //    server->h_length);
-  sockAddr->sin_addr.s_addr = inet_addr(address);
-  sockAddr->sin_port = htons(port);
-
-  if (connect(sckt, (struct sockaddr *)sockaddress, sizeof(sockaddr_in)) < 0) {
-    throw Ex(__FILE__, __LINE__, Errcode::CONNECTION_FAILURE);
-  }
+  connect();
 }
 
 // Server side
@@ -120,6 +104,25 @@ void IPV4Socket::wait() {
     } else {
       throw Ex(__FILE__, __LINE__, Errcode::CONNECTION_FAILURE);
     }
+  }
+}
+
+void IPV4Socket::connect() {
+  struct hostent * server = gethostbyname(address);
+
+  if (server == nullptr) {
+    throw Ex(__FILE__, __LINE__, Errcode::SERVER_INVALID);
+  }
+
+  sockaddr_in *sockAddr = (sockaddr_in *)sockaddress;
+  sockAddr->sin_family = AF_INET;
+  //    bcopy((char *)server->h_addr, (char *)&sockaddress.sin_addr.s_addr,
+  //    server->h_length);
+  sockAddr->sin_addr.s_addr = inet_addr(address);
+  sockAddr->sin_port = htons(port);
+
+  if (::connect(sckt, (struct sockaddr *)sockaddress, sizeof(sockaddr_in)) < 0) {
+    throw Ex(__FILE__, __LINE__, Errcode::CONNECTION_FAILURE);
   }
 }
 #endif
