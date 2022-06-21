@@ -1201,6 +1201,8 @@ class Calendar : public CompoundType {
   void addMeta(ArrayOfBytes* meta) const override;
   void writeXDL(Buffer& buf) const override;
   void writeXDLMeta(Buffer& buf) const override;
+  XDLType* begin(Buffer& buf) override;
+  DataType getDataType() const override{return DataType::STRUCT8; }
 };
 
 /**

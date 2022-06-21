@@ -18,7 +18,7 @@ class TestDrawBlockMap : public Member {
  public:
   TestDrawBlockMap(Tab* tab, const char bmlfile[], const char bdlfile[])
       : Member(tab),  // GLWin(0x000000, 0xCCCCCC, "Block Loader: Map Demo"),
-        filename(filename),
+        filename(bmlfile),
         mv(nullptr) {
     MainCanvas* c = tab->getMainCanvas();
     c->setOrthoProjection(-180, 180, 0, 90);
@@ -30,10 +30,10 @@ class TestDrawBlockMap : public Member {
     BLHashMap<MapEntry>* bdl = new BLHashMap<MapEntry>(bdlfile);
     
     // TODO: MultiText is drawing using Map coordinates but with a projection of web coordinates
-    MultiText* mt = c->addLayer(new MultiText(c, s2, 12));
+    mt = c->addLayer(new MultiText(c, s2, 12));
     const Font* f = mt->getStyle()->f;
     mt->addCentered(0,0,f,"testing", 7);
-//    mv = c->addLayer(new MapView2D(c, s2, bml, bdl));
+    mv = c->addLayer(new MapView2D(c, s2, bml, bdl));
 
     cout << "num points loaded: " << bml->getNumPoints() << '\n';
 
