@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
     Buffer& in = s.getIn(); // TODO: do we have to get a new input buffer every time?
     for (uint32_t trials = 0; trials < roundTrips; trials++) {
       quotes->getUpdate(out, in);
-      req.connect();
+      //req.connect();
 
       //      quotes.addToUpdateRequest(); // add to current update but don't
       //      send it out, batch together with others calendar.getUpdate();

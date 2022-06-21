@@ -15,7 +15,7 @@ using namespace std;
 int main(int argc, char* argv[]) {
   // server runs on this ip (not specified)
   // specifies port number
-  int port = argc > 1 ? atoi(argv[2]) : 8060;
+  int port = argc > 1 ? atoi(argv[1]) : 8060;
   // client specifies symbol name and perhaps later, we can accept that as a parameter. Right now we are hardcoded to AAPL
   const char* symbolName = "AAPL";
   try {

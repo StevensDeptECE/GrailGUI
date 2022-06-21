@@ -204,7 +204,7 @@ XDLRequest::XDLRequest(Socket* sckt,const char filename[]) : Request(sckt), xdlD
 #endif
 }
 
-XDLRequest::XDLRequest(Socket* sckt) : Request(sckt), xdlData(1),compiler(null) {}
+XDLRequest::XDLRequest(Socket* sckt) : Request(sckt), xdlData(1),compiler(nullptr) {}
 
 void XDLRequest::connect() const {sckt->connect();}
 
@@ -242,7 +242,8 @@ void XDLRequest::handle(int fd) {
 }
 
 XDLRequest::~XDLRequest() {
-  delete compiler;
+  if(compiler)
+    delete compiler;
   for (int i = 0; i < xdlData.size(); i++) {
     delete xdlData[i];
   }

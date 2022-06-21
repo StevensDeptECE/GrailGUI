@@ -122,7 +122,7 @@ void IPV4Socket::connect() {
   sockAddr->sin_port = htons(port);
 
   if (::connect(sckt, (struct sockaddr *)sockaddress, sizeof(sockaddr_in)) < 0) {
-    throw Ex(__FILE__, __LINE__, Errcode::CONNECTION_FAILURE);
+    throw Ex2(Errcode::CONNECTION_FAILURE,strerror(errno));
   }
 }
 #endif
