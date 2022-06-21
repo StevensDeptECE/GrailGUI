@@ -6,16 +6,27 @@
 #include "opengl/Style.hh"
 #include "util/BLHashMap.hh"
 
-MapViewer::MapViewer(const Style* s, BlockMapLoader* bml = nullptr,
-                     BLHashMap<MapEntry>* bdl = nullptr)
-    : Canvas(s, ),
-    mv(new MapView2D(this, s, bml, bdl)), mt(new MultiText(this, s, 12)) {
-  addLayer(mv);  // add the MapView2D to this map
-  addLayer(mt);  // add the text to this map (on top of the MapView2D)
-//    this->centerX = -74, this->centerY = 40;
-//    this->scaleX = 70 / 2, this->scaleY = 70 / 2;
+MapViewer::MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint32_t vpY,
+         uint32_t vpW, uint32_t vpH,
+         uint32_t pX, uint32_t pY,
+         BlockMapLoader* bml, BLHashMap<MapEntry>* bdl)
+    : Canvas(w, tab, style, vpX, vpY, vpW, vpH, pX, pY) {
 
-  setView();     // set the projection and call for a redraw
+    // NOTE: mt MUST be created first becuase mv needs it
+    mt = new MultiText(this, style, 12);
+
+    mv = new MapView2D(this, style, mt, bml, bdl);
+    // MapView2D automatically sets bounds on this object (the MapViewer)
+
+    addLayer(mv);  // add the MapView2D to this map FIRST because it is under the text
+    addLayer(mt);  // add the text to this map (on top of the MapView2D)
+    //    this->centerX = -74, this->centerY = 40;
+    //    this->scaleX = 70 / 2, this->scaleY = 70 / 2;
+}
+
+MapViewer::~MapViewer() {
+  delete mv;
+  delete mt;
 }
 
 void MapViewer::setView() {
@@ -41,11 +52,11 @@ void MapViewer::zoomIn(float lat, float lon, float factor) {
   setView();
 }
 void MapViewer::zoomOut(float lat, float lon, float factor) {
-  zoomIn(lat, lon 1/factor); // zoom out by the inverse of zoomIn?
+  zoomIn(lat, lon, 1/factor); // zoom out by the inverse of zoomIn?
   setView();
 }
 
-void MapViewer::pan(float deltaLat, float deltaLon) {
+void MapViewer::translate(float deltaLat, float deltaLon) {
   shiftLat += deltaLat, shiftLon += deltaLon;
   setView();
 }

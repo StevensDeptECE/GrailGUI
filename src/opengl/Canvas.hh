@@ -31,8 +31,7 @@ class Canvas {
                w->getHeight(), w->getWidth(), w->getHeight()) {}
 
   Canvas(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint32_t vpY,
-         uint32_t vpW, uint32_t vpH, uint32_t pX,
-         uint32_t pY)
+         uint32_t vpW, uint32_t vpH, uint32_t pX, uint32_t pY)
       :  // viewport, projection
         w(w),
         tab(tab),
@@ -53,6 +52,7 @@ class Canvas {
     // calling glm::ortho..., show init and render, works with z=0 and not with
     // z!=0
   }
+  Canvas(GLWin* w, Tab* tab, const Style* style) : Canvas(w, tab, style, vpX, vpY, vpW, vpH, vpW, vpH) {}
   ~Canvas();
   Canvas(const Canvas& orig) = delete;
   Canvas& operator=(const Canvas& orig) = delete;

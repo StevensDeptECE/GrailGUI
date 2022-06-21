@@ -1,9 +1,11 @@
-#include "data/BlockMapLoader2.hh"
-#include "maps/MapNames.hh"
-#include "maps/MapView2D.hh"
-#include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
-#include "opengl/MultiText.hh"
+#include "data/BlockMapLoader2.hh"
+#include "util/BLHashMap.hh"
+#include "maps/MapNames.hh"
+//#include "maps/MapView2D.hh"
+#include "maps/MapViewer.hh"
+//#include "opengl/ButtonWidget.hh"
+//#include "opengl/MultiText.hh"
 
 using namespace std;
 using namespace grail;
@@ -12,15 +14,20 @@ class TestDrawBlockMap : public Member {
  private:
   const char* filename;
   // both these components must be fed the same coordinates
-  MapView2D* mv;  // map view  displays the map lines and filled regions
-  MultiText* mt;  // multi text displays the text labels on top of the map
-
+  //MapView2D* mv;  // map view  displays the map lines and filled regions
+  //MultiText* mt;  // multi text displays the text labels on top of the map
+  MapViewer* viewer;
  public:
   TestDrawBlockMap(Tab* tab, const char bmlfile[], const char bdlfile[])
       : Member(tab),  // GLWin(0x000000, 0xCCCCCC, "Block Loader: Map Demo"),
-        filename(bmlfile),
-        mv(nullptr) {
-    MapViewer* viewer = new MapViewer(getParent(), tab, 0, );
+        filename(bmlfile) {
+          /*GLWin* w, Tab* tab, const Style* style,
+           uint32_t vpX, uint32_t vpY,
+         uint32_t vpW, uint32_t vpH, uint32_t pX,
+         uint32_t pY, BlockMapLoader* bml = nullptr,
+            BLHashMap<MapEntry>* bdl = nullptr
+            */
+    viewer = new MapViewer(getParent(), tab, tab->getDefaultStyle());
     viewer->setOrthoProjection(-180, 180, 0, 90);
     
     MainCanvas* c = tab->getMainCanvas();
@@ -32,15 +39,9 @@ class TestDrawBlockMap : public Member {
     BlockMapLoader* bml = new BlockMapLoader(bmlfile);
     BLHashMap<MapEntry>* bdl = new BLHashMap<MapEntry>(bdlfile);
 
-    // TODO: MultiText is drawing using Map coordinates but with a projection of
-    // web coordinates
-    mt = c->addLayer(new MultiText(c, s2, 12));
-    const Font* f = mt->getStyle()->f;
-    mt->addCentered(50, 100, f, "testing");
-    mv = c->addLayer(new MapView2D(c, s2, bml, bdl));
-
     cout << "num points loaded: " << bml->getNumPoints() << '\n';
-
+//TODO: Alice show us how to clean this up and use lambdas!
+    //tab->bindEvent(Tab::Inputs::WHEELUP, [viewer]() {return (zoomIn(1 / 1.2f));});
     tab->bindEvent(Tab::Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);
     tab->bindEvent(Tab::Inputs::WHEELDOWN, &TestDrawBlockMap::mapZoomOut, this);
     tab->bindEvent(Tab::Inputs::RARROW, &TestDrawBlockMap::mapPanRight, this);
@@ -54,62 +55,64 @@ class TestDrawBlockMap : public Member {
   int numCounties;
   int displayNumCounties;
 
-  ~TestDrawBlockMap() { delete mv; }
+  ~TestDrawBlockMap() { delete viewer; }
   TestDrawBlockMap(const TestDrawBlockMap& orig) = delete;
   TestDrawBlockMap& operator=(const TestDrawBlockMap& orig) = delete;
 
   constexpr static float zoomVal = 1.2;
   void mapZoomIn() {
-    mv->uniformZoom(1 / 1.2f);
-    mv->setProjection();
+    viewer->zoomIn(1 / 1.2f);
   }
 
   void mapZoomOut() {
-    mv->uniformZoom(1.2f);
-    mv->setProjection();
+    viewer->zoomOut(1.2f);
   }
 
   void mapPanRight() {
-    mv->translate(0.2, 0);
-    mv->setProjection();
+    viewer->translate(0.2, 0);
   }
 
   void mapPanLeft() {
-    mv->translate(-0.2, 0);
-    mv->setProjection();
+    viewer->translate(-0.2, 0);
   }
 
   void mapPanUp() {
-    mv->translate(0, 0.2);
-    mv->setProjection();
+    viewer->translate(0, 0.2);
   }
 
   void mapPanDown() {
-    mv->translate(0, -0.2);
-    mv->setProjection();
+    viewer->translate(0, -0.2);
   }
 
   void nextCounty() {
     if (countyStart < numCounties) countyStart++;
+    viewer->setView();
   }
 
   void prevCounty() {
     if (countyStart > 0) countyStart--;
+    viewer->setView();
   }
 
   void displayAllCounties() {
     countyStart = 0;
     displayNumCounties = numCounties;
+    viewer->setView();
   }
 
-  void display3Counties() { displayNumCounties = 3; }
+  void display3Counties() {
+     displayNumCounties = 3;
+     viewer->setView();
+ }
 
   void decreaseCounties() {
     if (displayNumCounties > 0) displayNumCounties--;
+    viewer->setView();
   }
 
   void increaseCounties() {
     if (displayNumCounties < numCounties) displayNumCounties++;
+    viewer->setView();
   }
 };
 

@@ -4,7 +4,25 @@
 #include <iostream>
 
 #include "opengl/Style.hh"
+#include "maps/MapViewer.hh"
+#include "data/BlockMapLoader2.hh"
+#include "util/BLHashMap.hh"
+
 using namespace std;
+
+MapView2D::MapView2D(MapViewer* parent, const Style* s, MultiText* mt,
+ BlockMapLoader* bml, BLHashMap<MapEntry>* bdl)
+      : Shape(parent), style(s), bml(bml), bdl(bdl), mt(mt) {
+    const BoundRect& bounds = bml->getBlockMapHeader()->bounds;
+    parent->setBounds(bounds.xMin, bounds.xMax, bounds.yMin, bounds.yMax);
+        parent->addLayer(mt);
+  }
+
+
+MapView2D::~MapView2D() {
+  delete bml;
+  delete bdl;
+}
 
 void MapView2D::init() {
   uint32_t numPoints = bml->getNumPoints();
@@ -85,7 +103,7 @@ void MapView2D::render(glm::mat4& trans) {
   // debug(transform, 0, 0, 0);
   // debug(t, 100, 0, 0);
   // debug(t, 0, 70, 0);
-  shader->setMat4("projection", transform);
+  shader->setMat4("projection", trans);
 
 #if 0
   // quick debugging rectangle in old immediate mode

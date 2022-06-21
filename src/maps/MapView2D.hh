@@ -2,16 +2,18 @@
 
 #include <glm/glm.hpp>
 
-#include "data/BlockMapLoader2.hh"
-#include "opengl/Canvas.hh"
+//#include "data/BlockMapLoader2.hh"
 #include "opengl/MultiShape2D.hh"
 #include "opengl/MultiText.hh"
 #include "maps/MapNames.hh"
+#include "util/BLHashMap.hh"
 
+class BlockMapLoader;
+class MapViewer;
 class Style;
 class MapView2D : public Shape {
  private:
-  //const Style* style;
+  const Style* style;
   //float centerX, centerY, shiftX, shiftY, scaleX, scaleY;
   //glm::mat4 originalTransform;
   //glm::mat4 transform;
@@ -20,45 +22,14 @@ class MapView2D : public Shape {
   BlockMapLoader* bml;
   BLHashMap<MapEntry>* bdl;
   uint32_t numIndicesToDraw;
-  //MultiText* mt;
+  MultiText* mt;
 
  public:
-  void uniformZoom(float s) { scaleX *= s, scaleY *= s; }
-  MapView2D(Canvas* parent, const Style* s, BlockMapLoader* bml = nullptr, BLHashMap<MapEntry>* bdl = nullptr)
-      : Shape(parent), style(s), bml(bml), bdl(bdl), mt(new MultiText(parent, s, 12)), transform(1.0f) {
-    parent->addLayer(mt);
-    const BoundRect& bounds = bml->getBlockMapHeader()->bounds;
-    float centerX = (bounds.xMin + bounds.xMax) * 0.5;
-    float centerY = (bounds.yMin + bounds.yMax) * 0.5;
-
-#if 0
-    double ySize = parent->getHeight();
-    double xSize = parent->getWidth();
-    shiftX = -bounds.xMin * xSize / (bounds.xMax - bounds.xMin);
-    shiftY = ySize + (bounds.yMin * ySize / (bounds.yMax - bounds.yMin));
-    scaleX = xSize / (bounds.xMax - bounds.xMin);
-    scaleY = -ySize / (bounds.yMax - bounds.yMin);
-    std::cout << "shift: " << shiftX << " " << shiftY << "\n";
-    std::cout << "scale: " << scaleX << " " << scaleY << "\n";
-#endif
-
-#if 0
-    transform = glm::mat4(1.0f);
-    transform = glm::translate(transform, glm::vec3(shiftX, shiftY, 0));
-    transform = glm::scale(transform, glm::vec3(scaleX, scaleY, 0));
-    this->centerX = -74, this->centerY = 40;
-    this->scaleX = 70 / 2, this->scaleY = 70 / 2;
-    setProjection();
-#endif
-  }
-  ~MapView2D() {
-    delete bml;
-    delete bdl;
-    delete mt;
-  }
+  MapView2D(MapViewer* parent, const Style* s, MultiText* mt,
+   BlockMapLoader* bml = nullptr, BLHashMap<MapEntry>* bdl = nullptr);
+  ~MapView2D();
   MapView2D(const MapView2D& orig) = delete;
   MapView2D& operator= (const MapView2D& orig) = delete;
-  glm::mat4& getTransform() { return transform; }
   void init() override;
   void render(glm::mat4& trans) override;
   void update() override;

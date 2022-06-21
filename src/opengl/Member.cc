@@ -24,5 +24,9 @@ void Member::init() {}
 void Member::render() {}
 void Member::update() {}
 
-Tab* Member::getParentTab() { return tab; }
-MainCanvas* Member::getParentCanvas() { return c; }
+Tab* Member::getParentTab() const { return tab; }
+GLWin* Member::getParent() const {
+  return getParentTab() -> parent;
+}
+
+MainCanvas* Member::getParentCanvas() const { return c; }
