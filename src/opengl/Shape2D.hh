@@ -56,6 +56,6 @@ class Shape2D : public Shape {
   virtual void init() override;
   virtual void process_input(Inputs* in, float dt) override {}
   virtual void update() override {}
-  virtual void render(glm::mat4& trans) = 0;
+  virtual void render(glm::mat4& trans) override = 0;
   void initIndices();
 };

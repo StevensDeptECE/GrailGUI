@@ -1,6 +1,6 @@
 #include <iostream>
 #include "util/Benchmark.hh"
-#include "mapNames.hh"
+#include "maps/MapNames.hh"
 
 using namespace std;
 using namespace grail::utils;

@@ -270,6 +270,13 @@ void MultiText::addCentered(float x, float y, const Font* f, const char s[],
   internalAdd(x - textWidth / 2, y - textHeight / 2, f, s, len);
 }
 
+void MultiText::addCentered(float x, float y, const Font* f, std::string_view s) {
+  float textWidth = f->getWidth(s.data(), s.length());
+  float textHeight = f->getHeight();
+
+  internalAdd(x - textWidth / 2, y - textHeight / 2, f, s.data(), s.length());
+}
+
 // horizontally and vertically centered text
 void MultiText::addCentered(float x, float y, float w, float h, const Font* f,
                             const char s[], uint32_t len) {

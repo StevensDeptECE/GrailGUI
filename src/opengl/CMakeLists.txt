@@ -17,7 +17,6 @@ set(grail-opengl
     GLWinFonts.cc
     Image.cc
     LineGraphWidget.cc
-    MapView2D.cc
     Member.cc
     MultiShape.cc
     MultiShape2D.cc

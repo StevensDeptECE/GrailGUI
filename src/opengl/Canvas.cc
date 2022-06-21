@@ -30,7 +30,7 @@ void Canvas::render() {
   // std::cout << projection << std::endl;
   
   //TODO: All objects using OpenGL must call Shader::useShader to select.
-  Shader::useShader(style->getShaderIndex())->setMat4("projection", trans);
+  //Shader::useShader(style->getShaderIndex())->setMat4("projection", trans);
   glViewport(vpX, w->height - vpH - vpY, vpW, vpH);
 
   for (uint32_t i = 0; i < layers.size(); i++) layers[i]->render(trans);

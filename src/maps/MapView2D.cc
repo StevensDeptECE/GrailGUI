@@ -1,4 +1,4 @@
-#include "opengl/MapView2D.hh"
+#include "maps/MapView2D.hh"
 
 #include <iomanip>
 #include <iostream>

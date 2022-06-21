@@ -1,6 +1,6 @@
 #include "opengl/Canvas.hh"
 #include "opengl/Style.hh"
-#include "opengl/MapView2D.hh"
+#include "maps/MapView2D.hh"
 #include "util/BLHashMap.hh"
 
 class BlockMapLoader;

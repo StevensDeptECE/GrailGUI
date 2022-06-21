@@ -16,7 +16,7 @@
     "editor.tabSize": 2,
     "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 0}",
     "editor.formatOnSave": true,
-    "editor.formatOnSaveMode": "modifications",
+    "editor.formatOnSaveMode": "file",
     "files.associations": {
       "*.cpp": "cpp",
       "*.cc": "cpp",

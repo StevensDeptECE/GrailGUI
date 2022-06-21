@@ -1,9 +1,9 @@
 #include "data/BlockMapLoader2.hh"
+#include "maps/MapNames.hh"
+#include "maps/MapView2D.hh"
 #include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
-#include "opengl/MapView2D.hh"
 #include "opengl/MultiText.hh"
-#include "../xp/mapNames.hh"
 
 using namespace std;
 using namespace grail;
@@ -12,14 +12,17 @@ class TestDrawBlockMap : public Member {
  private:
   const char* filename;
   // both these components must be fed the same coordinates
-  MapView2D* mv; // map view  displays the map lines and filled regions
-  MultiText* mt; // multi text displays the text labels on top of the map
+  MapView2D* mv;  // map view  displays the map lines and filled regions
+  MultiText* mt;  // multi text displays the text labels on top of the map
 
  public:
   TestDrawBlockMap(Tab* tab, const char bmlfile[], const char bdlfile[])
       : Member(tab),  // GLWin(0x000000, 0xCCCCCC, "Block Loader: Map Demo"),
         filename(bmlfile),
         mv(nullptr) {
+    MapViewer* viewer = new MapViewer(getParent(), tab, 0, );
+    viewer->setOrthoProjection(-180, 180, 0, 90);
+    
     MainCanvas* c = tab->getMainCanvas();
     c->setOrthoProjection(-180, 180, 0, 90);
     //    const Style* s = tab->getDefaultStyle();
@@ -28,11 +31,12 @@ class TestDrawBlockMap : public Member {
     // new ButtonWidget(c, 0, 0, 200, 100, "Click Me!", "mapZoomIn"));
     BlockMapLoader* bml = new BlockMapLoader(bmlfile);
     BLHashMap<MapEntry>* bdl = new BLHashMap<MapEntry>(bdlfile);
-    
-    // TODO: MultiText is drawing using Map coordinates but with a projection of web coordinates
+
+    // TODO: MultiText is drawing using Map coordinates but with a projection of
+    // web coordinates
     mt = c->addLayer(new MultiText(c, s2, 12));
     const Font* f = mt->getStyle()->f;
-    mt->addCentered(0,0,f,"testing", 7);
+    mt->addCentered(50, 100, f, "testing");
     mv = c->addLayer(new MapView2D(c, s2, bml, bdl));
 
     cout << "num points loaded: " << bml->getNumPoints() << '\n';
@@ -110,5 +114,6 @@ class TestDrawBlockMap : public Member {
 };
 
 void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
-  new TestDrawBlockMap(defaultTab, "res/maps/uscounties.bml", "res/maps/uscounties.bdl");
+  new TestDrawBlockMap(defaultTab, "res/maps/uscounties.bml",
+                       "res/maps/uscounties.bdl");
 }
