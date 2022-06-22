@@ -1,15 +1,15 @@
 #include "opengl/ModifiableMultiShape.hh"
 
 // ===========================Util Functions==========================//
-void ModifiableMultiShape::UpdateSolidList(uint32_t startVertexIndex,
+void ModifiableMultiShape::updateSolidList(uint32_t startVertexIndex,
                                            uint32_t startSolidIndex) {
   uint32_t points =
       numIndices.back();  // numIndices is in StyledMultiShape2d
                           // refers to number of points, get the latest
   uint32_t CurrentShapeIndices = IndiceCount.back();
   uint32_t numInVertices = elemPerVert * points;
-  solidList.add(SolidInfo(startVertexIndex, points, startSolidIndex,
-                          numInVertices, CurrentShapeIndices));
+  solidList.push_back(SolidInfo(startVertexIndex, points, startSolidIndex,
+                                numInVertices, CurrentShapeIndices));
 }
 
 /*void ModifiableMultiShape::UpdateLineList(uint32_t lStartVertexIndex,
@@ -31,7 +31,7 @@ uint32_t ModifiableMultiShape::addfillRectangle(float x, float y, float w,
   uint32_t startVertexIndex = vertices.size();
   uint32_t startSolidIndex = solidIndices.size();
   StyledMultiShape2D::fillRectangle(x, y, w, h, c);
-  UpdateSolidList(startVertexIndex, startSolidIndex);
+  updateSolidList(startVertexIndex, startSolidIndex);
   return index;  // solidList.size() - 1;
 }
 
@@ -42,7 +42,7 @@ uint32_t ModifiableMultiShape::addfillRoundRect(float x, float y, float w,
   uint32_t startVertexIndex = vertices.size();
   uint32_t startSolidIndex = solidIndices.size();
   StyledMultiShape2D::fillRoundRect(x, y, w, h, rx, ry, c);
-  UpdateSolidList(startVertexIndex, startSolidIndex);
+  updateSolidList(startVertexIndex, startSolidIndex);
   return index;  // solidList.size() - 1;
 }
 
@@ -53,7 +53,7 @@ uint32_t ModifiableMultiShape::addfillTriangle(float x1, float y1, float x2,
   uint32_t startVertexIndex = vertices.size();
   uint32_t startSolidIndex = solidIndices.size();
   StyledMultiShape2D::fillTriangle(x1, y1, x2, y2, x3, y3, c);
-  UpdateSolidList(startVertexIndex, startSolidIndex);
+  updateSolidList(startVertexIndex, startSolidIndex);
   return index;  // solidList.size() - 1;
 }
 
@@ -64,7 +64,7 @@ uint32_t ModifiableMultiShape::addfillPolygon(float x, float y, float xRad,
   uint32_t startVertexIndex = vertices.size();
   uint32_t startSolidIndex = solidIndices.size();
   StyledMultiShape2D::fillPolygon(x, y, xRad, yRad, n, c);
-  UpdateSolidList(startVertexIndex, startSolidIndex);
+  updateSolidList(startVertexIndex, startSolidIndex);
   return index;  // solidList.size() - 1;
 }
 
@@ -75,7 +75,7 @@ uint32_t ModifiableMultiShape::addfillCircle(float x, float y, float rad,
   uint32_t startVertexIndex = vertices.size();
   uint32_t startSolidIndex = solidIndices.size();
   StyledMultiShape2D::fillCircle(x, y, rad, angleInc, c);
-  UpdateSolidList(startVertexIndex, startSolidIndex);
+  updateSolidList(startVertexIndex, startSolidIndex);
   return index;  // solidList.size() - 1;
 }
 
@@ -86,7 +86,7 @@ uint32_t ModifiableMultiShape::addfillEllipse(float x, float y, float xRad,
   uint32_t startVertexIndex = vertices.size();
   uint32_t startSolidIndex = solidIndices.size();
   StyledMultiShape2D::fillEllipse(x, y, xRad, yRad, angleInc, c);
-  UpdateSolidList(startVertexIndex, startSolidIndex);
+  updateSolidList(startVertexIndex, startSolidIndex);
   return index;  // solidList.size() - 1;
 }
 
@@ -99,7 +99,15 @@ void ModifiableMultiShape::removeSolid(uint32_t index) {
   vertices.erase(startVertex, startVertex + solidList[index].numInVertices);
 
   auto startIndex = solidIndices.begin() + solidList[index].startSolidIndex;
-  solidIndices.erase(startIndex, startIndex + solidList[index].ShapeIndices);
+  solidIndices.erase(startIndex, startIndex + solidList[index].shapeIndices);
+
+  for (auto i = solidList.begin() + index + 1; i != solidList.end(); ++i) {
+    (*i).startVertexIndex -= solidList[index].numInVertices;
+  }  // fix index for vertices
+
+  for (auto i = solidList.begin() + index + 1; i != solidList.end(); ++i) {
+    (*i).startSolidIndex -= solidList[index].shapeIndices;
+  }  // fix index for indices
 
   for (auto i = startIndex; i != solidIndices.end(); ++i) {
     *i -= solidList[index]

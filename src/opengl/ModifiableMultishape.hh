@@ -5,21 +5,21 @@
 class ModifiableMultiShape : public StyledMultiShape2D {
  private:
   struct SolidInfo {
-    uint32_t startVertexIndex;  // starting position within vertices // how many
-                                // floating point numbers does this use?
+    uint32_t startVertexIndex;
+    uint32_t numInIndices;  // starting position within vertices // how many //
+                            // floating point numbers does this use?
     uint32_t startSolidIndex;  // start position in sbo
     uint32_t numInVertices;
-    uint32_t numInIndices;
-    uint32_t ShapeIndices;
+    uint32_t shapeIndices;
 
-    SolidInfo(uint32_t startVertexIndex, uint32_t numInIndices,
+    /*SolidInfo(uint32_t startVertexIndex, uint32_t numInIndices,
               uint32_t startSolidIndex, uint32_t numInVertices,
-              uint32_t ShapeIndices)
+              uint32_t shapeIndices)
         : startVertexIndex(startVertexIndex),
           startSolidIndex(startSolidIndex),
           numInVertices(numInVertices),
-          ShapeIndices(ShapeIndices),
-          numInIndices(numInIndices){};
+          shapeIndices(shapeIndices),
+          numInIndices(numInIndices) {}*/
   };
   struct LineInfo {
     uint32_t lStartVertexIndex;  // starting position within vertices
@@ -28,17 +28,17 @@ class ModifiableMultiShape : public StyledMultiShape2D {
     uint32_t lnumInIndices;
     uint32_t lShapeIndices;
 
-    LineInfo(uint32_t lStartVertexIndex, uint32_t lnumInIndices,
+    /*LineInfo(uint32_t lStartVertexIndex, uint32_t lnumInIndices,
              uint32_t startLineIndex, uint32_t lnumInVertices,
              uint32_t lShapeIndices)
         : lStartVertexIndex(lStartVertexIndex),
           lnumInIndices(lnumInIndices),
           startLineIndex(startLineIndex),
           lShapeIndices(lShapeIndices),
-          lnumInVertices(lnumInVertices){};
+          lnumInVertices(lnumInVertices){};*/
   };
-  DynArray<SolidInfo> solidList;
-  DynArray<LineInfo> lineList;
+  std::vector<SolidInfo> solidList;
+  std::vector<LineInfo> lineList;
   uint32_t index;
   Tab* tab;
 
@@ -48,10 +48,13 @@ class ModifiableMultiShape : public StyledMultiShape2D {
   ModifiableMultiShape(Canvas* c, const Style* s, Tab* tab,
                        uint32_t solidListCount = 1024,
                        uint32_t lineListCount = 1024)
-      : StyledMultiShape2D(c, s), solidList(1024), lineList(1024), tab(tab){};
+      : StyledMultiShape2D(c, s), tab(tab) {
+    solidList.reserve(solidListCount);
+    lineList.reserve(lineListCount);
+  };
 
   //====================== Util Functions =================//
-  void UpdateSolidList(uint32_t startVertexIndex, uint32_t startSolidIndex);
+  void updateSolidList(uint32_t startVertexIndex, uint32_t startSolidIndex);
 
   //=================== Solid Primatives ============//
   uint32_t addfillRectangle(float x, float y, float w, float h,
