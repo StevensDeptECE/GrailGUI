@@ -20,22 +20,23 @@ MapViewer::MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint3
 
     addLayer(mv);  // add the MapView2D to this map FIRST because it is under the text
     addLayer(mt);  // add the text to this map (on top of the MapView2D)
-    //    this->centerX = -74, this->centerY = 40;
-    //    this->scaleX = 70 / 2, this->scaleY = 70 / 2;
+    this->centerLon = -74, this->centerLat = 40;
+    this->scaleLon = 70 / 2, this->scaleLat = 70 / 2;
+    this->shiftLon = 0, this->shiftLat = 0;
 }
 
 // mv and mt are freed by the Canvas
 MapViewer::~MapViewer() {}
 
 void MapViewer::setView() {
-  setOrthoProjection(centerLon - scaleLon, centerLon + scaleLon, centerLat - scaleLat,
-                     centerLat + scaleLat);
+  setOrthoProjection(centerLon - scaleLon + shiftLon, centerLon + scaleLon + shiftLon, centerLat - scaleLat + shiftLat,
+                     centerLat + scaleLat + shiftLat);
   getWin()->setRender();
 }
 
 void MapViewer::zoomIn(float factor) {
-  scaleLon *= factor; // zoom in by requested factor in both x and y
-  scaleLat *= factor;
+  scaleLon /= factor; // zoom in by requested factor in both x and y
+  scaleLat /= factor;
   setView();
 }
 
@@ -45,8 +46,8 @@ void MapViewer::zoomOut(float factor) {
 
 void MapViewer::zoomIn(float lat, float lon, float factor) {
   centerLon = lon, centerLat = lat; // center on desired point
-  scaleLon *= factor; // zoom in by requested factor in both x and y
-  scaleLat *= factor;
+  scaleLon /= factor; // zoom in by requested factor in both x and y
+  scaleLat /= factor;
   setView();
 }
 void MapViewer::zoomOut(float lat, float lon, float factor) {
@@ -55,7 +56,7 @@ void MapViewer::zoomOut(float lat, float lon, float factor) {
 }
 
 void MapViewer::translate(float deltaLat, float deltaLon) {
-  shiftLat += deltaLat, shiftLon += deltaLon;
+  shiftLat += scaleLat * deltaLat, shiftLon += scaleLon * deltaLon;
   setView();
 }
 

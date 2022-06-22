@@ -62,11 +62,12 @@ void MapView2D::init() {
   delete[] lineIndices;
 
   const Font* f = mt->getStyle()->f;
-  #if 0
+  #if 1
   const BlockMapLoader::Region* regions = bml->getRegions();
   // TODO: need to implement to get states
   //const BlockMapLoader::RegionContainer* regionContainer = bml->getRegionContainer();
-  for (uint32_t i = 1; i < bdl->getNodeCount(); i++) {
+  const uint32_t count = 3; //bdl->getNodeCount();
+  for (uint32_t i = 1; i < count; i++) {
     const char* name = bdl->getNameAt(i);
     uint32_t len = strlen(name);
     const MapEntry* mapInfo = bdl->getValueAt(i);
