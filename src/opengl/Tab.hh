@@ -79,6 +79,7 @@ class Tab : public CallbackHandler {
   // copying a tab is not supported. What would it mean?
   Tab(const Tab& orig) = delete;
   Tab& operator=(const Tab& orig) = delete;
+  void addCanvas(Canvas* c) {canvases.add(c);}
   Canvas* addCanvas(const Style* style, uint32_t vpX, uint32_t vpY,
                     uint32_t vpW, uint32_t vpH);
 

@@ -24,10 +24,8 @@ MapViewer::MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint3
     //    this->scaleX = 70 / 2, this->scaleY = 70 / 2;
 }
 
-MapViewer::~MapViewer() {
-  delete mv;
-  delete mt;
-}
+// mv and mt are freed by the Canvas
+MapViewer::~MapViewer() {}
 
 void MapViewer::setView() {
   setOrthoProjection(centerLon - scaleLon, centerLon + scaleLon, centerLat - scaleLat,
