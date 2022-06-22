@@ -178,10 +178,13 @@ void StyledMultiShape2D::fillRoundRect(float x, float y, float w, float h,
   solidIndices.push_back(getPointIndex() - 1);
   solidIndices.push_back(centerIndex + 1);
 
-  points += 13;
+  points++;
   numIndices.push_back(points);
   currentIndex += points;
   startIndices.push_back(currentIndex);
+  SectorIndices += 12;
+  IndiceCount.push_back(SectorIndices);
+  SectorIndices = 0;
 }
 
 void StyledMultiShape2D::fillTriangle(float x1, float y1, float x2, float y2,
@@ -216,11 +219,13 @@ void StyledMultiShape2D::fillEllipse(float x, float y, float xRad, float yRad,
 
   uint32_t toAdd = addSector(x, y, xRad, yRad, 0, 360, angleInc, c);
   sAddSectorIndices(centerIndex, toAdd);
+  IndiceCount.push_back(SectorIndices);
 
   points += 1 + toAdd;
   numIndices.push_back(points);
   currentIndex += points;
   startIndices.push_back(currentIndex);
+  SectorIndices = 0;
 }
 
 // Line Primitives

@@ -8,6 +8,8 @@ class MultiShape2D : public MultiShape {
  protected:
   const Style* style;
   uint32_t elemPerVert;
+  uint32_t SectorIndices = 0;
+  std::vector<int> IndiceCount;
 
   // Utility
   void sAddTriIndices();

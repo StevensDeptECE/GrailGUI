@@ -160,7 +160,7 @@ class StyledMultiShape2D : public MultiShape2D {
 
   void dump();
 
- private:
+ protected:
   std::vector<float> colors;
   std::vector<int> startIndices;
   std::vector<int> numIndices;
