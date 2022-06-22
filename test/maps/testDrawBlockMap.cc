@@ -27,16 +27,17 @@ class TestDrawBlockMap : public Member {
     BlockMapLoader* bml = new BlockMapLoader(bmlfile);
     BLHashMap<MapEntry>* bdl = new BLHashMap<MapEntry>(bdlfile);
     viewer = new MapViewer(getParent(), tab, s, bml, bdl);
-    viewer->setOrthoProjection(-180, 180, -90, 90);
-    //viewer->setView();
+    viewer->setOrigBounds(-90, 90, -180, 180);
+    // BUG: bounds from bml are somehow corrupted, so we set the bounds ourselves
 
     cout << "num points loaded: " << bml->getNumPoints() << '\n';
     tab->bindEvent(Tab::Inputs::WHEELUP, [=,this]() {return viewer->zoomIn(1.2f);});
     tab->bindEvent(Tab::Inputs::WHEELDOWN, [=,this]() { return viewer->zoomOut(1.2f); });
-    tab->bindEvent(Tab::Inputs::RARROW, [=,this]() { return viewer->translate(0, 0.2); });
-    tab->bindEvent(Tab::Inputs::LARROW, [=,this]() { return viewer->translate(0, -0.2); });
-    tab->bindEvent(Tab::Inputs::UPARROW, [=,this]() { return viewer->translate(0.2, 0); });
-    tab->bindEvent(Tab::Inputs::DOWNARROW, [=,this]() { return viewer->translate(-0.2, 0); });
+    tab->bindEvent(Tab::Inputs::RARROW, [=,this]() { return viewer->translatePercent(0, 0.2); });
+    tab->bindEvent(Tab::Inputs::LARROW, [=,this]() { return viewer->translatePercent(0, -0.2); });
+    tab->bindEvent(Tab::Inputs::UPARROW, [=,this]() { return viewer->translatePercent(0.2, 0); });
+    tab->bindEvent(Tab::Inputs::DOWNARROW, [=,this]() { return viewer->translatePercent(-0.2, 0); });
+    tab->bindEvent(Tab::Inputs::MOUSE2, [=,this]() {return viewer->resetToOriginal();});
     //TODO:
     update();
   }

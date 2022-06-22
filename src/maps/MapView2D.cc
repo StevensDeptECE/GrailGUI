@@ -14,8 +14,8 @@ MapView2D::MapView2D(MapViewer* parent, const Style* s, MultiText* mt,
  BlockMapLoader* bml, BLHashMap<MapEntry>* bdl)
       : Shape(parent), style(s), bml(bml), bdl(bdl), mt(mt) {
     const BoundRect& bounds = bml->getBlockMapHeader()->bounds;
-    parent->setBounds(bounds.xMin, bounds.xMax, bounds.yMin, bounds.yMax);
-        parent->addLayer(mt);
+    parent->setOrigBounds(bounds.xMin, bounds.xMax, bounds.yMin, bounds.yMax);
+    parent->addLayer(mt);
   }
 
 
@@ -66,7 +66,7 @@ void MapView2D::init() {
   const BlockMapLoader::Region* regions = bml->getRegions();
   // TODO: need to implement to get states
   //const BlockMapLoader::RegionContainer* regionContainer = bml->getRegionContainer();
-  const uint32_t count = 3; //bdl->getNodeCount();
+  const uint32_t count = 2; //bdl->getNodeCount();
   for (uint32_t i = 1; i < count; i++) {
     const char* name = bdl->getNameAt(i);
     uint32_t len = strlen(name);

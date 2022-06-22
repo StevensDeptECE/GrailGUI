@@ -1,5 +1,6 @@
 #include "maps/MapViewer.hh"
 
+#include <cmath>
 #include "data/BlockMapLoader2.hh"
 #include "opengl/MultiText.hh"
 #include "maps/MapView2D.hh"
@@ -20,9 +21,6 @@ MapViewer::MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint3
 
     addLayer(mv);  // add the MapView2D to this map FIRST because it is under the text
     addLayer(mt);  // add the text to this map (on top of the MapView2D)
-    this->centerLon = -74, this->centerLat = 40;
-    this->scaleLon = 70 / 2, this->scaleLat = 70 / 2;
-    this->shiftLon = 0, this->shiftLat = 0;
 }
 
 // mv and mt are freed by the Canvas
@@ -55,11 +53,40 @@ void MapViewer::zoomOut(float lat, float lon, float factor) {
   setView();
 }
 
+void MapViewer::translatePercent(float percentLat, float percentLon) {
+  shiftLat += percentLat * scaleLat, shiftLon += percentLon * scaleLon;
+  setView();
+}
+
 void MapViewer::translate(float deltaLat, float deltaLon) {
-  shiftLat += scaleLat * deltaLat, shiftLon += scaleLon * deltaLon;
+  shiftLat += deltaLat, shiftLon += deltaLon;
   setView();
 }
 
 void MapViewer::resetToOriginal() {
-  
+  centerLat = origCenterLat, centerLon = origCenterLon, scaleLat = origScaleLat, scaleLon = origScaleLon, shiftLat = origShiftLat, shiftLon = origShiftLon;
+  setView();
+}
+
+void MapViewer::setOrigBounds(float minLat, float maxLat, float minLon, float maxLon) {
+  origCenterLat = (minLat + maxLat) * 0.5;
+  origCenterLon = (minLon + maxLon) * 0.5;
+  /* 
+  OpenGL by default scale -1 to +1 --> projection   --> 0..w-1, 0..h-1  w = 1024
+      512  --> -512 ... + 511 + 512
+      512  0   0  512
+      0    512 0  512
+      0    0   0  0
+      0    0   0  1
+
+      -180 .. +180  ->  *1/180
+      1/180   0   0    0
+      0      1/45 0    -1           +1/45*y - 1 -->  -1 .. +1
+      0      0    0    0
+      0      0    0    1
+  */
+  origScaleLat = (std::abs(minLat)+std::abs(maxLat))/4;
+  origScaleLon = (std::abs(minLon)+std::abs(maxLon))/4;
+  origShiftLat = 0, origShiftLon = 0;
+  resetToOriginal();
 }
