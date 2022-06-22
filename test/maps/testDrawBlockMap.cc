@@ -21,33 +21,23 @@ class TestDrawBlockMap : public Member {
   TestDrawBlockMap(Tab* tab, const char bmlfile[], const char bdlfile[])
       : Member(tab),  // GLWin(0x000000, 0xCCCCCC, "Block Loader: Map Demo"),
         filename(bmlfile) {
-          /*GLWin* w, Tab* tab, const Style* style,
-           uint32_t vpX, uint32_t vpY,
-         uint32_t vpW, uint32_t vpH, uint32_t pX,
-         uint32_t pY, BlockMapLoader* bml = nullptr,
-            BLHashMap<MapEntry>* bdl = nullptr
-            */
-    viewer = new MapViewer(getParent(), tab, tab->getDefaultStyle());
-    viewer->setOrthoProjection(-180, 180, 0, 90);
-    
-    MainCanvas* c = tab->getMainCanvas();
-    c->setOrthoProjection(-180, 180, 0, 90);
-    //    const Style* s = tab->getDefaultStyle();
-    Style* s2 = new Style(tab->getDefaultFont(), grail::white, grail::black);
     //    c->addClickableWidget(
     // new ButtonWidget(c, 0, 0, 200, 100, "Click Me!", "mapZoomIn"));
+    Style* s = new Style(tab->getDefaultFont(), grail::white, grail::black);
     BlockMapLoader* bml = new BlockMapLoader(bmlfile);
     BLHashMap<MapEntry>* bdl = new BLHashMap<MapEntry>(bdlfile);
+    viewer = new MapViewer(getParent(), tab, s, bml, bdl);
+    viewer->setOrthoProjection(-180, 180, 0, 90);
 
     cout << "num points loaded: " << bml->getNumPoints() << '\n';
 //TODO: Alice show us how to clean this up and use lambdas!
-    //tab->bindEvent(Tab::Inputs::WHEELUP, [viewer]() {return (zoomIn(1 / 1.2f));});
-    tab->bindEvent(Tab::Inputs::WHEELUP, &TestDrawBlockMap::mapZoomIn, this);
-    tab->bindEvent(Tab::Inputs::WHEELDOWN, &TestDrawBlockMap::mapZoomOut, this);
-    tab->bindEvent(Tab::Inputs::RARROW, &TestDrawBlockMap::mapPanRight, this);
-    tab->bindEvent(Tab::Inputs::LARROW, &TestDrawBlockMap::mapPanLeft, this);
-    tab->bindEvent(Tab::Inputs::UPARROW, &TestDrawBlockMap::mapPanUp, this);
-    tab->bindEvent(Tab::Inputs::DOWNARROW, &TestDrawBlockMap::mapPanDown, this);
+    tab->bindEvent(Tab::Inputs::WHEELUP, [=,this]() {return viewer->zoomIn(1 / 1.2f);});
+    tab->bindEvent(Tab::Inputs::WHEELDOWN, [=,this]() { return viewer->zoomOut(1.2f); });
+    tab->bindEvent(Tab::Inputs::RARROW, [=,this]() { return viewer->translate(0.2, 0); });
+    tab->bindEvent(Tab::Inputs::LARROW, [=,this]() { return viewer->translate(-0.2, 0); });
+    tab->bindEvent(Tab::Inputs::UPARROW, [=,this]() { return viewer->translate(0, 0.2); });
+    tab->bindEvent(Tab::Inputs::DOWNARROW, [=,this]() { return viewer->translate(0, -0.2); });
+    //TODO:
     update();
   }
 
@@ -60,29 +50,6 @@ class TestDrawBlockMap : public Member {
   TestDrawBlockMap& operator=(const TestDrawBlockMap& orig) = delete;
 
   constexpr static float zoomVal = 1.2;
-  void mapZoomIn() {
-    viewer->zoomIn(1 / 1.2f);
-  }
-
-  void mapZoomOut() {
-    viewer->zoomOut(1.2f);
-  }
-
-  void mapPanRight() {
-    viewer->translate(0.2, 0);
-  }
-
-  void mapPanLeft() {
-    viewer->translate(-0.2, 0);
-  }
-
-  void mapPanUp() {
-    viewer->translate(0, 0.2);
-  }
-
-  void mapPanDown() {
-    viewer->translate(0, -0.2);
-  }
 
   void nextCounty() {
     if (countyStart < numCounties) countyStart++;

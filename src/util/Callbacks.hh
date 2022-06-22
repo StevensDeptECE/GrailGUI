@@ -79,6 +79,10 @@ class CallbackHandler {
   void bindEvent(uint32_t inp, CallbackFunc<T> func, U* ptr) {
     registerCallback(inp, quote(func), Security::SAFE, func, ptr);
   }
+  
+  void bindEvent(uint32_t inp, std::invocable auto func){
+    registerCallback(inp, quote(func), Security::SAFE, func);
+  }
 
   void doit(uint32_t input);
 

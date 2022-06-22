@@ -52,7 +52,8 @@ class Canvas {
     // calling glm::ortho..., show init and render, works with z=0 and not with
     // z!=0
   }
-  Canvas(GLWin* w, Tab* tab, const Style* style) : Canvas(w, tab, style, vpX, vpY, vpW, vpH, vpW, vpH) {}
+  Canvas(GLWin* w, Tab* tab, const Style* style) :
+   Canvas(w, tab, style, 0, 0, w->getWidth(), w->getHeight(), w->getWidth(), w->getHeight()) {}
   ~Canvas();
   Canvas(const Canvas& orig) = delete;
   Canvas& operator=(const Canvas& orig) = delete;
