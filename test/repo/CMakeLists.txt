@@ -1,0 +1,6 @@
+add_grail_executable(SRC testRepo.cc LIBS grail webp curl curlpp)
+add_grail_executable(SRC testStegano.cc LIBS grail webp)
+add_grail_executable(SRC testCloud.cc LIBS grail curl curlpp)
+add_grail_executable(SRC testAES.cc LIBS grail)
+add_grail_executable(SRC testSSLClient.cc LIBS grail)
+add_grail_executable(SRC testSSLServer.cc LIBS grail)

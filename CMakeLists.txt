@@ -107,6 +107,9 @@ find_package(Freetype REQUIRED)
 # MPV
 find_package(MPV)
 
+# OpenSSL
+find_package(OpenSSL REQUIRED)
+
 # GLM
 FetchContent_Declare(
   glm
