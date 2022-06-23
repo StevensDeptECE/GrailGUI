@@ -4,9 +4,9 @@
 
 #include "util/datatype1.hh"
 
- /*
-   The list of XDL types specific to this application.
- */
+/*
+  The list of XDL types specific to this application.
+*/
 using namespace std;
 
 const char* DataTypeNames[] = {
@@ -84,9 +84,8 @@ const char* DataTypeNames[] = {
     "enum_size does not really exist",
 };
 
-
-unordered_map<string,DataType> mapnames;
-void loadmap(){
+unordered_map<string, DataType> mapnames;
+void loadmap() {
   for (int i = 0; i < int(DataType::ENUM_SIZE); i++)
     mapnames[DataTypeNames[i]] = (DataType)i;
 }

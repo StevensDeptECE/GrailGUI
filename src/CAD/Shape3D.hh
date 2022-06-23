@@ -22,8 +22,9 @@
 //   void applyTransform(Shader* s);
 // public:
 //   //Shape2D(float x, float y) : Shape2D(x,y,nullptr,nullptr){}
-//   //Shape2D(float x, float y, Transformation* transform) : Shape2D(x,y,nullptr,transform){}
-//   Shape3D(Canvas* c, float x, float y, float z, const Style* style, Transformation* transform = new Transformation()) : 
+//   //Shape2D(float x, float y, Transformation* transform) :
+//   Shape2D(x,y,nullptr,transform){} Shape3D(Canvas* c, float x, float y, float
+//   z, const Style* style, Transformation* transform = new Transformation()) :
 //     Shape(c), x(x),y(y),z(z),style(style),transform(transform)
 //   {}
 

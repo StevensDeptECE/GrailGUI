@@ -44,9 +44,9 @@ enum class DataType {\n"""
 
 #include "util/datatype1.hh"
 
- /*
-   The list of XDL types specific to this application.
- */
+/*
+  The list of XDL types specific to this application.
+*/
 using namespace std;
 
 const char* DataTypeNames[] = {\n"""
@@ -60,16 +60,16 @@ const char* DataTypeNames[] = {\n"""
         names.write("};\n")
 
         names.write(
-            """\n
-unordered_map<string,DataType> mapnames;
-void loadmap(){
+            """
+unordered_map<string, DataType> mapnames;
+void loadmap() {
   for (int i = 0; i < int(DataType::ENUM_SIZE); i++)
     mapnames[DataTypeNames[i]] = (DataType)i;
 }"""
         )
 
         types.write(
-            """\n
+            """
 extern const char* DataTypeNames[];
 extern std::unordered_map<std::string, DataType> mapnames;
 extern void loadmap();"""

@@ -57,10 +57,10 @@ class CBenchmark {
   }
 
   template <typename Func>
-  static void benchmark(const std::string& msg, uint64_t numIterations,
+  static void benchmark(const std::string_view msg, uint64_t numIterations,
                         Func func) {
     uint64_t iter = numIterations;
-    CBenchmark b(msg);
+    CBenchmark<Ratio> b(msg);
     b.start();
     for (; numIterations > 0; numIterations--) func();
     b.end();
@@ -71,6 +71,7 @@ class CBenchmark {
   static void benchmarkNoCache(const std::string_view msg,
                                const uint64_t numIterations, const Func func,
                                const bool mute_warnings = false) {
+#ifndef _WIN32  // This is not supported on Windows,
     uint64_t iter = numIterations;
     if (!mute_warnings) {
       fmt::print("Warning: dropping caches requires root access,");
@@ -91,7 +92,13 @@ class CBenchmark {
       dropCaches();
     }
     b.displayavg(numIterations);
+#else   // If on Windows, run without dropping caches.
+    fmt::print(stderr,
+               "Warning: Windows does not support dropping caches during "
+               "benchmark. Running normal benchmark instead.");
+    benchmark(msg, numIterations, func);
+#endif  // _WIN32
   }
 };
-};  // namespace benchmark
+};  // namespace utils
 };  // namespace grail

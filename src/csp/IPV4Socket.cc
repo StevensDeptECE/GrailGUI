@@ -1,14 +1,9 @@
 #include "IPV4Socket.hh"
 
-#include <errno.h>
-#include <sys/types.h>
 #include <unistd.h>
 /*
   All encapsulation for different operating systems networking code is done here
 */
-
-#include <memory.h>
-#include <signal.h>
 
 //#include "csp/HTTPRequest.hh"
 #include "csp/SocketIO.hh"
@@ -41,7 +36,6 @@ void Socket::classInit() {
   testResult(WSAStartup(MAKEWORD(2, 2), &wsaData), __FILE__, __LINE__,
              Errcode::SOCKET);
 #endif
-  return;
 }
 
 // Takes care of allocations made by Winsock
@@ -57,10 +51,11 @@ IPV4Socket::IPV4Socket(uint16_t port) : Socket(port) {
   int yes = 1;
   testResult(sckt = socket(AF_INET, SOCK_STREAM, 0), __FILE__, __LINE__,
              Errcode::SOCKET);
-  testResult(setsockopt(sckt, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(yes)),
+  testResult(setsockopt(sckt, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes,
+                        sizeof(yes)),
              __FILE__, __LINE__, Errcode::SETSOCKOPT);
   memset(sockaddress, 0, sizeof(sockaddress));
-  sockaddr_in *sockAddr = (sockaddr_in *)sockaddress;
+  auto *sockAddr = (sockaddr_in *)sockaddress;
   sockAddr->sin_family = AF_INET;
   sockAddr->sin_addr.s_addr = INADDR_ANY;
   sockAddr->sin_port = htons(port);
@@ -79,7 +74,7 @@ IPV4Socket::IPV4Socket(const char *addr, uint16_t port) : Socket(addr, port) {
     throw Ex(__FILE__, __LINE__, Errcode::SERVER_INVALID);
   }
 
-  sockaddr_in *sockAddr = (sockaddr_in *)sockaddress;
+  auto *sockAddr = (sockaddr_in *)sockaddress;
   sockAddr->sin_family = AF_INET;
   //    bcopy((char *)server->h_addr, (char *)&sockaddress.sin_addr.s_addr,
   //    server->h_length);
@@ -100,8 +95,8 @@ void IPV4Socket::wait() {
     cout << "WAITING CONNECTION." << endl;
     int returnsckt =
         accept(sckt, (struct sockaddr *)&client_addrconfig, &client_length);
-    //		int senderSock = accept(listenSock, (struct sockaddr *) &sockaddress,
-    //&senderNameLen);
+    //		int senderSock = accept(listenSock, (struct sockaddr *)
+    //&sockaddress, &senderNameLen);
     if (returnsckt >= 0) {
       cout << "CONNECT SUCCESSFULLY"
            << "\n";

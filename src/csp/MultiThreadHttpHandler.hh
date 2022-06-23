@@ -1,6 +1,6 @@
 #pragma once
 
 class MultiThreadHttpRequest {
-public:
-	void handle();
+ public:
+  void handle();
 };

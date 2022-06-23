@@ -1,4 +1,45 @@
-# How to build Grail on Linux and Windows
+<!-- omit in toc -->
+# Grail
+
+GrailGUI is a prototype of a replacement for web programming (HTTP, HTML, CSS,
+JavaScript) and GUI programming. It includes a client graphical API, a browser
+implemented in C++ and OpenGL, a protocol to transmit metadata and data in
+binary, a language (XDL) to describe the binary data, and local storage to
+retain data on the client should that be necessary. Encrypted communications
+(equivalent of TLS) have not yet been implemented.
+
+For more info see [our writeup from Summer 2021.](docs/Grail.md)
+
+<!-- omit in toc -->
+## Table of Contents
+
+<!-- toc -->
+
+- [Summer 2022 TODO's](#summer-2022-todos)
+- [How to build Grail on Linux and Windows](#how-to-build-grail-on-linux-and-windows)
+  - [Getting Set Up - Windows](#getting-set-up---windows)
+    - [MSYS2](#msys2)
+    - [Windows Subsystem for Linux (WSL2)](#windows-subsystem-for-linux-wsl2)
+  - [Getting Set Up - Ubuntu](#getting-set-up---ubuntu)
+    - [Ubuntu 18.04](#ubuntu-1804)
+    - [Ubuntu 20.04](#ubuntu-2004)
+  - [Getting Set Up - Arch-Based Linux](#getting-set-up---arch-based-linux)
+  - [Compiling](#compiling)
+  - [Running](#running)
+- [Frequent Issues](#frequent-issues)
+  - [Need to create an SSH key to push into the repository](#need-to-create-an-ssh-key-to-push-into-the-repository)
+  - [Cloned the repository using HTTPS, but now have to push to the repository](#cloned-the-repository-using-https-but-now-have-to-push-to-the-repository)
+  - [Runtime Error: `Failed to open GLFW window`](#runtime-error-failed-to-open-glfw-window)
+  - [git: 'remote-https' is not found or can't run program](#git-remote-https-is-not-found-or-cant-run-program)
+  - [Everything Else](#everything-else)
+
+<!-- tocstop -->
+
+## Summer 2022 TODO's
+
+See [this](docs/s22-tasks.md) for tasks to do.
+
+## How to build Grail on Linux and Windows
 
 This document describes how to build Grail on a number of different platforms.
 Grail requires a number of cutting edge tools, so the default ones may have to
@@ -35,48 +76,59 @@ audio and video).
 
 [![CMake](https://github.com/StevensDeptECE/GrailGUI/actions/workflows/cmake.yml/badge.svg?branch=main)](https://github.com/StevensDeptECE/GrailGUI/actions/workflows/cmake.yml)
 
-## Getting Set Up - Windows
+### Getting Set Up - Windows
+
+#### MSYS2
 
 1. [Install MSYS2](https://www.msys2.org/)
 
-2. Run MSYS2: `MSYS2 MinGW 64-bit` from the Windows Start Menu.
+1. Run MSYS2: `MSYS2 MinGW 64-bit` from the Windows Start Menu.
 
    - Make sure you are running the correct executable or else you will have
      trouble with the C++ compiler not recognizing your system correctly.
 
-3. Install dependencies
+1. Install dependencies
 
    ```shell
    pacman -S git nano make mingw64/mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb mingw-w64-x86_64-gcc mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-zlib mingw-w64-x86_64-freetype mingw-w64-x86_64-glfw mingw-w64-x86_64-mpv mingw-w64-x86_64-youtube-dl bison flex mingw-w64-x86_64-xz
    ```
 
-<!-- This may be possible to remove in the very near future, I've nearly removed all -->
-<!-- references to the the environment variable from core parts of Grail. DK-->
-
-4. Edit `~/.bashrc` to include `export GRAIL=/path/to/GRAIL` and
+1. Edit `~/.bashrc` to include `export GRAIL=/path/to/GRAIL` and
    `export PATH=$PATH:$GRAIL/bin` on the following line. `source ~/.bashrc` the
    first time.
 
+<!-- The above section may be possible to remove in the very near future, I've nearly removed all -->
+<!-- references to the the environment variable from core parts of Grail. DK-->
+
 If the MSYS2 method does not work, or there are issues, try the method below.
 
-1.  Install Ubuntu 20.04 LTS from the Microsoft Store.
-2.  Initially run the Ubuntu terminal once it is finished installing.
-3.  In Windows Powershell type the following commands `wsl --install`
-    `wsl --set-default Ubuntu-20.04` `wsl --set-version Ubuntu-20.04 2` Note: If
-    you have an error about version mismatch, use command `wsl -l` to show what
-    the name of the Ubuntu LTS is.
-4.  Download the x server [here](https://sourceforge.net/projects/vcxsrv/). To
-    finish the install click Next -> Next -> Finish.
-5.  Once installation is complete, create a desktop shortcut for the server and
-    in the Properties, target field type in
-    `"C:\Program Files\VcXsrv\vcxsrv.exe" :0 -ac -terminate -lesspointer -multiwindow -clipboard -dpi auto`
-    and apply the changes.
-6.  Install dependencies by referring to the Ubuntu 20.04 setup.
-7.  Edit the `~/.bashrc` file the same as the step above.
+#### Windows Subsystem for Linux (WSL2)
 
-## Getting Set Up - Ubuntu
+1. Follow [this guide](https://docs.microsoft.com/en-us/windows/wsl/install) to
+   install WSL.
+2. In Windows Powershell, type the following command to install Ubuntu 20.04 as
+   the default WSL distribution.
 
-### Ubuntu 18.04
+   ```bash
+   wsl --install -d Ubuntu-20.04
+   wsl --set-version Ubuntu-20.04 2
+   ```
+
+   - Note: If you have an error about version mismatch, use command `wsl -l` to
+     show what the name of the Ubuntu LTS is.
+
+3. Download the x server [here](https://sourceforge.net/projects/vcxsrv/). To
+   finish the install click Next -> Next -> Finish.
+4. Once installation is complete, create a desktop shortcut for the server and
+   in the Properties, target field type in
+   `"C:\Program Files\VcXsrv\vcxsrv.exe" :0 -ac -terminate -lesspointer -multiwindow -clipboard -dpi auto`
+   and apply the changes.
+5. Install dependencies by referring to the [Ubuntu 20.04 setup](#ubuntu-2004).
+6. Edit the `~/.bashrc` file the same as the [step above](#msys2).
+
+### Getting Set Up - Ubuntu
+
+#### Ubuntu 18.04
 
 1. Install gcc-11 and g++-11
 
@@ -126,10 +178,9 @@ If the MSYS2 method does not work, or there are issues, try the method below.
    sudo apt install ninja-build libglfw3-dev libfreetype6-dev mpv libmpv-dev liblzma-dev flex bison pkg-config
    ```
 
-5. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to
-   set up the environment variables.
+5. Refer to step 4 of [MSYS2](#msys2) to set up the environment variables.
 
-### Ubuntu 20.04
+#### Ubuntu 20.04
 
 1. Install gcc-10 and g++-10
 
@@ -159,10 +210,9 @@ If the MSYS2 method does not work, or there are issues, try the method below.
    sudo apt install make cmake ninja-build libglfw3-dev libfreetype-dev mpv libmpv-dev liblzma-dev flex bison pkg-config
    ```
 
-3. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to
-   set up the environment variables.
+3. Refer to step 4 of [MSYS2](#msys2) to set up the environment variables.
 
-## Getting Set Up - Arch-Based Linux
+### Getting Set Up - Arch-Based Linux
 
 1. Install dependencies
 
@@ -174,10 +224,9 @@ If the MSYS2 method does not work, or there are issues, try the method below.
    - If you are using Wayland, then install `glfw-wayland` instead of
      `glfw-x11`. Wayland support is currently unconfirmed.
 
-2. Refer to step 4 of [Getting Set up - Windows](#getting-set-up---windows) to
-   set up the environment variables.
+2. Refer to step 4 of [MSYS2](#msys2) to set up the environment variables.
 
-## Compiling
+### Compiling
 
 - To compile one test with default settings, run `./build.sh <testname>`
   - To compile all tests with default settings, run `./build.sh`
@@ -211,7 +260,7 @@ cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=release
 cmake --build build
 ```
 
-## Running
+### Running
 
 1. Update `test/CMakeLists.txt` to compile the file you want to compile and link
    it to grail.

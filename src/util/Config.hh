@@ -123,7 +123,7 @@ class Config {
         // out to make configTester run case STRING: delete [] s; break;
         default:;
       }
-    } //BUG: clang-tidy is picking up a memory leak here
+    }  // BUG: clang-tidy is picking up a memory leak here
   };
   std::map<std::string, Type> types;
   std::map<std::string, Type> optTypes;

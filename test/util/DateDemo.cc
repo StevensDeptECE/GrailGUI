@@ -1,6 +1,7 @@
 #include <iostream>
-#include "opengl/GrailGUI.hh"
+
 #include "../src/util/JulianDate.hh"
+#include "opengl/GrailGUI.hh"
 using namespace std;
 using namespace grail;
 
@@ -12,14 +13,9 @@ class DateDemo : public GLWin {
     MainCanvas* c = currentTab()->getMainCanvas();
     StyledMultiShape2D* gui = c->getGui();
     MultiText* guiText = c->getGuiText();
-    
-    
-    JulianDate a(12,1,12);
-    
 
+    JulianDate a(12, 1, 12);
   }
 };
 
-int main(int argc, char* argv[]) {
-  return GLWin::init(new DateDemo());
-}
+int main(int argc, char* argv[]) { return GLWin::init(new DateDemo()); }

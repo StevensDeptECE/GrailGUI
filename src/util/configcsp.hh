@@ -29,11 +29,11 @@ enum ip = {"ipV4", "ipV6"};  // only IP versions we'll use at the moment
 
 class csp {
  public:
-  uint16_t port;  // Port number to talk/listen on
-  prot protocol;  // Specifies what protocol we're going to use
-  ip ip_ver;      // Version if IP we're going to use
-  std::string log;     // The name of the log file to be generated
-  std::string base;    // this depends on os, base for all directory
+  uint16_t port;     // Port number to talk/listen on
+  prot protocol;     // Specifies what protocol we're going to use
+  ip ip_ver;         // Version if IP we're going to use
+  std::string log;   // The name of the log file to be generated
+  std::string base;  // this depends on os, base for all directory
   buf buffer;
 
   csp() {  // TODO: Write the tokenizer and make the fix the x[1] thing, because

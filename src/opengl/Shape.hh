@@ -25,7 +25,7 @@ class Shape {
 
   /**
    * @brief Get a pointer to the GLWin object
-   * 
+   *
    * @return GLWin* Window containing the Shape
    */
   GLWin* getWin() const;

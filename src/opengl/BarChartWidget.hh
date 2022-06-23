@@ -9,8 +9,10 @@ class BarChartWidget : public GraphWidget {
   float barWidth;
 
  public:
-  BarChartWidget(Canvas *c, double x, double y, double w, double h, AxisType xAxisType, AxisType yAxisType, const GraphStyle* s)
-      : GraphWidget(c, x, y, w, h, DISCRETE_PERMITTED, FUNCTIONS_PERMITTED, xAxisType, yAxisType, s),
+  BarChartWidget(Canvas *c, double x, double y, double w, double h,
+                 AxisType xAxisType, AxisType yAxisType, const GraphStyle *s)
+      : GraphWidget(c, x, y, w, h, DISCRETE_PERMITTED, FUNCTIONS_PERMITTED,
+                    xAxisType, yAxisType, s),
         values(std::vector<double>()),
         names(std::vector<std::string>()),
         barWidth(20) {}

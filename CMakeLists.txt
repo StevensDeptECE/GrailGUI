@@ -11,8 +11,11 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/libs)
 set(CMAKE_FILES_DIRECTORY build)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/modules)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
+option(CMAKE_C_STANDARD_REQUIRED ON)
 option(CMAKE_CXX_STANDARD_REQUIRED ON)
+option(CMAKE_C_EXTENSIONS OFF)
 option(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS
     ON
@@ -82,6 +85,11 @@ if(GRAIL_WERROR)
   endif()
 endif()
 
+if(GRAIL_TIDY)
+  message(STATUS "clang-tidy modern checks enabled")
+  set(CMAKE_CXX_CLANG_TIDY clang-tidy -extra-arg=-std=c++20)
+endif()
+
 include(FetchContent)
 include(GrailFunctions)
 
@@ -98,6 +106,9 @@ find_package(Freetype REQUIRED)
 
 # MPV
 find_package(MPV)
+
+# OpenSSL
+find_package(OpenSSL REQUIRED)
 
 # GLM
 FetchContent_Declare(
@@ -166,4 +177,4 @@ endif()
 
 add_subdirectory(test)
 
-# dump_cmake_variables()
+#dump_cmake_variables()
