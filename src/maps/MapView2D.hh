@@ -13,6 +13,9 @@ class MapViewer;
 class Style;
 class MapView2D : public Shape {
  private:
+  uint32_t vaoFill;
+  uint32_t vboFill;
+
   const Style* style;
   //float centerX, centerY, shiftX, shiftY, scaleX, scaleY;
   //glm::mat4 originalTransform;
@@ -21,7 +24,8 @@ class MapView2D : public Shape {
   // and we can have a null map and draw nothing, and change maps
   BlockMapLoader* bml;
   BLHashMap<MapEntry>* bdl;
-  uint32_t numIndicesToDraw;
+  uint32_t numLineIndicesToDraw;
+  uint32_t numFillIndicesToDraw;
   MultiText* mt;
 
  public:
@@ -31,7 +35,10 @@ class MapView2D : public Shape {
   MapView2D(const MapView2D& orig) = delete;
   MapView2D& operator= (const MapView2D& orig) = delete;
   void init() override;
+  void initFill();
+
   void render(glm::mat4& trans) override;
+  void renderFill(glm::mat4& trans);
   void update() override;
   void dump();
 };

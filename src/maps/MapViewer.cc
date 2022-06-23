@@ -35,6 +35,7 @@ void MapViewer::init() {
 void MapViewer::render() {
   Canvas::render();
   mv->render(trans);
+  // TODO: build scaling font (just scaling the projection does not work)
   glm::mat4 textTrans = glm::scale(trans, glm::vec3(0.1, -0.1, 1));
   mt->render(textTrans);
 }

@@ -8,10 +8,10 @@
 #include "opengl/Shape_impl.hh"
 HeatMap::~HeatMap() {}
 
-void HeatMap::render() {
+void HeatMap::render(glm::mat4& trans) {
   // Get Shader based on style
   Shader* shader = Shader::useShader(GLWin::HEATMAP_SHADER);
-  shader->setMat4("projection", *(parentCanvas->getProjection()));
+  shader->setMat4("projection", trans);
   glBindVertexArray(vao);
   glEnableVertexAttribArray(0);
 
