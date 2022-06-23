@@ -12,16 +12,16 @@ void ModifiableMultiShape::updateSolidList(uint32_t startVertexIndex,
                                 numInVertices, CurrentShapeIndices));
 }
 
-/*void ModifiableMultiShape::UpdateLineList(uint32_t lStartVertexIndex,
+void ModifiableMultiShape::updateLineList(uint32_t lStartVertexIndex,
                                           uint32_t startLineIndex) {
   uint32_t points =
       numIndices.back();  // numIndices is in StyledMultiShape2d
                           // refers to number of points, get the latest
-  uint32_t CurrentShapeIndices = IndiceCount.back();
+  uint32_t CurrentShapeIndices = lIndiceCount.back();
   uint32_t numInVertices = elemPerVert * points;
-  solidList.add(SolidInfo(lStartVertexIndex, points, startLineIndex,
-                          numInVertices, CurrentShapeIndices));
-}*/
+  lineList.push_back(LineInfo(lStartVertexIndex, points, startLineIndex,
+                              numInVertices, CurrentShapeIndices));
+}
 
 // ===========================solid Primatives==============================///
 
@@ -92,6 +92,16 @@ uint32_t ModifiableMultiShape::addfillEllipse(float x, float y, float xRad,
 
 //====================Line Primatives=================//
 
+uint32_t ModifiableMultiShape::adddrawRectangle(float x, float y, float w,
+                                                float h, const glm::vec4& c) {
+  uint32_t index = lineList.size();
+  uint32_t startVertexIndex = vertices.size();
+  uint32_t startLineIndex = lineIndices.size();
+  StyledMultiShape2D::drawRectangle(x, y, w, h, c);
+  updateLineList(startVertexIndex, startLineIndex);
+  return index;  // solidList.size() - 1;
+}
+
 //=====================Remove Functions================//
 
 void ModifiableMultiShape::removeSolid(uint32_t index) {
@@ -108,22 +118,16 @@ void ModifiableMultiShape::removeSolid(uint32_t index) {
   for (auto i = solidList.begin() + index + 1; i != solidList.end(); ++i) {
     (*i).startSolidIndex -= solidList[index].shapeIndices;
   }  // fix index for indices
-
-  for (auto i = startIndex; i != solidIndices.end(); ++i) {
-    *i -= solidList[index]
-              .numInIndices;  // TODO:only for rectangles also fix indices
-  }
 }
 
-/*void ModifiableMultiShape::removeLine(uint32_t index) {
-  auto startVertex = vertices.begin() + lineList[index].startVertexIndex;
-  vertices.erase(startVertex, startVertex + solidList[index].numInVertices);
+void ModifiableMultiShape::removeLine(uint32_t index) {
+  auto startVertex = vertices.begin() + lineList[index].lStartVertexIndex;
+  vertices.erase(startVertex, startVertex + lineList[index].lnumInVertices);
 
-  auto startIndex = solidIndices.begin() + solidList[index].startSolidIndex;
-  solidIndices.erase(startIndex, startIndex + solidList[index].ShapeIndices);
+  auto startIndex = lineIndices.begin() + lineList[index].startLineIndex;
+  lineIndices.erase(startIndex, startIndex + lineList[index].lShapeIndices);
 
-  for (auto i = startIndex; i != solidIndices.end(); ++i) {
-    *i -= solidList[index]
-              .numInIndices;  // TODO:only for rectangles also fix indices
-  }                      // tab->getParentWin()->setUpdate();
-}*/
+  for (auto i = startIndex; i != lineIndices.end(); ++i) {
+    *i -= lineList[index].lnumInIndices;
+  }
+}

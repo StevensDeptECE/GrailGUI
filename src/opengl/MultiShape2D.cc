@@ -122,6 +122,7 @@ void MultiShape2D::lAddTriIndices() {
   lineIndices.push_back(startIndex + 2);
   lineIndices.push_back(startIndex + 2);
   lineIndices.push_back(startIndex);
+  lIndiceCount.push_back(6);
 }
 
 void MultiShape2D::lAddQuadIndices() {
@@ -134,6 +135,7 @@ void MultiShape2D::lAddQuadIndices() {
   lineIndices.push_back(startIndex + 3);
   lineIndices.push_back(startIndex + 3);
   lineIndices.push_back(startIndex);
+  lIndiceCount.push_back(8);
 }
 
 void MultiShape2D::lAddSectorIndices(uint32_t centerIndex,
@@ -143,6 +145,7 @@ void MultiShape2D::lAddSectorIndices(uint32_t centerIndex,
        curIndex < startIndex + indexCount - 1; curIndex++) {
     lineIndices.push_back(curIndex);
     lineIndices.push_back(curIndex + 1);
+    SectorIndices += 3;
   }
 }
 

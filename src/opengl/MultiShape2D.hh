@@ -10,6 +10,7 @@ class MultiShape2D : public MultiShape {
   uint32_t elemPerVert;
   uint32_t SectorIndices = 0;
   std::vector<int> IndiceCount;
+  std::vector<int> lIndiceCount;
 
   // Utility
   void sAddTriIndices();

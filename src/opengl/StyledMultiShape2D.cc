@@ -285,6 +285,9 @@ void StyledMultiShape2D::drawRoundRect(float x, float y, float w, float h,
   lineIndices.push_back(centerIndex + 1);
 
   points += 9;
+  SectorIndices += 8;
+  lIndiceCount.push_back(SectorIndices);
+  SectorIndices = 0;
   numIndices.push_back(points);
   currentIndex += points;
   startIndices.push_back(currentIndex);
@@ -331,6 +334,8 @@ void StyledMultiShape2D::drawEllipse(float x, float y, float xRad, float yRad,
   lAddSectorIndices(centerIndex, toAdd);
   lineIndices.push_back(getPointIndex() - 1);
   lineIndices.push_back(centerIndex + 2);
+  SectorIndices += 2;
+  lIndiceCount.push_back(SectorIndices);
 
   points = 1 + toAdd;
   numIndices.push_back(points);

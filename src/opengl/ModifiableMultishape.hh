@@ -11,31 +11,14 @@ class ModifiableMultiShape : public StyledMultiShape2D {
     uint32_t startSolidIndex;  // start position in sbo
     uint32_t numInVertices;
     uint32_t shapeIndices;
-
-    /*SolidInfo(uint32_t startVertexIndex, uint32_t numInIndices,
-              uint32_t startSolidIndex, uint32_t numInVertices,
-              uint32_t shapeIndices)
-        : startVertexIndex(startVertexIndex),
-          startSolidIndex(startSolidIndex),
-          numInVertices(numInVertices),
-          shapeIndices(shapeIndices),
-          numInIndices(numInIndices) {}*/
   };
+
   struct LineInfo {
-    uint32_t lStartVertexIndex;  // starting position within vertices
+    uint32_t lStartVertexIndex;
+    uint32_t lnumInIndices;   // starting position within vertices
     uint32_t startLineIndex;  // how many floating point numbers does this use?
     uint32_t lnumInVertices;  // start position in lbo
-    uint32_t lnumInIndices;
     uint32_t lShapeIndices;
-
-    /*LineInfo(uint32_t lStartVertexIndex, uint32_t lnumInIndices,
-             uint32_t startLineIndex, uint32_t lnumInVertices,
-             uint32_t lShapeIndices)
-        : lStartVertexIndex(lStartVertexIndex),
-          lnumInIndices(lnumInIndices),
-          startLineIndex(startLineIndex),
-          lShapeIndices(lShapeIndices),
-          lnumInVertices(lnumInVertices){};*/
   };
   std::vector<SolidInfo> solidList;
   std::vector<LineInfo> lineList;
@@ -55,6 +38,7 @@ class ModifiableMultiShape : public StyledMultiShape2D {
 
   //====================== Util Functions =================//
   void updateSolidList(uint32_t startVertexIndex, uint32_t startSolidIndex);
+  void updateLineList(uint32_t lStartVertexIndex, uint32_t startLineIndex);
 
   //=================== Solid Primatives ============//
   uint32_t addfillRectangle(float x, float y, float w, float h,
@@ -71,21 +55,21 @@ class ModifiableMultiShape : public StyledMultiShape2D {
                           float angleInc, const glm::vec4& c);
 
   //================== Line Primatives ==============//
-  uint32_t drawRectangle(float x, float y, float w, float h,
+  uint32_t adddrawRectangle(float x, float y, float w, float h,
+                            const glm::vec4& c);
+  uint32_t adddrawRoundRect(float x, float y, float w, float h, float rx,
+                            float ry, const glm::vec4& c);
+  uint32_t adddrawTriangle(float x1, float y1, float x2, float y2, float x3,
+                           float y3, const glm::vec4& c);
+  uint32_t adddrawPolygon(const std::vector<float>& v, const glm::vec4& c);
+  uint32_t adddrawPolygon(float x, float y, float xRad, float yRad, float n,
+                          const glm::vec4& c);
+  uint32_t adddrawCompletePolygon(float x, float y, float xRad, float yRad,
+                                  float n, const glm::vec4& c);
+  uint32_t adddrawCircle(float x, float y, float rad, float angleInc,
                          const glm::vec4& c);
-  uint32_t drawRoundRect(float x, float y, float w, float h, float rx, float ry,
-                         const glm::vec4& c);
-  uint32_t drawTriangle(float x1, float y1, float x2, float y2, float x3,
-                        float y3, const glm::vec4& c);
-  uint32_t drawPolygon(const std::vector<float>& v, const glm::vec4& c);
-  uint32_t drawPolygon(float x, float y, float xRad, float yRad, float n,
-                       const glm::vec4& c);
-  uint32_t drawCompletePolygon(float x, float y, float xRad, float yRad,
-                               float n, const glm::vec4& c);
-  uint32_t drawCircle(float x, float y, float rad, float angleInc,
-                      const glm::vec4& c);
-  uint32_t drawEllipse(float x, float y, float xRad, float yRad, float angleInc,
-                       const glm::vec4& c);
+  uint32_t adddrawEllipse(float x, float y, float xRad, float yRad,
+                          float angleInc, const glm::vec4& c);
 
   // TODO: come up with easy API to modify existing StyledMultiShape2Ds...
   void removeSolid(uint32_t index);
