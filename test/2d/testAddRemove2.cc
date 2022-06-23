@@ -15,7 +15,7 @@ class ReactingToInput : public Member {
     m = c->addLayer(new ModifiableMultiShape(c, c->getStyle(), t));
 
 //====================Solid Delete Testing=================//
-#if 1
+#if 0
     uint32_t roundrect1 =
         m->addfillRoundRect(300, 100, 100, 100, 20, 20, green);
     uint32_t rectangle1 = m->addfillRectangle(100, 100, 100, 100, red);
@@ -36,9 +36,23 @@ class ReactingToInput : public Member {
 #endif
 //=================Line Delete Testing=====================//
 #if 0
-    uint32_t rectangle = m->adddrawRectangle(100, 100, 200, 200, red);
+    uint32_t rectangle = m->adddrawRectangle(100, 100, 100, 100, red);
+    uint32_t roundrect = m->adddrawRoundRect(300, 100, 100, 100, 20, 20, green);
+    uint32_t triangle = m->adddrawTriangle(500, 150, 550, 200, 600, 10, yellow);
+    uint32_t polygon = m->adddrawPolygon(700, 100, 20, 20, 6, black);
+    uint32_t circle = m->adddrawCircle(800, 100, 50, 20, blue);
+    uint32_t ellipse = m->adddrawEllipse(800, 300, 100, 200, 2, purple);
+    m->removeLine(roundrect);
     m->removeLine(rectangle);
+    m->removeLine(triangle);
+    m->removeLine(polygon);
+    m->removeLine(circle);
+    m->removeLine(ellipse);
+#endif
 
+//================Image Testing===================//
+#if 0
+    uint32_t image1 =
 #endif
   }
 };

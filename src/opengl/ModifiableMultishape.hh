@@ -1,4 +1,3 @@
-#include "opengl/Image.hh"
 #include "opengl/StyledMultiShape2D.hh"
 #include "util/DynArray.hh"
 
@@ -61,11 +60,8 @@ class ModifiableMultiShape : public StyledMultiShape2D {
                             float ry, const glm::vec4& c);
   uint32_t adddrawTriangle(float x1, float y1, float x2, float y2, float x3,
                            float y3, const glm::vec4& c);
-  uint32_t adddrawPolygon(const std::vector<float>& v, const glm::vec4& c);
   uint32_t adddrawPolygon(float x, float y, float xRad, float yRad, float n,
                           const glm::vec4& c);
-  uint32_t adddrawCompletePolygon(float x, float y, float xRad, float yRad,
-                                  float n, const glm::vec4& c);
   uint32_t adddrawCircle(float x, float y, float rad, float angleInc,
                          const glm::vec4& c);
   uint32_t adddrawEllipse(float x, float y, float xRad, float yRad,
