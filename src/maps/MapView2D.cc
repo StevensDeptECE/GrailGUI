@@ -15,7 +15,6 @@ MapView2D::MapView2D(MapViewer* parent, const Style* s, MultiText* mt,
       : Shape(parent), style(s), bml(bml), bdl(bdl), mt(mt) {
     const BoundRect& bounds = bml->getBlockMapHeader()->bounds;
     parent->setOrigBounds(bounds.xMin, bounds.xMax, bounds.yMin, bounds.yMax);
-    parent->addLayer(mt);
   }
 
 

@@ -19,12 +19,25 @@ MapViewer::MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint3
     mv = new MapView2D(this, style, mt, bml, bdl);
     // MapView2D automatically sets bounds on this object (the MapViewer)
 
-    addLayer(mv);  // add the MapView2D to this map FIRST because it is under the text
-    addLayer(mt);  // add the text to this map (on top of the MapView2D)
+    //addLayer(mv);  // add the MapView2D to this map FIRST because it is under the text
+    //addLayer(mt);  // add the text to this map (on top of the MapView2D)
+
 }
 
 // mv and mt are freed by the Canvas
 MapViewer::~MapViewer() {}
+
+void MapViewer::init() {
+  mv->init();
+  mt->init();
+}
+
+void MapViewer::render() {
+  Canvas::render();
+  mv->render(trans);
+  glm::mat4 textTrans = glm::scale(trans, glm::vec3(0.1, -0.1, 1));
+  mt->render(textTrans);
+}
 
 void MapViewer::setView() {
   setOrthoProjection(centerLon - scaleLon + shiftLon, centerLon + scaleLon + shiftLon, centerLat - scaleLat + shiftLat,

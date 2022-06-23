@@ -406,12 +406,9 @@ void MultiText::render(glm::mat4& trans) {
 
   Shader* s = Shader::useShader(GLWin::TEXT_SHADER);
   s->setVec4("textColor", style->getFgColor());
-  Transformation::dump(transform);
-  Transformation::apply(transform,-73.9, 40.6,0);
-  glm::mat4 m = *parentCanvas->getProjection() * transform;
-  Transformation::dump(m);
-  Transformation::apply(m, -73.9, 40.6,0);
-  s->setMat4("projection", m);
+  //Transformation::dump(trans);
+  //Transformation::apply(trans, -73.9, 40.6,0);
+  s->setMat4("projection", trans);
   s->setInt("ourTexture", 0);
 
   // glPushAttrib(GL_CURRENT_BIT);

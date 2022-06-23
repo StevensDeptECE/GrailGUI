@@ -31,6 +31,8 @@ class MapViewer : public Canvas {
   BlockMapLoader* bml = nullptr, BLHashMap<MapEntry>* bdl = nullptr) 
   : MapViewer(w, tab, style, 0, 0, w->getWidth(), w->getHeight(), w->getWidth(), w->getHeight(), bml, bdl) {}
   ~MapViewer();
+  void init();
+  void render();
   void setView();
   void zoomIn(float factor);
   void zoomOut(float factor);
