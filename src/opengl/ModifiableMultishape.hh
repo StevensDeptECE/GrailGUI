@@ -8,7 +8,7 @@ class ModifiableMultiShape : public StyledMultiShape2D {
     uint32_t startVertexIndex;
     uint32_t numInIndices;  // starting position within vertices // how many //
                             // floating point numbers does this use?
-    uint32_t startSolidIndex;  // start position in sbo
+    uint32_t startSolidIndex;  // start position in sbo (nice)
     uint32_t numInVertices;
     uint32_t shapeIndices;
   };
