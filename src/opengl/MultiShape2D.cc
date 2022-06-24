@@ -145,7 +145,7 @@ void MultiShape2D::lAddSectorIndices(uint32_t centerIndex,
        curIndex < startIndex + indexCount - 1; curIndex++) {
     lineIndices.push_back(curIndex);
     lineIndices.push_back(curIndex + 1);
-    SectorIndices += 3;
+    SectorIndices += 2;
   }
 }
 
