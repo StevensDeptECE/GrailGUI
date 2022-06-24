@@ -24,6 +24,12 @@ MapView2D::~MapView2D() {
 }
 
 void MapView2D::init() {
+  initOutline();
+  initLabels(); 
+  initFill();
+}
+
+void MapView2D::initOutline() {
   uint32_t numPoints = bml->getNumPoints();
 
   glGenVertexArrays(1, &vao);  // Create the container for all vbo objects
@@ -62,9 +68,10 @@ void MapView2D::init() {
                lineIndices, GL_STATIC_DRAW);
 
   delete[] lineIndices;
+}
 
+void MapView2D::initLabels() {
   const Font* f = mt->getStyle()->f;
-  #if 1
   const BlockMapLoader::Region* regions = bml->getRegions();
   // TODO: need to implement to get states
   //const BlockMapLoader::RegionContainer* regionContainer = bml->getRegionContainer();
@@ -80,9 +87,9 @@ void MapView2D::init() {
       mt->addCentered(x, y, f, name, len);
     }
   }
-  #endif
-  mt->addCentered(0,0,f,"testing", 7);
+//  mt->addCentered(0,0,f,"testing", 7);
 }
+
 void MapView2D::initFill() {
   uint32_t numPoints = bml->getNumPoints();
 

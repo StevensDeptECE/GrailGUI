@@ -35,7 +35,10 @@ class MapView2D : public Shape {
   MapView2D(const MapView2D& orig) = delete;
   MapView2D& operator= (const MapView2D& orig) = delete;
   void init() override;
-  void initFill();
+  void initOutline(); // draw outlines of the map borders
+  void initLabels();
+  void initFill();    // draw solid color outlines using (eventually) data to colorize
+
 
   void render(glm::mat4& trans) override;
   void renderFill(glm::mat4& trans);
