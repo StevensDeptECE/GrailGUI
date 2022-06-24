@@ -28,6 +28,11 @@ class ReactingToInput : public Member {
     rect = m->addfillRectangle(50, 100, 100, 100, red);
     roundRect = m->addfillRoundRect(300, 200, 100, 100, 50, 50, green);
     triangle = m->addfillTriangle(550, 200, 500, 250, 600, 250, blue);
+    m->removeSolid(rect);
+    rect = m->addfillRectangle(50, 100, 100, 100, red);
+    m->removeSolid(rect);
+    rect = m->addfillRectangle(50, 100, 100, 100, red);
+
     ButtonWidget* rectButton =
         new ButtonWidget(c, 50, 500, 200, 200, "Rect", "remove");
     ButtonWidget* roundRectButton =
@@ -35,46 +40,44 @@ class ReactingToInput : public Member {
     ButtonWidget* triButton =
         new ButtonWidget(c, 550, 500, 200, 200, "Triangle", "remove");
 
-    rectButton->setAction(bind(&ReactingToInput::toggleRect, this, rect));
-    roundRectButton->setAction(
-        bind(&ReactingToInput::toggleRoundRect, this, roundRect));
-    triButton->setAction(
-        bind(&ReactingToInput::toggleTriangle, this, triangle));
+    rectButton->setAction(bind(&ReactingToInput::toggleRect, this));
+    roundRectButton->setAction(bind(&ReactingToInput::toggleRoundRect, this));
+    triButton->setAction(bind(&ReactingToInput::toggleTriangle, this));
     //  ideally put action on button to delete so you can see it in real time
   }
 
-  void toggleRect(uint32_t index) {
+  void toggleRect() {
     if (recton == true) {
-      m->removeSolid(index);
+      m->removeSolid(rect);
       recton = false;
     } else {
       rect = m->addfillRectangle(50, 100, 100, 100, red);
       recton = true;
     }
-    m->init();
+    m->updatePoints();
     tab->getParentWin()->setUpdate();
   }
 
-  void toggleRoundRect(uint32_t index) {
+  void toggleRoundRect() {
     if (roundrecton == true) {
-      m->removeSolid(index);
+      m->removeSolid(roundRect);
       roundrecton = false;
     } else {
       roundRect = m->addfillRoundRect(300, 200, 100, 100, 50, 50, green);
       roundrecton = true;
     }
-    m->init();
+    m->updatePoints();
     tab->getParentWin()->setUpdate();
   }
-  void toggleTriangle(uint32_t index) {
+  void toggleTriangle() {
     if (triangleon == true) {
-      m->removeSolid(index);
+      m->removeSolid(triangle);
       triangleon = false;
     } else {
       triangle = m->addfillTriangle(550, 200, 500, 250, 600, 250, blue);
       triangleon = true;
     }
-    m->init();
+    m->updatePoints();
     tab->getParentWin()->setUpdate();
   }
 };
