@@ -24,20 +24,22 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
 
   uint64_t numPoints = 0;
   uint32_t numSegments = 0;
-  vector<SHPObject*> shapes(nEntities);
+  vector<SHPObject*> shapes(nEntities); // each county shape is a list of polygons
   for (int i = 0; i < nEntities; i++) {
     SHPObject* shape = SHPReadObject(shapeHandle, i);
     if (shape == nullptr) {
       std::cerr << "Warning: error reading shape " << i << "\n";
       continue;
     }
-    numPoints += shape->nVertices;
+    numPoints += shape->nVertices; // ESRI has 1 extra point per polygon wasted (duplicate of start)
     numSegments += shape->nParts;
     shapes[i] = shape;
   }
+  // but we want 1 extra point for each polygon for centroid: net NO CHANGE
+  //NO EXTRA POINTS???? numPoints += numSegments; // adding 1 extra point for centroid of polygon
 
   BlockMapLoader bml(sizeof(BlockMapHeader) + nEntities * sizeof(Region) +
-                         numSegments * sizeof(Segment) + numPoints * 8,
+                         numSegments * sizeof(Segment) + numPoints * 2 * sizeof(float),
                      version);
   // first bytes past standard header is the header specific to this file format
   bml.blockMapHeader = (BlockMapHeader*)bml.getSpecificHeader();
@@ -72,25 +74,36 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
     }
     // regions[i].numPoints =
     BoundRect& bounds = bml.regions[i].bounds;
-    bounds.xMin = shapes[i]->dfXMin;
+    bounds.xMin = shapes[i]->dfXMin; // copying bounds from ESRI into bml
     bounds.xMax = shapes[i]->dfXMax;
     bounds.yMin = shapes[i]->dfYMin;
     bounds.yMax = shapes[i]->dfYMax;
-    bml.regions[i].baseX = shapes[i]->padfX[0];
-    bml.regions[i].baseY = shapes[i]->padfY[0];
+    bml.regions[i].baseX = shapes[i]->padfX[0]; // baseX baseY stored as double
+    bml.regions[i].baseY = shapes[i]->padfY[0]; // for future accuracy = ESRI map
     for (uint32_t j = 0; j < shapes[i]->nParts; j++, segCount++) {
-      bml.segments[segCount].type = shapes[i]->nSHPType;
+      bml.segments[segCount].type = shapes[i]->nSHPType; // should be a closed polygon
       uint32_t numPoints;
       if (j == shapes[i]->nParts - 1)
-        numPoints = shapes[i]->nVertices - start[j];
+        numPoints = shapes[i]->nVertices - start[j] - 1; // last point is a dup of the first
       else
-        numPoints = start[j + 1] - start[j];
+        numPoints = start[j + 1] - start[j] - 1; // last point is a dup of the first
+        // at this point numPoints = number of points in your polygon
       bml.segments[segCount].numPoints = numPoints;
       uint32_t startOffset = pointOffset;
-      for (uint32_t k = 0; k < numPoints; k++) {
-        bml.points[pointOffset++] = shapes[i]->padfX[start[j] + k];
-        bml.points[pointOffset++] = shapes[i]->padfY[start[j] + k];
+      float sumX = 0, sumY = 0;
+      for (uint32_t k = 0; k < numPoints; k++) { // number of points in the segment
+      //TODO: if we delta-compress this, it will be a)more accurate and b)compress WAY better
+      //  float dx = shapes[i]->padfX[start[j] + k] - baseX; // doing everything as deltas off baseX,baseY is more accurate
+      //  float dy = shapes[i]->padfY[start[j] + k] - baseY;
+        float x = shapes[i]->padfX[start[j] + k]; // x coord
+        float y = shapes[i]->padfY[start[j] + k]; // y coord
+        sumX += x, sumY += y;
+        bml.points[pointOffset++] = x;
+        bml.points[pointOffset++] = y;
       }
+      bml.points[pointOffset++] = sumX / numPoints; // centroidX
+      bml.points[pointOffset++] = sumY / numPoints; // centroidY
+      #if 0
       if (approxeqpt(bml.points[startOffset], bml.points[startOffset + 1],
                      bml.points[pointOffset - 2],
                      bml.points[pointOffset - 1])) {
@@ -102,13 +115,16 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
         numDups++;
         bml.segments[segCount].numPoints--;
       }
+      #endif
     }
   }
 
+  #if 0
   // cerr << "Removed " << numDups << " final points of polygons\n";
   uint32_t numFloatsRemoved = numDups * 2;
   bml.blockMapHeader->numPoints -= numFloatsRemoved;
   bml.size -= numFloatsRemoved * sizeof(float);
+  #endif
   for (const auto& shape : shapes) SHPDestroyObject(shape);
   SHPClose(shapeHandle);
 

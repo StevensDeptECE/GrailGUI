@@ -66,7 +66,7 @@ class Canvas {
     return nullptr;
   }
 
-  void init() {
+  virtual void init() {
     for (int i = 0; i < layers.size(); i++) {
       layers[i]->init();
     }
@@ -86,7 +86,7 @@ class Canvas {
 
   const Style* getStyle() const { return style; }
 
-  void render();
+  virtual void render();
 
   void cleanup();
 };

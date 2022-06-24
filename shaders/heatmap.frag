@@ -1,8 +1,8 @@
 #version 330 core
 out vec4 FragColor;
 
-in vec2 TexCoord;
-
+//in vec2 TexCoord;
+in float val;
 //uniform sampler2D ourTexture;
 uniform vec3 minColor;
 uniform vec3 maxColor;

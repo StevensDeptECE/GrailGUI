@@ -10,6 +10,6 @@ out float val;
 void main() {
 	gl_Position = transform*vec4(xy, 1.0);
 	//TexCoord = vec2(0.0, inval);
-	val = val;
+	val = inval;
 }
 
