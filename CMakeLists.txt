@@ -122,8 +122,13 @@ if(NOT glm_POPULATED)
   FetchContent_Populate(glm)
 endif()
 
+# cURLpp
+FetchContent_Declare(
+  curlpp
+  GIT_REPOSITORY https://github.com/jpbarrette/curlpp.git
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/glm)
+FetchContent_MakeAvailable(curlpp)
 # stats.hh
-
 FetchContent_Declare(
   stats
   GIT_REPOSITORY https://gitlab.com/Silent__Ninja346/stats
@@ -165,10 +170,9 @@ target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/external)
 
 # target_include_directories(grailserver PUBLIC ${PROJECT_SOURCE_DIR}/src)
 # target_include_directories(grailserver PUBLIC ${PROJECT_SOURCE_DIR}/include)
-# target_include_directories(grailserver
-#                            PUBLIC ${PROJECT_SOURCE_DIR}/external/glm)
-# target_include_directories(grailserver
-#                            PUBLIC ${PROJECT_SOURCE_DIR}/external/fmt/include)
+# target_include_directories(grailserver PUBLIC
+# ${PROJECT_SOURCE_DIR}/external/glm) target_include_directories(grailserver
+# PUBLIC ${PROJECT_SOURCE_DIR}/external/fmt/include)
 # target_include_directories(grailserver PUBLIC ${PROJECT_SOURCE_DIR}/external)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
@@ -177,4 +181,4 @@ endif()
 
 add_subdirectory(test)
 
-#dump_cmake_variables()
+# dump_cmake_variables()

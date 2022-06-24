@@ -1,5 +1,9 @@
 #include "Cloud.hh"
 
+#include <curlpp/Infos.hpp>
+#include <curlpp/Options.hpp>
+#include <curlpp/cURLpp.hpp>
+
 void CloudClient::get_file_bytes(const std::string &fname) {
   std::ifstream fi(fname);
   if (!fi.is_open()) throw Ex2(Errcode::FILE_NOT_FOUND, fname);

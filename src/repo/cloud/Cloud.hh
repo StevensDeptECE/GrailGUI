@@ -8,9 +8,6 @@
 #include <openssl/sha.h>
 
 #include <curlpp/Easy.hpp>
-#include <curlpp/Infos.hpp>
-#include <curlpp/Options.hpp>
-#include <curlpp/cURLpp.hpp>
 
 #include "json.hpp"
 using json = nlohmann::json;

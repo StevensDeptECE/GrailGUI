@@ -7,15 +7,14 @@ add_subdirectory(CAD)
 add_subdirectory(repo)
 
 set(grail-path
-            ${PROJECT_SOURCE_DIR}/include/glad/glad.c
-            ${grail-csp}
-            ${grail-data}
-            ${grail-opengl}
-            ${grail-util}
-            ${grail-xdl}
-            ${grail-CAD}
-            ${grail-repo}
-)
+    ${PROJECT_SOURCE_DIR}/include/glad/glad.c
+    ${grail-csp}
+    ${grail-data}
+    ${grail-opengl}
+    ${grail-util}
+    ${grail-xdl}
+    ${grail-CAD}
+    ${grail-repo})
 
 if(${GRAIL_EXPERIMENTAL})
   add_subdirectory(xp)
@@ -31,7 +30,6 @@ endif()
 # add_library(grailserver ${grail-path})
 
 add_library(grail ${grail-path} opengl/Main.cc)
-
 
 # GLFW
 target_include_directories(grail INTERFACE ${GLFW_INCLUDE_DIRS})
@@ -80,13 +78,17 @@ target_link_libraries(grail fmt::fmt)
 target_include_directories(grail INTERFACE ${OPENSSL_INCLUDE_DIR})
 target_link_libraries(grail OpenSSL::Crypto OpenSSL::SSL)
 
+# curlpp
+target_include_directories(grail PRIVATE ${CURLPP_INCLUDE_DIR})
+target_link_libraries(grail curlpp)
+
 # Shapelib
 target_link_libraries(grail shpgrail)
 
 # target_link_libraries(grailserver shpgrail)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
-	target_link_libraries(grail wsock32 ws2_32)
+  target_link_libraries(grail wsock32 ws2_32)
 
   # target_link_libraries(grailserver wsock32 ws2_32)
 endif()
