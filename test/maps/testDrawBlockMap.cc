@@ -26,7 +26,7 @@ class TestDrawBlockMap : public Member {
     Style* s = new Style(tab->getDefaultFont(), grail::white, grail::black);
     BlockMapLoader* bml = new BlockMapLoader(bmlfile);
     BLHashMap<MapEntry>* bdl = new BLHashMap<MapEntry>(bdlfile);
-    viewer = new MapViewer(getParent(), tab, s, bml, bdl);
+    viewer = new MapViewer(getParent(), tab, s, bml, bdl, 0.002);
     viewer->setOrigBounds(-90, 90, -180, 180);
     // BUG: bounds from bml are somehow corrupted, so we set the bounds ourselves
 

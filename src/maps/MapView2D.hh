@@ -17,6 +17,7 @@ class MapView2D : public Shape {
   uint32_t vboFill;
 
   const Style* style;
+  float textScale;
   //float centerX, centerY, shiftX, shiftY, scaleX, scaleY;
   //glm::mat4 originalTransform;
   //glm::mat4 transform;
@@ -30,13 +31,13 @@ class MapView2D : public Shape {
 
  public:
   MapView2D(MapViewer* parent, const Style* s, MultiText* mt,
-   BlockMapLoader* bml = nullptr, BLHashMap<MapEntry>* bdl = nullptr);
+   BlockMapLoader* bml = nullptr, BLHashMap<MapEntry>* bdl = nullptr, float textScale = 1);
   ~MapView2D();
   MapView2D(const MapView2D& orig) = delete;
   MapView2D& operator= (const MapView2D& orig) = delete;
   void init() override;
   void initOutline(); // draw outlines of the map borders
-  void initLabels();
+  void initLabels(); // draw text labels for counties
   void initFill();    // draw solid color outlines using (eventually) data to colorize
 
 

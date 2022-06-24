@@ -10,13 +10,13 @@
 MapViewer::MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint32_t vpY,
          uint32_t vpW, uint32_t vpH,
          uint32_t pX, uint32_t pY,
-         BlockMapLoader* bml, BLHashMap<MapEntry>* bdl)
+         BlockMapLoader* bml, BLHashMap<MapEntry>* bdl, float textScale)
     : Canvas(w, tab, style, vpX, vpY, vpW, vpH, pX, pY) {
 
     // NOTE: mt MUST be created first becuase mv needs it
+    this->textScale = textScale;
     mt = new MultiText(this, style, 12);
-
-    mv = new MapView2D(this, style, mt, bml, bdl);
+    mv = new MapView2D(this, style, mt, bml, bdl, 1/textScale);
     // MapView2D automatically sets bounds on this object (the MapViewer)
 
     //addLayer(mv);  // add the MapView2D to this map FIRST because it is under the text
@@ -35,8 +35,8 @@ void MapViewer::init() {
 void MapViewer::render() {
   Canvas::render();
   mv->render(trans);
-  // TODO: build scaling font (just scaling the projection does not work)
-  glm::mat4 textTrans = glm::scale(trans, glm::vec3(0.1, -0.1, 1));
+  // scale x and y coordinates by 1/factor in MapView2D
+  glm::mat4 textTrans = glm::scale(trans, glm::vec3(textScale, -textScale, 1));
   mt->render(textTrans);
 }
 
