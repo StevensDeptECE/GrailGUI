@@ -5,6 +5,10 @@ struct Point {
   float x,y;
   Point(float x, float y) : x(x), y(y) {}
 };
+struct Line {
+  Point start, end;
+  Line(Point start, Point end) : start(start), end(end){};
+};
 
 Point centroid(float xy[], int n);
 
