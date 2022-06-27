@@ -4,6 +4,7 @@
 #include "data/BlockMapLoader2.hh"
 #include "libshape/shapefil.h"
 #include "util/Ex.hh"
+#include "maps/Geometry.hh"
 using namespace std;
 
 // extra parameter calls loader from ESRI Shapefile
@@ -82,27 +83,28 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
     bml.regions[i].baseY = shapes[i]->padfY[0]; // for future accuracy = ESRI map
     for (uint32_t j = 0; j < shapes[i]->nParts; j++, segCount++) {
       bml.segments[segCount].type = shapes[i]->nSHPType; // should be a closed polygon
-      uint32_t numPoints;
+      uint32_t numSegPoints;
       if (j == shapes[i]->nParts - 1)
-        numPoints = shapes[i]->nVertices - start[j] - 1; // last point is a dup of the first
+        numSegPoints = shapes[i]->nVertices - start[j] - 1; // last point is a dup of the first
       else
-        numPoints = start[j + 1] - start[j] - 1; // last point is a dup of the first
+        numSegPoints = start[j + 1] - start[j] - 1; // last point is a dup of the first
         // at this point numPoints = number of points in your polygon
-      bml.segments[segCount].numPoints = numPoints;
+      bml.segments[segCount].numPoints = numSegPoints;
       uint32_t startOffset = pointOffset;
-      float sumX = 0, sumY = 0;
-      for (uint32_t k = 0; k < numPoints; k++) { // number of points in the segment
+      Point center = centroid(shapes[i]->padfX + start[j],shapes[i]->padfY + start[j], numSegPoints);
+      for (uint32_t k = 0; k < numSegPoints; k++) { // number of points in the segment
       //TODO: if we delta-compress this, it will be a)more accurate and b)compress WAY better
       //  float dx = shapes[i]->padfX[start[j] + k] - baseX; // doing everything as deltas off baseX,baseY is more accurate
       //  float dy = shapes[i]->padfY[start[j] + k] - baseY;
         float x = shapes[i]->padfX[start[j] + k]; // x coord
         float y = shapes[i]->padfY[start[j] + k]; // y coord
-        sumX += x, sumY += y;
         bml.points[pointOffset++] = x;
         bml.points[pointOffset++] = y;
       }
-      bml.points[pointOffset++] = sumX / numPoints; // centroidX
-      bml.points[pointOffset++] = sumY / numPoints; // centroidY
+      bml.points[pointOffset++] = center.x;
+      bml.points[pointOffset++] = center.y;
+      //bml.points[pointOffset++] = (bounds.xMin + bounds.xMin)/2;
+      //bml.points[pointOffset++] = (bounds.yMin + bounds.yMin)/2;
       #if 0
       if (approxeqpt(bml.points[startOffset], bml.points[startOffset + 1],
                      bml.points[pointOffset - 2],

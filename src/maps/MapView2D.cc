@@ -51,15 +51,15 @@ void MapView2D::initOutline() {
 
   //TODO: now we have one segment from Alaska (instead of Maine) pointing to (0,0)
   // number of points in blockmap + 1 index per segment for separator - 1 point for the centroid stored after each polygon
-  numLineIndicesToDraw = numPoints; //+ (numSegments- numSegments);
+  numLineIndicesToDraw = numPoints + numSegments; // so we can also draw centroids if we want to + (numSegments- numSegments);
   uint32_t* lineIndices = new uint32_t[numLineIndicesToDraw];
   uint32_t c = 0;
   for (uint32_t i = 0, j = 0; i < numSegments; i++) {
     uint32_t startSegment = j;
-      for (uint32_t k = 0; k < bml->getSegment(i).numPoints; k++) {
+      for (uint32_t k = 0; k < bml->getSegment(i).numPoints+1; k++) {
         lineIndices[c++] = j++;
       }
-      j++; // skip centroid at end of segment
+      //j++; // skip centroid at end of segment
       lineIndices[c++] = endIndex; // add the separator (0xFFFFFFFF)
   }
   glGenBuffers(1, &lbo);
@@ -105,7 +105,7 @@ void MapView2D::initFill() {
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
   // Create a buffer object for indices of lines
-  uint32_t numSegments = bml->getNumSegments();
+  uint32_t numSegments = 10; //bml->getNumSegments();
   constexpr uint32_t endIndex = 0xFFFFFFFF;
   // xy1 xy2 xy3 xy4 xy5 ... (xy points on the map)
   // 1 2 3 4 5 ... 1 0xFFFFFFFF 6 7 8 ... 6 0xFFFFFFFF (connect the points)
@@ -148,6 +148,12 @@ void debug(const glm::mat4& m, float x, float y, float z) {
 }
 
 void MapView2D::render(glm::mat4& trans) {
+  //renderOutline(trans);
+  //renderLabels(trans);
+  renderFill(trans);
+}
+
+void MapView2D::renderOutline(glm::mat4& trans) {
   Shader* shader = Shader::useShader(GLWin::COMMON_SHADER);
   shader->setVec4("solidColor", style->getFgColor());
 
@@ -178,29 +184,28 @@ void MapView2D::render(glm::mat4& trans) {
 }
 
 void MapView2D::renderFill(glm::mat4& trans) {
-  #if 0
+  
   Shader* shader = Shader::useShader(GLWin::HEATMAP_SHADER);
   shader->setVec4("minColor", grail::blue);
   shader->setVec4("maxColor", grail::red);
   shader->setFloat("minVal", 0.0f);
   shader->setFloat("maxVal", 1.0f);
   shader->setMat4("projection", trans);
-#endif
-  Shader* shader = Shader::useShader(GLWin::COMMON_SHADER);//TODO: make new shader
+
+  //Shader* shader = Shader::useShader(GLWin::COMMON_SHADER);//TODO: make new shader
   
-  shader->setVec4("solidColor", grail::red); // draw in red, just to see it work!
-  shader->setMat4("projection", trans);
+  //shader->setVec4("solidColor", grail::red); // draw in red, just to see it work!
+  //shader->setMat4("projection", trans);
 
   glEnable(GL_PRIMITIVE_RESTART);
   glPrimitiveRestartIndex(0xFFFFFFFFU);
 
-  glBindVertexArray(vao);
+  glBindVertexArray(vaoFill);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
-  glLineWidth(style->getLineWidth());
 
-  // Draw Lines
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
+  // Draw Solid
+  numFillIndicesToDraw = 19;
   glDrawElements(GL_TRIANGLE_FAN, numFillIndicesToDraw, GL_UNSIGNED_INT, 0);
 
   // Unbind

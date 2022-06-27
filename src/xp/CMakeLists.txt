@@ -1,6 +1,7 @@
 set(grail-xp
-  Calendar.cc
-  lzmadecode.cc
+  #Calendar.cc
+  #lzmadecode.cc
+  Geometry.cc
 )
 
 list(TRANSFORM grail-xp PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/)
