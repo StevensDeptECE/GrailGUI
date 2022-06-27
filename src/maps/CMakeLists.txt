@@ -1,4 +1,5 @@
 set(grail-maps
+    Geometry.cc
     MapView2D.cc
     MapViewer.cc)
 

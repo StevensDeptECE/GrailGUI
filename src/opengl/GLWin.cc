@@ -268,7 +268,7 @@ void GLWin::shaderInit() {
                "common.frag");  // Texture for images
   Shader::load("multiText.bin", "MultiTexture.vert",
                "MultiTexture.frag");  // MultiTexture for shapes
-  // Shader::load("heatmap.bin", "heatmap.vert", "heatmap.frag");
+  Shader::load("heatmap.bin", "heatmap.vert", "heatmap.frag");
 #if 0
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback(messageCallback, 0);

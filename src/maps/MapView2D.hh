@@ -42,6 +42,8 @@ class MapView2D : public Shape {
 
 
   void render(glm::mat4& trans) override;
+  void renderOutline(glm::mat4& trans);
+  void renderLabels(glm::mat4& trans);
   void renderFill(glm::mat4& trans);
 
   void setTextScale(float textScale);
