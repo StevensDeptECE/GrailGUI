@@ -21,15 +21,16 @@ class MapViewer : public Canvas {
   MultiText* mt; //WARNING: mt MUST COME BEFORE mv because it is used in it!!!
   // not great style, but C++ does not allow us an easy way out
   MapView2D* mv;
+  float textScale;
 
  public:
   MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint32_t vpY,
          uint32_t vpW, uint32_t vpH, uint32_t pX,
          uint32_t pY, BlockMapLoader* bml = nullptr,
-            BLHashMap<MapEntry>* bdl = nullptr);
-  MapViewer(GLWin* w, Tab* tab, const Style* style, 
-  BlockMapLoader* bml = nullptr, BLHashMap<MapEntry>* bdl = nullptr) 
-  : MapViewer(w, tab, style, 0, 0, w->getWidth(), w->getHeight(), w->getWidth(), w->getHeight(), bml, bdl) {}
+            BLHashMap<MapEntry>* bdl = nullptr, float textScale = 1);
+  MapViewer(GLWin* w, Tab* tab, const Style* style,
+  BlockMapLoader* bml = nullptr, BLHashMap<MapEntry>* bdl = nullptr, float textScale = 1) 
+  : MapViewer(w, tab, style, 0, 0, w->getWidth(), w->getHeight(), w->getWidth(), w->getHeight(), bml, bdl, textScale) {}
   ~MapViewer();
   void init();
   void render();

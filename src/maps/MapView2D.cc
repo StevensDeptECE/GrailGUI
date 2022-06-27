@@ -11,8 +11,8 @@
 using namespace std;
 
 MapView2D::MapView2D(MapViewer* parent, const Style* s, MultiText* mt,
- BlockMapLoader* bml, BLHashMap<MapEntry>* bdl)
-      : Shape(parent), style(s), bml(bml), bdl(bdl), mt(mt) {
+ BlockMapLoader* bml, BLHashMap<MapEntry>* bdl, float textScale)
+      : Shape(parent), style(s), mt(mt), bml(bml), bdl(bdl),textScale(textScale){
     const BoundRect& bounds = bml->getBlockMapHeader()->bounds;
     parent->setOrigBounds(bounds.xMin, bounds.xMax, bounds.yMin, bounds.yMax);
   }
@@ -75,15 +75,16 @@ void MapView2D::initLabels() {
   const BlockMapLoader::Region* regions = bml->getRegions();
   // TODO: need to implement to get states
   //const BlockMapLoader::RegionContainer* regionContainer = bml->getRegionContainer();
-  const uint32_t count = 2; //bdl->getNodeCount();
+  const uint32_t count = bdl->getNodeCount();
   for (uint32_t i = 1; i < count; i++) {
     const char* name = bdl->getNameAt(i);
     uint32_t len = strlen(name);
     const MapEntry* mapInfo = bdl->getValueAt(i);
     if (mapInfo->entityType == ENT_COUNTY) {
       const BlockMapLoader::Region& r = regions[mapInfo->offset];
-      float x = (r.bounds.xMax + r.bounds.xMin)/2;
-      float y = (r.bounds.yMax + r.bounds.yMin)/2;
+      // scale x and y by 1/factor of projection downscale
+      float x = (r.bounds.xMax + r.bounds.xMin)/2*textScale;
+      float y = (r.bounds.yMax + r.bounds.yMin)/2*-textScale;
       mt->addCentered(x, y, f, name, len);
     }
   }
