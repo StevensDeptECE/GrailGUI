@@ -85,7 +85,7 @@ void MapView2D::initLabels() {
       // scale x and y by 1/factor of projection downscale
       float x = (r.bounds.xMax + r.bounds.xMin)/2*textScale;
       float y = (r.bounds.yMax + r.bounds.yMin)/2*-textScale;
-      mt->addCentered(x, y, f, name, len);
+      mt->addCentered(x, y, f, name+2, len-2); // +2 and -2 to remove the appended state abbr.
     }
   }
 //  mt->addCentered(0,0,f,"testing", 7);
@@ -209,6 +209,12 @@ void MapView2D::renderFill(glm::mat4& trans) {
   glDisableVertexAttribArray(0);
   glBindVertexArray(0);
   glDisable(GL_PRIMITIVE_RESTART);
+}
+
+void MapView2D::setTextScale(float textScale) {
+  this->textScale = textScale;
+  mt->clear();
+  MapView2D::initLabels();
 }
 
 void MapView2D::update() {}

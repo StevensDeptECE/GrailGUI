@@ -22,6 +22,7 @@ class MapViewer : public Canvas {
   // not great style, but C++ does not allow us an easy way out
   MapView2D* mv;
   float textScale;
+  bool displayText;
 
  public:
   MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint32_t vpY,
@@ -37,11 +38,17 @@ class MapViewer : public Canvas {
   void setView();
   void zoomIn(float factor);
   void zoomOut(float factor);
-  void zoomIn(float lat, float lon, float factor);
-  void zoomOut(float lat, float lon, float factor);
+  void zoomInOnCenter(float lat, float lon, float factor);
+  void zoomOutOnCenter(float lat, float lon, float factor);
   void translatePercent(float percentLat, float percentLon);
   void translate(float deltaLat, float deltaLon);
   void resetToOriginal();
   void setOriginalCoords(float centerLat, float centerLon, float scaleLat, float scaleLon, float shiftLon, float shiftLat);
   void setOrigBounds(float minLat, float maxLat, float minLon, float maxLon);
+  void setTextScale(float textScale);
+  void increaseTextSize(float factor);
+  void decreaseTextSize(float factor);
+  void toggleDisplayText();
+  void zoomInOnMouse(float factor);
+  void zoomOutOnMouse(float factor);
 };

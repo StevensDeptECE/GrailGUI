@@ -15,6 +15,7 @@ MapViewer::MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint3
 
     // NOTE: mt MUST be created first becuase mv needs it
     this->textScale = textScale;
+    displayText = true;
     mt = new MultiText(this, style, 12);
     mv = new MapView2D(this, style, mt, bml, bdl, 1/textScale);
     // MapView2D automatically sets bounds on this object (the MapViewer)
@@ -35,9 +36,11 @@ void MapViewer::init() {
 void MapViewer::render() {
   Canvas::render();
   mv->render(trans);
-  // scale x and y coordinates by 1/factor in MapView2D
-  glm::mat4 textTrans = glm::scale(trans, glm::vec3(textScale, -textScale, 1));
-  mt->render(textTrans);
+  if (displayText) {
+    // scale x and y coordinates by 1/factor in MapView2D
+    glm::mat4 textTrans = glm::scale(trans, glm::vec3(textScale, -textScale, 1));
+    mt->render(textTrans);
+  }
 }
 
 void MapViewer::setView() {
@@ -56,14 +59,14 @@ void MapViewer::zoomOut(float factor) {
   zoomIn(1/factor);
 }
 
-void MapViewer::zoomIn(float lat, float lon, float factor) {
+void MapViewer::zoomInOnCenter(float lat, float lon, float factor) {
   centerLon = lon, centerLat = lat; // center on desired point
   scaleLon /= factor; // zoom in by requested factor in both x and y
   scaleLat /= factor;
   setView();
 }
-void MapViewer::zoomOut(float lat, float lon, float factor) {
-  zoomIn(lat, lon, 1/factor); // zoom out by the inverse of zoomIn?
+void MapViewer::zoomOutOnCenter(float lat, float lon, float factor) {
+  zoomInOnCenter(lat, lon, 1/factor); // zoom out by the inverse of zoomIn?
   setView();
 }
 
@@ -80,6 +83,15 @@ void MapViewer::translate(float deltaLat, float deltaLon) {
 void MapViewer::resetToOriginal() {
   centerLat = origCenterLat, centerLon = origCenterLon, scaleLat = origScaleLat, scaleLon = origScaleLon, shiftLat = origShiftLat, shiftLon = origShiftLon;
   setView();
+}
+
+void MapViewer::setOriginalCoords(float centerLat, float centerLon, float scaleLat, float scaleLon, float shiftLat, float shiftLon) {
+  origCenterLat = centerLat;
+  origCenterLon = centerLon;
+  origScaleLat = scaleLat;
+  origScaleLon = scaleLon;
+  origShiftLat = shiftLat;
+  origShiftLon = shiftLon;
 }
 
 void MapViewer::setOrigBounds(float minLat, float maxLat, float minLon, float maxLon) {
@@ -103,4 +115,41 @@ void MapViewer::setOrigBounds(float minLat, float maxLat, float minLon, float ma
   origScaleLon = (std::abs(minLon)+std::abs(maxLon))/4;
   origShiftLat = 0, origShiftLon = 0;
   resetToOriginal();
+}
+
+void MapViewer::setTextScale(float textScale) {
+  this->textScale = textScale;
+  mv->setTextScale(1/textScale);
+  setView();
+}
+
+void MapViewer::increaseTextSize(float factor) {
+  textScale *= factor;
+  setTextScale(textScale);
+}
+
+void MapViewer::decreaseTextSize(float factor) {
+  increaseTextSize(1/factor);
+}
+
+void MapViewer::toggleDisplayText() {
+  displayText = !displayText;
+  setView();
+}
+
+void MapViewer::zoomInOnMouse(float factor) {
+  //glm::mat4 inverseTrans = glm::inverse(trans);
+  //glm::vec4 mouseVec = inverseTrans * glm::vec4(w->mouseX, w->mouseY, 0, 1);
+  BoundRect r(centerLon - scaleLon + shiftLon, centerLon + scaleLon + shiftLon, centerLat - scaleLat + shiftLat,
+                     centerLat + scaleLat + shiftLat);
+  float mouseFracX = (float)w->mouseX / (w->width-1);
+  float mouseFracY = (float)w->mouseY / (w->height-1);
+  float mouseVecX = (r.xMin * (1-mouseFracX)) + (r.xMax * mouseFracX);
+  float mouseVecY = (r.yMin * (1-mouseFracY)) + (r.yMax * mouseFracY);
+  std::cout << "x= " << mouseVecX << " y= " << mouseVecY << std::endl;
+  zoomInOnCenter(mouseVecY, mouseVecX, factor);
+}
+
+void MapViewer::zoomOutOnMouse(float factor) {
+  zoomInOnMouse(factor);
 }

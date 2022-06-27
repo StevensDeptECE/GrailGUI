@@ -38,6 +38,11 @@ class TestDrawBlockMap : public Member {
     tab->bindEvent(Tab::Inputs::UPARROW, [=,this]() { return viewer->translatePercent(0.2, 0); });
     tab->bindEvent(Tab::Inputs::DOWNARROW, [=,this]() { return viewer->translatePercent(-0.2, 0); });
     tab->bindEvent(Tab::Inputs::MOUSE2, [=,this]() {return viewer->resetToOriginal();});
+    tab->bindEvent(Tab::Inputs::INSERT, [=,this]() {return viewer->increaseTextSize(1.2f);});
+    tab->bindEvent(Tab::Inputs::DEL, [=,this]() {return viewer->decreaseTextSize(1.2f);});
+    tab->bindEvent(Tab::Inputs::HOME, [=,this]() {return viewer->toggleDisplayText();});
+    tab->bindEvent(Tab::Inputs::MOUSE0_RELEASE, [=,this]() {return viewer->zoomInOnMouse(1.2f);});
+    tab->bindEvent(Tab::Inputs::MOUSE1, [=,this]() {return viewer->zoomOutOnMouse(1.2f);});
     //TODO:
     update();
   }
