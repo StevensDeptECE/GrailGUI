@@ -57,5 +57,4 @@ class MapViewer : public Canvas {
   void decNumSegments();
   void displayAllSegments();
   void displayFirstSegment();
-
 };
