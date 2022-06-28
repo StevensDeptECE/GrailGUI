@@ -13,8 +13,18 @@ class MapViewer;
 class Style;
 class MapView2D : public Shape {
  private:
+  uint32_t startSegment;
+  uint32_t endSegment;
+
+  uint32_t startLineIndex; // used to draw only some of the edges
+  uint32_t endLineIndex;   // set in initOutline
+
   uint32_t vaoFill;
   uint32_t vboFill;
+
+  uint32_t startFillIndex; // used to fill only some of the polygons (start)
+  uint32_t endFillIndex;   // used to fill only some of the polygons (end) set in initFill
+
 
   const Style* style;
   float textScale;
@@ -49,4 +59,10 @@ class MapView2D : public Shape {
   void setTextScale(float textScale);
   void update() override;
   void dump();
+  void displayAllSegments();
+  void incSegment();
+  void decSegment();
+  void incNumSegments();
+  void decNumSegments();
+  void setWhichSegmentsToDisplay(uint32_t start, uint32_t end);
 };

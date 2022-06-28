@@ -24,6 +24,8 @@ MapView2D::~MapView2D() {
 }
 
 void MapView2D::init() {
+  startSegment = 0;
+  endSegment = 10; //bml->getNumSegments();
   initOutline();
   initLabels(); 
   initFill();
@@ -55,12 +57,17 @@ void MapView2D::initOutline() {
   uint32_t* lineIndices = new uint32_t[numLineIndicesToDraw];
   uint32_t c = 0;
   for (uint32_t i = 0, j = 0; i < numSegments; i++) {
+    if (i == startSegment)
+      startLineIndex = c;
     uint32_t startSegment = j;
       for (uint32_t k = 0; k < bml->getSegment(i).numPoints+1; k++) {
         lineIndices[c++] = j++;
       }
       //j++; // skip centroid at end of segment
       lineIndices[c++] = endIndex; // add the separator (0xFFFFFFFF)
+      if (i == endSegment) {
+        endLineIndex = c;   // total number = endLineIndex - startLineIndex
+      }
   }
   glGenBuffers(1, &lbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
@@ -106,7 +113,7 @@ void MapView2D::initFill() {
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
   // Create a buffer object for indices of lines
-  uint32_t numSegments = 10; //bml->getNumSegments();
+  uint32_t numSegments = bml->getNumSegments();
   constexpr uint32_t endIndex = 0xFFFFFFFF;
   // xy1 xy2 xy3 xy4 xy5 ... (xy points on the map)
   // 1 2 3 4 5 ... 1 0xFFFFFFFF 6 7 8 ... 6 0xFFFFFFFF (connect the points)
@@ -118,6 +125,8 @@ void MapView2D::initFill() {
   uint32_t* fillIndices = new uint32_t[numFillIndicesToDraw];
   uint32_t c = 0;
   for (uint32_t i = 0, j = 0; i < numSegments; i++) {
+    if (i == startSegment)
+      startFillIndex = c;
     uint32_t startSegment = j;
     fillIndices[c++] = j+bml->getSegment(i).numPoints; // Add centroid;
     for (uint32_t k = 0; k < bml->getSegment(i).numPoints; k++) {
@@ -125,6 +134,9 @@ void MapView2D::initFill() {
     }
     j++; //TODO: Daniil sez: put the centroid first to simplify this logic!
     fillIndices[c++] = endIndex; // add the separator (0xFFFFFFFF)
+    if (i == endSegment) {
+      endFillIndex = c;
+    }
   }
   glGenBuffers(1, &sbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sbo);
@@ -149,9 +161,8 @@ void debug(const glm::mat4& m, float x, float y, float z) {
 }
 
 void MapView2D::render(glm::mat4& trans) {
-  //renderOutline(trans);
-  //renderLabels(trans);
-  renderFill(trans);
+  renderOutline(trans);
+  //renderFill(trans);
 }
 
 void MapView2D::renderOutline(glm::mat4& trans) {
@@ -175,7 +186,7 @@ void MapView2D::renderOutline(glm::mat4& trans) {
 
   // Draw Lines
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
-  glDrawElements(GL_LINE_LOOP, numLineIndicesToDraw, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_LINE_LOOP, endLineIndex, GL_UNSIGNED_INT, (void*)(uint64_t)startLineIndex);
 
   // Unbind
   glDisableVertexAttribArray(1);
@@ -207,7 +218,7 @@ void MapView2D::renderFill(glm::mat4& trans) {
 
   // Draw Solid
   numFillIndicesToDraw = 19;
-  glDrawElements(GL_TRIANGLE_FAN, numFillIndicesToDraw, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_TRIANGLE_FAN, endFillIndex, GL_UNSIGNED_INT, (void*)(uint64_t)startFillIndex);
 
   // Unbind
   glDisableVertexAttribArray(1);
@@ -224,3 +235,54 @@ void MapView2D::setTextScale(float textScale) {
 
 void MapView2D::update() {}
 void MapView2D::dump() {}
+
+void MapView2D::setWhichSegmentsToDisplay(uint32_t start, uint32_t end) {
+  uint32_t numSegments = bml->getNumSegments();
+  startSegment = start;
+  if (startSegment > numSegments)
+    startSegment = numSegments - 1;
+  endSegment = end;
+  if (endSegment > numSegments) {
+    endSegment = numSegments - startSegment;
+  }
+  uint32_t lineIndex = 0;
+  uint32_t fillIndex = 0;
+  const BlockMapLoader::Segment* s = bml->getSegments();
+
+  for (uint32_t i = 0; i < startSegment; i++) {
+    lineIndex += s[i].numPoints;
+    fillIndex += s[i].numPoints + 1; // also add one index to draw the centroid
+  }
+  startLineIndex = lineIndex; // first position to draw
+  startFillIndex = fillIndex;
+  for (uint32_t i = startSegment + 1; i < endSegment; i++) {
+    lineIndex += s[i].numPoints;
+    fillIndex += s[i].numPoints + 1; // also add one index to draw the centroid
+  }
+  endLineIndex = lineIndex;
+  endFillIndex = fillIndex;
+  cout << "displaying segments: " << startSegment << " to " << (endSegment-1) << 
+  " lineIndices=[" << startLineIndex << " " << endLineIndex << 
+  "] fillIndices=[" << startFillIndex << " " << endFillIndex << "]" << endl;
+
+}
+
+void MapView2D::displayAllSegments() {
+  setWhichSegmentsToDisplay(0, bml->getNumSegments());
+}
+
+void MapView2D::incSegment() {
+  setWhichSegmentsToDisplay(startSegment+1, endSegment+1);
+}
+
+void MapView2D::decSegment() {
+  setWhichSegmentsToDisplay(startSegment-1, endSegment-1);
+}
+
+void MapView2D::incNumSegments() {
+  
+}
+
+void MapView2D::decNumSegments() {
+  
+}

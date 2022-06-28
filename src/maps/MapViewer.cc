@@ -153,3 +153,33 @@ void MapViewer::zoomInOnMouse(float factor) {
 void MapViewer::zoomOutOnMouse(float factor) {
   zoomInOnMouse(factor);
 }
+
+void MapViewer::incSegment(){
+  mv->incSegment();
+  setView();
+}
+
+void MapViewer::decSegment() {
+  mv->decSegment();
+  setView();
+}
+
+void MapViewer::incNumSegments() {
+  mv->incNumSegments();
+  setView();
+}
+
+void MapViewer::decNumSegments() {
+  mv->decNumSegments();
+  setView();
+}
+
+void MapViewer::displayAllSegments() {
+  mv->displayAllSegments();
+  setView();
+}
+
+void MapViewer::displayFirstSegment() {
+  mv->setWhichSegmentsToDisplay(0,20);
+  setView();
+}

@@ -51,4 +51,11 @@ class MapViewer : public Canvas {
   void toggleDisplayText();
   void zoomInOnMouse(float factor);
   void zoomOutOnMouse(float factor);
+  void incSegment();
+  void decSegment();
+  void incNumSegments();
+  void decNumSegments();
+  void displayAllSegments();
+  void displayFirstSegment();
+
 };
