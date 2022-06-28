@@ -10,7 +10,7 @@
 
 using namespace std;
 
-Vec3D Line::getPoint(double step) {
+Vec3D Seg::getPoint(double step) {
   double x = start.x + (step * stop.x);
   double y = start.y + (step * stop.y);
   double z = start.y + (step * stop.y);
@@ -36,7 +36,7 @@ std::vector<float> unwrap(std::vector<Vec3D> x) {
   return temp;
 }
 
-void Line::init() {
+void Seg::init() {
   // create VAO to hold shapes
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
@@ -52,7 +52,7 @@ void Line::init() {
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 }
 
-void Line::render(glm::mat4& trans) {
+void Seg::render(glm::mat4& trans) {
   Shader* shader = Shader::useShader(GLWin::COMMON_SHADER);
   shader->setMat4("projection", *(parentCanvas->getProjection()));
   shader->setVec4("solidColor", style->getFgColor());

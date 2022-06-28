@@ -18,11 +18,11 @@ void Facet::connect(
   for (int i = 0; i < size; i++) {
     if (i == size - 1) {  // if at the last point connect it to the first
       // cout<< vertices[i] << ", " << vertices[0] << endl;
-      Line* l = new Line(vertices[i], vertices[0], this->c, this->s);
+      Seg* l = new Seg(vertices[i], vertices[0], this->c, this->s);
       c->addLayer(l);
     } else {  // else connect the point at i to the next one
       // cout<< vertices[i] << ", " << vertices[i+1] << endl;
-      Line* l = new Line(vertices[i], vertices[i + 1], this->c, this->s);
+      Seg* l = new Seg(vertices[i], vertices[i + 1], this->c, this->s);
       c->addLayer(l);
     }
   }
