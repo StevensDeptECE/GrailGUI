@@ -43,6 +43,12 @@ class TestDrawBlockMap : public Member {
     tab->bindEvent(Tab::Inputs::HOME, [=,this]() {return viewer->toggleDisplayText();});
     tab->bindEvent(Tab::Inputs::MOUSE0_RELEASE, [=,this]() {return viewer->zoomInOnMouse(1.2f);});
     tab->bindEvent(Tab::Inputs::MOUSE1, [=,this]() {return viewer->zoomOutOnMouse(1.2f);});
+    
+    tab->bindEvent(Tab::Inputs::F1, [=,this]() {return viewer->displayAllSegments();});
+    tab->bindEvent(Tab::Inputs::F2, [=,this]() {return viewer->incSegment();});
+    tab->bindEvent(Tab::Inputs::F3, [=,this]() {return viewer->decSegment();});
+    tab->bindEvent(Tab::Inputs::F4, [=,this]() {return viewer->incNumSegments();});
+    tab->bindEvent(Tab::Inputs::F4, [=,this]() {return viewer->displayFirstSegment();});
     //TODO:
     update();
   }

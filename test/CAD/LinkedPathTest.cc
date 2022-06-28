@@ -27,7 +27,7 @@ class LineTest : public Member {
 
     Vec3D start1(-10, 0, 0);
     Vec3D stop1(0, 0, 0);
-    Line* firstLine = new Line(start1, stop1, c, baseGraphStyle);
+    Seg* firstLine = new Seg(start1, stop1, c, baseGraphStyle);
     c->addLayer(firstLine);
 
     Vec3D b2(3, 7, 0);
@@ -38,7 +38,7 @@ class LineTest : public Member {
     c->addLayer(firstBezier);
 
     Vec3D stop2(15, 0, 0);
-    Line* secondLine = new Line(b4, stop2, c, baseGraphStyle);
+    Seg* secondLine = new Seg(b4, stop2, c, baseGraphStyle);
     c->addLayer(secondLine);
 
     Helix* secondHelix = new Helix(b4, 10, 4, c, baseGraphStyle);

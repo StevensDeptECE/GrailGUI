@@ -7,7 +7,7 @@
 class HeatMap : public Shape {
  private:
   std::vector<float> grid; // all x,y values stored here
-  std::vector<uint32_t> values; // floating point values for each region here
+  std::vector<float> values; // floating point values for each region here
 
  public:
   HeatMap(uint32_t w, uint32_t h) {

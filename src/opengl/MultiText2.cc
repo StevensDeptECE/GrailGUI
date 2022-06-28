@@ -76,6 +76,43 @@ inline void MultiText2::internalAdd(float x, float y, const Font* f,
     x += glyph->advance;
   }
 }
+//TODO: Let's make unicode work!
+// How does 19 bit unicode even work? hoping never to find out: https://home.unicode.org
+#if 0
+inline void MultiText2::internalAdd(float x, float y, const BigFont* f,
+                                    const uint16_t s[], uint32_t len) {
+  for (uint32_t i = 0; i < len; i++) {
+    const Font::Glyph* glyph = f->getGlyph(s[i]);
+    float x0 = x + glyph->bearingX, x1 = x0 + glyph->sizeX;
+    // TODO: Not maxwidth, should be less for proportional fonts?
+    float y0 = y - glyph->bearingY, y1 = y0 + glyph->sizeY;
+    addPoint(x0, y0, /* fontLeft */ glyph->u0, glyph->v1);
+    addPoint(x0, y1, /* fontLeft */ glyph->u0, glyph->v0);
+    addPoint(x1, y1, /* fontRight */ glyph->u1, glyph->v0);
+    addPoint(x1, y0, /* fontRight */ glyph->u1, glyph->v1);
+
+    x += glyph->advance;
+  }
+}
+
+inline void MultiText2::internalAdd(float x, float y, const BigFont* f,
+                                    uint32_t baseCode, // the base code in unicode, each char=baseCode+s[i]
+                                    const uint8_t s[], uint32_t len) {
+  for (uint32_t i = 0; i < len; i++) {
+    const Font::Glyph* glyph = f->getGlyph(s[i]);
+    float x0 = x + glyph->bearingX, x1 = x0 + glyph->sizeX;
+    // TODO: Not maxwidth, should be less for proportional fonts?
+    float y0 = y - glyph->bearingY, y1 = y0 + glyph->sizeY;
+    addPoint(x0, y0, /* fontLeft */ glyph->u0, glyph->v1);
+    addPoint(x0, y1, /* fontLeft */ glyph->u0, glyph->v0);
+    addPoint(x1, y1, /* fontRight */ glyph->u1, glyph->v0);
+    addPoint(x1, y0, /* fontRight */ glyph->u1, glyph->v1);
+
+    x += glyph->advance;
+  }
+}
+
+#endif
 
 inline void rotateAround(float xc, float yc, float cosa, float sina, float& x,
                          float& y) {

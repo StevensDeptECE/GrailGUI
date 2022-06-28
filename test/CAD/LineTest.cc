@@ -25,17 +25,17 @@ class LineTest : public Member {
 
     Vec3D start1(3, 0, 0);
     Vec3D stop1(3, 7, 0);
-    Line* firstLine = new Line(start1, stop1, c, baseGraphStyle);
+    Seg* firstLine = new Seg(start1, stop1, c, baseGraphStyle);
     c->addLayer(firstLine);
 
     Vec3D start2(0, 0, 0);
     Vec3D stop2(-6, -15, 0);
-    Line* secondLine = new Line(start2, stop2, c, baseGraphStyle);
+    Seg* secondLine = new Seg(start2, stop2, c, baseGraphStyle);
     c->addLayer(secondLine);
 
     Vec3D start3(-3, 10, 0);
     Vec3D stop3(0, 0, 0);
-    Line* thirdLine = new Line(start3, stop3, c, baseGraphStyle);
+    Seg* thirdLine = new Seg(start3, stop3, c, baseGraphStyle);
     c->addLayer(thirdLine);
   }
 };
