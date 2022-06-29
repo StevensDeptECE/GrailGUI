@@ -15,7 +15,7 @@ MapViewer::MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint3
 
     // NOTE: mt MUST be created first becuase mv needs it
     this->textScale = textScale;
-    displayText = true;
+    displayText = true, displaySegments = true;
     mt = new MultiText(this, style, 12);
     mv = new MapView2D(this, style, mt, bml, bdl, 1/textScale);
     // MapView2D automatically sets bounds on this object (the MapViewer)
@@ -35,7 +35,8 @@ void MapViewer::init() {
 
 void MapViewer::render() {
   Canvas::render();
-  mv->render(trans);
+  if (displaySegments)
+    mv->render(trans);
   if (displayText) {
     // scale x and y coordinates by 1/factor in MapView2D
     glm::mat4 textTrans = glm::scale(trans, glm::vec3(textScale, -textScale, 1));
@@ -134,6 +135,11 @@ void MapViewer::decreaseTextSize(float factor) {
 
 void MapViewer::toggleDisplayText() {
   displayText = !displayText;
+  setView();
+}
+
+void MapViewer::toggleDisplaySegments() {
+  displaySegments = !displaySegments;
   setView();
 }
 

@@ -56,21 +56,16 @@ void MapView2D::initOutline() {
   numLineIndicesToDraw = numPoints + numSegments; // so we can also draw centroids if we want to + (numSegments- numSegments);
   uint32_t* lineIndices = new uint32_t[numLineIndicesToDraw];
   uint32_t c = 0;
-  for (uint32_t i = 0, j = 0; i < numSegments; i++) {
-//    if (i == startSegment)
-//      startLineIndex = c;
-    uint32_t startSegment = j;
-      for (uint32_t k = 0; k < bml->getSegment(i).numPoints+1; k++) {
-        lineIndices[c++] = j++;
-      }
-      //j++; // skip centroid at end of segment
-      lineIndices[c++] = endIndex; // add the separator (0xFFFFFFFF)
-//      if (i == endSegment) {
-//        endLineIndex = c;   // total number = endLineIndex - startLineIndex
-//      }
+  for (uint32_t i = 0, j = 0; i < numSegments; i++) { // last one is segment pointing to (0,0)
+    for (uint32_t k = 0; k < bml->getSegment(i).numPoints; k++) {
+      lineIndices[c++] = j++;
+    }
+    j++; // skip centroid at end of segment
+    lineIndices[c++] = endIndex; // add the separator (0xFFFFFFFF)
   }
   startLineIndex = 0;
   endLineIndex = c;
+  numLineIndicesToDraw = endLineIndex - startLineIndex;
   glGenBuffers(1, &lbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * numLineIndicesToDraw,
@@ -188,7 +183,7 @@ void MapView2D::renderOutline(glm::mat4& trans) {
 
   // Draw Lines
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
-  glDrawElements(GL_LINE_LOOP, endLineIndex, GL_UNSIGNED_INT, (void*)(uint64_t)startLineIndex);
+  glDrawElements(GL_LINE_LOOP, endLineIndex - startLineIndex, GL_UNSIGNED_INT, (void*)(uint64_t)startLineIndex);
 
   // Unbind
   glDisableVertexAttribArray(1);
@@ -240,26 +235,33 @@ void MapView2D::dump() {}
 
 void MapView2D::setWhichSegmentsToDisplay(uint32_t start, uint32_t end) {
   uint32_t numSegments = bml->getNumSegments();
+
   startSegment = start;
-  if (startSegment > numSegments)
-    startSegment = numSegments - 1;
+  if (startSegment == 0xffffffff)
+    startSegment = 0;
+  if (startSegment > endSegment)
+    startSegment = endSegment - 1;
+    
   endSegment = end;
+  if (endSegment < startSegment || endSegment == 0xffffffff)
+    endSegment = startSegment + 1;
   if (endSegment > numSegments) {
-    endSegment = numSegments - startSegment;
+    endSegment = numSegments;
   }
   uint32_t lineIndex = 0;
   uint32_t fillIndex = 0;
   const BlockMapLoader::Segment* s = bml->getSegments();
 
   for (uint32_t i = 0; i < startSegment; i++) {
-    lineIndex += s[i].numPoints;
-    fillIndex += s[i].numPoints + 1; // also add one index to draw the centroid
+    lineIndex += s[i].numPoints + 1;
+    fillIndex += s[i].numPoints + 2; // also add one index to draw the centroid
   }
   startLineIndex = lineIndex; // first position to draw
   startFillIndex = fillIndex;
-  for (uint32_t i = startSegment + 1; i < endSegment; i++) {
-    lineIndex += s[i].numPoints;
-    fillIndex += s[i].numPoints + 1; // also add one index to draw the centroid
+
+  for (uint32_t i = startSegment; i < endSegment; i++) {
+    lineIndex += s[i].numPoints + 1;
+    fillIndex += s[i].numPoints + 2; // also add one index to draw the centroid
   }
   endLineIndex = lineIndex;
   endFillIndex = fillIndex;
