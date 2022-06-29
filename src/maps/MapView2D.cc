@@ -164,7 +164,7 @@ void debug(const glm::mat4& m, float x, float y, float z) {
 
 void MapView2D::render(glm::mat4& trans) {
   renderOutline(trans);
-  //renderFill(trans);
+  renderFill(trans);
 }
 
 void MapView2D::renderOutline(glm::mat4& trans) {
@@ -220,7 +220,7 @@ void MapView2D::renderFill(glm::mat4& trans) {
 
   // Draw Solid
   numFillIndicesToDraw = 19;
-  glDrawElements(GL_TRIANGLE_FAN, endFillIndex, GL_UNSIGNED_INT, (void*)(uint64_t)startFillIndex);
+  glDrawElements(GL_TRIANGLE_FAN, endFillIndex - startFillIndex, GL_UNSIGNED_INT, (void*)(uint64_t)startFillIndex);
 
   // Unbind
   glDisableVertexAttribArray(1);
