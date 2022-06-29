@@ -25,7 +25,7 @@ MapView2D::~MapView2D() {
 
 void MapView2D::init() {
   startSegment = 0;
-  endSegment = bml->getNumSegments();
+  endSegment = bml->getNumSegments()-1;
   initOutline();
   initLabels(); 
   initFill();
@@ -124,7 +124,6 @@ void MapView2D::initFill() {
   for (uint32_t i = 0, j = 0; i < numSegments; i++) {
     if (i == startSegment)
       startFillIndex = c;
-    uint32_t startSegment = j;
     fillIndices[c++] = j+bml->getSegment(i).numPoints; // Add centroid;
     for (uint32_t k = 0; k < bml->getSegment(i).numPoints; k++) {
       fillIndices[c++] = j++;
@@ -132,7 +131,7 @@ void MapView2D::initFill() {
     j++; //TODO: Daniil sez: put the centroid first to simplify this logic!
     fillIndices[c++] = endIndex; // add the separator (0xFFFFFFFF)
     if (i == endSegment) {
-      endFillIndex = c;
+      endFillIndex = c-1; // c is 1 beyond the end of the stored indices
     }
   }
   glGenBuffers(1, &sbo);
@@ -159,7 +158,7 @@ void debug(const glm::mat4& m, float x, float y, float z) {
 
 void MapView2D::render(glm::mat4& trans) {
   renderOutline(trans);
-  renderFill(trans);
+  //renderFill(trans);
 }
 
 void MapView2D::renderOutline(glm::mat4& trans) {
@@ -214,7 +213,7 @@ void MapView2D::renderFill(glm::mat4& trans) {
   glEnableVertexAttribArray(1);
 
   // Draw Solid
-  numFillIndicesToDraw = 19;
+  //numFillIndicesToDraw = 19;
   glDrawElements(GL_TRIANGLE_FAN, endFillIndex - startFillIndex, GL_UNSIGNED_INT, (void*)(uint64_t)startFillIndex);
 
   // Unbind
@@ -280,7 +279,7 @@ void MapView2D::incSegment() {
 }
 
 void MapView2D::decSegment() {
-  setWhichSegmentsToDisplay(startSegment-1, endSegment-1);
+  setWhichSegmentsToDisplay(startSegment-1, endSegment-20);
 }
 
 void MapView2D::incNumSegments() {
