@@ -82,6 +82,8 @@ void MapView2D::initLabels() {
   const uint32_t count = bdl->getNodeCount();
   for (uint32_t i = 1; i < count; i++) {
     const char* name = bdl->getNameAt(i);
+    string tempName = name + 2;
+    tempName += ":" + to_string(i);
     uint32_t len = strlen(name);
     const MapEntry* mapInfo = bdl->getValueAt(i);
     if (mapInfo->entityType == ENT_COUNTY) {
@@ -89,7 +91,7 @@ void MapView2D::initLabels() {
       // scale x and y by 1/factor of projection downscale
       float x = (r.bounds.xMax + r.bounds.xMin)/2*textScale;
       float y = (r.bounds.yMax + r.bounds.yMin)/2*-textScale;
-      mt->addCentered(x, y, f, name+2, len-2); // +2 and -2 to remove the appended state abbr.
+      mt->addCentered(x, y, f, tempName); // +2 and -2 to remove the appended state abbr.
     }
   }
 //  mt->addCentered(0,0,f,"testing", 7);
@@ -226,7 +228,7 @@ void MapView2D::renderFill(glm::mat4& trans) {
 void MapView2D::setTextScale(float textScale) {
   this->textScale = textScale;
   mt->clear();
-  MapView2D::initLabels();
+  initLabels();
 }
 
 void MapView2D::update() {}
