@@ -33,18 +33,25 @@ float area(float xy[], int numPoints) { // Calculates the area of a polygon
   return area;
 }
 
-Point centroid(float xy[], int numPoints){ // Calculates the centroid of a polygon
+Point centroid(const float xy[], const int numPoints){ // Calculates the centroid of a polygon
   Point* p = (Point*)xy;
   Point center(0,0);
   //float a = area(xy, numPoints);
   float a = 0;
   float cx = 0, cy = 0;
-  for (int i = 0; i < numPoints-1; i++) {
-    float seg = (p[i].x * p[i+1].y - p[i+1].x * p[i].y);
+  float seg;
+  int i = 0;
+  for (i = 0; i < numPoints-1; i++) {
+    seg = (p[i].x * p[i+1].y - p[i+1].x * p[i].y);
     a += seg;
     cx += (p[i].x + p[i+1].x) * seg;
     cy += (p[i].y + p[i+1].y) * seg;
   }
+  // SPECIAL CASE: Wrap-around back to i = 0;
+  seg = (p[i].x * p[0].y - p[0].x * p[i].y);
+  a += seg;
+  cx += (p[i].x + p[0].x) * seg;
+  cy += (p[i].y + p[0].y) * seg;
 
   a /= 2;
   cx /= 6*a;

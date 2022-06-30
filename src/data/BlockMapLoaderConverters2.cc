@@ -9,7 +9,7 @@ using namespace std;
 
 // extra parameter calls loader from ESRI Shapefile
 // TODO: BlockMapLoader BlockMapLoader::loadESRI(const char filename[])
-BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
+BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], bool toggleDateLine) {
   SHPHandle shapeHandle = SHPOpen(filename, "rb");
   // Load basic information
   int nEntities = shapeHandle->nRecords;
@@ -91,16 +91,20 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
         // at this point numPoints = number of points in your polygon
       bml.segments[segCount].numPoints = numSegPoints;
       uint32_t startOffset = pointOffset;
-      Point center = centroid(shapes[i]->padfX + start[j],shapes[i]->padfY + start[j], numSegPoints);
+      // Point center = centroid(shapes[i]->padfX + start[j],shapes[i]->padfY + start[j], numSegPoints);
       for (uint32_t k = 0; k < numSegPoints; k++) { // number of points in the segment
       //TODO: if we delta-compress this, it will be a)more accurate and b)compress WAY better
       //  float dx = shapes[i]->padfX[start[j] + k] - baseX; // doing everything as deltas off baseX,baseY is more accurate
       //  float dy = shapes[i]->padfY[start[j] + k] - baseY;
         float x = shapes[i]->padfX[start[j] + k]; // x coord
+        if (toggleDateLine)
+          if (x > 172.0f)
+            x -= 360.0f;
         float y = shapes[i]->padfY[start[j] + k]; // y coord
         bml.points[pointOffset++] = x;
         bml.points[pointOffset++] = y;
       }
+      Point center = centroid(&bml.points[pointOffset - (numSegPoints*2)], numSegPoints);
       bml.points[pointOffset++] = center.x;
       bml.points[pointOffset++] = center.y;
       //bml.points[pointOffset++] = (bounds.xMin + bounds.xMin)/2;

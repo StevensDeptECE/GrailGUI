@@ -51,16 +51,15 @@ void MapView2D::initOutline() {
   // xy1 xy2 xy3 xy4 xy5 ... (xy points on the map)
   // 1 2 3 4 5 ... 1 0xFFFFFFFF 6 7 8 ... 6 0xFFFFFFFF (connect the points)
 
-  //TODO: now we have one segment from Alaska (instead of Maine) pointing to (0,0)
   // number of points in blockmap + 1 index per segment for separator - 1 point for the centroid stored after each polygon
   numLineIndicesToDraw = numPoints + numSegments; // so we can also draw centroids if we want to + (numSegments- numSegments);
   uint32_t* lineIndices = new uint32_t[numLineIndicesToDraw];
   uint32_t c = 0;
-  for (uint32_t i = 0, j = 0; i < numSegments; i++) { // last one is segment pointing to (0,0)
-    for (uint32_t k = 0; k < bml->getSegment(i).numPoints; k++) {
+  for (uint32_t i = 0, j = 0; i < numSegments; i++) {
+    for (uint32_t k = 0; k < bml->getSegment(i).numPoints + 1; k++) {
       lineIndices[c++] = j++;
     }
-    j++; // skip centroid at end of segment
+    // j++; // skip centroid at end of segment
     lineIndices[c++] = endIndex; // add the separator (0xFFFFFFFF)
   }
   startLineIndex = 0;

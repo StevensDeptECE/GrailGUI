@@ -106,7 +106,7 @@ class BlockMapLoader : public BlockLoader {
 
   // load and convert an ESRI .shp to BlockMap format
   BlockMapLoader(const char filename[], const char[]);
-  static BlockMapLoader loadFromESRI(const char filename[]);
+  static BlockMapLoader loadFromESRI(const char filename[], bool toggleDateLine = true);
   static BlockMapLoader loadCompressed(const char filename[]);
   // TODO: const RegionContainers* getRegionContainers() const { return
   // regionContainers; }

@@ -11,7 +11,7 @@ struct Line {
   Line(Point start, Point end) : start(start), end(end){};
 };
 
-Point centroid(float xy[], int n);
+Point centroid(const float xy[], const int n);
 
 template<typename Precision>
 Point centroid(Precision x[], Precision y[], int numPoints);
@@ -23,7 +23,6 @@ Point centroid(Precision x[], Precision y[], int numPoints){
   float seg;
   float cxseg;
   float cyseg; 
-  std::ofstream f("damnit.txt");
   //f << "i" << "\t" << "x[i]" << "\t" << "y[i]" << "\t" << "seg" << "\t" << "cxseg" << "\t" << "cyseg" << "\n";
   int i;
   for (i = 0; i < numPoints-1; i++) {
@@ -35,10 +34,10 @@ Point centroid(Precision x[], Precision y[], int numPoints){
     cy += cyseg;
     //f << i << "\t" << x[i] << "\t" << y[i] << "\t" << seg << "\t" << cxseg << "\t" << cyseg << '\n';
   }
-  seg = (x[i] * y[i+1] - x[i+1] * y[i]);
+  seg = (x[i] * y[0] - x[0] * y[i]);
   signedArea += seg;
-  cxseg = (x[i] + x[i+1]) * seg;
-  cyseg = (y[i] + y[i+1]) * seg;
+  cxseg = (x[i] + x[0]) * seg;
+  cyseg = (y[i] + y[0]) * seg;
   cx += cxseg;
   cy += cyseg;
   //f << i << "\t" << x[i] << "\t" << y[i] << "\t" << seg << "\t" << cxseg << "\t" << cyseg << '\n';
