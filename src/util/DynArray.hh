@@ -3,6 +3,7 @@
 #include <memory.h>
 
 #include <iostream>
+#include <utility>
 template <typename T>
 class DynArray {
  private:
@@ -12,6 +13,7 @@ class DynArray {
   void* operator new(size_t sz, T* place) { return place; }
   // TODO: Objects containing pointers may be unable to move
   // DynArray of Strings seems to break after 2 Strings are added
+
   void checkGrow() {
     if (size_ >= capacity) {
       T* old = data;
@@ -35,7 +37,7 @@ class DynArray {
   DynArray(const DynArray& orig)
       : capacity(orig.capacity),
         size_(orig.size_),
-        data((T*)new char[sizeof(T) * orig.capacity]) {
+        data((T*)malloc(sizeof(T) * orig.capacity)) {
     for (uint32_t i = 0; i < size_; i++) new (data + i) T(orig.data[i]);
   }
 
@@ -47,8 +49,21 @@ class DynArray {
 
   T removeEnd() {
     size_--;
-    T copy = data[size_];
+    T copy = data[size_];  // TODO: This needs to MOVE not copy
     data[size_].~T();
+    return copy;
+  }
+
+  //  1 2 3 4 5
+  T remove(uint32_t i) {
+    T copy = data[i];  // TODO: This needs to MOVE not copy
+    data[i].~T();
+    for (uint32_t j = i + 1; j < size_; j++) data[j - 1] = std::move(data[j]);
+    // new (data + j - 1) T(data[j]);
+    // data[j].~T();
+    // TODO: Alice! What the hell is this? Trying to move but the destination
+    // should not be destroyed. move seems like a really bad implementation
+    size_--;
     return copy;
   }
   constexpr const T& operator[](uint32_t i) const { return data[i]; }

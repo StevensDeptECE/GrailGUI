@@ -60,4 +60,6 @@ class Shape {
   virtual void process_input(Inputs* in, float dt) {}
   virtual void update() = 0;
   virtual void render() = 0;
+  virtual void
+  cleanup();  // TODO: Make pure virtual to force children to implement
 };

@@ -51,8 +51,10 @@ class ReactingToInput : public Member {
 #endif
 
 //================Image Testing===================//
-#if 0
-    uint32_t image1 =
+#if 1
+    Image* brook1 = c->addLayer(
+        new Image(c, 100, 100, 200, 200, "ChessTextures/brook.webp"));
+    c->removeLayer(brook1);
 #endif
   }
 };

@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 
+#include "glad/glad.h"
 #include "opengl/Shape.hh"
 
 /**
@@ -86,4 +87,8 @@ class Image : public Shape {
   void update() override;
 
   void setupBuffers(float u0, float v0, float u1, float v1);
+
+  void cleanup() { glDeleteTextures(1, &textureID); }
+
+  ~Image() { cleanup(); }
 };

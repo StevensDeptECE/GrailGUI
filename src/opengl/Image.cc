@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 #include <string>
 
-#include "glad/glad.h"
 #include "opengl/Canvas.hh"
 #include "util/Ex.hh"
 #include "webp/decode.h"
@@ -147,5 +146,3 @@ void Image::render() {
 }
 
 void Image::update() {}
-
-// void Image::cleanup() { glDeleteTextures(1, &textureID); }

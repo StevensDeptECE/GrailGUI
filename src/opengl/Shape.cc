@@ -4,3 +4,4 @@
 
 Shape::~Shape() {}
 GLWin* Shape::getWin() const { return parentCanvas->getWin(); }
+void Shape::cleanup() {}

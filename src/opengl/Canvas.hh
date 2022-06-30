@@ -80,6 +80,22 @@ class Canvas {
     return shape;
   }
 
+  void removeLayer(uint32_t i) {
+    Shape* s = layers.remove(i);
+    delete s;
+  }
+
+  void removeLayer(Shape* s) {
+    for (uint32_t i = 0; i < layers.size(); i++) {
+      if (layers[i] == s) {
+        layers.remove(i);
+        s->cleanup();
+        delete s;
+        return;
+      }
+    }
+  }
+
   Shape* getLayer(uint32_t i) {
     if (i < layers.size()) return layers[i];
     return nullptr;
