@@ -39,7 +39,7 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[]) {
   // but we want 1 extra point for each polygon for centroid: net NO CHANGE
   //NO EXTRA POINTS???? numPoints += numSegments; // adding 1 extra point for centroid of polygon
 
-  BlockMapLoader bml(32 + sizeof(BlockMapHeader) + nEntities * sizeof(Region) +
+  BlockMapLoader bml(sizeof(BlockMapHeader) + nEntities * sizeof(Region) +
                          numSegments * sizeof(Segment) + numPoints * 2 * sizeof(float),
                      version);//TODO: Find why 32 bytes are missing
   // first bytes past standard header is the header specific to this file format

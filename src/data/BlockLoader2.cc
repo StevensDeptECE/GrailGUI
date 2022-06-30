@@ -9,8 +9,9 @@
 #include "util/Ex.hh"
 #include "util/PlatFlags.hh"
 
-BlockLoader::BlockLoader(uint64_t bytes, Type t, uint16_t version)
-    : mem((uint64_t*)(malloc((getHeaderSize() + ((bytes + 7) & ~7ULL))))), size(bytes) {
+BlockLoader::BlockLoader(uint64_t bytes, Type t, uint16_t version) {
+  size = (getHeaderSize() + ((bytes + 7) & ~7ULL));
+  mem = (uint64_t*)(malloc(size));
   generalHeader = (GeneralHeader*)mem;  // header is the first chunk of bytes
   generalHeader->magic = ((((('!' << 8) + 'B') << 8) + 'L') << 8) +
                          'd';  // magic number for all block loaders
