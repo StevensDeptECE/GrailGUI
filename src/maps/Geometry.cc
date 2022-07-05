@@ -37,10 +37,10 @@ Point centroid(const float xy[], const int numPoints){ // Calculates the centroi
   Point* p = (Point*)xy;
   Point center(0,0);
   //float a = area(xy, numPoints);
-  float a = 0;
-  float cx = 0, cy = 0;
-  float seg;
-  int i = 0;
+  double a = 0;
+  double cx = 0, cy = 0;
+  double seg;
+  int i;
   for (i = 0; i < numPoints-1; i++) {
     seg = (p[i].x * p[i+1].y - p[i+1].x * p[i].y);
     a += seg;

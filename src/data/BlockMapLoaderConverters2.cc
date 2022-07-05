@@ -7,6 +7,7 @@
 #include "maps/Geometry.hh"
 using namespace std;
 
+const double lonThresh = 100;
 // extra parameter calls loader from ESRI Shapefile
 // TODO: BlockMapLoader BlockMapLoader::loadESRI(const char filename[])
 BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], bool toggleDateLine) {
@@ -17,6 +18,7 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], bool toggleDa
   // cerr << "nEntities: " << nEntities << endl;
 
   double minBounds[4], maxBounds[4];
+
 
   for (int i = 0; i < 4; i++) {
     minBounds[i] = shapeHandle->adBoundsMin[i];
@@ -91,7 +93,11 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], bool toggleDa
         // at this point numPoints = number of points in your polygon
       bml.segments[segCount].numPoints = numSegPoints;
       uint32_t startOffset = pointOffset;
-      // Point center = centroid(shapes[i]->padfX + start[j],shapes[i]->padfY + start[j], numSegPoints);
+      Point center = centroid(shapes[i]->padfX + start[j],shapes[i]->padfY + start[j], numSegPoints, lonThresh);
+      if(center.x  >-65)
+      {
+        cout << "Hello"<<endl;
+      }
       for (uint32_t k = 0; k < numSegPoints; k++) { // number of points in the segment
       //TODO: if we delta-compress this, it will be a)more accurate and b)compress WAY better
       //  float dx = shapes[i]->padfX[start[j] + k] - baseX; // doing everything as deltas off baseX,baseY is more accurate
@@ -104,7 +110,7 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], bool toggleDa
         bml.points[pointOffset++] = x;
         bml.points[pointOffset++] = y;
       }
-      Point center = centroid(&bml.points[pointOffset - (numSegPoints*2)], numSegPoints);
+      //Point center = centroid(&bml.points[pointOffset - (numSegPoints*2)], numSegPoints);
       bml.points[pointOffset++] = center.x;
       bml.points[pointOffset++] = center.y;
       //bml.points[pointOffset++] = (bounds.xMin + bounds.xMin)/2;
