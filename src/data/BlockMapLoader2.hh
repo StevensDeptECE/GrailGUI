@@ -51,7 +51,7 @@ class BlockMapLoader : public BlockLoader {
   */
   struct Region {
     uint32_t segmentStart;  // first segment in this region
-    uint32_t startPoints;   // starting index for points so you don't have to
+//    uint32_t startPoints;   // starting index for points so you don't have to
                             // start from the beginning to index them
     BoundRect bounds;       // bounding box for region
     double baseX, baseY;    // the base location in high precision
@@ -60,6 +60,7 @@ class BlockMapLoader : public BlockLoader {
     uint32_t numPoints : 24;  // up to 16 million points
     uint32_t type : 8;  // TODO: Define what type of segments exist. polygons
                         // (islands, border) polyline (rivers, roads) etc
+    uint32_t start;
   };
   void mean(float* meanx, float* meany) const;
 
@@ -135,8 +136,11 @@ class BlockMapLoader : public BlockLoader {
   uint32_t getNumRegions() const { return blockMapHeader->numRegions; }
   uint32_t getNumSegments() const { return blockMapHeader->numSegments; }
   uint32_t getNumPoints() const { return blockMapHeader->numPoints; }
-  const float* getXPoints() const { return points; }
-  const float* getYPoints() const { return points + blockMapHeader->numPoints; }
+  const float* getPoints() const { return points; }
+//  const float* getYPoints() const { return points + blockMapHeader->numPoints; }
   const Segment& getSegment(uint32_t i) { return segments[i]; }
+  const float* getSegmentCentroid(uint32_t i) {
+    return points + (segments[i].start + (segments[i].numPoints*2));
+  }
   static void diff(const BlockMapLoader& a, const BlockMapLoader& b);
 };

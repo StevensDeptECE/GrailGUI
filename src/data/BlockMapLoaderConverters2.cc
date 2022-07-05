@@ -7,7 +7,6 @@
 #include "maps/Geometry.hh"
 using namespace std;
 
-const double lonThresh = 100;
 // extra parameter calls loader from ESRI Shapefile
 // TODO: BlockMapLoader BlockMapLoader::loadESRI(const char filename[])
 BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], bool toggleDateLine) {
@@ -18,7 +17,7 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], bool toggleDa
   // cerr << "nEntities: " << nEntities << endl;
 
   double minBounds[4], maxBounds[4];
-
+  const double lonThresh = 100;
 
   for (int i = 0; i < 4; i++) {
     minBounds[i] = shapeHandle->adBoundsMin[i];
@@ -75,7 +74,7 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], bool toggleDa
       // TODO: use exception
       throw(Ex1(Errcode::FILE_READ));
     }
-    // regions[i].numPoints =
+    bml.regions[i].segmentStart = segCount;
     BoundRect& bounds = bml.regions[i].bounds;
     bounds.xMin = shapes[i]->dfXMin; // copying bounds from ESRI into bml
     bounds.xMax = shapes[i]->dfXMax;
@@ -92,19 +91,22 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], bool toggleDa
         numSegPoints = start[j + 1] - start[j] - 1; // last point is a dup of the first
         // at this point numPoints = number of points in your polygon
       bml.segments[segCount].numPoints = numSegPoints;
-      uint32_t startOffset = pointOffset;
+      // uint32_t startOffset = pointOffset;
+      bml.segments[segCount].start = pointOffset;
       Point center = centroid(shapes[i]->padfX + start[j],shapes[i]->padfY + start[j], numSegPoints, lonThresh);
+      #if 0
       if(center.x  >-65)
       {
         cout << "Hello"<<endl;
       }
+      #endif
       for (uint32_t k = 0; k < numSegPoints; k++) { // number of points in the segment
       //TODO: if we delta-compress this, it will be a)more accurate and b)compress WAY better
       //  float dx = shapes[i]->padfX[start[j] + k] - baseX; // doing everything as deltas off baseX,baseY is more accurate
       //  float dy = shapes[i]->padfY[start[j] + k] - baseY;
         float x = shapes[i]->padfX[start[j] + k]; // x coord
         if (toggleDateLine)
-          if (x > 172.0f)
+          if (x > lonThresh)
             x -= 360.0f;
         float y = shapes[i]->padfY[start[j] + k]; // y coord
         bml.points[pointOffset++] = x;

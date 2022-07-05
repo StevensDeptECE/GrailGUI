@@ -1,0 +1,8 @@
+Maps TODO
+
+1. Filling segments
+2. 4-color map (not critical)
+3. add methods to draw only one state, one county, ...0.0f
+   advantage of sequential regions: texas = 247... 292  as opposed to...  texas is 247, 301, 356, 401-462
+4. heatmap: color according to some value
+5. area of polygon can be used to sort segments by their area, use biggest one for location of text, this requires storing the index of biggest segment (or sorting)

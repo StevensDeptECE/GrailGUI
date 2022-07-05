@@ -175,8 +175,8 @@ void BlockMapLoader::diff(const BlockMapLoader& a, const BlockMapLoader& b) {
     }
   }
   if (errors != 0) return;
-  const float* ap = a.getXPoints();
-  const float* bp = b.getXPoints();
+  const float* ap = a.getPoints();
+  const float* bp = b.getPoints();
   for (uint32_t i = 0; i < a.getNumPoints() * 2; i++)
     if (!approxeq(ap[i], bp[i]))
       cerr << i << ": " << ap[i] << "," << bp[i] << '\n';

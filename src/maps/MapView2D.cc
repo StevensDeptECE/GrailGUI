@@ -41,7 +41,7 @@ void MapView2D::initOutline() {
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, numPoints * (2 * sizeof(float)),
-               bml->getXPoints(), GL_STATIC_DRAW);
+               bml->getPoints(), GL_STATIC_DRAW);
   // Describe how information is received in shaders
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
@@ -79,6 +79,7 @@ void MapView2D::initLabels() {
   // TODO: need to implement to get states
   //const BlockMapLoader::RegionContainer* regionContainer = bml->getRegionContainer();
   const uint32_t count = bdl->getNodeCount();
+  const float* points = bml->getPoints();
   for (uint32_t i = 1; i < count; i++) {
     const char* name = bdl->getNameAt(i);
     string tempName = name + 2;
@@ -88,8 +89,13 @@ void MapView2D::initLabels() {
     if (mapInfo->entityType == ENT_COUNTY) {
       const BlockMapLoader::Region& r = regions[mapInfo->offset];
       // scale x and y by 1/factor of projection downscale
-      float x = (r.bounds.xMax + r.bounds.xMin)/2*textScale;
-      float y = (r.bounds.yMax + r.bounds.yMin)/2*-textScale;
+      #if 1
+      const float* centroidLoc = bml->getSegmentCentroid(r.segmentStart);
+      float x = centroidLoc[0]*textScale;
+      float y = centroidLoc[1]*-textScale;
+      #endif
+      //float x = (r.bounds.xMax + r.bounds.xMin)/2*textScale;
+      //float y = (r.bounds.yMax + r.bounds.yMin)/2*-textScale;
       mt->addCentered(x, y, f, tempName); // +2 and -2 to remove the appended state abbr.
     }
   }
@@ -106,7 +112,7 @@ void MapView2D::initFill() {
   glGenBuffers(1, &vboFill);
   glBindBuffer(GL_ARRAY_BUFFER, vboFill);
   glBufferData(GL_ARRAY_BUFFER, numPoints * (2 * sizeof(float)),
-               bml->getXPoints(), GL_STATIC_DRAW);
+               bml->getPoints(), GL_STATIC_DRAW);
   // Describe how information is received in shaders
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 

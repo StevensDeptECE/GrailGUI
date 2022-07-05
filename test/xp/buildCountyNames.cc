@@ -111,11 +111,11 @@ void buildMapDict(const char filename[]) {
 //    uint32_t symbolSize = mapDict.getSymbolSize();
     mapDict.add(county, MapEntry{
       //symbolSize, (uint32_t)strlen(county), 
-      ENT_COUNTY, FEAT_LOCAL, static_cast<uint32_t>(fieldNum)}); //warning: both static casts are narrowing int to uint32_t
+      ENT_COUNTY, FEAT_LOCAL, static_cast<uint32_t>(fieldNum-1)}); //warning: both static casts are narrowing int to uint32_t
     if (mapDict.get(state) == nullptr) {
 //      symbolSize = mapDict.getSymbolSize();
       mapDict.add(state, MapEntry{
-        ENT_STATE, FEAT_STATE, static_cast<uint32_t>(stateNum)});
+        ENT_STATE, FEAT_STATE, static_cast<uint32_t>(stateNum-1)}); // decrement by 1 since FIPS starts at 1, not 0
     }
   }
   mapDict.writeFile("res/maps/uscounties.bdl");
