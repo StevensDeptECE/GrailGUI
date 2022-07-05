@@ -9,7 +9,7 @@ CallbackHandler::CallbackHandler() {
 }
 
 HashMap<uint32_t> CallbackHandler::actionNameMap(64, 4096);
-std::array<uint32_t, 32768> inputMap();
+std::unordered_map<uint32_t, std::vector<uint32_t>> inputMap();
 
 uint32_t CallbackHandler::internalRegisterAction(const char name[], Security s,
                                                  function<void()> action) {
@@ -59,10 +59,12 @@ uint32_t CallbackHandler::registerCallback(uint32_t input, const char name[],
 }
 
 void CallbackHandler::doit(uint32_t input) {
-  uint32_t act = CallbackHandler::inputMap[input];
-  if (act == 0) return;
-  auto a = CallbackHandler::actionMap[act];
-  a();  // execute the action
+  auto act = CallbackHandler::inputMap[input];
+  for (auto fn : act) {
+    if (fn == 0) return;
+    auto a = CallbackHandler::actionMap[fn];
+    a();  // execute the action
+  }
 }
 
 void CallbackHandler::bind2DOrtho() {

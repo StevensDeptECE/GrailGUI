@@ -3,6 +3,7 @@
 #include <array>
 #include <cstdint>
 #include <functional>
+#include <vector>
 
 #include "util/HashMap.hh"
 
@@ -22,7 +23,7 @@ class CallbackHandler {
   template <typename T>
   using CallbackFunc = void (T::*)(void);
 
-  inline static std::array<uint32_t, 32768> inputMap;
+  inline static std::unordered_map<uint32_t, std::vector<uint32_t>> inputMap;
   /*
         map an integer code to a function to execute
         the actions are all the publicly available performance the code can DO
@@ -31,7 +32,8 @@ class CallbackHandler {
   static HashMap<uint32_t> actionNameMap;
   uint32_t lookupAction(const char actionName[]);
   //	static GLWin* w;
-  void setEvent(uint32_t e, uint32_t a) { inputMap[e] = a; }
+
+  void setEvent(uint32_t e, uint32_t a) { inputMap[e].push_back(a); }
 
   void setEvent(uint32_t key, uint32_t mod, uint32_t a) {
     setEvent((mod << 9) | key, a);
@@ -78,6 +80,10 @@ class CallbackHandler {
   template <typename T, typename U>
   void bindEvent(uint32_t inp, CallbackFunc<T> func, U* ptr) {
     registerCallback(inp, quote(func), Security::SAFE, func, ptr);
+  }
+
+  void bindEvent(uint32_t inp, std::invocable auto func) {
+    registerCallback(inp, quote(func), Security::SAFE, func);
   }
 
   void doit(uint32_t input);
