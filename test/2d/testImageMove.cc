@@ -1,6 +1,6 @@
 #include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
-#include "opengl/ModifiableMultiShape.cc"
+#include "opengl/Image.hh"
 
 using namespace std;
 using namespace grail;

@@ -1,3 +1,4 @@
+#include "opengl/Image.hh"
 #include "opengl/StyledMultiShape2D.hh"
 #include "util/DynArray.hh"
 
