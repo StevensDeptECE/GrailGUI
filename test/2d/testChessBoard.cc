@@ -9,11 +9,12 @@ using namespace grail;
 class TestChessBoard : public Member {
  public:
   TestChessBoard(Tab* tab) : Member(tab, -1, 0) {
-    ChessBoard(tab, 100, 100, 600, 600);
+    ChessBoard(c, tab, 100, 100, 600, 600);
   }
 };
 
 void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
   w->setTitle("Test filldraw");
+  MainCanvas* c = defaultTab->getMainCanvas();
   new TestChessBoard(defaultTab);
 }
