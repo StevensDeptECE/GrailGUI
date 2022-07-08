@@ -157,7 +157,7 @@ void MapViewer::zoomInOnMouse(float factor) {
 }
 
 void MapViewer::zoomOutOnMouse(float factor) {
-  zoomInOnMouse(factor);
+  zoomInOnMouse(1/factor);
 }
 
 void MapViewer::incSegment(){

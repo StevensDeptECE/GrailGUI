@@ -236,4 +236,6 @@ void Tab::loadBindings() {
 
   // bind3D();
   // bind2DOrtho();
+
+  mainCanvas.loadBindings();
 }

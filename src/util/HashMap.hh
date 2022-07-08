@@ -3,10 +3,10 @@
 #include <utility>
 class HashMapBase {
  protected:
-  uint32_t size;
-  uint32_t symbolSize;
+  uint32_t tableCapacity;
+  uint32_t symbolCapacity;
   char* symbols;
-  char* current;
+  char* currentSymbol;
   uint32_t* table;
   constexpr static int r1 = 5, r2 = 7, r3 = 17, r4 = 13, r5 = 11,
                        r6 = 16;  // rotate values
@@ -34,15 +34,15 @@ class HashMapBase {
   uint32_t hash(const char s[], uint32_t len) const {
     return bytewisehash(s, len);
   }
-  HashMapBase(uint32_t sz, uint32_t symbolSize)
-      : size(sz), symbolSize(symbolSize), table(new uint32_t[sz]) {
-    size--;
-    symbols = new char[symbolSize];
+  HashMapBase(uint32_t tableCapacity, uint32_t symbolCapacity)
+      : tableCapacity(tableCapacity), symbolCapacity(symbolCapacity), table(new uint32_t[tableCapacity]) {
+    tableCapacity--;
+    symbols = new char[symbolCapacity];
   }
 
  public:
   const char* getWords() const { return symbols; }
-  uint32_t getWordsSize() const { return current - symbols; }
+  uint32_t getWordsSize() const { return currentSymbol - symbols; }
 };
 
 template <typename Val>
@@ -57,19 +57,96 @@ class HashMap : public HashMapBase {
     Node(uint32_t offset, uint32_t next, Val v)
         : offset(offset), next(next), val(v) {}
   };
-  uint32_t nodeSize;   // how many nodes are preallocated
+  uint32_t nodeCapacity;   // how many nodes are preallocated
   uint32_t nodeCount;  // how many nodes are currently used
   Node* nodes;
 
+  // TODO: segment faults when trying to grow
+  void checkGrow() {
+    if (nodeCount * 2 <= tableCapacity) return;
+    const Node* oldNodes = nodes;
+    nodes = new Node[nodeCapacity * 2];  // TODO: need placement new
+    for (uint32_t i = 0; i < nodeCount; i++)
+      nodes[i] = std::move(oldNodes[i]);  // TODO: this is broken for objects Val
+                                     // without default constructor
+    nodeCapacity *= 2;
+    delete[](char*) oldNodes;  // get rid of the old block of memory
+    uint32_t* oldTable = table;
+    uint32_t oldTableCapacity = tableCapacity;
+    tableCapacity = tableCapacity*2|1;  // this is power of 2 - 1
+    table = new uint32_t[tableCapacity+1];  // new size = power of 2
+    for (uint32_t i = 0; i <= tableCapacity; i++)
+      table[i] = 0;
+    // remember tableCapacity=last element, go up to AND INCLUDING
+    // go through each element of existing table and copy to new one
+    for (uint32_t i = 0; i <= oldTableCapacity; i++)
+      if (oldTable[i] != 0) {
+        // find out new hash value of symbol
+        uint32_t index = hash(symbols + nodes[oldTable[i]].offset); 
+        if (table[index] != 0) {
+          nodes[i].next = table[index]; // make our node point at the one already in the bin
+        }          
+        table[index] = oldTable[i];
+      }
+    delete[] oldTable;
+    // TODO: grow the symbol table too
+    std::cerr << "HashMap growing size=" << tableCapacity << " " << nodeCapacity << '\n';
+  }
+
+  void internalUpdate(int i, uint32_t index, const Val& v) {
+    currentSymbol[i] = '\0';
+    nodes[nodeCount] = Node(currentSymbol - symbols, table[index], v);
+    table[index] = nodeCount;
+    currentSymbol += i + 1;
+    nodeCount++;
+  }
+
+  void internalAdd(uint32_t index, const char s[], const Val& v) {
+    for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {
+      const char* w = symbols + nodes[p].offset;
+      for (int i = 0; w[i] == s[i]; i++)
+        if (w[i] == '\0') {
+          nodes[p].val = v;
+          return;
+        }
+    }
+    int i;
+    for (i = 0; s[i] != '\0'; i++) currentSymbol[i] = s[i];
+    internalUpdate(i, index, v);
+  }
+
+  
+  //TODO: This logic is NOT RIGHT.
+  // for case where "catalog"--> bin 12, then "cat" --> bin 12, this would think
+  // that cat should replace catalog since the first 3 letters of catalog match cat.
+  // 
+  void internalAdd(uint32_t index, const char s[], uint32_t len, const Val& v) {
+    for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {
+      const char* w = symbols + nodes[p].offset;
+      for (int i = 0; i < len; i++) {
+        if (w[i] != s[i]) {
+          goto notAMatch; // if a letter is different, this is the wrong hash entry
+        }
+      }
+      if (w[len] == '\0') {
+        nodes[p].val = v;
+        return;
+      }
+notAMatch: ;
+    }
+    int i;
+    for (i = 0; i < len; i++) currentSymbol[i] = s[i];
+    internalUpdate(i, index, v);
+  }
  public:
-  HashMap(uint32_t sz, uint32_t symbolSize = 1024 * 1024)
-      : HashMapBase(sz, symbolSize),
-        nodeSize(sz / 2 + 2),
-        nodes(new Node[sz / 2 + 2]) {
-    current = symbols;
+  HashMap(uint32_t tableCapacity, uint32_t symbolCapacity = 1024 * 1024)
+      : HashMapBase(tableCapacity-1, symbolCapacity),
+        nodeCapacity(tableCapacity / 2 + 2),
+        nodes(new Node[tableCapacity / 2 + 2]) {
+    currentSymbol = symbols;
     nodeCount = 1;  // zero is null
 
-    for (uint32_t i = 0; i <= size; i++)
+    for (uint32_t i = 0; i <= tableCapacity; i++)
       table[i] = 0;  // 0 means empty, at the moment the first node is unused
   }
   ~HashMap() {
@@ -80,54 +157,20 @@ class HashMap : public HashMapBase {
   HashMap(const HashMap& orig) = delete;
   HashMap& operator=(const HashMap& orig) = delete;
 
-  void checkGrow() {
-    if (nodeCount * 2 <= size) return;
-    const Node* old = nodes;
-    nodes = new Node[nodeSize * 2];  // TODO: need placement new
-    for (uint32_t i = 0; i < nodeSize; i++)
-      nodes[i] = std::move(old[i]);  // TODO: this is broken for objects Val
-                                     // without default constructor
-    nodeSize *= 2;
-    delete[](char*) old;  // get rid of the old block of memory
-    uint32_t* oldTable = table;
-    uint32_t oldSize = size;
-    table = new uint32_t[size * 2 | 1];  // new size = power of 2 - 1
-
-    // remember size=last element, go up to AND INCLUDING
-    // go through each element of existing table and copy to new one
-    for (uint32_t i = 0; i <= size; i++)
-      if (oldTable[i] != 0) {
-        uint32_t index = hash(
-            symbols +
-            nodes[oldTable[i]].offset);  // find out new hash value of symbol
-        table[index] = oldTable[i];
-      }
-    delete[] oldTable;
-    size = size * 2 | 1;
-    // TODO: grow the symbol table too
-    std::cerr << "HashMap growing size=" << size << " " << nodeSize << '\n';
+  void add(const char s[], uint32_t len, const Val& v) {
+    checkGrow();
+    uint32_t index = hash(s, len);
+    internalAdd(index, s, len, v);
   }
 
   void add(const char s[], const Val& v) {
-    uint32_t index = hash(s);
-    for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {
-      const char* w = symbols + nodes[p].offset;
-      for (int i = 0; *w == s[i]; i++)
-        if (*w == '\0') {
-          nodes[p].val = v;
-          return;
-        }
-    }
     checkGrow();
-
-    int i;
-    for (i = 0; s[i] != '\0'; i++) current[i] = s[i];
-    current[i] = '\0';
-    nodes[nodeCount] = Node(current - symbols, table[index], v);
-    table[index] = nodeCount;
-    current += i + 1;
-    nodeCount++;
+    uint32_t index = hash(s);
+    internalAdd(index, s, v);
   }
+
+  
+#if 0
   Val add(const char s[], uint32_t len, const Val& v) {
     uint32_t index = hash(s, len);
     for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {
@@ -140,14 +183,15 @@ class HashMap : public HashMapBase {
     checkGrow();
 
     int i;
-    for (i = 0; i < len; i++) current[i] = s[i];
+    for (i = 0; i < len; i++) currentSymbol[i] = s[i];
     current[i] = '\0';
-    nodes[nodeCount] = Node(current - symbols, table[index], v);
+    nodes[nodeCount] = Node(currentSymbol - symbols, table[index], v);
     table[index] = nodeCount;
-    current += i + 1;
+    currentSymbol += i + 1;
     nodeCount++;
     return v;
   }
+#endif
 
   bool get(const char s[], Val* v) const {
     uint32_t index = hash(s);
@@ -199,7 +243,7 @@ class HashMap : public HashMapBase {
   uint64_t hist() const {
     constexpr int histsize = 20;
     int h[histsize] = {0};
-    for (uint32_t i = 0; i <= size; i++) {
+    for (uint32_t i = 0; i <= tableCapacity; i++) {
       uint32_t count = 0;
       for (uint32_t p = table[i]; p != 0; p = nodes[p].next) count++;
       if (count >= histsize - 1)

@@ -101,17 +101,13 @@ void MainCanvas::addMenu(const string menu[], uint32_t numStrings, float x,
 }
 
 void MainCanvas::init() {
-  Canvas::init();  // call parent for normal initialization
   // initialize the GUI layers (does not have to be at the end, but in render it
   // does)
   gui->init();
   guiText->init();
   menu->init();
   menuText->init();
-  tab->registerCallback(Tab::Inputs::MOUSE0_PRESS, "Widget Callback- Press",
-                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
-  tab->registerCallback(Tab::Inputs::MOUSE0_RELEASE, "Widget Callback- Release",
-                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
+  Canvas::init();  // call parent for normal initialization
 }
 
 void MainCanvas::render() {
@@ -145,4 +141,13 @@ void MainCanvas::click() {
   for (InteractiveWidget2D* widget : widgets) {
     if (widget->checkClick(mouseX, mouseY)) return;
   }
+}
+
+void MainCanvas::loadBindings() {
+  // TODO: this binding happens AFTER main application bindings and overrides it
+  // TODO: need to figure out how to make this happen first
+  tab->registerCallback(Tab::Inputs::MOUSE0_PRESS, "Widget Callback- Press",
+                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
+  tab->registerCallback(Tab::Inputs::MOUSE0_RELEASE, "Widget Callback- Release",
+                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
 }

@@ -56,10 +56,10 @@ void MapView2D::initOutline() {
   uint32_t* lineIndices = new uint32_t[numLineIndicesToDraw];
   uint32_t c = 0;
   for (uint32_t i = 0, j = 0; i < numSegments; i++) {
-    for (uint32_t k = 0; k < bml->getSegment(i).numPoints + 1; k++) {
+    for (uint32_t k = 0; k < bml->getSegment(i).numPoints; k++) {
       lineIndices[c++] = j++;
     }
-    // j++; // skip centroid at end of segment
+    j++; // skip centroid at end of segment
     lineIndices[c++] = endIndex; // add the separator (0xFFFFFFFF)
   }
   startLineIndex = 0;

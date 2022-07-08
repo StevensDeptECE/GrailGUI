@@ -14,7 +14,7 @@ uint32_t HashMapBase::bytewisehash(const char s[]) const {
   sum = ((sum << r5) | (sum >> (32 - r5))) ^ sum ^ (i << 7);
   //  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >>
   //  (32-r6)))) + s[i];
-  return sum & size;
+  return sum & tableCapacity;
 }
 
 // do not call with len = 0, or die.
@@ -32,7 +32,7 @@ uint32_t HashMapBase::bytewisehash(const char s[], uint32_t len) const {
   sum = ((sum << r5) | (sum >> (32 - r5))) ^ sum ^ (i << 7);
   //  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >>
   //  (32-r6)))) + s[i];
-  return sum & size;
+  return sum & tableCapacity;
 }
 
 uint32_t HashMapBase::fasthash1(const char s[]) const {
@@ -64,5 +64,5 @@ uint32_t HashMapBase::fasthash1(const char s[]) const {
   sum = (sum >> 7) ^ (sum << 9);
   sum = (sum >> 13) ^ (sum << 17);
   sum = (sum >> 31) ^ (sum >> 45);
-  return sum & size;
+  return sum & tableCapacity;
 }

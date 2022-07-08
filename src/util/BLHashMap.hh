@@ -265,13 +265,13 @@ class BLHashMap : public BlockLoader {
     if (nodeCount * 2 <= tableCapacity) return;
     const Node* old = nodes;
     nodes = new Node[nodeCapacity * 2];  // TODO: need placement new
-    for (uint32_t i = 0; i < nodeCapacity; i++)
+    for (uint32_t i = 0; i < nodeCount; i++)
       nodes[i] = std::move(old[i]);  // TODO: this is broken for objects Val
                                      // without default constructor
     nodeCapacity *= 2;
     delete[](char*) old;  // get rid of the old block of memory
     uint32_t* oldTable = table;
-    uint32_t oldSize = tableCapacity;
+    uint32_t oldTableCapacity = tableCapacity;
     table = new uint32_t[tableCapacity * 2 | 1];  // new size = power of 2 - 1
 
     // remember size=last element, go up to AND INCLUDING
@@ -284,7 +284,7 @@ class BLHashMap : public BlockLoader {
         table[index] = oldTable[i];
       }
     delete[] oldTable;
-    size = size * 2 | 1;
+    tableCapacity = tableCapacity * 2 | 1;
     // TODO: grow the symbol table too
     std::cerr << "BLHashMap growing size=" << tableCapacity << " " << nodeCapacity << '\n';
   }

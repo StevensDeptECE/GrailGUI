@@ -20,6 +20,7 @@ int main(int argc, char* argv[]) {
 
     CBenchmark<> b2("Grail run grailmain");
     b2.start();
+    tab->loadBindings();
     grailmain(argc, argv, &w, tab);
     b2.endAndDisplay(prefs.shouldDisplay(LogLevel::INFO));  // How long to run grailmain?
 
