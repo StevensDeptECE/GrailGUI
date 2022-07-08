@@ -35,8 +35,8 @@ class HashMapBase {
     return bytewisehash(s, len);
   }
   HashMapBase(uint32_t tableCapacity, uint32_t symbolCapacity)
-      : tableCapacity(tableCapacity), symbolCapacity(symbolCapacity), table(new uint32_t[tableCapacity]) {
-    tableCapacity--;
+      : tableCapacity(tableCapacity-1), symbolCapacity(symbolCapacity), table(new uint32_t[tableCapacity]) {
+        // allocate a power of 2 for the table size, and set tableCapacity to n-1 so it can AND to implement MOD
     symbols = new char[symbolCapacity];
   }
 
@@ -139,10 +139,10 @@ notAMatch: ;
     internalUpdate(i, index, v);
   }
  public:
-  HashMap(uint32_t tableCapacity, uint32_t symbolCapacity = 1024 * 1024)
-      : HashMapBase(tableCapacity-1, symbolCapacity),
+  HashMap(uint32_t tableCapacity_in, uint32_t symbolCapacity = 1024 * 1024)
+      : HashMapBase(tableCapacity_in, symbolCapacity),
         nodeCapacity(tableCapacity / 2 + 2),
-        nodes(new Node[tableCapacity / 2 + 2]) {
+        nodes(new Node[tableCapacity / 2]) {
     currentSymbol = symbols;
     nodeCount = 1;  // zero is null
 
