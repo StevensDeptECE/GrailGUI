@@ -1,7 +1,10 @@
-#include "opengl/ButtonWidget.hh"
 #include "opengl/GrailGUI.hh"
 #include "opengl/Image.hh"
 #include "opengl/util/Transformation.hh"
+// glad, include glad *before* glfw
+#include <glad/glad.h>
+// GLFW
+#include <GLFW/glfw3.h>
 
 using namespace std;
 using namespace grail;
@@ -11,12 +14,13 @@ class ReactingToInput : public Member {
  private:
   float y = 0;
   bool hasclicked = false;
-  bool notpressed;
+  bool notReleased;
   void (*p)();  // p points to void functions with empty ()
   float xpos, ypos, width, height;
   Image* piece;
   Transformation tChess;
   GLWin* window;
+  Transformation* trans;
 
   void GetPosition(GLWin* w) {
     xpos = w->mouseX;
@@ -26,6 +30,7 @@ class ReactingToInput : public Member {
  public:
   ReactingToInput(Tab* t, GLWin* w) : Member(t, 0, .1), window(w) {
     MainCanvas* c = t->getMainCanvas();
+    trans = new Transformation();
 
     GetPosition(w);
     xpos = 100;
@@ -34,7 +39,7 @@ class ReactingToInput : public Member {
     height = 200;
 
     piece = c->addLayer(
-        new Image(c, 100, 100, 200, 200, "ChessTextures/brook.webp"));
+        new Image(c, xpos, ypos, 200, 200, "ChessTextures/brook.webp"));
     // c->removeLayer(PieceButton);
 
     /*int foo = 1;
@@ -75,6 +80,16 @@ class ReactingToInput : public Member {
         tab->getParentWin()->setUpdate();
       }
     }
+    if (notReleased) {
+      trans->translate(1, 0, 0);
+      tab->getParentWin()->setUpdate();
+      /*while (notReleased) {
+        glfwPollEvents();
+        c->removeLayer(piece);
+        piece = addNewImage(w->mouseX, w->mouseY);
+        tab->getParentWin()->setUpdate();
+      }*/
+    }
   }
   /*void release() {
     if (hasclicked) {
@@ -82,17 +97,13 @@ class ReactingToInput : public Member {
            << "\n";
       cout << "Click to make reappear"
            << "\n";
+      notReleased = false;
       c->removeLayer(piece);
       tab->getParentWin()->setUpdate();
     } else {
       return;
     }
   }*/
-
-  void drag() {
-    // When mouse moves:
-    if (notpressed) return;
-  }
 
   Image* addNewImage(double xpos, double ypos) {
     Image* m = c->addLayer(

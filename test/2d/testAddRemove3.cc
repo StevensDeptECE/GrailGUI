@@ -106,12 +106,17 @@ class ReactingToInput : public Member {
       c->removeLayer(brook1);
       imageon = false;
     } else {
-      brook1 = c->addLayer(
-          new Image(c, 100, 100, 200, 200, "ChessTextures/brook.webp"));
-      brook1->init();
+      brook1 = addNewImage();
       imageon = true;
     }
     tab->getParentWin()->setUpdate();
+  }
+
+  Image* addNewImage() {
+    Image* m = c->addLayer(
+        new Image(c, 100, 100, 200, 200, "ChessTextures/brook.webp"));
+    m->init();
+    return m;
   }
 };
 
