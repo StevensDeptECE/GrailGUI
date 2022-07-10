@@ -6,20 +6,47 @@
 
 using namespace std;
 using namespace grail;
-
+// use same click method as testimagemove, make function that checks what struct
+// its for in imagelist, then according to that fuck with the image
 class ChessBoard {
  private:
   struct squareLocation {
     float xposition;
     float yposition;
+    float xleft;
+    float ytop;
+    float xright;
+    float ybot;
+    Image* currentPiece = nullptr;
+    string filepath;
   };
 
+  float xpos;
+  float ypos;
   squareLocation ImageList[8][8];
+  GLWin* window;
+  Image* selectedpiece = nullptr;
+  bool hasclicked = false;
+  float width;
+  float height;
+  float xstart;
+  float ystart;
+  MainCanvas* c;
+  float sizeSquares;
+  int selectedRow;
+  int selectedColumn;
+  string selectedPath;
 
  public:
-  ChessBoard(MainCanvas* c, Tab* tab, float xstart, float ystart, float w,
-             float h) {
-    float sizeSquares = w / 8;
+  ChessBoard(MainCanvas* c, GLWin* window, Tab* tab, float xstart, float ystart,
+             float w, float h)
+      : window(window),
+        width(w),
+        height(h),
+        xstart(xstart),
+        ystart(ystart),
+        c(c) {
+    sizeSquares = w / 8;
     calculateSquares(xstart, ystart, sizeSquares);
 
     //=============================Chess Board Initialization=====///
@@ -30,11 +57,45 @@ class ChessBoard {
     board->CheckeredGrid(xstart, ystart, w, h, 8, 8, black, darkgreen,
                          lightgrey);
 
+    // store filepaths//
+    ImageList[0][0].filepath = "ChessTextures/brook.webp";
+    ImageList[0][1].filepath = "ChessTextures/bknight.webp";
+    ImageList[0][2].filepath = "ChessTextures/bbishop.webp";
+    ImageList[0][3].filepath = "ChessTextures/bqueen.webp";
+    ImageList[0][4].filepath = "ChessTextures/bking.webp";
+    ImageList[0][5].filepath = "ChessTextures/bbishop.webp";
+    ImageList[0][6].filepath = "ChessTextures/bknight.webp";
+    ImageList[0][7].filepath = "ChessTextures/brook.webp";
+
+    ImageList[7][0].filepath = "ChessTextures/wrook.webp";
+    ImageList[7][1].filepath = "ChessTextures/wknight.webp";
+    ImageList[7][2].filepath = "ChessTextures/wbishop.webp";
+    ImageList[7][3].filepath = "ChessTextures/wqueen.webp";
+    ImageList[7][4].filepath = "ChessTextures/wking.webp";
+    ImageList[7][5].filepath = "ChessTextures/wbishop.webp";
+    ImageList[7][6].filepath = "ChessTextures/wknight.webp";
+    ImageList[7][7].filepath = "ChessTextures/wrook.webp";
+    for (int i = 0; i < 8; i++) {
+      ImageList[1][i].filepath = "ChessTextures/bpawn.webp";
+      ImageList[6][i].filepath = "ChessTextures/wpawn.webp";
+    }
+
+    for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        if (i == 0 || i == 1 || i == 6 || i == 7) {
+          ImageList[i][j].currentPiece =
+              addImage(c, ImageList[i][j].xposition, ImageList[i][j].yposition,
+                       sizeSquares, sizeSquares, &ImageList[i][j].filepath[0]);
+        }
+      }
+    }
+
     //  Black Pieces//
-    Image* brook1 =
+    /*ImageList[0][0].currentPiece =
         addImage(c, ImageList[0][0].xposition, ImageList[0][0].yposition,
                  sizeSquares, sizeSquares, "ChessTextures/brook.webp");
-    Image* bknight1 =
+
+    ImageList[0][1].currentPiece =
         addImage(c, ImageList[0][1].xposition, ImageList[0][1].yposition,
                  sizeSquares, sizeSquares, "ChessTextures/bknight.webp");
     Image* bbishop1 =
@@ -129,7 +190,7 @@ class ChessBoard {
     Image* wpawn8 = c->addLayer(
         new Image(c, ImageList[6][7].xposition, ImageList[6][7].yposition,
                   sizeSquares, sizeSquares, "ChessTextures/wpawn.webp"));
-
+*/
     //======================Text Board==========================//
 
     MultiText* letters =
@@ -174,12 +235,70 @@ class ChessBoard {
     ///================Cool Delete==========//
   }
 
+  void GetPosition(GLWin* w) {
+    xpos = w->mouseX;
+    ypos = w->mouseY;
+  }
+
+  void update() {
+    if (hasclicked) {
+      c->removeLayer(selectedpiece);
+      selectedpiece = addImage(c, window->mouseX, window->mouseY, sizeSquares,
+                               sizeSquares, &selectedPath[0]);
+    }
+  }
+
+  void press(GLWin* w) {
+    GetPosition(w);
+    if (xpos >= xstart && xpos <= xstart + width && ypos >= ystart &&
+        ypos <= ystart + height) {
+      if (!hasclicked) {
+        checkSquare(w);
+        if (ImageList[selectedRow][selectedColumn].currentPiece != nullptr) {
+          selectedpiece = ImageList[selectedRow][selectedColumn].currentPiece;
+          ImageList[selectedRow][selectedColumn].currentPiece = nullptr;
+          selectedPath = ImageList[selectedRow][selectedColumn].filepath;
+          ImageList[selectedRow][selectedColumn].filepath = "";
+          hasclicked = true;
+        }
+      } else {
+        checkSquare(w);
+        if (ImageList[selectedRow][selectedColumn].currentPiece == nullptr) {
+          c->removeLayer(selectedpiece);
+          ImageList[selectedRow][selectedColumn].currentPiece =
+              addImage(c, ImageList[selectedRow][selectedColumn].xposition,
+                       ImageList[selectedRow][selectedColumn].yposition,
+                       sizeSquares, sizeSquares, &selectedPath[0]);
+          selectedpiece = nullptr;
+          ImageList[selectedRow][selectedColumn].filepath = selectedPath;
+          selectedPath = "";
+          hasclicked = false;
+        }
+      }
+    }
+  }
+
+  void checkSquare(GLWin* w) {
+    for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        if (xpos >= ImageList[i][j].xleft && xpos <= ImageList[i][j].xright &&
+            ypos <= ImageList[i][j].ybot && ypos >= ImageList[i][j].ytop) {
+          selectedRow = i;
+          selectedColumn = j;
+          return;
+        }
+      }
+    }
+  }
+
   void calculateSquares(float xstart, float ystart, float sizeSquares) {
     uint32_t multiplier = 0;
     for (int i = 0; i < 8; i++) {
       multiplier = 0;
       for (int j = 0; j < 8; j++) {
         ImageList[i][j].xposition = xstart + sizeSquares * multiplier;
+        ImageList[i][j].xleft = xstart + sizeSquares * multiplier;
+        ImageList[i][j].xright = xstart + sizeSquares * (multiplier + 1);
         multiplier++;
       }
     }
@@ -187,6 +306,8 @@ class ChessBoard {
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
         ImageList[i][j].yposition = ystart + sizeSquares * multiplier;
+        ImageList[i][j].ytop = ystart + sizeSquares * multiplier;
+        ImageList[i][j].ybot = ystart + sizeSquares * (multiplier + 1);
       }
       multiplier++;
     }
