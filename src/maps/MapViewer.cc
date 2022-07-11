@@ -6,6 +6,7 @@
 #include "maps/MapView2D.hh"
 #include "opengl/Style.hh"
 #include "util/BLHashMap.hh"
+#include "opengl/Tab.hh"
 
 MapViewer::MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint32_t vpY,
          uint32_t vpW, uint32_t vpH,
@@ -18,6 +19,7 @@ MapViewer::MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint3
     displayText = true, displaySegments = true;
     mt = new MultiText(this, style, 12);
     mv = new MapView2D(this, style, mt, bml, bdl, 1/textScale);
+    tab->addCanvas(this); // register ourselves in the tab
     // MapView2D automatically sets bounds on this object (the MapViewer)
 
     //addLayer(mv);  // add the MapView2D to this map FIRST because it is under the text

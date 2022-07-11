@@ -31,7 +31,8 @@ Canvas::Canvas(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint32_t vp
     trans =
         glm::ortho(0.0f, static_cast<float>(pX), static_cast<float>(pY), 0.0f);
     originalTrans = trans;
-    tab->addCanvas(this);
+    //BUG: All canvases cannot register themselves with tab, because that means
+    // MainCanvas would also: do this manually: tab->addCanvas(this);
     //    projection = glm::scale(projection, glm::vec3(16, -16, 1));
     //    projection = glm::translate(projection, glm::vec3(180, -90, 0));
     // calling glm::ortho..., show init and render, works with z=0 and not with

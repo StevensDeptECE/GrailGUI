@@ -141,8 +141,8 @@ notAMatch: ;
  public:
   HashMap(uint32_t tableCapacity_in, uint32_t symbolCapacity = 1024 * 1024)
       : HashMapBase(tableCapacity_in, symbolCapacity),
-        nodeCapacity(tableCapacity / 2 + 2),
-        nodes(new Node[tableCapacity / 2]) {
+        nodeCapacity(tableCapacity / 2+2),
+        nodes(new Node[tableCapacity / 2+2]) {
     currentSymbol = symbols;
     nodeCount = 1;  // zero is null
 
