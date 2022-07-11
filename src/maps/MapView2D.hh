@@ -65,4 +65,5 @@ class MapView2D : public Shape {
   void incNumSegments();
   void decNumSegments();
   void setWhichSegmentsToDisplay(uint32_t start, uint32_t end);
+  void displayFirst();
 };

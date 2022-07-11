@@ -109,12 +109,28 @@ void MapView2D::initFill() {
   glBindVertexArray(vaoFill);
 
   // push points up to graphics card as two separate vbo for x and y
+  //glBindBuffer(GL_ARRAY_BUFFER, vbo); // re-use vbo for this solid drawing
+  //glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+  //glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)(2*sizeof(float)));
+
   glGenBuffers(1, &vboFill);
   glBindBuffer(GL_ARRAY_BUFFER, vboFill);
-  glBufferData(GL_ARRAY_BUFFER, numPoints * (2 * sizeof(float)),
-               bml->getPoints(), GL_STATIC_DRAW);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+  glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)(2*sizeof(float)));
+
+  const float* points = bml->getPoints();
+  float* xyv = new float[numPoints*3];
+  int c = 0, d = 0;
+  for (int i = 0; i < numPoints; i++) {
+    xyv[c++] = points[d++];  // copy x
+    xyv[c++] = points[d++];  // copy y
+    xyv[c++] = 0; // insert a value
+  }
+  glBufferData(GL_ARRAY_BUFFER, numPoints * (3 * sizeof(float)),
+               xyv, GL_STATIC_DRAW);
+  delete[] xyv;
   // Describe how information is received in shaders
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+//  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
   // Create a buffer object for indices of lines
   uint32_t numSegments = bml->getNumSegments();
@@ -127,7 +143,7 @@ void MapView2D::initFill() {
   // number of points in blockmap + 1 index per segment for separator
   numFillIndicesToDraw = numPoints + numSegments;// - numSegments);
   uint32_t* fillIndices = new uint32_t[numFillIndicesToDraw];
-  uint32_t c = 0;
+  c = 0;
   for (uint32_t i = 0, j = 0; i < numSegments; i++) {
     if (i == startSegment)
       startFillIndex = c;
@@ -165,7 +181,7 @@ void debug(const glm::mat4& m, float x, float y, float z) {
 
 void MapView2D::render(glm::mat4& trans) {
   renderOutline(trans);
-  //renderFill(trans);
+  renderFill(trans);
 }
 
 void MapView2D::renderOutline(glm::mat4& trans) {
@@ -221,10 +237,11 @@ void MapView2D::renderFill(glm::mat4& trans) {
 
   // Draw Solid
   //numFillIndicesToDraw = 19;
+  //endFillIndex = 19;
   glDrawElements(GL_TRIANGLE_FAN, endFillIndex - startFillIndex, GL_UNSIGNED_INT, (void*)(uint64_t)startFillIndex);
 
   // Unbind
-  glDisableVertexAttribArray(1);
+  //glDisableVertexAttribArray(1);
   glDisableVertexAttribArray(0);
   glBindVertexArray(0);
   glDisable(GL_PRIMITIVE_RESTART);
@@ -294,5 +311,9 @@ void MapView2D::incNumSegments() {
 }
 
 void MapView2D::decNumSegments() {
+  setWhichSegmentsToDisplay(startSegment, endSegment-1);  
+}
+
+void MapView2D::displayFirst() {
   setWhichSegmentsToDisplay(startSegment, endSegment-1);  
 }

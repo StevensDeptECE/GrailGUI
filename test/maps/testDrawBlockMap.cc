@@ -49,6 +49,7 @@ class TestDrawBlockMap : public Member {
     tab->bindEvent(Tab::Inputs::F3, [=,this]() {return viewer->decSegment();});
     tab->bindEvent(Tab::Inputs::F4, [=,this]() {return viewer->incNumSegments();});
     tab->bindEvent(Tab::Inputs::F5, [=,this]() {return viewer->displayFirstSegment();});
+    tab->bindEvent(Tab::Inputs::F9, [=,this]() {return viewer->displayFirstSegment();});
     //TODO:
     update();
   }
