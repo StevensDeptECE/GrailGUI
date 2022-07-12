@@ -119,21 +119,45 @@ void MapView2D::initFill() {
   glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)(2*sizeof(float)));
 
   const float* points = bml->getPoints();
+#if 0
+  float xyv[] = {
+    -150,0, 0,
+   -150,55, 0.5,
+   -63,0, 0,
+   -63,47,0.96};
+  glBufferData(GL_ARRAY_BUFFER, 4 * (3 * sizeof(float)),
+               xyv, GL_STATIC_DRAW);
+#endif
+#if 1
   float* xyv = new float[numPoints*3];
+  const uint32_t numSegments = bml->getNumSegments();
   int c = 0, d = 0;
-  for (int i = 0; i < numPoints; i++) {
-    xyv[c++] = points[d++];  // copy x
-    xyv[c++] = points[d++];  // copy y
-    xyv[c++] = 0; // insert a value
+  float val = 0;
+  for (uint32_t i = 0, j = 0; i < numSegments; i++) {
+    for (uint32_t k = 0; k < bml->getSegment(i).numPoints; k++) {
+      xyv[c++] = points[d++];  // copy x
+      xyv[c++] = points[d++];  // copy y
+      xyv[c++] = val; // insert a value
+    }
+    xyv[c++] = points[d++];  // copy centroid x
+    xyv[c++] = points[d++];  // copy centroid y
+    xyv[c++] = val; // insert a value (same as for the perimeter)
+    val += 0.25;
+    if (val > 1)
+      val = 0;
   }
   glBufferData(GL_ARRAY_BUFFER, numPoints * (3 * sizeof(float)),
                xyv, GL_STATIC_DRAW);
+  cout << "\n\nxyv\n";
+  for (int i = 0, j = 0; i < 19; i++, j += 3) {
+    cout << xyv[j] << "," << xyv[j+1] << "," << xyv[j+2] << '\n';
+  }
   delete[] xyv;
+#endif
   // Describe how information is received in shaders
 //  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
   // Create a buffer object for indices of lines
-  uint32_t numSegments = bml->getNumSegments();
   constexpr uint32_t endIndex = 0xFFFFFFFF;
   // xy1 xy2 xy3 xy4 xy5 ... (xy points on the map)
   // 1 2 3 4 5 ... 1 0xFFFFFFFF 6 7 8 ... 6 0xFFFFFFFF (connect the points)
@@ -141,28 +165,39 @@ void MapView2D::initFill() {
 
   //TODO: hopefully right this time? 
   // number of points in blockmap + 1 index per segment for separator
-  numFillIndicesToDraw = numPoints + numSegments;// - numSegments);
-  uint32_t* fillIndices = new uint32_t[numFillIndicesToDraw];
-  c = 0;
-  for (uint32_t i = 0, j = 0; i < numSegments; i++) {
-    if (i == startSegment)
-      startFillIndex = c;
-    fillIndices[c++] = j+bml->getSegment(i).numPoints; // Add centroid;
-    for (uint32_t k = 0; k < bml->getSegment(i).numPoints; k++) {
-      fillIndices[c++] = j++;
+  {
+    numFillIndicesToDraw = numPoints + 2*numSegments;// - numSegments);
+    uint32_t* fillIndices = new uint32_t[numFillIndicesToDraw];
+    uint32_t c = 0;
+    for (uint32_t i = 0, j = 0; i < numSegments; i++) {
+      if (i == startSegment)
+        startFillIndex = c;
+      uint32_t start = j; // remember start so it can be copied at the end of the fan
+      fillIndices[c++] = j+bml->getSegment(i).numPoints; // Add centroid;
+      for (uint32_t k = 0; k < bml->getSegment(i).numPoints; k++) {
+        fillIndices[c++] = j++;
+      }
+      fillIndices[c++] = start;
+      j++; //TODO: Daniil sez: put the centroid first to simplify this logic!
+      fillIndices[c++] = endIndex; // add the separator (0xFFFFFFFF)
+      if (i == endSegment) {
+        endFillIndex = c-1; // c is 1 beyond the end of the stored indices
+      }
     }
-    j++; //TODO: Daniil sez: put the centroid first to simplify this logic!
-    fillIndices[c++] = endIndex; // add the separator (0xFFFFFFFF)
-    if (i == endSegment) {
-      endFillIndex = c-1; // c is 1 beyond the end of the stored indices
-    }
+  
+  cout << "\nFill indices:\n";
+  for (int i = 0; i < 19; i++) {
+    cout << fillIndices[i] << ' ';
   }
+  cout << "\n";
   glGenBuffers(1, &sbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sbo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * numFillIndicesToDraw,
                fillIndices, GL_STATIC_DRAW);
 
   delete[] fillIndices;
+  }
+
 }
 
 void debug(const glm::mat4& m, float x, float y, float z) {
@@ -217,11 +252,11 @@ void MapView2D::renderOutline(glm::mat4& trans) {
 void MapView2D::renderFill(glm::mat4& trans) {
   
   Shader* shader = Shader::useShader(GLWin::HEATMAP_SHADER);
-  shader->setVec4("minColor", grail::blue);
-  shader->setVec4("maxColor", grail::red);
+  shader->setVec3("minColor", glm::vec3(0,0,1));
+  shader->setVec3("maxColor", glm::vec3(1,0,0));
   shader->setFloat("minVal", 0.0f);
   shader->setFloat("maxVal", 1.0f);
-  shader->setMat4("projection", trans);
+  shader->setMat4("trans", trans);
 
   //Shader* shader = Shader::useShader(GLWin::COMMON_SHADER);//TODO: make new shader
   
@@ -239,7 +274,7 @@ void MapView2D::renderFill(glm::mat4& trans) {
   //numFillIndicesToDraw = 19;
   //endFillIndex = 19;
   glDrawElements(GL_TRIANGLE_FAN, endFillIndex - startFillIndex, GL_UNSIGNED_INT, (void*)(uint64_t)startFillIndex);
-
+  //glDrawArrays(GL_TRIANGLE_FAN, 0, 4); // quick test, just draw one huge yellow rectangle!
   // Unbind
   //glDisableVertexAttribArray(1);
   glDisableVertexAttribArray(0);

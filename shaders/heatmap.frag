@@ -13,6 +13,8 @@ uniform float maxVal;
 void main()
 {
 	float f = (val - minVal)/ (maxVal-minVal);
-	FragColor = vec4(1,1,0,1);//texture(ourTexture, f);
-	//FragColor = vec4(minColor*(1.0-f) + maxColor * f,1.0);
+	vec3 c = minColor*(1.0-f) + maxColor * f;
+  //vec3 c(1.0,0.0,1.0);
+  //FragColor = vec4(1,1,0,1);//texture(ourTexture, f);
+	FragColor = vec4(c, 1.0);
 }
