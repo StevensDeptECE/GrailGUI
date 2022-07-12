@@ -43,16 +43,16 @@ class BLHashMap : public BlockLoader {
 
 
   // computes the next highest power of 2
-    static uint32_t nearestPower2 (uint32_t v) {
-      v--;
-      v |= v >> 1;
-      v |= v >> 2;
-      v |= v >> 4;
-      v |= v >> 8;
-      v |= v >> 16;
-      v++;
-      return v;
-    }
+  static uint32_t nearestPower2 (uint32_t v) {
+    v--;
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    v++;
+    return v;
+  }
 
   static bool hasNoZero(uint32_t v) {
     return (v & 0xff) && (v & 0xff00) && (v & 0xff0000) && (v & 0xff000000);
@@ -71,36 +71,36 @@ class BLHashMap : public BlockLoader {
   }
 
   uint32_t fasthash1(const char s[]) const {
-  uint64_t* p = (uint64_t*)s;
-  uint64_t v;
-  uint64_t sum = 0xF39A5EB6;
+    uint64_t* p = (uint64_t*)s;
+    uint64_t v;
+    uint64_t sum = 0xF39A5EB6;
 
-  // https://graphics.stanford.edu/~seander/bithacks.html#ZeroInWord
-  while (v = *p++, hasNoZero(v)) {
-    // rotate might be better, preserve more bits in each operation
-    sum = sum ^ v ^ (v << 12);
-    sum = (sum << 3) ^ (sum >> 5);
-    sum = (sum << 7) ^ (sum >> 13);
-    sum = (sum >> 17) ^ (sum << 23);
-  }
-  // do the last chunk which is somewhere less than 8 bytes
-  // this is for little-endian CPUs like intel, from bottom byte to the right
-  uint64_t wipe = 0xFF;
-  uint64_t M = 0xFFULL;
-  for (int i = 8; i > 0; i--) {
-    if ((v & M) == 0) {
-      v &= wipe;
-      break;
+    // https://graphics.stanford.edu/~seander/bithacks.html#ZeroInWord
+    while (v = *p++, hasNoZero(v)) {
+      // rotate might be better, preserve more bits in each operation
+      sum = sum ^ v ^ (v << 12);
+      sum = (sum << 3) ^ (sum >> 5);
+      sum = (sum << 7) ^ (sum >> 13);
+      sum = (sum >> 17) ^ (sum << 23);
     }
-    M <<= 8;
-    wipe = (wipe << 8) | 0xFF;
+    // do the last chunk which is somewhere less than 8 bytes
+    // this is for little-endian CPUs like intel, from bottom byte to the right
+    uint64_t wipe = 0xFF;
+    uint64_t M = 0xFFULL;
+    for (int i = 8; i > 0; i--) {
+      if ((v & M) == 0) {
+        v &= wipe;
+        break;
+      }
+      M <<= 8;
+      wipe = (wipe << 8) | 0xFF;
+    }
+    sum = sum ^ v ^ (sum >> 3);
+    sum = (sum >> 7) ^ (sum << 9);
+    sum = (sum >> 13) ^ (sum << 17);
+    sum = (sum >> 31) ^ (sum >> 45);
+    return sum & tableCapacity;
   }
-  sum = sum ^ v ^ (sum >> 3);
-  sum = (sum >> 7) ^ (sum << 9);
-  sum = (sum >> 13) ^ (sum << 17);
-  sum = (sum >> 31) ^ (sum >> 45);
-  return sum & tableCapacity;
-}
 
   // do not call with len = 0, or die.
   uint32_t bytewisehash(const char s[], uint32_t len) const {
@@ -146,6 +146,7 @@ class BLHashMap : public BlockLoader {
     uint32_t index;
     const char* next;
   };
+  
   hashReturn hashAndReturn(const char s[]) const {
     uint32_t i;
     uint32_t sum = s[0] ^ 0x56F392AC;
@@ -260,35 +261,97 @@ class BLHashMap : public BlockLoader {
   BLHashMap(const BLHashMap& orig) = delete;
   BLHashMap& operator=(const BLHashMap& orig) = delete;
 
-  // TODO: segment faults when trying to grow
+  // TODO: fix implementation to fit with blockloaders
   void checkGrow() {
     if (nodeCount * 2 <= tableCapacity) return;
-    const Node* old = nodes;
+    const Node* oldNodes = nodes;
     nodes = new Node[nodeCapacity * 2];  // TODO: need placement new
     for (uint32_t i = 0; i < nodeCount; i++)
-      nodes[i] = std::move(old[i]);  // TODO: this is broken for objects Val
+      nodes[i] = std::move(oldNodes[i]);  // TODO: this is broken for objects Val
                                      // without default constructor
     nodeCapacity *= 2;
-    delete[](char*) old;  // get rid of the old block of memory
+    delete[](char*) oldNodes;  // get rid of the old block of memory
     uint32_t* oldTable = table;
     uint32_t oldTableCapacity = tableCapacity;
-    table = new uint32_t[tableCapacity * 2 | 1];  // new size = power of 2 - 1
-
-    // remember size=last element, go up to AND INCLUDING
-    // go through each element of existing table and copy to new one
+    tableCapacity = tableCapacity*2|1;  // this is power of 2 - 1
+    table = new uint32_t[tableCapacity+1];  // new size = power of 2
     for (uint32_t i = 0; i <= tableCapacity; i++)
+      table[i] = 0;
+    // remember tableCapacity=last element, go up to AND INCLUDING
+    // go through each element of existing table and copy to new one
+    for (uint32_t i = 0; i <= oldTableCapacity; i++)
       if (oldTable[i] != 0) {
-        uint32_t index = hash(
-            symbols +
-            nodes[oldTable[i]].offset);  // find out new hash value of symbol
+        // find out new hash value of symbol
+        uint32_t index = hash(symbols + nodes[oldTable[i]].offset); 
+        if (table[index] != 0) {
+          nodes[i].next = table[index]; // make our node point at the one already in the bin
+        }          
         table[index] = oldTable[i];
       }
     delete[] oldTable;
-    tableCapacity = tableCapacity * 2 | 1;
     // TODO: grow the symbol table too
     std::cerr << "BLHashMap growing size=" << tableCapacity << " " << nodeCapacity << '\n';
   }
 
+    void internalUpdate(int i, uint32_t index, const Val& v) {
+    currentSymbol[i] = '\0';
+    nodes[nodeCount] = Node(currentSymbol - symbols, table[index], v);
+    table[index] = nodeCount;
+    currentSymbol += i + 1;
+    nodeCount++;
+  }
+
+  void internalAdd(uint32_t index, const char s[], const Val& v) {
+    for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {
+      const char* w = symbols + nodes[p].offset;
+      for (int i = 0; w[i] == s[i]; i++)
+        if (w[i] == '\0') {
+          nodes[p].val = v;
+          return;
+        }
+    }
+    int i;
+    for (i = 0; s[i] != '\0'; i++) currentSymbol[i] = s[i];
+    internalUpdate(i, index, v);
+  }
+
+  
+  //TODO: This logic is NOT RIGHT.
+  // for case where "catalog"--> bin 12, then "cat" --> bin 12, this would think
+  // that cat should replace catalog since the first 3 letters of catalog match cat.
+  // 
+  void internalAdd(uint32_t index, const char s[], uint32_t len, const Val& v) {
+    for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {
+      const char* w = symbols + nodes[p].offset;
+      for (int i = 0; i < len; i++) {
+        if (w[i] != s[i]) {
+          goto notAMatch; // if a letter is different, this is the wrong hash entry
+        }
+      }
+      if (w[len] == '\0') {
+        nodes[p].val = v;
+        return;
+      }
+      notAMatch: ;
+    }
+    int i;
+    for (i = 0; i < len; i++) currentSymbol[i] = s[i];
+    internalUpdate(i, index, v);
+  }
+
+  void add(const char s[], uint32_t len, const Val& v) {
+    checkGrow();
+    uint32_t index = hash(s, len);
+    internalAdd(index, s, len, v);
+  }
+
+  void add(const char s[], const Val& v) {
+    checkGrow();
+    uint32_t index = hash(s);
+    internalAdd(index, s, v);
+  }
+
+  #if 0
   void add(const char s[], const Val& v) {
     uint32_t index = hash(s);
     for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {
@@ -309,6 +372,7 @@ class BLHashMap : public BlockLoader {
     currentSymbol += i + 1;
     nodeCount++;
   }
+  #endif
 
   uint32_t getSymbolSize() {
     return currentSymbol - symbols;
@@ -343,6 +407,7 @@ class BLHashMap : public BlockLoader {
     return r.next;
   }
 
+  #if 0
   Val add(const char s[], uint32_t len, const Val& v) {
     uint32_t index = hash(s, len);
     for (uint32_t p = table[index]; p != 0; p = nodes[p].next) {
@@ -363,6 +428,7 @@ class BLHashMap : public BlockLoader {
     nodeCount++;
     return v;
   }
+  #endif
 
   bool get(const char s[], Val* v) const {
     uint32_t index = hash(s);

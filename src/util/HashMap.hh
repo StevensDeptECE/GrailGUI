@@ -1,15 +1,43 @@
 #pragma once
 #include <iostream>
 #include <utility>
-class HashMapBase {
- protected:
-  uint32_t tableCapacity;
-  uint32_t symbolCapacity;
+
+template <typename Val>
+class HashMap {
+  class Node {
+   public:
+    uint32_t offset;
+    uint32_t next;  // relative pointer (offset into nodes)
+    Val val;
+    Node() {
+    }  // this is so the empty block can be initialized without doing anything
+    Node(uint32_t offset, uint32_t next, Val v)
+        : offset(offset), next(next), val(v) {}
+  };
+
+  uint32_t symbolCapacity; // number of elements holding symbols
+  uint32_t nodeCapacity;   // how many nodes are preallocated
+  uint32_t tableCapacity;  // number of elements  holding table
   char* symbols;
   char* currentSymbol;
+  uint32_t nodeCount;  // how many nodes are currently used
+  Node* nodes;
   uint32_t* table;
+
   constexpr static int r1 = 5, r2 = 7, r3 = 17, r4 = 13, r5 = 11,
                        r6 = 16;  // rotate values
+
+  // computes the next highest power of 2
+  static uint32_t nearestPower2 (uint32_t v) {
+    v--;
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    v++;
+    return v;
+  }
 
   static bool hasNoZero(uint32_t v) {
     return (v & 0xff) && (v & 0xff00) && (v & 0xff0000) && (v & 0xff000000);
@@ -27,41 +55,78 @@ class HashMapBase {
     return ~(((v & MASK) + MASK) | v) | MASK;
   }
 
-  uint32_t fasthash1(const char s[]) const;
-  uint32_t bytewisehash(const char s[], uint32_t len) const;
-  uint32_t bytewisehash(const char s[]) const;
+  uint32_t fasthash1(const char s[]) const {
+    uint64_t* p = (uint64_t*)s;
+    uint64_t v;
+    uint64_t sum = 0xF39A5EB6;
+
+    // https://graphics.stanford.edu/~seander/bithacks.html#ZeroInWord
+    while (v = *p++, hasNoZero(v)) {
+      // rotate might be better, preserve more bits in each operation
+      sum = sum ^ v ^ (v << 12);
+      sum = (sum << 3) ^ (sum >> 5);
+      sum = (sum << 7) ^ (sum >> 13);
+      sum = (sum >> 17) ^ (sum << 23);
+    }
+    // do the last chunk which is somewhere less than 8 bytes
+    // this is for little-endian CPUs like intel, from bottom byte to the right
+    uint64_t wipe = 0xFF;
+    uint64_t M = 0xFFULL;
+    for (int i = 8; i > 0; i--) {
+      if ((v & M) == 0) {
+        v &= wipe;
+        break;
+      }
+      M <<= 8;
+      wipe = (wipe << 8) | 0xFF;
+    }
+    sum = sum ^ v ^ (sum >> 3);
+    sum = (sum >> 7) ^ (sum << 9);
+    sum = (sum >> 13) ^ (sum << 17);
+    sum = (sum >> 31) ^ (sum >> 45);
+    return sum & tableCapacity;
+  }
+
+  // do not call with len = 0, or die.
+  uint32_t bytewisehash(const char s[], uint32_t len) const {
+    uint32_t i;
+    uint32_t sum = s[0] ^ 0x56F392AC;
+    for (i = 1; i < len; i++) {
+      sum = (((sum << r1) | (sum >> (32 - r1))) ^
+            ((sum >> r2) | (sum >> (32 - r2)))) +
+            s[i];
+      sum = (((sum << r3) | (sum >> (32 - r3))) ^
+            ((sum >> r4) | (sum >> (32 - r4)))) +
+            s[i];
+    }
+    sum = ((sum << r5) | (sum >> (32 - r5))) ^ sum ^ (i << 7);
+    //  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >>
+    //  (32-r6)))) + s[i];
+    return sum & tableCapacity;
+  }
+
+  uint32_t bytewisehash(const char s[]) const {
+    uint32_t i;
+    uint32_t sum = s[0] ^ 0x56F392AC;
+    for (i = 1; s[i] != '\0'; i++) {
+      sum = (((sum << r1) | (sum >> (32 - r1))) ^
+            ((sum >> r2) | (sum >> (32 - r2)))) +
+            s[i];
+      sum = (((sum << r3) | (sum >> (32 - r3))) ^
+            ((sum >> r4) | (sum >> (32 - r4)))) +
+            s[i];
+    }
+    sum = ((sum << r5) | (sum >> (32 - r5))) ^ sum ^ (i << 7);
+    //  sum = (((sum << r5) | (sum >> (32-r5))) ^ ((sum << r6) | (sum >>
+    //  (32-r6)))) + s[i];
+    return sum & tableCapacity;
+  }
+
   uint32_t hash(const char s[]) const { return bytewisehash(s); }
   uint32_t hash(const char s[], uint32_t len) const {
     return bytewisehash(s, len);
   }
-  HashMapBase(uint32_t tableCapacity, uint32_t symbolCapacity)
-      : tableCapacity(tableCapacity-1), symbolCapacity(symbolCapacity), table(new uint32_t[tableCapacity]) {
-        // allocate a power of 2 for the table size, and set tableCapacity to n-1 so it can AND to implement MOD
-    symbols = new char[symbolCapacity];
-  }
 
- public:
-  const char* getWords() const { return symbols; }
-  uint32_t getWordsSize() const { return currentSymbol - symbols; }
-};
-
-template <typename Val>
-class HashMap : public HashMapBase {
-  class Node {
-   public:
-    uint32_t offset;
-    uint32_t next;  // relative pointer (offset into nodes)
-    Val val;
-    Node() {
-    }  // this is so the empty block can be initialized without doing anything
-    Node(uint32_t offset, uint32_t next, Val v)
-        : offset(offset), next(next), val(v) {}
-  };
-  uint32_t nodeCapacity;   // how many nodes are preallocated
-  uint32_t nodeCount;  // how many nodes are currently used
-  Node* nodes;
-
-  // TODO: segment faults when trying to grow
   void checkGrow() {
     if (nodeCount * 2 <= tableCapacity) return;
     const Node* oldNodes = nodes;
@@ -132,7 +197,7 @@ class HashMap : public HashMapBase {
         nodes[p].val = v;
         return;
       }
-notAMatch: ;
+    notAMatch: ;
     }
     int i;
     for (i = 0; i < len; i++) currentSymbol[i] = s[i];
@@ -140,9 +205,13 @@ notAMatch: ;
   }
  public:
   HashMap(uint32_t tableCapacity_in, uint32_t symbolCapacity = 1024 * 1024)
-      : HashMapBase(tableCapacity_in, symbolCapacity),
-        nodeCapacity(tableCapacity / 2+2),
-        nodes(new Node[tableCapacity / 2+2]) {
+      : symbolCapacity(symbolCapacity),
+        tableCapacity(tableCapacity_in - 1) {
+    // allocate a power of 2 for the table size, and set tableCapacity to n-1 so it can AND to implement MOD
+    nodeCapacity = tableCapacity / 2+2;
+    symbols = new char[symbolCapacity];
+    table = new uint32_t[tableCapacity];
+    nodes = new Node[tableCapacity / 2+2];
     currentSymbol = symbols;
     nodeCount = 1;  // zero is null
 
@@ -239,6 +308,9 @@ notAMatch: ;
     }
     return nullptr;
   }
+
+  const char* getWords() const { return symbols; }
+  uint32_t getWordsSize() const { return currentSymbol - symbols; }
 
   uint64_t hist() const {
     constexpr int histsize = 20;
