@@ -50,8 +50,8 @@ struct Seg {
   // test alternate implementation
   bool onLine2(const Seg& L, Point p) {   //check whether p is on the line or not
    
-   if(p.x <= max(L.p1.x, L.p2.x) && p.x <= min(l1.p1.x, l1.p2.x) &&
-      (p.y <= max(L.p1.y, L.p2.y) && p.y <= min(l1.p1.y, l1.p2.y)))
+   if(p.x <= max(L.p1.x, L.p2.x) && p.x <= min(L.p1.x, L.p2.x) &&
+      (p.y <= max(L.p1.y, L.p2.y) && p.y <= min(L.p1.y, L.p2.y)))
       return true;
    
    return false;
@@ -85,6 +85,21 @@ struct Delta {
   }
 };
 
+/*
+
+wikipedia seems to have the best theory for the regular case
+https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+
+https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
+https://www.cs.cmu.edu/~15451-f17/lectures/lec21-sweepline.pdf
+https://www.hackerearth.com/practice/math/geometry/line-intersection-using-bentley-ottmann-algorithm/tutorial/
+
+definitely wrong for some cases, but surprisingly works fairly well considering!
+integer overflow for sure has a problem
+https://www.tutorialspoint.com/Check-if-two-line-segments-intersect
+
+https://alienryderflex.com/intersect/
+*/
 /*
   return true if two line segments intersect each other
   quick rejection if their bounding boxes do not intersect each other
