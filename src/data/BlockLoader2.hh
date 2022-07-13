@@ -112,5 +112,7 @@ class BlockLoader {
   void writeFile(const char filename[], uint64_t fileSize);
   void writeFile(const char filename[]);
 
+  uint64_t* BLRealloc(uint64_t bytes);
+
   BlockLoader(uint64_t bytes, Type t, uint16_t version);
 };

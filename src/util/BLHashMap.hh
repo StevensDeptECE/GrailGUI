@@ -261,35 +261,45 @@ class BLHashMap : public BlockLoader {
   BLHashMap(const BLHashMap& orig) = delete;
   BLHashMap& operator=(const BLHashMap& orig) = delete;
 
-  // TODO: fix implementation to fit with blockloaders
+  // TODO: words are not being transferred
   void checkGrow() {
     if (nodeCount * 2 <= tableCapacity) return;
-    const Node* oldNodes = nodes;
-    nodes = new Node[nodeCapacity * 2];  // TODO: need placement new
-    for (uint32_t i = 0; i < nodeCount; i++)
-      nodes[i] = std::move(oldNodes[i]);  // TODO: this is broken for objects Val
-                                     // without default constructor
-    nodeCapacity *= 2;
-    delete[](char*) oldNodes;  // get rid of the old block of memory
-    uint32_t* oldTable = table;
-    uint32_t oldTableCapacity = tableCapacity;
+    // need to copy everything to another block of memory
+    // then expand the BLHashMap and copy it back in   
+
+    symbolCapacity *= 2; // TODO: does symbolCapacity really need to be doubled?
     tableCapacity = tableCapacity*2|1;  // this is power of 2 - 1
-    table = new uint32_t[tableCapacity+1];  // new size = power of 2
-    for (uint32_t i = 0; i <= tableCapacity; i++)
-      table[i] = 0;
-    // remember tableCapacity=last element, go up to AND INCLUDING
-    // go through each element of existing table and copy to new one
-    for (uint32_t i = 0; i <= oldTableCapacity; i++)
-      if (oldTable[i] != 0) {
-        // find out new hash value of symbol
-        uint32_t index = hash(symbols + nodes[oldTable[i]].offset); 
-        if (table[index] != 0) {
-          nodes[i].next = table[index]; // make our node point at the one already in the bin
-        }          
-        table[index] = oldTable[i];
-      }
-    delete[] oldTable;
-    // TODO: grow the symbol table too
+    nodeCapacity *= 2;
+
+    // MUST BE FREED
+    uint64_t* oldMem = BLRealloc(symbolCapacity + nearestPower2(tableCapacity)*sizeof(uint32_t) + nodeCapacity*sizeof(Node) + sizeof(HashMapHeader));
+    const char* oldSymbols = symbols;
+    const uint32_t* oldTable = table;
+    const Node* oldNodes = nodes;
+    uint32_t symbolSize = getSymbolSize();
+    
+    hashMapHeader = (HashMapHeader*)((char*)(mem) + sizeof(GeneralHeader));
+    hashMapHeader->symbolCapacity = symbolCapacity;
+    hashMapHeader->tableCapacity = tableCapacity;
+    hashMapHeader->nodeCapacity = nodeCapacity;
+    hashMapHeader->nodeCount = nodeCount;
+    
+    constructorSetup(symbolCapacity);
+    nodeCount = hashMapHeader->nodeCount; // because constructorSetup() sets nodeCount to 1
+     
+    memcpy(symbols, oldSymbols, symbolSize);
+    currentSymbol = symbols + symbolSize;
+
+    for (uint32_t i = 1; i < nodeCount; i++) {
+      nodes[i] = std::move(oldNodes[i]);
+      uint32_t index = hash(symbols + nodes[i].offset);
+      if (table[index] != 0)
+        nodes[i].next = table[index];
+      table[index] = i;
+    }
+
+    free(oldMem);
+
     std::cerr << "BLHashMap growing size=" << tableCapacity << " " << nodeCapacity << '\n';
   }
 
