@@ -245,8 +245,6 @@ class ChessBoard {
   void update() {
     if (hasclicked) {
       c->removeLayer(selectedpiece);
-      cout << "problem"
-           << "\n";
       selectedpiece = addImage(c, window->mouseX, window->mouseY, sizeSquares,
                                sizeSquares, &selectedPath[0]);
     }
@@ -273,7 +271,6 @@ class ChessBoard {
                        sizeSquares, sizeSquares, &selectedPath[0]);
           ImageList[selectedRow][selectedColumn].filepath = selectedPath;
           clickmove = false;
-          hasclicked = false;
         }
       }
       if (!hasclicked) {
@@ -294,10 +291,7 @@ class ChessBoard {
     if (xpos >= xstart && xpos <= xstart + width && ypos >= ystart &&
         ypos <= ystart + height) {
       checkSquare(w);
-      if (selectedpiece == nullptr) {
-        return;
-      } else if (ImageList[selectedRow][selectedColumn].currentPiece ==
-                 nullptr) {
+      if (ImageList[selectedRow][selectedColumn].currentPiece == nullptr) {
         c->removeLayer(selectedpiece);
         ImageList[selectedRow][selectedColumn].currentPiece =
             addImage(c, ImageList[selectedRow][selectedColumn].xposition,
