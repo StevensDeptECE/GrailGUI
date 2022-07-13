@@ -260,7 +260,6 @@ class ChessBoard {
           return;
         } else if (ImageList[selectedRow][selectedColumn].currentPiece ==
                    nullptr) {
-          cout << "problem2" << endl;
           selectedPath = selectedPathClick;
           c->removeLayer(ImageList[previousRow][previousColumn].currentPiece);
           ImageList[previousRow][previousColumn].currentPiece = nullptr;
@@ -291,7 +290,10 @@ class ChessBoard {
     if (xpos >= xstart && xpos <= xstart + width && ypos >= ystart &&
         ypos <= ystart + height) {
       checkSquare(w);
-      if (ImageList[selectedRow][selectedColumn].currentPiece == nullptr) {
+      if (selectedpiece == nullptr) {
+        return;
+      } else if (ImageList[selectedRow][selectedColumn].currentPiece ==
+                 nullptr) {
         c->removeLayer(selectedpiece);
         ImageList[selectedRow][selectedColumn].currentPiece =
             addImage(c, ImageList[selectedRow][selectedColumn].xposition,
