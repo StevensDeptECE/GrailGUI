@@ -210,7 +210,7 @@ class HashMap {
     // allocate a power of 2 for the table size, and set tableCapacity to n-1 so it can AND to implement MOD
     nodeCapacity = tableCapacity / 2+2;
     symbols = new char[symbolCapacity];
-    table = new uint32_t[tableCapacity];
+    table = new uint32_t[tableCapacity+1];
     nodes = new Node[tableCapacity / 2+2];
     currentSymbol = symbols;
     nodeCount = 1;  // zero is null
