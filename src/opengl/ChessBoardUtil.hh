@@ -253,8 +253,7 @@ class ChessBoard {
   void press(GLWin* w) {
     GetPosition(w);
     checkSquare(w);
-    if (xpos >= xstart && xpos <= xstart + width && ypos >= ystart &&
-        ypos <= ystart + height) {
+    if (checkBounds()) {
       if (clickmove) {
         if (clickPiece == nullptr) {
           return;
@@ -287,8 +286,7 @@ class ChessBoard {
 
   void release(GLWin* w) {
     GetPosition(w);
-    if (xpos >= xstart && xpos <= xstart + width && ypos >= ystart &&
-        ypos <= ystart + height) {
+    if (checkBounds()) {
       checkSquare(w);
       if (selectedpiece == nullptr) {
         return;
@@ -314,6 +312,25 @@ class ChessBoard {
           clickmove = true;
         }
       }
+    } else if (hasclicked && !checkBounds()) {
+      c->removeLayer(selectedpiece);
+      PreviousSquare[0][0]->currentPiece = addImage(
+          c, PreviousSquare[0][0]->xposition, PreviousSquare[0][0]->yposition,
+          sizeSquares, sizeSquares, &selectedPath[0]);
+      hasclicked = false;
+      clickmove = false;
+      PreviousSquare[0][0]->filepath = selectedPath;
+      selectedPath = "";
+      selectedpiece = nullptr;
+    }
+  }
+
+  bool checkBounds() {
+    if (xpos >= xstart && xpos <= xstart + width && ypos >= ystart &&
+        ypos <= ystart + height) {
+      return true;
+    } else {
+      return false;
     }
   }
 
