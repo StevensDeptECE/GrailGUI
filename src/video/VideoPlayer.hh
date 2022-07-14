@@ -105,20 +105,20 @@ class VideoPlayer : public Shape {
    * @brief Artifact of being subclassed from Shape, currently does nothing.
    *
    */
-  void init();
+  void init() override;
 
   /**
    * @brief Ask MPV if it has updates to display and set the current GLWin to be
    * dirty if so.
    *
    */
-  void update();
+  void update() override;
 
   /**
    * @brief Render the current frame with the specified x, y, width, and height.
    *
    */
-  void render();
+  void render(glm::mat4& trans) override;
 
   /**
    * @brief Load a video file from a file path.

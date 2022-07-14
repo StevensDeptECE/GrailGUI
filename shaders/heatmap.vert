@@ -1,12 +1,15 @@
 #version 330 core
-layout (location = 0) in vec3 xy_v;   // the position variable has attribute position 0
-uniform mat4 projection;
+layout (location = 0) in vec3 xy;   // the grid points in slot 0
+layout (location = 1) in float inval; // the value corresponding to each grid point comes in separately
+
 uniform mat4 trans;
 
-out vec2 TexCoord;
+//out vec2 TexCoord;
+out float val;
 //Add a uniform bool to check if to use vertColor or Solid color
 void main() {
-	gl_Position = projection*vec4(xy_v.x, xy_v.y, 0.0, 1.0);
-	TexCoord = vec2(0.0, xy_v.z);
+	gl_Position = trans*vec4(xy, 1.0);
+	//TexCoord = vec2(0.0, inval);
+	val = inval;
 }
 

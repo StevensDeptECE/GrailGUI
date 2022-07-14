@@ -5,15 +5,17 @@
 #include "opengl/StyledMultiShape2D.hh"
 //#include "grail/Grail.hh"
 #include "opengl/HeatMap.hh"
-#include "opengl/Shape_impl.cc"
+#include "opengl/Shape_impl.hh"
 HeatMap::~HeatMap() {}
 
-void HeatMap::render() {
+void HeatMap::render(glm::mat4& trans) {
   // Get Shader based on style
-  Shader* shader = Shader::useShader(Grail::PER_VERTEX_SHADER);
-  shader->setMat4("projection", *(parentCanvas->getProjection()));
+  Shader* shader = Shader::useShader(GLWin::HEATMAP_SHADER);
+  shader->setMat4("projection", trans);
   glBindVertexArray(vao);
   glEnableVertexAttribArray(0);
+
+  glEnableVertexAttribArray(1);
 
   //  glLineWidth(style->getLineWidth());
 
@@ -48,11 +50,11 @@ void HeatMap::init() {
 
   // Create VBO for vertices
   // Create an object in the VAO to store all the vertex values
-  gen(vbo, grid);
+  gen(vbo, grid, 3*sizeof(float),    0, 2, 0,     1, 1, 2*sizeof(float));
   // Desctribe how information is recieved in shaders
   // no indices for now.  Not the most efficient way to do this.... gen(sbo,
   // indices);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+  //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 #if 0
   //Create LBO

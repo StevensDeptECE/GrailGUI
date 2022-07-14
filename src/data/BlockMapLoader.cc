@@ -1,104 +1,52 @@
-#include "BlockMapLoader.hh"
+#include "data/BlockMapLoader.hh"
 
+#include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 #include <cstdio>
 #include <iostream>
-//#include "lzmadec.h"
+
+#include "fmt/core.h"
+#include "util/Ex.hh"
+#include "util/PlatFlags.hh"
+
 using namespace std;
 
-void BlockLoader::init(uint64_t bytes, Type t, uint32_t version) {
-  bytes =
-      (getHeaderSize() + bytes + 7) & ~7ULL;  // round up to 64-bit aligned size
-  size = bytes;                               // store size in teh object
-  // mem = std::make_unique<uint64_t>(bytes / 8);
-  mem = new uint64_t[bytes / 8];
-  generalHeader = (GeneralHeader*)mem;  // header is the first chunk of bytes
-  generalHeader->magic = ((((('!' << 8) + 'B') << 8) + 'L') << 8) +
-                         'd';  // magic number for all block loaders
-  generalHeader->type = uint32_t(t);
-  generalHeader->version = version;
-  securityHeader =
-      (SecurityHeaderV0*)((uint64_t*)mem + sizeof(GeneralHeader) / 8);
-}
-
-void BlockLoader::init(uint64_t* mem, uint64_t size) {
-  this->mem = mem;
-  this->size = size;
-  this->generalHeader = (GeneralHeader*)mem;
-  this->securityHeader =
-      (SecurityHeaderV0*)((uint64_t*)mem + sizeof(GeneralHeader) / 8);
-}
-#if 0
-static void *_lzmaAlloc(ISzAllocPtr, size_t size) {
-  return new uint8_t[size];
-}
-static void _lzmaFree(ISzAllocPtr, void *addr) {
-  if (!addr)
-    return;
-  
-  delete[] reinterpret_cast<uint8_t *>(addr);
-}
-
-static ISzAlloc _allocFuncs = {
-  _lzmaAlloc, _lzmaFree
-};
-
 BlockMapLoader BlockMapLoader::loadCompressed(const char lzmaFile[]) {
-  int fh = open(filename, O_RDONLY);
-  struct stat s;
-  fstat(fh, &s);
-  uint64_t compressedSize = s.st_size;
-  unique_ptr<char[]> tempCompressed = make_unique(compressedSize); // create temp buffer to hold compressed data
-  int bytesRead = read(fh, tempCompressed.get(), compressedSize); // read in compressed file
-  if (bytesRead != compressedSize)
-    throw "Error: compressed file size mismatch";
-  close(fh);//TODO: make sure this file handle is automatically closed if the throw happens
-  
-  if (compressedSize < 13)
-    throw "Compressed file too small to be correct lzma file";
-
-  // this is lzma decompressed courtesy of
-  //https://gist.github.com/phoe/c33e1f8ec651e7892f82596be6d0d3af
-  
-  char* input = tempCompressed.get();
-  // extract the size from the header
-  uint64_t size = 0;
-  for (int i = 0; i < 8; i++)
-    size |= (input[5 + i] << (i * 8));
-
-  if (size <= (256 * 1024 * 1024)) {
-    auto blob = std::make_unique<uint8_t[]>(size);
-    ELzmaStatus lzmaStatus;
-    SizeT procOutSize = size, procInSize = compressedSize - 13;
-    int status = LzmaDecode(blob.get(), &procOutSize, &input[13],
-			    &procInSize, input, 5, LZMA_FINISH_END, &lzmaStatus, &_allocFuncs);
-
-    if (status == SZ_OK && procOutSize == size) {
-      *outputSize = size;
-      return BlockMapLoader();
-    }
-  }
-  throw "Error: lZMA compression using more than 256Mb, giving up";
+  throw(Ex1(Errcode::UNIMPLEMENTED));
 }
-#endif
 
+/*
+  Block Loaders are high-speed binary data. While this is extremely fast, it
+  means that byte order matters. You cannot write this in on an Intel and read
+  in on a big-endian machine
+
+  float: b1 b2 b3 b4 uint32_t:   b1 b2 b3 b4   b4 b3 b2 b1 b4 b3 b2 b1
+  uint64_t:   b1 b2 b3 b4 b5 b6 b7 b8 --> b8 b7 b6 b5 b4 b3 b2 b1
+*/
 void BlockMapLoader::save(const char filename[]) {
-  int fh = open(filename, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+  int fh = open(filename, O_BINARY | O_WRONLY | O_TRUNC | O_CREAT, 0644);
   int bytesWritten = write(fh, (char*)mem, size);
+  if (bytesWritten < 0) {
+    throw Ex2(Errcode::FILE_READ, strerror(errno));
+  }
+  fmt::print("{:d} bytes written\n", bytesWritten);
   close(fh);
-  // byte-endian-ness matters! You cannot write this in on an Intel and read in
-  // on Sparc
-
-  // if you have to worry about endianness
-  // float: b1 b2 b3 b4 uint32_t:   b1 b2 b3 b4   b4 b3 b2 b1 b4 b3 b2 b1
-  // uint64_t:   b1 b2 b3 b4 b5 b6 b7 b8 --> b8 b7 b6 b5 b4 b3 b2 b1
 }
-BlockMapLoader::BlockMapLoader(const char filename[]) : BlockLoader(filename) {
-  blockMapHeader = (BlockMapHeader*)((char*)mem + getHeaderSize());
+
+static uint32_t getFileSize(const char filename[]) {
+    struct stat s;
+    stat(filename, &s);
+    return s.st_size;
+}
+
+BlockMapLoader::BlockMapLoader(const char filename[]) : BlockLoader(filename, getFileSize(filename)) {
+  blockMapHeader =
+      (BlockMapHeader*)getSpecificHeader();  //((char*)mem + getHeaderSize());
   // TODO: add RegionContainer and NamedEntities
+  regionContainers = nullptr;
   regions = (Region*)((char*)blockMapHeader + sizeof(BlockMapHeader));
   segments =
       (Segment*)((char*)regions + blockMapHeader->numRegions * sizeof(Region));
@@ -122,11 +70,27 @@ void BlockMapLoader::methodPolygon() {}
 
 void BlockMapLoader::methodPolyline() {}
 
+#if 0
+//TODO: test of walking through all points, but since they are float this seems worthless and weird except to test traversal
 uint64_t BlockMapLoader::sum() const {
   uint64_t sum = 0;
   uint64_t* p = (uint64_t*)points;
   for (uint32_t i = blockMapHeader->numPoints / 2; i > 0; i--) sum += *p++;
   return sum;
+}
+#endif
+
+// TODO: test of walking through all points, but since it's weighted towards the
+// number of points it's useless as a practical measure of center anything
+void BlockMapLoader::mean(float* meanx, float* meany) const {
+  float xsum = 0, ysum = 0;
+  const float* p = points;
+  for (uint32_t i = blockMapHeader->numPoints; i > 0; i--) {
+    xsum += *p++;
+    ysum += *p++;
+  }
+  *meanx = xsum / blockMapHeader->numPoints;
+  *meany = ysum / blockMapHeader->numPoints;
 }
 
 inline void delta(float& val, float& prevVal) {
@@ -211,8 +175,8 @@ void BlockMapLoader::diff(const BlockMapLoader& a, const BlockMapLoader& b) {
     }
   }
   if (errors != 0) return;
-  const float* ap = a.getXPoints();
-  const float* bp = b.getXPoints();
+  const float* ap = a.getPoints();
+  const float* bp = b.getPoints();
   for (uint32_t i = 0; i < a.getNumPoints() * 2; i++)
     if (!approxeq(ap[i], bp[i]))
       cerr << i << ": " << ap[i] << "," << bp[i] << '\n';

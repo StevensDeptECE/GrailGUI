@@ -48,7 +48,7 @@ class TestText3 : public Member {
     return yStart + 50;
   }
 
-  TestText3(Tab* tab) : Member(tab, 0, 0.1) {
+  TestText3(Tab* tab) : Member(tab, -1, 0.1) {
     Canvas* c = tab->getMainCanvas();
     uint32_t width = c->getWidth(), height = c->getHeight();
 

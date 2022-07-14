@@ -19,7 +19,7 @@ Prefs::Prefs()
       preferredHeight(1024),
       allowMaximize(false),
       logPath(baseDir + "log/log.txt"),
-      logLevel(5),
+      logLevel(static_cast<uint32_t>(LogLevel::INFO)), // display everything by default
       enableVoiceCmd(false),
       shaderBinaryFormat(0),
       fastLoadShaders(false),

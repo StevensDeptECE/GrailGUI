@@ -1,8 +1,13 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
+enum class LogLevel {
+  ALL = 0, INFO = 1, WARNING = 3, CRITICAL = 4, FATAL = 5
+};
 
 class Prefs {
+  public:
  private:
   std::string baseDir;                       // location of all grail files
   uint32_t preferredWidth, preferredHeight;  // desired window size
@@ -32,6 +37,8 @@ class Prefs {
   uint32_t getPreferredHeight() const { return preferredHeight; }
   bool getFastLoadShaders() const { return shaderBinaryFormat != 0; }
   void setFastLoadShaders(uint32_t fmt) { shaderBinaryFormat = fmt; }
+  uint32_t getLogLevel() const { return logLevel; }
+  bool shouldDisplay(LogLevel level) const { return logLevel <= static_cast<uint32_t>(level);}
 };
 
 extern Prefs prefs;

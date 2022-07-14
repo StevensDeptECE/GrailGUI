@@ -12,8 +12,8 @@ class Triangle : public Shape2D {
   Triangle(Canvas* c, float x1, float y1, float x2, float y2, float x3,
            float y3, const Style* s);
   // void initIndices();
-  void init();
-  void render();
+  void init() override;
+  void render(glm::mat4& trans) override;
   // void getArea(base, height);
   // void getArea(x, y, x2, y2, x3, y3);
 };

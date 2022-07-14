@@ -124,8 +124,7 @@ void loadESRIDBF(const char filename[], string& output) {
          << DBFReadStringAttribute(dbf, i, 3) << '\t'
          << DBFReadStringAttribute(dbf, i, 4) << '\t'
          << DBFReadStringAttribute(dbf, i, 5) << '\t'
-         << DBFReadStringAttribute(dbf, i, 7)
-         << '\t'  // population
+         << DBFReadStringAttribute(dbf, i, 7) << '\t'  // population
          //<< DBFReadStringAttribute(dbf, i, 7) << '\t' // lat?
          //<< DBFReadStringAttribute(dbf, i, 7) << '\t' // lon?
          << DBFReadStringAttribute(dbf, i, SQMI) << '\n';

@@ -15,6 +15,29 @@ using namespace std;
 
 Canvas::Canvas(Tab* tab) : Canvas(tab->getParentWin(), tab) {}
 
+Canvas::Canvas(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint32_t vpY, uint32_t vpW, uint32_t vpH, uint32_t pX, uint32_t pY)
+      :  // viewport, projection
+        w(w),
+        tab(tab),
+        layers(4),
+        style(style),
+        vpX(vpX),
+        vpY(vpY),
+        vpW(vpW),
+        vpH(vpH),
+        pX(pX),
+        pY(pY),
+        cam(nullptr) {
+    trans =
+        glm::ortho(0.0f, static_cast<float>(pX), static_cast<float>(pY), 0.0f);
+    originalTrans = trans;
+    //BUG: All canvases cannot register themselves with tab, because that means
+    // MainCanvas would also: do this manually: tab->addCanvas(this);
+    //    projection = glm::scale(projection, glm::vec3(16, -16, 1));
+    //    projection = glm::translate(projection, glm::vec3(180, -90, 0));
+    // calling glm::ortho..., show init and render, works with z=0 and not with
+    // z!=0
+  }
 Canvas::~Canvas() { cleanup(); }
 
 void Canvas::cleanup() {
@@ -28,10 +51,12 @@ void Canvas::cleanup() {
 
 void Canvas::render() {
   // std::cout << projection << std::endl;
-  Shader::useShader(style->getShaderIndex())->setMat4("projection", projection);
+  
+  //TODO: All objects using OpenGL must call Shader::useShader to select.
+  //Shader::useShader(style->getShaderIndex())->setMat4("projection", trans);
   glViewport(vpX, w->height - vpH - vpY, vpW, vpH);
 
-  for (uint32_t i = 0; i < layers.size(); i++) layers[i]->render();
+  for (uint32_t i = 0; i < layers.size(); i++) layers[i]->render(trans);
 }
 
 Camera* Canvas::setLookAtProjection(float eyeX, float eyeY, float eyeZ,
@@ -77,26 +102,22 @@ void MainCanvas::addMenu(const string menu[], uint32_t numStrings, float x,
 }
 
 void MainCanvas::init() {
-  Canvas::init();  // call parent for normal initialization
   // initialize the GUI layers (does not have to be at the end, but in render it
   // does)
   gui->init();
   guiText->init();
   menu->init();
   menuText->init();
-  tab->registerCallback(Tab::Inputs::MOUSE0_PRESS, "Widget Callback- Press",
-                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
-  tab->registerCallback(Tab::Inputs::MOUSE0_RELEASE, "Widget Callback- Release",
-                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
+  Canvas::init();  // call parent for normal initialization
 }
 
 void MainCanvas::render() {
   Canvas::render();  // call parent's render
   // then render the GUI layer on top of everything
-  gui->render();
-  guiText->render();
-  menu->render();
-  menuText->render();
+  gui->render(trans);
+  guiText->render(trans);
+  menu->render(trans);
+  menuText->render(trans);
 }
 
 void MainCanvas::cleanup() {
@@ -121,4 +142,13 @@ void MainCanvas::click() {
   for (InteractiveWidget2D* widget : widgets) {
     if (widget->checkClick(mouseX, mouseY)) return;
   }
+}
+
+void MainCanvas::loadBindings() {
+  // TODO: this binding happens AFTER main application bindings and overrides it
+  // TODO: need to figure out how to make this happen first
+  tab->registerCallback(Tab::Inputs::MOUSE0_PRESS, "Widget Callback- Press",
+                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
+  tab->registerCallback(Tab::Inputs::MOUSE0_RELEASE, "Widget Callback- Release",
+                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
 }

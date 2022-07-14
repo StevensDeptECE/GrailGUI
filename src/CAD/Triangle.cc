@@ -34,7 +34,7 @@ void Triangle::init() {
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 }
 
-void Triangle::render() {
+void Triangle::render(glm::mat4& trans) {
   Shader* shader = Shader::useShader(GLWin::COMMON_SHADER);
   shader->setMat4("projection", *(parentCanvas->getProjection()));
   shader->setVec4("solidColor", style->getFgColor());

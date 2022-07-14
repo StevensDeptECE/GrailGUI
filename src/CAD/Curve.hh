@@ -32,7 +32,7 @@ class Curve : public Vec3D, public Shape2D {
   }
 
   void init();
-  void render();
+  void render(glm::mat4& trans);
   void add(const Vec3D& p);
   void resize() {
     return points.reserve(points.size() * 2);

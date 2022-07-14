@@ -9,6 +9,7 @@
 #include <iostream>
 #include <regex>
 #include <string>
+#include <cstring>
 
 #include "opengl/Errcode.hh"
 #include "util/Ex.hh"
@@ -36,7 +37,8 @@ class FileUtil {
     struct stat info;
     fstat(fh, &info);
     const uint32_t size = info.st_size;
-    char* buf = new char[size];
+    char* buf = new char[size+1];
+    buf[size] = '\0';
     uint32_t bytesRead = read(fh, buf, size);
     if (bytesRead < size) {
       delete[] buf;

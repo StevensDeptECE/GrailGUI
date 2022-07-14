@@ -19,7 +19,6 @@ add_subdirectory(gui)
 # Maps
 add_subdirectory(maps)
 
-
 # Media
 add_subdirectory(media)
 

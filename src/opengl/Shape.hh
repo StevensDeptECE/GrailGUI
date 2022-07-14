@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <vector>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 #if 0
 namespace std {
@@ -18,7 +20,12 @@ class Shape {
   Canvas* parentCanvas;
   template <typename T>
   void gen(uint32_t& vb, std::vector<T>& list);
-
+  template <typename T>
+  void gen(uint32_t& vb, std::vector<T>& list, uint32_t stride, uint32_t shaderParam, uint32_t numElements, uint64_t offset);
+  template <typename T>
+  void gen(uint32_t& vb, std::vector<T>& list, uint32_t stride,
+           uint32_t shaderParam1, uint32_t numElements1, uint64_t offset1,
+           uint32_t shaderParam2, uint32_t numElements2, uint64_t offset2);
  public:
   Shape(Canvas* parent) : parentCanvas(parent) {}
   virtual ~Shape();
@@ -59,5 +66,5 @@ class Shape {
   // overhaul in the meantime, I just made the parent implement a default nop
   virtual void process_input(Inputs* in, float dt) {}
   virtual void update() = 0;
-  virtual void render() = 0;
+  virtual void render(glm::mat4& trans) = 0;
 };

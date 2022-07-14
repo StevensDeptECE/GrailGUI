@@ -50,7 +50,7 @@ void MultiShape2D::init() {
 }
 
 // Shape2D
-void MultiShape2D::render() {
+void MultiShape2D::render(glm::mat4& trans) {
   // Get Shader based on style
   const Shader* shader = Shader::useShader(style->getShaderIndex());
   // If color buffer exists

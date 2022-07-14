@@ -308,7 +308,7 @@ void MultiShape3D::init() {
   }
 }
 
-void MultiShape3D::render() {
+void MultiShape3D::render(glm::mat4& trans) {
   // Enable depth test
   glEnable(GL_DEPTH_TEST);
   // Accept fragment if it closer to the camera than the former one

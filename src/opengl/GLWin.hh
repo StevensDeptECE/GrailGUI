@@ -41,6 +41,7 @@ class GLWin {
   constexpr static uint32_t TEXTURE_SHADER = 3;
   constexpr static uint32_t CURSOR_SHADER = 4;
   constexpr static uint32_t MULTI_TEXTURE_SHADER = 5;
+  constexpr static uint32_t HEATMAP_SHADER = 6;
 
  private:
   static bool ranStaticInits;
@@ -170,7 +171,7 @@ Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
   const Font* getGuiFont() const { return guiFont; }
   const Font* getMenuFont() const { return menuFont; }
 
-  virtual void baseInit();
+  void shaderInit();
 
   static void classInit();
   static void classCleanup();

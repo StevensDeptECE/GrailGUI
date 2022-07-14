@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <memory>
 
 /*
@@ -9,32 +10,35 @@
 */
 class BlockLoader {
  public:
-  enum class Type { gismap, hashmap, gapminder };
+  enum class Type {
+    gismap,   // a map storing GIS shapes, akin to ESRI Shapefile but much more
+              // efficient
+    namemap,  // a hashmap with string keys, values are byte chunks defined by
+              // user
+    gapminder,  // a binary database of floating point variables, originally
+                // from gapminder this one could store any time series data by
+                // year
+    i32map  // a hashmap with 32-bit int keys, values are byte chunks defined by
+            // user
+  };
 
   // std::unique_ptr<uint64_t> mem;
-  uint64_t* mem;  // hating unique pointers right now
+  uint64_t* mem;
   uint64_t size;
   struct GeneralHeader {
-    uint32_t magic;    // magic number for all block loaders
-    uint16_t type;     // type of block loader
-    uint16_t version;  // version
+    uint32_t magic;         // magic number for all block loaders
+    uint16_t type;          // type of block loader
+    uint16_t version;       // version
+    uint64_t author_id;     // key to find author id on server
+    uint64_t doc_id;        // unique id of document by author
+    uint16_t num_sections;  // the number of sections, each requiring a header
+    uint16_t header_size;   // number of 64-bit words used for all headers
     static constexpr uint32_t bh = 0x644C4221;  // !BLd
     GeneralHeader(Type type, uint16_t version)
-        : magic(bh), type((uint16_t)type), version(version) {}
+        : magic(bh), type(uint16_t(type)), version(version) {}
   };
-  struct SecurityHeaderV0 {
-    uint64_t yoho;  // TODO: put something in
-  };
-#if 0
-	struct SecurityHeaderV1 {
-		uint8_t hash[32];  // SHA256 hash signed by author
-		uint8_t hash2[32]; // SHA256 hash of alternate region in data signed by author
-		uint8_t id[32]; // id of author
-	};
-#endif
 
   GeneralHeader* generalHeader;
-  SecurityHeaderV0* securityHeader;
 
  protected:
   /*
@@ -42,7 +46,9 @@ class BlockLoader {
     problem: We need to allocate memory in base class to share
     memory allocation and common headers among all BlockLoaders.
     But we don't know how much memory we need until we open the file
-    read all the information from ESRI and create.
+    read all the information from a source file like ESRI and
+    create an actual document.
+
     In any file format, there will be this problem. There must be a
     temporary object structure while you read in and figure out how big
     the data is. Then, once the data is known, you can read in a single
@@ -53,7 +59,7 @@ class BlockLoader {
     what for us is the segment information for the map with lots of
     extra space at the end. We make the list as big as it needs to be and
     just keep an extra data structure with the points. Then, when done
-    growing define a pointer to the points at the end and copy in.
+    growing define a pointer to the data at the end and copy in.
 
     The uninitialized protected constructor is only for use by children
     who first figure out how big, then call init() to initialize their
@@ -62,39 +68,51 @@ class BlockLoader {
     requires knowing everything before call) This would require returning
     a structure with those 3 items. Should probably just do that.
   */
-  BlockLoader() {}
   struct Info {
     uint64_t bytes;
     Type t;
     uint32_t version;
   };
   BlockLoader(const Info& info);
-
+  uint64_t crc64(uint32_t start, uint32_t stride) const;
+  void hashThisDocument() const;
+  BlockLoader(const char filename[], uint64_t fileSize, uint64_t memSize = 0);
  public:
-  BlockLoader(const char filename[]);
-  ~BlockLoader() { delete[] mem; }
+  ~BlockLoader() {
+    // std::cerr << "destroying: " << mem << std::endl;
+    free(mem);
+  }
   BlockLoader(const BlockLoader& orig) = delete;
   BlockLoader& operator=(const BlockLoader& orig) = delete;
+  BlockLoader(BlockLoader&& orig)
+      : mem(orig.mem), size(orig.size), generalHeader(orig.generalHeader) {
+    //orig.mem = nullptr;
+    free(orig.mem);
+  }
 
-  void init(uint64_t* mem, uint64_t size);
-  void init(uint64_t bytes, Type t, uint32_t version);
-  // Fast load a blockfile
+  static void* findNextAlign8(char* p){
+    return (void*)((uint64_t)(p + 7) / 8 * 8);
+  }
+  // static BlockLoader readFile(const char filename[], uint64_t memSize);
+
+  // void init(uint64_t* mem, uint64_t size);
+  // void init(uint64_t bytes, Type t, uint32_t version);
+  //  Fast load a blockfile
   void readBlockFile(const char filename[]);
-  // get the size of the SecurityHeader for any BlockLoader
-  uint32_t getAuthHeaderSize() const { return sizeof(SecurityHeaderV0); }
-  uint32_t getHeaderSize() const {
-    return sizeof(GeneralHeader) + sizeof(SecurityHeaderV0);
-  }
-  bool authenticate() const;
-  BlockLoader(uint64_t bytes, Type t, uint32_t version)
-      : mem(new uint64_t[(getHeaderSize() + (bytes + 7) / 8)]) {
-    // std::make_unique<uint64_t[]>(getHeaderSize() + (bytes + 7) / 8)) {
-    generalHeader = (GeneralHeader*)mem;  // header is the first chunk of bytes
-    generalHeader->magic = ((((('!' << 8) + 'B') << 8) + 'L') << 8) +
-                           'd';  // magic number for all block loaders
-    generalHeader->type = uint32_t(t);
-    generalHeader->version = version;
-    securityHeader =
-        (SecurityHeaderV0*)((uint64_t*)mem + sizeof(GeneralHeader) / 8);
-  }
+  uint32_t getHeaderSize() const { return sizeof(GeneralHeader); }
+  void* getSpecificHeader() const {
+    return (char*)mem + sizeof(GeneralHeader) + generalHeader->header_size;
+  }  // TODO: do we need header_size at all? variable sized headers?
+
+  void registerDocument(uint64_t author_id) const;
+  // register this document with a server under author's id
+  bool authenticateDocument()
+      const;  // return true if this document is correctly signed on server
+
+  void writeFile(const char filename[], uint64_t fileSize);
+  void writeFile(const char filename[]);
+
+  uint64_t* BLRealloc(uint64_t bytes);
+
+  BlockLoader(uint64_t bytes, Type t, uint16_t version);
 };

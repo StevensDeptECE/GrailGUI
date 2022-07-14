@@ -6,39 +6,17 @@
 
 class HeatMap : public Shape {
  private:
-  std::vector<float> grid;
-  uint32_t currentIndex;
+  std::vector<float> grid; // all x,y values stored here
+  std::vector<float> values; // floating point values for each region here
 
  public:
-  HeatMap(uint32_t w, uint32_t h) : currentIndex(0) {
+  HeatMap(uint32_t w, uint32_t h) {
     grid.reserve((w + 1) * (h + 1) * 2);
   }
 
-  void add(float x1, float y1, float v1, float x2, float y2, float v2, float x3,
-           float y3, float v3, float x4, float y4, float v4) {
-    grid.push_back(x1);
-    grid.push_back(y1);
-    grid.push_back(v1);
-
-    grid.push_back(x2);
-    grid.push_back(y2);
-    grid.push_back(v2);
-
-    grid.push_back(x3);
-    grid.push_back(y3);
-    grid.push_back(v3);
-
-    grid.push_back(x2);
-    grid.push_back(y2);
-    grid.push_back(v2);
-
-    grid.push_back(x3);
-    grid.push_back(y3);
-    grid.push_back(v3);
-
-    grid.push_back(x4);
-    grid.push_back(y4);
-    grid.push_back(v4);
+  void add(float x, float y) {
+    grid.push_back(x);
+    grid.push_back(y);
   }
 
   ~HeatMap() override;

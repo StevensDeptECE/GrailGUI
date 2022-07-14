@@ -23,7 +23,7 @@ class ScrollbarWidget : public StyledMultiShape2D {
         boxSize(h / 2) {}
   // void ;
   void init() override;
-  void render() override;
+  void render(glm::mat4& trans) override;
   void update() override;
   void draw();
   void scroll(float dy);

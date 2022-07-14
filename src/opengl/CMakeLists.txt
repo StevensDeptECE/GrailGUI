@@ -11,13 +11,12 @@ set(grail-opengl
     ErrNames.cc
     ESRIPolygon.cc
     ESRIShape.cc
-    GapMinderWidget.cc
+#    GapMinderWidget.cc
     GraphWidget.cc
     GLWin.cc
     GLWinFonts.cc
     Image.cc
     LineGraphWidget.cc
-    MapView2D.cc
     Member.cc
     MultiShape.cc
     MultiShape2D.cc

@@ -82,6 +82,19 @@ if(GRAIL_WERROR)
   endif()
 endif()
 
+if(GRAIL_ADDRSAN)
+  message(STATUS "Address Sanitizer flags enabled. Debug flag automatically enabled")
+  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+  set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+endif()
+
+if(GRAIL_UBSAN)
+  message(STATUS "Undefined Behavior flags enabled. Debug flag automatically enabled")
+  set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=undefined")
+  set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG}
+  -fsanitize=undefined")
+endif()
+
 include(FetchContent)
 include(GrailFunctions)
 

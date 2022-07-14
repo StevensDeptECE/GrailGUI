@@ -81,7 +81,7 @@ class XDLType {
   XDLType() = delete;
   XDLType(const std::string& typeName) {
     if (!byName.get(typeName.c_str(), &nameOffset)) {
-      byName.checkGrow();
+      // byName.checkGrow();
       byName.add(typeName.c_str(), nameOffset = typeNames.size());
       typeNames.add(typeName);
       types.add(this);
@@ -1201,6 +1201,8 @@ class Calendar : public CompoundType {
   void addMeta(ArrayOfBytes* meta) const override;
   void writeXDL(Buffer& buf) const override;
   void writeXDLMeta(Buffer& buf) const override;
+  XDLType* begin(Buffer& buf) override;
+  DataType getDataType() const override{return DataType::STRUCT8; }
 };
 
 /**
