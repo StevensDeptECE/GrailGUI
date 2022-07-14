@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <utility>
+#include <cstring>
 #include <sys/stat.h>
 #include "data/BlockLoader.hh"
 
