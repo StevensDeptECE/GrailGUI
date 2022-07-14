@@ -1,7 +1,7 @@
 #include "maps/MapViewer.hh"
 
 #include <cmath>
-#include "data/BlockMapLoader2.hh"
+#include "data/BlockMapLoader.hh"
 #include "opengl/MultiText.hh"
 #include "maps/MapView2D.hh"
 #include "opengl/Style.hh"

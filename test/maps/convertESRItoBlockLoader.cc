@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "data/BlockMapLoader2.hh"
+#include "data/BlockMapLoader.hh"
 #include "opengl/GLWin.hh"
 
 std::string getFile(const char defaultDir[], const char defaultFilename[],

@@ -5,7 +5,7 @@
 
 #include "opengl/Style.hh"
 #include "maps/MapViewer.hh"
-#include "data/BlockMapLoader2.hh"
+#include "data/BlockMapLoader.hh"
 #include "util/BLHashMap.hh"
 
 using namespace std;

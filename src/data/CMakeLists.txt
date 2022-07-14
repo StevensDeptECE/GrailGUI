@@ -1,7 +1,7 @@
 set(grail-data 
-    BlockLoader2.cc
-    BlockMapLoader2.cc
-    BlockMapLoaderConverters2.cc 
+    BlockLoader.cc
+    BlockMapLoader.cc
+    BlockMapLoaderConverters.cc 
 #    GapMinderBinaryDB.cc
 #    GapMinderLoader.cc
 )

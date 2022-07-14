@@ -2,7 +2,7 @@
 #include <iostream>
 #include <utility>
 #include <sys/stat.h>
-#include "data/BlockLoader2.hh"
+#include "data/BlockLoader.hh"
 
 template<typename Val>
 class BLHashMap : public BlockLoader {
@@ -261,7 +261,6 @@ class BLHashMap : public BlockLoader {
   BLHashMap(const BLHashMap& orig) = delete;
   BLHashMap& operator=(const BLHashMap& orig) = delete;
 
-  // TODO: words are not being transferred
   void checkGrow() {
     if (nodeCount * 2 <= tableCapacity) return;
     // need to copy everything to another block of memory

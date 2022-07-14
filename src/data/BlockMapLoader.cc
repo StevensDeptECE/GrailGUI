@@ -1,4 +1,4 @@
-#include "data/BlockMapLoader2.hh"
+#include "data/BlockMapLoader.hh"
 
 #include <errno.h>
 #include <fcntl.h>
