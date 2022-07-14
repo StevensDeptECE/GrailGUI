@@ -106,7 +106,7 @@ If the MSYS2 method does not work, or there are issues, try the method below.
 
 1. Follow [this guide](https://docs.microsoft.com/en-us/windows/wsl/install) to
    install WSL.
-2. In Windows Powershell, type the following command to install Ubuntu 20.04 as
+1. In Windows Powershell, type the following command to install Ubuntu 20.04 as
    the default WSL distribution.
 
    ```bash
@@ -117,14 +117,32 @@ If the MSYS2 method does not work, or there are issues, try the method below.
    - Note: If you have an error about version mismatch, use command `wsl -l` to
      show what the name of the Ubuntu LTS is.
 
-3. Download the x server [here](https://sourceforge.net/projects/vcxsrv/). To
+1. Download the x server [here](https://sourceforge.net/projects/vcxsrv/). To
    finish the install click Next -> Next -> Finish.
-4. Once installation is complete, create a desktop shortcut for the server and
-   in the Properties, target field type in
-   `"C:\Program Files\VcXsrv\vcxsrv.exe" :0 -ac -terminate -lesspointer -multiwindow -clipboard -dpi auto`
-   and apply the changes.
-5. Install dependencies by referring to the [Ubuntu 20.04 setup](#ubuntu-2004).
-6. Edit the `~/.bashrc` file the same as the [step above](#msys2).
+1. Once installation is complete, right click on the desktop and create a new shortcut.
+1. In the shortcut's properties, fill in the target field with the following and apply the changes
+
+   ```powershell
+   "C:\Program Files\VcXsrv\vcxsrv.exe" :0 -ac -terminate -lesspointer -multiwindow -clipboard -dpi auto
+   ```
+
+1. Double-click the shortcut to run VcXsrv, there should now be an icon for it in your taskbar's tray.
+1. In the WSL2 shell, edit the `~/.bashrc` file and add the following line. This allows WSL2 to connect to VcXsrv.
+
+   ```bash
+   export DISPLAY="`grep nameserver /etc/resolv.conf | sed 's/nameserver //'`:0"
+   ```
+
+1. To test VcXsrv, run the following commands. These should make a pair of eyes appear on your screen, followed by a calculator.
+
+   ```bash
+   sudo apt install x11-apps
+   xeyes
+   xcalc
+   ```
+
+1. Install dependencies by referring to the [Ubuntu 20.04 setup](#ubuntu-2004).
+1. Edit the `~/.bashrc` file the same way as the [step above](#msys2).
 
 ### Getting Set Up - Ubuntu
 
