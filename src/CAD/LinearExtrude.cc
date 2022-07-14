@@ -18,5 +18,5 @@ using namespace std;
 // posible shapes: circle2d, gear, rectangle, triangle
 void LinearExtrude::draw() {
   cout << "in linear extrude draw" << endl;
-  Line* ltest = new Line(this->start, this->stop, c, baseGraphStyle);
+  Seg* ltest = new Seg(this->start, this->stop, c, baseGraphStyle);
 }

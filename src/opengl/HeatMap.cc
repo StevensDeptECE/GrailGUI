@@ -8,10 +8,10 @@
 #include "opengl/Shape_impl.hh"
 HeatMap::~HeatMap() {}
 
-void HeatMap::render() {
+void HeatMap::render(glm::mat4& trans) {
   // Get Shader based on style
   Shader* shader = Shader::useShader(GLWin::HEATMAP_SHADER);
-  shader->setMat4("projection", *(parentCanvas->getProjection()));
+  shader->setMat4("projection", trans);
   glBindVertexArray(vao);
   glEnableVertexAttribArray(0);
 
@@ -54,7 +54,7 @@ void HeatMap::init() {
   // Desctribe how information is recieved in shaders
   // no indices for now.  Not the most efficient way to do this.... gen(sbo,
   // indices);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+  //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 #if 0
   //Create LBO

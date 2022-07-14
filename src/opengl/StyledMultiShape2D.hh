@@ -55,7 +55,7 @@ class StyledMultiShape2D : public MultiShape2D {
     pointIndices.clear();
   }
   void init() override;
-  void render() override;
+  void render(glm::mat4& trans) override;
 
   // Update Methods (in progress)
   void updateColors(const uint64_t pos, const float r, const float g,

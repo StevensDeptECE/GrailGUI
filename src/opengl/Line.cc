@@ -3,7 +3,7 @@
 #include "glad/glad.h"
 #include "opengl/Shader.hh"
 
-void Line::render() {
+void Seg::render() {
   // Get Shader based on style
   Shader* s = Shader::useShader(style->getShaderIndex());
 
@@ -35,7 +35,7 @@ void Line::render() {
   glBindVertexArray(0);
 }
 
-void Line::initIndices() {
+void Seg::initIndices() {
   for (uint32_t i = 0; i < vertices.size(); i++) {
     lineIndices.push_back(i);
     pointIndices.push_back(i);

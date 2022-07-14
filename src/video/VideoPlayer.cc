@@ -140,7 +140,7 @@ void VideoPlayer::update() {
   if (flags & MPV_RENDER_UPDATE_FRAME) parentCanvas->getWin()->setRender();
 }
 
-void VideoPlayer::render() {
+void VideoPlayer::render(glm::mat4& trans) {
   // bind the current framebuffer to our created fbo
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
   // if the framebuffer somehow isn't complete, throw an exception, the program

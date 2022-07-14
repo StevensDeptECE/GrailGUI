@@ -1,6 +1,6 @@
 #include <iostream>
 #include "util/Benchmark.hh"
-#include "mapNames.hh"
+#include "maps/MapNames.hh"
 
 using namespace std;
 using namespace grail::utils;
@@ -109,14 +109,13 @@ void buildMapDict(const char filename[]) {
          << state << '\t'
          << stateNum << '\n';
 //    uint32_t symbolSize = mapDict.getSymbolSize();
-    mapDict.add(county, MapEntry(
+    mapDict.add(county, MapEntry{
       //symbolSize, (uint32_t)strlen(county), 
-      ENT_COUNTY, FEAT_LOCAL, fieldNum));
+      ENT_COUNTY, FEAT_LOCAL, static_cast<uint32_t>(fieldNum-1)}); //warning: both static casts are narrowing int to uint32_t
     if (mapDict.get(state) == nullptr) {
 //      symbolSize = mapDict.getSymbolSize();
-      mapDict.add(state, MapEntry(
-        //symbolSize, (uint32_t)strlen(state), 
-        ENT_STATE, FEAT_STATE, stateNum));
+      mapDict.add(state, MapEntry{
+        ENT_STATE, FEAT_STATE, static_cast<uint32_t>(stateNum-1)}); // decrement by 1 since FIPS starts at 1, not 0
     }
   }
   mapDict.writeFile("res/maps/uscounties.bdl");

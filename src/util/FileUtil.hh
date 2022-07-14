@@ -9,6 +9,7 @@
 #include <iostream>
 #include <regex>
 #include <string>
+#include <cstring>
 
 #include "opengl/Errcode.hh"
 #include "util/Ex.hh"

@@ -193,7 +193,8 @@ void benchmarkEverything(const char filename[]) {
   FileUtil::readComplete(&f, &length, filename);
   char* word = strtok(f, "\n");
   // create hashmap and load dictionary in with a unique integer for each word
-  BLHashMap<uint32_t> dict = BLHashMap<uint32_t>(length, length/5, length/5);
+  BLHashMap<uint32_t> dict = BLHashMap<uint32_t>(length, 1024, 1024);//length/5, length/5);
+  // test checkGrow()
   while (word != nullptr)
   {
     dict.add(word, count++);

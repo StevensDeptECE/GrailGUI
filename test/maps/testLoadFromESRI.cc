@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#include "data/BlockMapLoader2.hh"
+#include "data/BlockMapLoader.hh"
 #include "opengl/GLWin.hh"
 #include "util/Benchmark.hh"
 

@@ -10,7 +10,7 @@
 /**
 Represent --
 **/
-class Line : public Vec3D, public Shape2D {
+class Seg : public Vec3D, public Shape2D {
  protected:
   std::vector<Vec3D> points;
   Vec3D start;
@@ -20,7 +20,7 @@ class Line : public Vec3D, public Shape2D {
   Style* s;
 
  public:
-  Line(Vec3D start, Vec3D stop, Canvas* c, Style* s)
+  Seg(Vec3D start, Vec3D stop, Canvas* c, Style* s)
       : Shape2D(c, start.x, start.y, s) {
     this->start = start;
     this->stop = stop;
@@ -28,8 +28,8 @@ class Line : public Vec3D, public Shape2D {
     points.push_back(stop);
   }
 
-  void init();
-  void render();
+  void init() override;
+  void render(glm::mat4& trans) override;
 
   Vec3D getPoint(double step);
   //  void getPoints();

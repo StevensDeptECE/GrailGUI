@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-#include "data/BlockMapLoader2.hh"
+#include "data/BlockMapLoader.hh"
 #include "util/Benchmark.hh"
 #include "util/Ex.hh"
 using namespace std;
@@ -28,6 +28,13 @@ int main(int argc, char* argv[]) {
     // bml.save((grail + "uscountiesdelta.bml").c_str());
     float meanx, meany;
     bml.mean(&meanx, &meany);
+#if 0
+//TODO: example of loading segments so they can be tessellated
+    uint32_t numSegs = bml.getNumSegments();
+    for (uint32_t i = 0; i < numSegs; i++) {
+      const BlockMapLoader::Segment* seg = bml.getSegment(i);
+    }
+#endif
 
     CBenchmark<>::benchmarkNoCache(
         "BML load", 1e2,

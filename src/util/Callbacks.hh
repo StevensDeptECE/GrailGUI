@@ -62,10 +62,13 @@ class CallbackHandler {
   void bind(const char inputCmd[], const char actionName[]);
 #define quote(a) #a
 
+  #define registerAction(security, func, ptr) internalRegisterAction(quote(func), security, func, ptr)
+  #if 0
   template <typename T, typename U>
   void registerAction(Security security, CallbackFunc<T> func, U* ptr) {
     internalRegisterAction(quote(func), security, func, ptr);
   }
+  #endif
   uint32_t registerCallback(uint32_t input, const char name[], Security s,
                             std::function<void(void)> action);
   template <typename T, typename U>
@@ -78,6 +81,10 @@ class CallbackHandler {
   template <typename T, typename U>
   void bindEvent(uint32_t inp, CallbackFunc<T> func, U* ptr) {
     registerCallback(inp, quote(func), Security::SAFE, func, ptr);
+  }
+  
+  void bindEvent(uint32_t inp, std::invocable auto func){
+    registerCallback(inp, quote(func), Security::SAFE, func);
   }
 
   void doit(uint32_t input);

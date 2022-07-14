@@ -89,8 +89,8 @@ void DocView::update() {
   }
 }
 
-void DocView::render() {
-  m->render();
-  // img.render();
-  t->render();
+void DocView::render(glm::mat4& trans) {
+  m->render(trans);
+  // img.render(trans);
+  t->render(trans);
 }

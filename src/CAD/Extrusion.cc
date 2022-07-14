@@ -31,4 +31,4 @@ void Extrusion::extrude() {
 }
 
 void Extrusion::init() {}
-void Extrusion::render() {}
+void Extrusion::render(glm::mat4& trans) {}

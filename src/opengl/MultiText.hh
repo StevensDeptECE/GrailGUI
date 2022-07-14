@@ -201,6 +201,7 @@ class MultiText : public Shape {
                    const std::string& s);
   void addCentered(float x, float y, const Font* f, const char s[],
                    uint32_t len);
+  void addCentered(float x, float y, const Font* f, std::string_view s);
 
   void addBox(float x, float y, float w, float h, const Font* f, const char s[],
               uint32_t len) {
@@ -241,5 +242,5 @@ class MultiText : public Shape {
   }
   const Style* getStyle();
   void update() override;
-  void render() override;
+  void render(glm::mat4& trans) override;
 };

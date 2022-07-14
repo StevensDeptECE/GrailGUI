@@ -39,7 +39,7 @@ class MultiText2 : public Shape {
   uint32_t formatLead0(char destBuf[], uint16_t printVal) {
     if (printVal >= 100) {
       uint32_t upper = printVal / 100;
-      uint32_t d0 = upper / 100;
+      uint32_t d0 = upper / 100;//TODO: /10?
       destBuf[0] = '0' + d0;
       uint32_t rest = upper - d0 * 100;
       uint32_t d1 = rest / 10;
@@ -163,5 +163,5 @@ class MultiText2 : public Shape {
   void init() override;
   const Style* getStyle();
   void update() override;
-  void render() override;
+  void render(glm::mat4& trans) override;
 };

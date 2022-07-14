@@ -9,7 +9,7 @@ set(grail-CAD
     Gear.cc
     Curve.cc
     Cylinder.cc
-    Transformation.cc
+    #Transformation.cc
     Circle.cc
     BezierPath.cc
     Line.cc

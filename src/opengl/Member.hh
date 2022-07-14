@@ -25,8 +25,9 @@ class Member {
   virtual void render();
   virtual void update();
 
-  Tab* getParentTab();
-  MainCanvas* getParentCanvas();
+  GLWin* getParent() const;
+  Tab* getParentTab() const;
+  MainCanvas* getParentCanvas() const;
 };
 /*
 template <typename T>

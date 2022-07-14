@@ -877,6 +877,14 @@ void Calendar::addMeta(ArrayOfBytes* meta) const {
 void Calendar::addData(ArrayOfBytes* data) const {
   throw Ex1(Errcode::UNIMPLEMENTED);
 }
+void Calendar::writeXDL(Buffer& buf) const {
+  throw Ex1(Errcode::UNIMPLEMENTED);
+}
+void Calendar::writeXDLMeta(Buffer& buf) const {
+  throw Ex1(Errcode::UNIMPLEMENTED);
+}
+uint32_t Calendar::size() const { throw Ex1(Errcode::UNIMPLEMENTED); }
+XDLType* Calendar::begin(Buffer& buf) { throw Ex1(Errcode::UNIMPLEMENTED); }
 void ArrayOfBytes::addStruct(const char name[], uint8_t numElements) {
   addMeta(DataType::STRUCT8);
   addMeta(name);

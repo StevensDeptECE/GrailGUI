@@ -28,8 +28,8 @@ class Facet : public Vec3D, public Shape2D {
   // public Vec3D normal();
   // void add(Vec3D v){vertex.push_back(v);};
   //  Vec3D get(int index){return vertex[index];};
-  int size() { return vertex.size(); };
+  int size() const { return vertex.size(); };
   void connect(std::vector<Vec3D> vertices);
-  void init();
-  void render();
+  void init() override;
+  void render(glm::mat4& trans) override;
 };

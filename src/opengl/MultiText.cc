@@ -9,6 +9,7 @@
 #include "opengl/GLWinFonts.hh"
 #include "opengl/Shader.hh"
 #include "opengl/Style.hh"
+#include "opengl/util/Transformation.hh"
 
 using namespace std;
 // todo: fix render to pass everything in the text vert to draw it
@@ -269,6 +270,13 @@ void MultiText::addCentered(float x, float y, const Font* f, const char s[],
   internalAdd(x - textWidth / 2, y - textHeight / 2, f, s, len);
 }
 
+void MultiText::addCentered(float x, float y, const Font* f, std::string_view s) {
+  float textWidth = f->getWidth(s.data(), s.length());
+  float textHeight = f->getHeight();
+
+  internalAdd(x - textWidth / 2, y - textHeight / 2, f, s.data(), s.length());
+}
+
 // horizontally and vertically centered text
 void MultiText::addCentered(float x, float y, float w, float h, const Font* f,
                             const char s[], uint32_t len) {
@@ -391,14 +399,16 @@ const Style* MultiText::getStyle() { return style; }
 
 void MultiText::update() {}
 
-void MultiText::render() {
+void MultiText::render(glm::mat4& trans) {
   glBindVertexArray(vao);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
 
   Shader* s = Shader::useShader(GLWin::TEXT_SHADER);
   s->setVec4("textColor", style->getFgColor());
-  s->setMat4("projection", *parentCanvas->getProjection() * transform);
+  //Transformation::dump(trans);
+  //Transformation::apply(trans, -73.9, 40.6,0);
+  s->setMat4("projection", trans);
   s->setInt("ourTexture", 0);
 
   // glPushAttrib(GL_CURRENT_BIT);

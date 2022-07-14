@@ -41,7 +41,7 @@ void CallbackHandler::bind(uint32_t input, const char actionName[]) {
 
 uint32_t CallbackHandler::registerCallback(uint32_t input, const char name[],
                                            Security s,
-                                           function<void(void)> action) {
+                                           std::function<void(void)> action) {
   uint32_t securityIndex = uint32_t(s);
   // SAFE = 0..999, RESTRICTED=1000.1999, ASK=2000..2999
   uint32_t actNum = 1000 * securityIndex + numActions[securityIndex]++;
