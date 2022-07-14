@@ -1,7 +1,7 @@
 #pragma once
 
 #include "util/BLHashMap.hh"
-#include "data/BlockMapLoader2.hh"
+#include "data/BlockMapLoader.hh"
 #include "libshape/shapefil.h"
 #include "util/FileUtil.hh"
 #include "util/BLHashMap.hh"

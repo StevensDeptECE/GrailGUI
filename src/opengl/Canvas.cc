@@ -31,7 +31,8 @@ Canvas::Canvas(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint32_t vp
     trans =
         glm::ortho(0.0f, static_cast<float>(pX), static_cast<float>(pY), 0.0f);
     originalTrans = trans;
-    tab->addCanvas(this);
+    //BUG: All canvases cannot register themselves with tab, because that means
+    // MainCanvas would also: do this manually: tab->addCanvas(this);
     //    projection = glm::scale(projection, glm::vec3(16, -16, 1));
     //    projection = glm::translate(projection, glm::vec3(180, -90, 0));
     // calling glm::ortho..., show init and render, works with z=0 and not with
@@ -101,17 +102,13 @@ void MainCanvas::addMenu(const string menu[], uint32_t numStrings, float x,
 }
 
 void MainCanvas::init() {
-  Canvas::init();  // call parent for normal initialization
   // initialize the GUI layers (does not have to be at the end, but in render it
   // does)
   gui->init();
   guiText->init();
   menu->init();
   menuText->init();
-  tab->registerCallback(Tab::Inputs::MOUSE0_PRESS, "Widget Callback- Press",
-                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
-  tab->registerCallback(Tab::Inputs::MOUSE0_RELEASE, "Widget Callback- Release",
-                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
+  Canvas::init();  // call parent for normal initialization
 }
 
 void MainCanvas::render() {
@@ -145,4 +142,13 @@ void MainCanvas::click() {
   for (InteractiveWidget2D* widget : widgets) {
     if (widget->checkClick(mouseX, mouseY)) return;
   }
+}
+
+void MainCanvas::loadBindings() {
+  // TODO: this binding happens AFTER main application bindings and overrides it
+  // TODO: need to figure out how to make this happen first
+  tab->registerCallback(Tab::Inputs::MOUSE0_PRESS, "Widget Callback- Press",
+                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
+  tab->registerCallback(Tab::Inputs::MOUSE0_RELEASE, "Widget Callback- Release",
+                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
 }

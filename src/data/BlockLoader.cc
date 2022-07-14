@@ -1,5 +1,5 @@
 
-#include "data/BlockLoader2.hh"
+#include "data/BlockLoader.hh"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -12,6 +12,8 @@
 BlockLoader::BlockLoader(uint64_t bytes, Type t, uint16_t version) {
   size = (getHeaderSize() + ((bytes + 7) & ~7ULL));
   mem = (uint64_t*)(malloc(size));
+  if (mem == nullptr)
+    throw Ex1(Errcode::OUTOF_MEMORY);
   generalHeader = (GeneralHeader*)mem;  // header is the first chunk of bytes
   generalHeader->magic = ((((('!' << 8) + 'B') << 8) + 'L') << 8) +
                          'd';  // magic number for all block loaders
@@ -115,4 +117,19 @@ void BlockLoader::writeFile(const char filename[], uint64_t fileSize) {
 
 void BlockLoader::writeFile(const char filename[]) {
   writeFile(filename, size);
+}
+
+// mallocs new chunk of memory and returns pointer to oldMem, which must be freed later
+uint64_t* BlockLoader::BLRealloc(uint64_t bytes) {
+  size = (getHeaderSize() + ((bytes + 7) & ~7ULL));
+  uint64_t* oldMem = mem;
+  mem = (uint64_t*)(malloc(size));
+  if (mem == nullptr)
+    throw Ex1(Errcode::OUTOF_MEMORY);
+  
+  GeneralHeader* oldGeneralHeader = generalHeader;
+  generalHeader = (GeneralHeader*)mem;
+  *generalHeader = *oldGeneralHeader;
+
+  return oldMem; // MUST BE FREED LATER
 }

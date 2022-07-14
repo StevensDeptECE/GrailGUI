@@ -81,7 +81,7 @@ class XDLType {
   XDLType() = delete;
   XDLType(const std::string& typeName) {
     if (!byName.get(typeName.c_str(), &nameOffset)) {
-      byName.checkGrow();
+      // byName.checkGrow();
       byName.add(typeName.c_str(), nameOffset = typeNames.size());
       typeNames.add(typeName);
       types.add(this);

@@ -1,5 +1,5 @@
 #pragma once
-#include "data/BlockLoader2.hh"
+#include "data/BlockLoader.hh"
 #include "data/BoundRect.hh"
 class BlockMapLoader : public BlockLoader {
  public:

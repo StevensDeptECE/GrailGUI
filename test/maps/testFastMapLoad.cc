@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-#include "data/BlockMapLoader2.hh"
+#include "data/BlockMapLoader.hh"
 #include "util/Benchmark.hh"
 #include "util/Ex.hh"
 using namespace std;

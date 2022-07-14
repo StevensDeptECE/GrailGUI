@@ -81,7 +81,7 @@ void Tab::cleanup() {
     delete canvases[i];
   }
   canvases.clear();  // empty the array since the pointers are all dead
-                     // TODO: mainCanvas.cleanup()?
+  mainCanvas.cleanup();
 }
 
 void Tab::render() {
@@ -96,6 +96,9 @@ void Tab::render() {
     canvases[i]->render();
   }
 
+ //TODO: having a non-dynamic maincanvas will currently crash
+ // when we cleanup, but having it auto-register itself as a canvas is just wrong
+ 
   mainCanvas.render();
 }
 
@@ -236,4 +239,6 @@ void Tab::loadBindings() {
 
   // bind3D();
   // bind2DOrtho();
+
+  mainCanvas.loadBindings();
 }

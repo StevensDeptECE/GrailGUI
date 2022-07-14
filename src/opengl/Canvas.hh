@@ -122,4 +122,5 @@ class MainCanvas : public Canvas {
   void addButton(const char text[], float x, float y, float w, float h);
   void addLabel(const char text[], float x, float y, float w, float h);
   void addMenu(const std::string menu[], uint32_t numStrings, float x, float y);
+  void loadBindings();
 };
