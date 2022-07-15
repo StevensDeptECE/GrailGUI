@@ -145,6 +145,7 @@ void MapViewer::toggleDisplaySegments() {
   setView();
 }
 
+//TODO: why does this translate where we are looking?
 void MapViewer::zoomInOnMouse(float factor) {
   //glm::mat4 inverseTrans = glm::inverse(trans);
   //glm::vec4 mouseVec = inverseTrans * glm::vec4(w->mouseX, w->mouseY, 0, 1);
@@ -162,6 +163,7 @@ void MapViewer::zoomOutOnMouse(float factor) {
   zoomInOnMouse(1/factor);
 }
 
+//TODO: why are we unable to display properly if we are not starting at segment 0
 void MapViewer::incSegment(){
   mv->incSegment();
   setView();
@@ -188,6 +190,6 @@ void MapViewer::displayAllSegments() {
 }
 
 void MapViewer::displayFirstSegment() {
-  mv->setWhichSegmentsToDisplay(0,20);
+  mv->setWhichSegmentsToDisplay(0,1);
   setView();
 }

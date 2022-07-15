@@ -301,7 +301,7 @@ void MapView2D::setWhichSegmentsToDisplay(uint32_t start, uint32_t end) {
     startSegment = endSegment - 1;
     
   endSegment = end;
-  if (endSegment < startSegment || endSegment == 0xffffffff)
+  if (endSegment < startSegment)
     endSegment = startSegment + 1;
   if (endSegment > numSegments) {
     endSegment = numSegments;
@@ -323,7 +323,7 @@ void MapView2D::setWhichSegmentsToDisplay(uint32_t start, uint32_t end) {
   }
   endLineIndex = lineIndex;
   endFillIndex = fillIndex;
-  cout << "displaying segments: " << startSegment << " to " << (endSegment-1) << 
+  cout << "displaying segments: " << startSegment << " to " << endSegment << 
   " lineIndices=[" << startLineIndex << " " << endLineIndex << 
   "] fillIndices=[" << startFillIndex << " " << endFillIndex << "]" << endl;
 
@@ -338,7 +338,7 @@ void MapView2D::incSegment() {
 }
 
 void MapView2D::decSegment() {
-  setWhichSegmentsToDisplay(startSegment-1, endSegment-20);
+  setWhichSegmentsToDisplay(startSegment-1, endSegment-1);
 }
 
 void MapView2D::incNumSegments() {
@@ -346,9 +346,5 @@ void MapView2D::incNumSegments() {
 }
 
 void MapView2D::decNumSegments() {
-  setWhichSegmentsToDisplay(startSegment, endSegment-1);  
-}
-
-void MapView2D::displayFirst() {
   setWhichSegmentsToDisplay(startSegment, endSegment-1);  
 }
