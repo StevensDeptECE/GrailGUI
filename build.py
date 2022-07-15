@@ -86,7 +86,7 @@ def parse():
     return args
 
 
-def execute_generate(args: argparse.Namespace, rest: list[str]):
+def execute_generate(args: argparse.Namespace, rest: "list[str]"):
     """Generates a new compile environment via CMake
 
     Args:
@@ -159,7 +159,7 @@ def check_grail_dir(dir: str = ".", has_logging: bool = True):
         os.chdir(dir)
 
 
-def execute_build(target: str, args: argparse.Namespace, rest:list[str]):
+def execute_build(target: str, args: argparse.Namespace, rest:"list[str]"):
     """Builds a target
 
     Args:
@@ -183,7 +183,7 @@ def execute_build(target: str, args: argparse.Namespace, rest:list[str]):
     shutil.copy("./build/compile_commands.json", ".")
 
 
-def execute_run(target: str, args: list[str]):
+def execute_run(target: str, args: "list[str]"):
     """Runs a test or demo
 
     Args:
