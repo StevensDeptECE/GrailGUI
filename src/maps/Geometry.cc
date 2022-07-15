@@ -1,8 +1,15 @@
 //https://en.wikipedia.org/wiki/Centroid#Of_a_polygon
 //https://www.topcoder.com/thrive/articles/Geometry%20Concepts%20part%202:%20%20Line%20Intersection%20and%20its%20Applications
 #include "maps/Geometry.hh"
+#include <algorithm>
+#include <numbers>
+#include <cmath>
+//constexpr float inf = INFINITY;
+constexpr uint32_t numBins = 16;
+constexpr double binSize = 2*numbers::pi/numBins;
+constexpr double inverseBinSize = 1/binSize;
 
-Point intersection(Line line1, Line line2) { // Returns the intersection point between two lines
+bool intersection(Line line1, Line line2) { // Returns the intersection point between two lines
   float x, y;
   float A1, A2, B1, B2, C1, C2;
   A1 = line1.end.y - line1.start.y;
@@ -12,14 +19,23 @@ Point intersection(Line line1, Line line2) { // Returns the intersection point b
   C1 = A1 * line1.start.x + B1 * line1.start.y;
   C2 = A1 * line2.start.x + B1 * line2.start.y;
   float det = A1 * B2 - A2 * B1;
-  if(det != 0)  {
+  if(det !=0) {
     x = (B2 * C1 - B1 * C2)/det;
     y = (A1 * C2 - C1 * A2)/det;
   }
-  Point p;
-  p.x = x;
-  p.y = y;
-  return p;
+  else
+  {
+    return false;
+  }
+  if(x <= max(line1.end.x, line1.start.x) 
+  && x >= min(line1.end.x, line1.start.x) 
+  && y <= max(line1.end.y, line1.start.y) 
+  && y >= min(line1.end.y, line1.start.y)) {
+    return true;
+  }
+  else {
+    return false;
+  }
 }
 // x y x y x y ...
 float area(float xy[], int numPoints) { // Calculates the area of a polygon
@@ -58,7 +74,55 @@ Point centroid(const float xy[], const int numPoints){ // Calculates the centroi
   cy /= 6*a;
   return Point(cx, cy);
 }
-
+inline int getBin(Point centroid, Point p)
+{
+  return (int)(atan2(p.y-centroid.y, p.x - centroid.x) * inverseBinSize);
+}
+inline void addToBin(const Point centroid, const Point a, const Point b, vector<const Line*> angleBins[], Line lineSegments[], int i){
+    
+    lineSegments[i] = Line(a, b);
+    int startBin = getBin(centroid, lineSegments[i].start);
+    int endBin = getBin(centroid, lineSegments[i].end);
+    if(startBin > endBin)
+    {
+      swap(startBin, endBin);
+    }
+    for(int j = startBin; j<=endBin; j++)
+    {
+      angleBins[j].push_back(&lineSegments[i]);
+    }
+}
+/**
+ * @brief 
+ * Checks whether there is an intersection between the line segement from the centroid to each point
+ * and the other segments
+ * Returns true if there are no intersections
+ */
+bool checkIntersections(const Point polygon[], int numPoints, Point centroid) {
+  Line lineSegments[numPoints];
+  bool intersections[numPoints];
+  vector<const Line*> angleBins[numBins];
+  for(int i = 0; i < numPoints-1; i++)
+  {
+    addToBin(centroid, polygon[i], polygon[i+1], angleBins, lineSegments, i);
+  }
+  addToBin(centroid, polygon[numPoints-1], polygon[0], angleBins, lineSegments, numPoints-1);
+  for(int i = 0; i < numPoints; i++)
+  {
+    Line centLine(centroid, polygon[i]);
+    int bin = getBin(centroid, polygon[i]);
+    intersections[i] = true;
+    for(const auto b: angleBins[bin])
+    {
+      if(intersection(centLine, *b))
+      {
+        intersections[i] = false;
+        return false;
+      }
+    }
+  }
+  return true;
+}
 
 //Point centroid<float>(float x[], float y[], int numPoints);
 //Point centroid<double>(double x[], double y[], int numPoints);

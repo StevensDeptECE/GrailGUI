@@ -190,7 +190,7 @@ vector<float> tessellate(int indSize, double * x, double * y, bool * isConcave)
 //Fan Tessellator
 //Returns a Vector of a Vector of triangle fan coordinates
 //Meant to reduce the number of duplicate coordinates
-/*vector<vector<float>> fanTessellate(int indSize, double * x, double * y, bool * isConcave)
+/*vector<float> fanTessellate(int indSize, double * x, double * y, bool * isConcave)
 {
     tessCount++;
     if(verbose)
@@ -273,19 +273,15 @@ vector<float> tessellate(int indSize, double * x, double * y, bool * isConcave)
             tessPoint = concavePoints[0];
         else
             tessPoint = 0;
-        double triangle[6];
-        int nextI;
+
+        triangles.push_back(x[tessPoint]);
+        triangles.push_back(y[tessPoint]);
         for(int i = 0; i < indSize; i++)
         {
-            nextI = (i+1)%indSize;
-            if(i != tessPoint && nextI != tessPoint)
+            if(i != tessPoint)
             {
                 triangles.push_back(x[i]);
                 triangles.push_back(y[i]);
-                triangles.push_back(x[nextI]);
-                triangles.push_back(y[nextI]);
-                triangles.push_back(x[tessPoint]);
-                triangles.push_back(y[tessPoint]);
             }
             
         }

@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iomanip>
 using namespace std;
+
 struct Point {
   float x,y;
   Point(float x, float y) : x(x), y(y) {}
@@ -11,6 +12,7 @@ struct Point {
 struct Line {
   Point start, end;
   Line(Point start, Point end) : start(start), end(end){};
+  Line() {}
 };
 
 Point centroid(const float xy[], const int n);
