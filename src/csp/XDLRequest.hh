@@ -22,9 +22,10 @@ class XDLRequest : public Request {
   XDLRequest& operator=(const XDLRequest& r) = delete;
   void addPage(const char metaDataFilename[], const char filename[]);
   void addPage(const char filename[]);
-  void handle(int fd) override;
+  void handle(socket_t) override {}
+  transportStatus handle(socket_t fd, bool shouldClose) override;
   // below is from father class Request, it is for http server
-  void handle(int sckt, const char* command) override;
+  void handle(socket_t sckt, const char* command) override;
   void connect() const;
   // TODO:	getParameter(const string& name);
 };

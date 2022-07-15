@@ -1,5 +1,7 @@
 #include "util/Buffer.hh"
 
+#include <fmt/format.h>
+
 #include <csp/HTTPRequest.hh>
 
 #include "csp/SocketIO.hh"
@@ -46,7 +48,18 @@ Buffer::Buffer(const char filename[], size_t initialSize, const char*)
 }
 
 void Buffer::readNext() {
-  int32_t bytesRead = SocketIO::recv(fd, buffer, size, 0);
+  int32_t bytesRead;
+  if (isSockBuf) {
+    bytesRead = SocketIO::recv(fd, buffer, size, 0);
+    // BUG: This is only ever called internally, but in order to check if a
+    // socket was closed by the client, we need to be able to recover from
+    // bytesRead == 0. Consider changing type signature of this function.
+    if (bytesRead <= 0) {
+      cerr << fmt::format("Socket %d died", fd) << endl;
+    }
+  } else {
+    bytesRead = read(fd, buffer, size);
+  }
   if (bytesRead > 0) availSize -= bytesRead;
   // TODO: do we set p????
   // read really shouldn't return negative but it is, at least on windows...

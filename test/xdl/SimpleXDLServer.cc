@@ -7,8 +7,6 @@
 #include <cstdlib>
 using namespace std;
 
-Log srvlog;  // log all important events for security and debugging
-
 // Signal Handlers will not work see below:
 // https://stackoverflow.com/questions/51169357/unable-to-catch-sigint-sent-by-clion
 // However the solution there introduces other issues so code is left as is

@@ -1,21 +1,25 @@
 #include "IPV4Socket.hh"
 
-#include <errno.h>
-#include <sys/types.h>
-#include <unistd.h>
 /*
   All encapsulation for different operating systems networking code is done here
 */
 
-#include <memory.h>
-#include <signal.h>
-
 //#include "csp/HTTPRequest.hh"
+#include <fmt/format.h>
+
+#include <algorithm>
+
+#include "csp/CSPPlatImports.hh"
 #include "csp/SocketIO.hh"
 #include "csp/csp.hh"
 
 #ifdef _WIN32
 WSADATA Socket::wsaData;
+#elif __linux__
+#include <unistd.h>
+
+#include <cstdlib>
+#include <cstring>
 #endif
 
 using namespace std;
@@ -51,132 +55,69 @@ void Socket::classCleanup() {
 #endif
 }
 
-#ifdef __linux__
-// Constructor for HTTP server
-IPV4Socket::IPV4Socket(uint16_t port) : Socket(port) {
-  int yes = 1;
-  testResult(sckt = socket(AF_INET, SOCK_STREAM, 0), __FILE__, __LINE__,
-             Errcode::SOCKET);
-  testResult(setsockopt(sckt, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes,
-                        sizeof(yes)),
-             __FILE__, __LINE__, Errcode::SETSOCKOPT);
-  setBufFD(sckt);
+struct client_info {
+  socklen_t addr_len = sizeof(addr);
+  struct sockaddr_storage addr;
+  socket_t socket;
+  char request[MAX_REQUEST_SIZE + 1];
+  int received;
+};
+fd_set waitOnClients(IPV4Socket *sckt, socket_t server);
 
-  memset(sockaddress, 0, sizeof(sockaddress));
-  sockaddr_in *sockAddr = (sockaddr_in *)sockaddress;
-  sockAddr->sin_family = AF_INET;
-  sockAddr->sin_addr.s_addr = INADDR_ANY;
-  sockAddr->sin_port = htons(port);
-  ::bind(sckt, (struct sockaddr *)sockAddr, sizeof(sockaddr_in));
-  testResult(listen(sckt, 20), __FILE__, __LINE__, Errcode::LISTEN);
-}
-
-// Constructor for csp/http client
-IPV4Socket::IPV4Socket(const char *addr, uint16_t port) : Socket(addr, port) {
-  testResult(sckt = socket(AF_INET, SOCK_STREAM, 0), __FILE__, __LINE__,
-             Errcode::SOCKET);
-  setBufFD(sckt);
-  connect();
-}
-
-// Server side
-void IPV4Socket::wait() {
-  struct sockaddr_in client_addrconfig;
-  socklen_t client_length = sizeof(client_addrconfig);
-
-  while (true) {
-    cout << "WAITING CONNECTION." << endl;
-    int returnsckt =
-        accept(sckt, (struct sockaddr *)&client_addrconfig, &client_length);
-    //		int senderSock = accept(listenSock, (struct sockaddr *)
-    //&sockaddress, &senderNameLen);
-    if (returnsckt >= 0) {
-      cout << "CONNECT SUCCESSFULLY"
-           << "\n";
-      req->handle(returnsckt);
-      close(returnsckt);
-      // if you are not familiar with socket, try below code
-      //			read(senderSock,testin, sizeof(testin)-1);
-      //			cout<<testin<<endl;
-      //			strcpy(testout,"hello,this is server");
-      //			write(senderSock,testout,sizeof(testout));
-      //			cout<<listenSock;
-    } else {
-      throw Ex(__FILE__, __LINE__, Errcode::CONNECTION_FAILURE);
-    }
-  }
-}
-
-void IPV4Socket::connect() {
-  struct hostent * server = gethostbyname(address);
-
-  if (server == nullptr) {
-    throw Ex(__FILE__, __LINE__, Errcode::SERVER_INVALID);
+IPV4Socket::~IPV4Socket() {
+  for (auto &client : clients) {
+    dropClient(&client);
   }
 
-  sockaddr_in *sockAddr = (sockaddr_in *)sockaddress;
-  sockAddr->sin_family = AF_INET;
-  //    bcopy((char *)server->h_addr, (char *)&sockaddress.sin_addr.s_addr,
-  //    server->h_length);
-  sockAddr->sin_addr.s_addr = inet_addr(address);
-  sockAddr->sin_port = htons(port);
-
-  if (::connect(sckt, (struct sockaddr *)sockaddress, sizeof(sockaddr_in)) < 0) {
-    throw Ex2(Errcode::CONNECTION_FAILURE,strerror(errno));
-  }
+  CLOSESOCKET(sckt);
 }
-#endif
-
-#ifdef _WIN32
 
 // Constructor for server
-IPV4Socket::IPV4Socket(uint16_t port) : Socket(port) {
-  struct addrinfo *result = NULL;
-  struct addrinfo *ptr = NULL;
+IPV4Socket::IPV4Socket(uint16_t port, const char *host) : Socket(port) {
+  auto bind_addr = this->result;
   struct addrinfo hints;
 
+  char err_buf[256];
   char port_string[8];
-  itoa(port, port_string, 10);
+  sprintf(port_string, "%d", port);
 
-  ZeroMemory(&hints, sizeof(hints));
+  memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_protocol = IPPROTO_TCP;
-  hints.ai_flags = 1;  // TODO: Originally AI_PASSIVE, convert to macro
+  hints.ai_flags = AI_PASSIVE;
 
-  // TODO: Find out if port should stay as uint16_t or convert to const char *
   // Resolve the local address and port to be used by the server
-  testResult(getaddrinfo(NULL, port_string, &hints, &result), __FILE__,
-             __LINE__, Errcode::SOCKET);
+  if (getaddrinfo(host, port_string, &hints, &bind_addr)) {
+    freeaddrinfo(bind_addr);
+    throw Ex2(Errcode::SOCKET, "Address already in use");
+  }
+  this->result = bind_addr;
 
   sckt = INVALID_SOCKET;
 
   // Create a SOCKET for the server to listen for client connections
-  sckt = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+  sckt = socket(bind_addr->ai_family, bind_addr->ai_socktype,
+                bind_addr->ai_protocol);
 
-  // TODO: Determine how to best convert for use with test result
-  if (sckt == INVALID_SOCKET) {
-    // WSACleanup();
+  if (!ISVALIDSOCKET(sckt)) {
     freeaddrinfo(result);
-    throw Ex1(Errcode::SOCKET);
+    sprintf(err_buf, "socket() failed. %d", GETSOCKETERRNO());
+    throw Ex2(Errcode::SOCKET, err_buf);
   }
 
   // Setup the TCP listening socket
-  if (bind(sckt, result->ai_addr, (int)result->ai_addrlen) == SOCKET_ERROR) {
-    cerr << WSAGetLastError() << endl;
+  if (bind(sckt, result->ai_addr, (int)result->ai_addrlen)) {
     freeaddrinfo(result);
-    closesocket(sckt);
-    throw Ex1(Errcode::SOCKET_BIND);
-    // WSACleanup();
+    sprintf(err_buf, "bind() failed. %d", GETSOCKETERRNO());
+    throw Ex2(Errcode::SOCKET_BIND, err_buf);
   }
 
   freeaddrinfo(result);
 
-  if (listen(sckt, SOMAXCONN) == SOCKET_ERROR) {
-    cerr << "listen failed with error: " << WSAGetLastError() << endl;
-    closesocket(sckt);
-    // WSACleanup();
-    return;
+  if (listen(sckt, SOMAXCONN) < 0) {
+    sprintf(err_buf, "listen() failed. %d", GETSOCKETERRNO());
+    throw Ex2(Errcode::LISTEN, err_buf);
   }
 
   // TODO: Check if send/receive needs to be implemented
@@ -185,81 +126,120 @@ IPV4Socket::IPV4Socket(uint16_t port) : Socket(port) {
 
 // Constructor for csp/http client
 IPV4Socket::IPV4Socket(const char *addr, uint16_t port) : Socket(addr, port) {
-  sckt = INVALID_SOCKET;
-  struct addrinfo *result = NULL;
-  struct addrinfo *ptr = NULL;
+  auto server_addr = this->result;
   struct addrinfo hints;
 
+  char err_buf[100];
   char port_string[8];
-  itoa(port, port_string, 10);
-  ZeroMemory(&hints, sizeof(hints));
+  sprintf(port_string, "%d", port);
+  memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_protocol = IPPROTO_TCP;
-
-  // TODO: Find out if port should stay as uint16_t or convert to const char *
   // Resolve the address and port to be used by the client
-  testResult(getaddrinfo(addr, port_string, &hints, &result), __FILE__,
-             __LINE__, Errcode::SOCKET);
-
-  for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
-    // Create a SOCKET for connecting to server
-    sckt = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-    testResult(sckt == INVALID_SOCKET, __FILE__, __LINE__, Errcode::SOCKET);
-
-    // TODO: Check if connect should be passed to test_result and
-    // closesocket
-    //       reimplemented in destructor
-    if (connect(sckt, ptr->ai_addr, (int)ptr->ai_addrlen) == SOCKET_ERROR) {
-      closesocket(sckt);
-      sckt = INVALID_SOCKET;
-      continue;
-    }
-    break;
+  if (getaddrinfo(addr, port_string, &hints, &server_addr)) {
+    freeaddrinfo(server_addr);
+    sprintf(err_buf, "getaddrinfo() failed. \nunable to resolve address %s:%d",
+            addr, port);
+    throw Ex2(Errcode::SOCKET, err_buf);
   }
 
-  testResult(sckt == INVALID_SOCKET, __FILE__, __LINE__, Errcode::SOCKET);
+  char address_buffer[100];
+  char service_buffer[100];
 
-  // TODO: Get some more info on this
-  // Probably should remove and leave to the destructor???
-  freeaddrinfo(result);
+  if (getnameinfo(server_addr->ai_addr, server_addr->ai_addrlen, address_buffer,
+                  sizeof(address_buffer), service_buffer,
+                  sizeof(service_buffer), NI_NUMERICHOST)) {
+    freeaddrinfo(server_addr);
+    throw Ex2(Errcode::SOCKET, "getnameinfo() failed");
+  }
+  sckt = socket(server_addr->ai_family, server_addr->ai_socktype,
+                server_addr->ai_protocol);
+  if (!ISVALIDSOCKET(sckt)) {
+    freeaddrinfo(server_addr);
+    throw Ex2(Errcode::SOCKET, "socket() failed");
+  }
+
+  if (connect(sckt, server_addr->ai_addr, server_addr->ai_addrlen)) {
+    freeaddrinfo(server_addr);
+    throw Ex2(Errcode::SOCKET, "connect() failed");
+  }
+
+  freeaddrinfo(server_addr);
 }
 
 // Server side
 void IPV4Socket::wait() {
-  struct sockaddr_in client_addrconfig;
-  socklen_t client_length = sizeof(client_addrconfig);
-  SOCKET returnsckt = INVALID_SOCKET;
+  char err_buf[100];
 
   while (true) {
     cout << "WAITING CONNECTION." << endl;
+    fd_set reads;
+    reads = waitOnClients(this, sckt);
 
-    // Accept a client socket
-    returnsckt = accept(sckt, NULL, NULL);
-    if (returnsckt == INVALID_SOCKET) {
-      cerr << "accept failed with error: " << WSAGetLastError() << endl;
-      closesocket(sckt);
-      // WSACleanup();
-      return;
+    if (FD_ISSET(sckt, &reads)) {
+      cout << "Connection successful. New Client connected." << endl;
+      auto client = &clients.emplace_back();
+      client->socket =
+          accept(sckt, (struct sockaddr *)&client->addr, &client->addr_len);
+
+      if (!ISVALIDSOCKET(client->socket)) {
+        sprintf(err_buf, "accept() failed. (%d)\n", GETSOCKETERRNO());
+        cerr << err_buf << endl;
+        cerr << "Connection to client dropped." << endl;
+        continue;
+      }
+
+      cout << "New connection from " << getClientAddress(client);
+      handleClientConnection(client);
+      continue;
     }
-
-    if (returnsckt >= 0) {
-      cout << "CONNECT SUCCESSFULLY" << endl;
-      req->handle(returnsckt);
-      close(returnsckt);
-      // csp18summer: if you are not familiar with socket, try below code
-      //			read(senderSock,testin, sizeof(testin)-1);
-      //			cout<<testin<<endl;
-      //			strcpy(testout,"hello,this is server");
-      //			write(senderSock,testout,sizeof(testout));
-      //			cout<<listenSock;
-    } else {
-      throw Ex(__FILE__, __LINE__, Errcode::CONNECTION_FAILURE);
+    for (auto &client : clients) {
+      if (FD_ISSET(client.socket, &reads)) {
+        cout << "Handling client connection from " << getClientAddress(&client)
+             << ".\n";
+        handleClientConnection(&client);
+      }
     }
   }
 }
 
-#endif
+void IPV4Socket::handleClientConnection(client_info *info) {
+  auto status = req->handle(info->socket, true);
+  if (req->getShouldClose()) {
+    cout << fmt::format("Request for client %s closed.\n",
+                        getClientAddress(info));
+    dropClient(info);
+  }
+  if (!status.isWriting && status.bytesTransferred < 0) {
+    cout << fmt::format("Unexpected disconnect from client %s.\n",
+                        getClientAddress(info));
+    dropClient(info);
+  }
+}
+
+fd_set waitOnClients(IPV4Socket *sckt, socket_t server) {
+  fd_set reads;
+  FD_ZERO(&reads);
+
+  FD_SET(server, &reads);
+  socket_t max_socket = server;
+
+  for (const auto &client : sckt->clients) {
+    FD_SET(client.socket, &reads);
+    if (client.socket > max_socket) {
+      max_socket = client.socket;
+    }
+  }
+
+  if (select(max_socket + 1, &reads, 0, 0, 0) < 0) {
+    char err_buf[100];
+    sprintf(err_buf, "select() failed. (%d)\n", GETSOCKETERRNO());
+    throw Ex2(Errcode::SERVER_INVALID, err_buf);
+  }
+
+  return reads;
+}
 
 // Client side
 void IPV4Socket::send(const char *command) { req->handle(sckt, command); }
@@ -269,4 +249,43 @@ void IPV4Socket::send(uint32_t reqn) {
   out.write(reqn);
   out.flush();
   in.attachRead(sckt);
+}
+
+void IPV4Socket::sendAndAwait(uint32_t reqn, Request &r) {
+  send(reqn);
+  r.handle(sckt, false);
+}
+
+auto getClient(IPV4Socket *sckt, socket_t sock) {
+  auto isSock = [sock](client_info &c) { return c.socket == sock; };
+  auto fr = ranges::find_if(sckt->clients, isSock);
+  auto end = sckt->clients.end();
+  if (fr != end) {
+    return &*fr;
+  }
+
+  sckt->clients.emplace_back();
+  return &(sckt->clients.back());
+}
+
+void IPV4Socket::dropClient(struct client_info *info) {
+  CLOSESOCKET(info->socket);
+
+  auto isSock = [info](client_info &c) { return c.socket == info->socket; };
+
+  auto numErased = std::erase_if(clients, isSock);
+  if (numErased == 0) {
+    printf("Client with address %s not found\n",
+           getClientAddress(info).c_str());
+  }
+}
+
+string IPV4Socket::getClientAddress(struct client_info *info) {
+  std::string address;
+  address.reserve(100);
+  char *address_buffer = address.data();
+  getnameinfo((struct sockaddr *)&info->addr, info->addr_len, address_buffer,
+              sizeof(address_buffer), 0, 0, NI_NUMERICHOST);
+
+  return address;
 }

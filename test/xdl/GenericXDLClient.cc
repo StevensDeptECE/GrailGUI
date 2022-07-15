@@ -6,8 +6,6 @@
 #include "xdl/std.hh"
 using namespace std;
 
-Log srvlog;  // log all important events for security and debugging
-
 /*
   This generic client demonstrates the ability to send a request to an XDL
   server, and get in response metadata and then data By reading the metadata,

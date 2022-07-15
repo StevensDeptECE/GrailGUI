@@ -206,14 +206,11 @@ XDLRequest::XDLRequest(Socket* sckt,const char filename[]) : Request(sckt), xdlD
 
 XDLRequest::XDLRequest(Socket* sckt) : Request(sckt), xdlData(1),compiler(nullptr) {}
 
-void XDLRequest::connect() const {sckt->connect();}
-
-
 XDLRequest::XDLRequest(Socket* sckt, const XDLType* xdl) : Request(sckt), xdlData(1) { xdlData.add(xdl);
   sckt->attach(this);
 }
 
-void XDLRequest::handle(int fd) {
+transportStatus XDLRequest::handle(socket_t fd, bool shouldRespond) {
   auto& in = sckt->getIn();
   auto& out = sckt->getOut();
   cout << "handling XDL request" << endl;
@@ -222,23 +219,31 @@ void XDLRequest::handle(int fd) {
   in.displayRawRead();
   // buffer ..   buffer+dataSize
   // for now, hardcoded first 4 bytes of buffer is the request number
-  uint32_t requestId = in.readU32();
-  cout << "requestId: " << requestId << '\n';
-  if (requestId >= xdlData.size()) {
-    // srvlog.error(Errcode::ILLEGAL_SERVLETID);
-    // commented this line out because it causes an error
-    // ERROR: In function `CSPRequest::handle(int)':
-    // CSPRequest.cc:(.text+0xf6): undefined reference to `srvlog'
-    cout << "ERROR::ILLEGAL_SERVLETID\n";
-    return;
-  }
+  if (shouldRespond) {
+    uint32_t requestId = in.readU32();
+    cout << "requestId: " << requestId << '\n';
+    if (requestId >= xdlData.size()) {
+      // srvlog.error(Errcode::ILLEGAL_SERVLETID);
+      // commented this line out because it causes an error
+      // ERROR: In function `CSPRequest::handle(int)':
+      // CSPRequest.cc:(.text+0xf6): undefined reference to `srvlog'
+      cout << "ERROR::ILLEGAL_SERVLETID\n";
+      return {sizeof(requestId), false};
+    }
 
-  const XDLType* x = xdlData[requestId];
-  // Struct* s = (Struct*)st->getSymbol(root);
-  x->writeXDLMeta(out);
-  x->writeXDL(out);
-  out.displayRaw();
-  out.flush();
+    const XDLType* x = xdlData[requestId];
+    // Struct* s = (Struct*)st->getSymbol(root);
+    x->writeXDLMeta(out);
+    x->writeXDL(out);
+    out.displayRaw();
+    out.flush();
+
+    return {sizeof(requestId), false};
+  }
+  cerr << "Warning: Client-side handling of XDL request is not supported yet. "
+          "See GenericXDLClient.cc for an example."
+       << endl;
+  return {0, true};
 }
 
 XDLRequest::~XDLRequest() {
