@@ -240,7 +240,7 @@ void MapView2D::renderOutline(glm::mat4& trans) {
 
   // Draw Lines
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
-  glDrawElements(GL_LINE_LOOP, endLineIndex - startLineIndex, GL_UNSIGNED_INT, (void*)(uint64_t)startLineIndex);
+  glDrawElements(GL_LINE_LOOP, endLineIndex - startLineIndex, GL_UNSIGNED_INT, (void*)(startLineIndex * sizeof(uint32_t))); // the void* is a byte offset!
 
   // Unbind
   glDisableVertexAttribArray(1);
@@ -273,7 +273,7 @@ void MapView2D::renderFill(glm::mat4& trans) {
   // Draw Solid
   //numFillIndicesToDraw = 19;
   //endFillIndex = 19;
-  glDrawElements(GL_TRIANGLE_FAN, endFillIndex - startFillIndex, GL_UNSIGNED_INT, (void*)(uint64_t)startFillIndex);
+  glDrawElements(GL_TRIANGLE_FAN, endFillIndex - startFillIndex, GL_UNSIGNED_INT, (void*)(startFillIndex * sizeof(uint32_t))); // the void* is a byte offset!
   //glDrawArrays(GL_TRIANGLE_FAN, 0, 4); // quick test, just draw one huge yellow rectangle!
   // Unbind
   //glDisableVertexAttribArray(1);
@@ -295,15 +295,15 @@ void MapView2D::setWhichSegmentsToDisplay(uint32_t start, uint32_t end) {
   uint32_t numSegments = bml->getNumSegments();
 
   startSegment = start;
+  endSegment = end;
   if (startSegment == 0xffffffff)
     startSegment = 0;
-  if (startSegment > endSegment)
+  if (startSegment >= endSegment)
     startSegment = endSegment - 1;
     
-  endSegment = end;
-  if (endSegment < startSegment)
+  if (endSegment <= startSegment)
     endSegment = startSegment + 1;
-  if (endSegment > numSegments) {
+  if (endSegment >= numSegments) {
     endSegment = numSegments;
   }
   uint32_t lineIndex = 0;

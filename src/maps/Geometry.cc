@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <numbers>
 #include <cmath>
+#include <vector>
+
 //constexpr float inf = INFINITY;
 constexpr uint32_t numBins = 16;
 constexpr double binSize = 2*numbers::pi/numBins;

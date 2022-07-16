@@ -163,7 +163,6 @@ void MapViewer::zoomOutOnMouse(float factor) {
   zoomInOnMouse(1/factor);
 }
 
-//TODO: why are we unable to display properly if we are not starting at segment 0
 void MapViewer::incSegment(){
   mv->incSegment();
   setView();
