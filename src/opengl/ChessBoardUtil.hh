@@ -1,13 +1,40 @@
 #include <stdlib.h>
 
+#include <regex>
+
 #include "opengl/GrailGUI.hh"
 #include "opengl/Image.hh"
 #include "opengl/MultiText.hh"
 
 using namespace std;
 using namespace grail;
-// use same click method as testimagemove, make function that checks what struct
-// its for in imagelist, then according to that fuck with the image
+/*
+⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠛⠛⠋⠉⠈⠉⠉⠉⠉⠛⠻⢿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⡿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⢿⣿⣿⣿⣿
+⣿⣿⣿⣿⡏⣀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣤⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿
+⣿⣿⣿⢏⣴⣿⣷⠀⠀⠀⠀⠀⢾⣿⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠈⣿⣿
+⣿⣿⣟⣾⣿⡟⠁⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣷⢢⠀⠀⠀⠀⠀⠀⠀⢸⣿
+⣿⣿⣿⣿⣟⠀⡴⠄⠀⠀⠀⠀⠀⠀⠙⠻⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⣿
+⣿⣿⣿⠟⠻⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠶⢴⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⣿
+⣿⣁⡀⠀⠀⢰⢠⣦⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⣿⣿⣿⣿⡄⠀⣴⣶⣿⡄⣿
+⣿⡋⠀⠀⠀⠎⢸⣿⡆⠀⠀⠀⠀⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⠗⢘⣿⣟⠛⠿⣼
+⣿⣿⠋⢀⡌⢰⣿⡿⢿⡀⠀⠀⠀⠀⠀⠙⠿⣿⣿⣿⣿⣿⡇⠀⢸⣿⣿⣧⢀⣼
+⣿⣿⣷⢻⠄⠘⠛⠋⠛⠃⠀⠀⠀⠀⠀⢿⣧⠈⠉⠙⠛⠋⠀⠀⠀⣿⣿⣿⣿⣿
+⣿⣿⣧⠀⠈⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠟⠀⠀⠀⠀⢀⢃⠀⠀⢸⣿⣿⣿⣿
+⣿⣿⡿⠀⠴⢗⣠⣤⣴⡶⠶⠖⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡸⠀⣿⣿⣿⣿
+⣿⣿⣿⡀⢠⣾⣿⠏⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠛⠉⠀⣿⣿⣿⣿
+⣿⣿⣿⣧⠈⢹⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿
+⣿⣿⣿⣿⡄⠈⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣴⣾⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣦⣄⣀⣀⣀⣀⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⠙⣿⣿⡟⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠁⠀⠀⠹⣿⠃⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⢐⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⠿⠛⠉⠉⠁⠀⢻⣿⡇⠀⠀⠀⠀⠀⠀⢀⠈⣿⣿⡿⠉⠛⠛⠛⠉⠉
+⣿⡿⠋⠁⠀⠀⢀⣀⣠⡴⣸⣿⣇⡄⠀⠀⠀⠀⢀⡿⠄⠙⠛⠀⣀⣠⣤⣤⠄
+*/
 class ChessBoard {
  private:
   struct squareLocation {
@@ -19,6 +46,14 @@ class ChessBoard {
     float ybot;
     Image* currentPiece = nullptr;
     string filepath;
+    string typeOfPiece;
+    char color;
+  };
+  struct Square {
+    int row;
+    int column;
+    bool takingPiece = false;
+    Square(int row, int column) : row(row), column(column) {}
   };
 
   float xpos;
@@ -26,7 +61,7 @@ class ChessBoard {
   squareLocation ImageList[8][8];
   squareLocation* PreviousSquare[1][1];
   GLWin* window;
-  Image* selectedpiece = nullptr;
+  Image* selectedPiece = nullptr;
   Image* clickPiece = nullptr;
   bool hasclicked = false;
   bool clickmove = false;
@@ -41,7 +76,11 @@ class ChessBoard {
   int previousRow;
   int previousColumn;
   string selectedPath;
+  string selectedTypeOfPiece;
   string selectedPathClick;
+  char selectedColor;
+  char turn = 'w';
+  std::vector<Square> possibleSquares;
 
  public:
   ChessBoard(MainCanvas* c, GLWin* window, Tab* tab, float xstart, float ystart,
@@ -92,109 +131,22 @@ class ChessBoard {
           ImageList[i][j].currentPiece =
               addImage(c, ImageList[i][j].xposition, ImageList[i][j].yposition,
                        sizeSquares, sizeSquares, &ImageList[i][j].filepath[0]);
+          string temp;
+          string final;
+          regex reg("ChessTextures/");
+          regex_replace(back_inserter(temp), ImageList[i][j].filepath.begin(),
+                        ImageList[i][j].filepath.end(), reg, "");
+          regex reg2("\\..*");
+          regex_replace(back_inserter(final), temp.begin(), temp.end(), reg2,
+                        "");
+          ImageList[i][j].color = final[0];
+          final.erase(0, 1);
+          ImageList[i][j].typeOfPiece = final;
+          cout << ImageList[i][j].typeOfPiece << endl
+               << ImageList[i][j].color << endl;
         }
       }
     }
-
-    //  Black Pieces//
-    /*ImageList[0][0].currentPiece =
-        addImage(c, ImageList[0][0].xposition, ImageList[0][0].yposition,
-                 sizeSquares, sizeSquares, "ChessTextures/brook.webp");
-    ImageList[0][1].currentPiece =
-        addImage(c, ImageList[0][1].xposition, ImageList[0][1].yposition,
-                 sizeSquares, sizeSquares, "ChessTextures/bknight.webp");
-    Image* bbishop1 =
-        addImage(c, ImageList[0][2].xposition, ImageList[0][2].yposition,
-                 sizeSquares, sizeSquares, "ChessTextures/bbishop.webp");
-    Image* bqueen =
-        addImage(c, ImageList[0][3].xposition, ImageList[0][3].yposition,
-                 sizeSquares, sizeSquares, "ChessTextures/bqueen.webp");
-    Image* bking =
-        addImage(c, ImageList[0][4].xposition, ImageList[0][4].yposition,
-                 sizeSquares, sizeSquares, "ChessTextures/bking.webp");
-    Image* bbishop2 =
-        addImage(c, ImageList[0][5].xposition, ImageList[0][5].yposition,
-                 sizeSquares, sizeSquares, "ChessTextures/bbishop.webp");
-    Image* bknight2 =
-        addImage(c, ImageList[0][6].xposition, ImageList[0][6].yposition,
-                 sizeSquares, sizeSquares, "ChessTextures/bknight.webp");
-    Image* brook2 =
-        addImage(c, ImageList[0][7].xposition, ImageList[0][7].yposition,
-                 sizeSquares, sizeSquares, "ChessTextures/brook.webp");
-    Image* bpawn1 =
-        addImage(c, ImageList[1][0].xposition, ystart + sizeSquares,
-                 sizeSquares, sizeSquares, "ChessTextures/bpawn.webp");
-    Image* bpawn2 =
-        addImage(c, ImageList[1][1].xposition, ImageList[1][1].yposition,
-                 sizeSquares, sizeSquares, "ChessTextures/bpawn.webp");
-    Image* bpawn3 =
-        addImage(c, ImageList[1][2].xposition, ImageList[1][2].yposition,
-                 sizeSquares, sizeSquares, "ChessTextures/bpawn.webp");
-    Image* bpawn4 =
-        addImage(c, ImageList[1][3].xposition, ImageList[1][3].yposition,
-                 sizeSquares, sizeSquares, "ChessTextures/bpawn.webp");
-    Image* bpawn5 =
-        addImage(c, ImageList[1][4].xposition, ImageList[1][4].yposition,
-                 sizeSquares, sizeSquares, "ChessTextures/bpawn.webp");
-    Image* bpawn6 =
-        addImage(c, ImageList[1][5].xposition, ImageList[1][5].yposition,
-                 sizeSquares, sizeSquares, "ChessTextures/bpawn.webp");
-    Image* bpawn7 =
-        addImage(c, ImageList[1][6].xposition, ImageList[1][6].yposition,
-                 sizeSquares, sizeSquares, "ChessTextures/bpawn.webp");
-    Image* bpawn8 =
-        addImage(c, ImageList[1][7].xposition, ImageList[1][6].yposition,
-                 sizeSquares, sizeSquares, "ChessTextures/bpawn.webp");
-    // White Pieces//
-    Image* wrook1 = c->addLayer(
-        new Image(c, ImageList[7][0].xposition, ImageList[7][0].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wrook.webp"));
-    Image* wknight1 = c->addLayer(
-        new Image(c, ImageList[7][1].xposition, ImageList[7][1].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wknight.webp"));
-    Image* wbishop1 = c->addLayer(
-        new Image(c, ImageList[7][2].xposition, ImageList[7][2].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wbishop.webp"));
-    Image* wqueen = c->addLayer(
-        new Image(c, ImageList[7][3].xposition, ImageList[7][3].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wqueen.webp"));
-    Image* wking = c->addLayer(
-        new Image(c, ImageList[7][4].xposition, ImageList[7][4].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wking.webp"));
-    Image* wbishop2 = c->addLayer(
-        new Image(c, ImageList[7][5].xposition, ImageList[7][5].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wbishop.webp"));
-    Image* wknight2 = c->addLayer(
-        new Image(c, ImageList[7][6].xposition, ImageList[7][6].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wknight.webp"));
-    Image* wrook2 = c->addLayer(
-        new Image(c, ImageList[7][7].xposition, ImageList[7][7].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wrook.webp"));
-    Image* wpawn1 = c->addLayer(
-        new Image(c, ImageList[6][0].xposition, ImageList[6][0].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wpawn.webp"));
-    Image* wpawn2 = c->addLayer(
-        new Image(c, ImageList[6][1].xposition, ImageList[6][1].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wpawn.webp"));
-    Image* wpawn3 = c->addLayer(
-        new Image(c, ImageList[6][2].xposition, ImageList[6][2].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wpawn.webp"));
-    Image* wpawn4 = c->addLayer(
-        new Image(c, ImageList[6][3].xposition, ImageList[6][3].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wpawn.webp"));
-    Image* wpawn5 = c->addLayer(
-        new Image(c, ImageList[6][4].xposition, ImageList[6][4].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wpawn.webp"));
-    Image* wpawn6 = c->addLayer(
-        new Image(c, ImageList[6][5].xposition, ImageList[6][5].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wpawn.webp"));
-    Image* wpawn7 = c->addLayer(
-        new Image(c, ImageList[6][6].xposition, ImageList[6][6].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wpawn.webp"));
-    Image* wpawn8 = c->addLayer(
-        new Image(c, ImageList[6][7].xposition, ImageList[6][7].yposition,
-                  sizeSquares, sizeSquares, "ChessTextures/wpawn.webp"));
-*/
     //======================Text Board==========================//
 
     MultiText* letters =
@@ -244,8 +196,8 @@ class ChessBoard {
 
   void update() {
     if (hasclicked) {
-      c->removeLayer(selectedpiece);
-      selectedpiece = addImage(c, window->mouseX, window->mouseY, sizeSquares,
+      c->removeLayer(selectedPiece);
+      selectedPiece = addImage(c, window->mouseX, window->mouseY, sizeSquares,
                                sizeSquares, &selectedPath[0]);
     }
   }
@@ -259,25 +211,31 @@ class ChessBoard {
           return;
         } else if (ImageList[selectedRow][selectedColumn].currentPiece ==
                    nullptr) {
-          selectedPath = selectedPathClick;
           c->removeLayer(ImageList[previousRow][previousColumn].currentPiece);
-          ImageList[previousRow][previousColumn].currentPiece = nullptr;
-          ImageList[previousRow][previousColumn].filepath = "";
-          ImageList[selectedRow][selectedColumn].currentPiece =
-              addImage(c, ImageList[selectedRow][selectedColumn].xposition,
-                       ImageList[selectedRow][selectedColumn].yposition,
-                       sizeSquares, sizeSquares, &selectedPath[0]);
-          ImageList[selectedRow][selectedColumn].filepath = selectedPath;
+          clearSquare(previousRow, previousColumn);
+          updateSquare(selectedRow, selectedColumn);
+          clearSelected();
+          clickPiece = nullptr;
           clickmove = false;
+          hasclicked = false;
+          changeTurn();
+          return;
+        } else if (ImageList[selectedRow][selectedColumn].currentPiece !=
+                       nullptr &&
+                   ImageList[selectedRow][selectedColumn].color == turn) {
+          clearSelected();
+          clickPiece = nullptr;
+          clickmove = false;
+          hasclicked = false;
         }
       }
-      if (!hasclicked) {
+      if (!hasclicked && ImageList[selectedRow][selectedColumn].color == turn) {
         if (ImageList[selectedRow][selectedColumn].currentPiece != nullptr) {
-          selectedpiece = ImageList[selectedRow][selectedColumn].currentPiece;
-          ImageList[selectedRow][selectedColumn].currentPiece = nullptr;
-          selectedPath = ImageList[selectedRow][selectedColumn].filepath;
-          ImageList[selectedRow][selectedColumn].filepath = "";
+          updateSelected(selectedRow, selectedColumn);
+          clearSquare(selectedRow, selectedColumn);
           hasclicked = true;
+          previousRow = selectedRow;
+          previousColumn = selectedColumn;
         }
       }
       PreviousSquare[0][0] = &ImageList[selectedRow][selectedColumn];
@@ -288,41 +246,77 @@ class ChessBoard {
     GetPosition(w);
     if (checkBounds()) {
       checkSquare(w);
-      if (selectedpiece == nullptr) {
+      if (selectedPiece == nullptr) {
         return;
       } else if (ImageList[selectedRow][selectedColumn].currentPiece ==
                  nullptr) {
-        c->removeLayer(selectedpiece);
-        ImageList[selectedRow][selectedColumn].currentPiece =
-            addImage(c, ImageList[selectedRow][selectedColumn].xposition,
-                     ImageList[selectedRow][selectedColumn].yposition,
-                     sizeSquares, sizeSquares, &selectedPath[0]);
-        clickPiece = selectedpiece;
-        selectedPathClick = selectedPath;
-        previousRow = selectedRow;
-        previousColumn = selectedColumn;
-        // selectedpiece = nullptr;
-        ImageList[selectedRow][selectedColumn].filepath = selectedPath;
-        // selectedPath = "";
-        hasclicked = false;
+        c->removeLayer(selectedPiece);
+        updateSquare(selectedRow, selectedColumn);
         if (ImageList[selectedRow][selectedColumn].xposition ==
                 PreviousSquare[0][0]->xposition &&
             ImageList[selectedRow][selectedColumn].yposition ==
                 PreviousSquare[0][0]->yposition) {
           clickmove = true;
+          clickPiece = ImageList[selectedRow][selectedColumn].currentPiece;
+          selectedPiece = nullptr;
+          hasclicked = false;
+          return;
         }
+        clearSelected();
+        changeTurn();
+        hasclicked = false;
+      } else if (ImageList[selectedRow][selectedColumn].currentPiece !=
+                 nullptr) {
+        c->removeLayer(selectedPiece);
+        updateSquare(previousRow, previousColumn);
+        hasclicked = false;
+        clickmove = false;
+        clearSelected();
       }
     } else if (hasclicked && !checkBounds()) {
-      c->removeLayer(selectedpiece);
-      PreviousSquare[0][0]->currentPiece = addImage(
-          c, PreviousSquare[0][0]->xposition, PreviousSquare[0][0]->yposition,
-          sizeSquares, sizeSquares, &selectedPath[0]);
+      c->removeLayer(selectedPiece);
+      updateSquare(previousRow, previousColumn);
       hasclicked = false;
       clickmove = false;
-      PreviousSquare[0][0]->filepath = selectedPath;
-      selectedPath = "";
-      selectedpiece = nullptr;
+      clearSelected();
     }
+  }
+
+  void changeTurn() {
+    if (turn == 'w') {
+      turn = 'b';
+    } else {
+      turn = 'w';
+    }
+  }
+  void clearSquare(int row, int column) {
+    ImageList[row][column].currentPiece = nullptr;
+    ImageList[row][column].filepath = "";
+    ImageList[row][column].typeOfPiece = "";
+    ImageList[row][column].color = '\0';
+  }
+
+  void updateSquare(int row, int column) {
+    ImageList[row][column].currentPiece = addImage(
+        c, ImageList[row][column].xposition, ImageList[row][column].yposition,
+        sizeSquares, sizeSquares, &selectedPath[0]);
+    ImageList[row][column].filepath = selectedPath;
+    ImageList[row][column].typeOfPiece = selectedTypeOfPiece;
+    ImageList[row][column].color = selectedColor;
+  }
+
+  void updateSelected(int row, int column) {
+    selectedPiece = ImageList[row][column].currentPiece;
+    selectedPath = ImageList[row][column].filepath;
+    selectedTypeOfPiece = ImageList[row][column].typeOfPiece;
+    selectedColor = ImageList[row][column].color;
+  }
+
+  void clearSelected() {
+    selectedPiece = nullptr;
+    selectedPath = "";
+    selectedTypeOfPiece = "";
+    selectedColor = '\0';
   }
 
   bool checkBounds() {
@@ -381,4 +375,29 @@ class ChessBoard {
     c->removeLayer(imageHandle);
     tab->getParentWin()->setUpdate();
   }
+#if 0
+  void possibleMoves(int row, int column, string piece, char color) {
+    if (piece == "pawn") {
+      checkPawn(row, column, color);
+    }
+  }
+  void checkPawn(int row, int column, char color) {
+    if (color == "w" && row == 6) {
+      possibleSquares.push_back(Square(row - 1, column));
+      possibleSquares.push_back(Square(row - 2, column));
+    }
+    if (color == "b" && row == 1) {
+      possibleSquares.push_back(Square(row + 1, column));
+      possibleSquares.push_back(Square(row + 2, column));
+    }
+    for (int i = 0; i < possibleSquares.size(); i++) {
+      if (ImageList[possibleSquares[i].row][possibleSquares[i].column]
+              .currentPiece != nullptr) {
+        possibleSquares.erase(i, possibleSquares.size() - 1);
+        return;
+      }
+    }
+  }
+  void cleanRules() { possibleSquares.clear(); }
+#endif
 };
