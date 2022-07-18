@@ -130,7 +130,7 @@ class HashMap {
   void checkGrow() {
     if (nodeCount * 2 <= tableCapacity) return;
     const Node* oldNodes = nodes;
-    nodes = new Node[nodeCapacity * 2];  // TODO: need placement new
+    nodes = (Node*)new char[sizeof(Node) * nodeCapacity * 2];  // TODO: need placement new
     for (uint32_t i = 0; i < nodeCount; i++)
       nodes[i] = std::move(oldNodes[i]);  // TODO: this is broken for objects Val
                                      // without default constructor
@@ -153,7 +153,7 @@ class HashMap {
         }          
         table[index] = oldTable[i];
       }
-    delete[] oldTable;
+    delete[] (char*)oldTable;
     // TODO: grow the symbol table too
     std::cerr << "HashMap growing size=" << tableCapacity << " " << nodeCapacity << '\n';
   }
@@ -219,7 +219,9 @@ class HashMap {
       table[i] = 0;  // 0 means empty, at the moment the first node is unused
   }
   ~HashMap() {
-    delete[] nodes;
+    for (uint32_t i = 0; i <= nodeCount; i++)
+      nodes[i].~Node();
+    delete[] (char*)nodes;
     delete[] symbols;
     delete[] table;
   }

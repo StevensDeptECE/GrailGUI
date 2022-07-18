@@ -10,3 +10,6 @@ TextLine.cc
 WebCursor?
 WebDraw?
 X11Util?
+Cursor.*?
+ESRIPOlygon.cc  (deleted)
+ESRIShape.cc    (deleted)

@@ -74,8 +74,7 @@ class DocView : public Shape {
   }
 
   void addChar(const Font* f, uint8_t c);
-  void init();
-  void process_input(Inputs* in, float dt);
-  void update();
-  void render(glm::mat4& trans);
+  void init() override;
+  void update() override;
+  void render(glm::mat4& trans) override;
 };

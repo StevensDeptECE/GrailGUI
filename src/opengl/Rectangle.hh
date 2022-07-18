@@ -1,33 +1,16 @@
 #pragma once
 
-#include "opengl/Shape2D.hh"
+#include "opengl/Shape.hh"
 
-class Rectangle : public Shape2D {
+class Rectangle : public Shape {
  private:
-  float width, height;
+   glm::vec4 fillColor;
 
  public:
-  Rectangle(Canvas* c, float x, float y, float width, float height, Style* s)
-      : Shape2D(c, x, y, s) {
-    addPoint(x, y);
-    addPoint(x, y - height);
-    addPoint(x + width, y - height);
-    addPoint(x + width, y);
+  Rectangle(Canvas* c, float x, float y, float width, float height, const glm::vec4& color);
 
-    for (int i = 0; i < vertices.size(); i++) {
-      lineIndices.push_back(i);
-      pointIndices.push_back(i);
-    }
-
-    solidIndices.push_back(0);
-    solidIndices.push_back(1);
-    solidIndices.push_back(2);
-
-    solidIndices.push_back(3);
-    solidIndices.push_back(0);
-    solidIndices.push_back(2);
-  }
-
-  void initIndices();
-  void render();
+  void init() override;
+  void update() override;
+  void render(glm::mat4& trans) override;
+ 
 };

@@ -2,54 +2,32 @@
 
 #include "glad/glad.h"
 #include "opengl/Shader.hh"
+#include "opengl/GLWin.hh"
 
-void Rectangle::render() {
-  // Get Shader based on style
-  Shader* s = Shader::useShader(style->getShaderIndex());
-
-  applyTransform(s);
-
+Rectangle::Rectangle(Canvas* c, float x, float y, float width, float height, const glm::vec4& color)
+      : Shape(c), fillColor(color) {
+    float points[8] = {x, y, x+width, y, x+width, y+height, x, y+height};
+  glGenVertexArrays(1, &vao);  // Create the container for all vbo objects
   glBindVertexArray(vao);
-  glEnableVertexAttribArray(0);
-
-  // If color buffer exists
-  if (cbo > 0) {
-    glEnableVertexAttribArray(1);
-  } else {
-    s->setVec4("solidColor", style->getFgColor());
-  }
-
-  glLineWidth(style->getLineWidth());
-
-  // Draw Solids
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sbo);
-  glDrawElements(GL_TRIANGLES, solidIndices.size(), GL_UNSIGNED_INT, 0);
-
-  // Draw Lines
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
-  glDrawElements(GL_LINES, lineIndices.size(), GL_UNSIGNED_INT, 0);
-
-  // Draw Points
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pbo);
-  glDrawElements(GL_POINTS, pointIndices.size(), GL_UNSIGNED_INT, 0);
-
-  // Unbind
-  if (cbo > 0) glDisableVertexAttribArray(1);
-  glDisableVertexAttribArray(0);
-  glBindVertexArray(0);
+  glGenBuffers(1, &vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), points, GL_STATIC_DRAW);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 }
 
-void Rectangle::initIndices() {
-  for (int i = 0; i < vertices.size(); i++) {
-    lineIndices.push_back(i);
-    pointIndices.push_back(i);
-  }
+void Rectangle::init() {
+}
 
-  solidIndices.push_back(0);
-  solidIndices.push_back(1);
-  solidIndices.push_back(2);
+void Rectangle::update() {
+}
 
-  solidIndices.push_back(3);
-  solidIndices.push_back(0);
-  solidIndices.push_back(2);
+void Rectangle::render(glm::mat4& trans) {
+  // Get Shader based on style
+  Shader* shader = Shader::useShader(GLWin::COMMON_SHADER);
+  shader->setMat4("trans", trans);
+  shader->setVec4("solidColor", fillColor);
+  glBindVertexArray(vao);
+  glEnableVertexAttribArray(0);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  glBindVertexArray(0);
 }

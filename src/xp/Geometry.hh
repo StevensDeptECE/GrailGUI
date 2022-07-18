@@ -89,6 +89,7 @@ struct Delta {
 
 wikipedia seems to have the best theory for the regular case
 https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+https://www.topcoder.com/thrive/articles/Geometry%20Concepts%20part%202:%20%20Line%20Intersection%20and%20its%20Applications
 
 https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
 https://www.cs.cmu.edu/~15451-f17/lectures/lec21-sweepline.pdf

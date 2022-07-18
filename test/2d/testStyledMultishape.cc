@@ -1,5 +1,4 @@
 #include "opengl/GrailGUI.hh"
-#include "util/Ex.hh"
 
 using namespace std;
 using namespace grail;

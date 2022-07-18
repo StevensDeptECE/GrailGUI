@@ -10,6 +10,7 @@
 #include "opengl/MultiText.hh"
 #include "opengl/Shader.hh"
 #include "opengl/Style.hh"
+#include "util/Benchmark.hh"
 
 using namespace std;
 using namespace grail;
@@ -39,8 +40,6 @@ void DocView::init() {
   t->init();
 }
 
-void DocView::process_input(Inputs* in, float dt) {}
-
 inline void DocView::addChar(const Font* f, uint8_t c) {
   const PageLayout* layout = doc->getLayout();
   t->checkAdd(x, y, f, c, layout->x0, rowSize, layout->x1);
@@ -50,8 +49,11 @@ void DocView::printPageNum(uint32_t page) {
   const PageLayout* layout = doc->getLayout();
   t->add(layout->pageNumX, layout->pageNumY, pageNumFont, pageNum);
 }
+grail::utils::CBenchmark entireUpdate("entire update");
+uint32_t pageCount = 0;
 
 void DocView::update() {
+  entireUpdate.start();
   clear();
   const Page* p = doc->getPage(pageNum);
   const unsigned char* text = doc->getText();
@@ -87,6 +89,9 @@ void DocView::update() {
       y += f->getHeight();
     }
   }
+  entireUpdate.end();
+  pageCount++;
+  entireUpdate.displayavg(pageCount);
 }
 
 void DocView::render(glm::mat4& trans) {
