@@ -117,7 +117,7 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], bool toggleDa
       //Point center = centroid(&bml.points[pointOffset - (numSegPoints*2)], numSegPoints);
       bml.points[pointOffset++] = center.x;
       bml.points[pointOffset++] = center.y;
-      //Geometry::checkIntersections(&bml.points[pointOffset - 2 - 2*numSegPoints], numSegPoints, center);
+      vector<Range> ranges = checkIntersections((Point*)(&bml.points[pointOffset - 2 - 2*numSegPoints]), numSegPoints, center);
       
       //bml.points[pointOffset++] = (bounds.xMin + bounds.xMin)/2;
       //bml.points[pointOffset++] = (bounds.yMin + bounds.yMin)/2;

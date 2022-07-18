@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <algorithm>
 using namespace std;
 
 struct Point {
@@ -14,7 +15,18 @@ struct Line {
   Line(Point start, Point end) : start(start), end(end){};
   Line() {}
 };
+struct Range {
+  int start, end;
+  Range(int start, int end) : start(start), end(end) {
+    if(start > end)
+    {
+      swap(start, end);
+    }
+  }
+  Range() {}
+};
 
+vector<Range> checkIntersections(const Point* polygon, int numPoints, Point centroid);
 Point centroid(const float xy[], const int n);
 
 template<typename Precision>

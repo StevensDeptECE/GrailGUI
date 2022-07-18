@@ -100,7 +100,7 @@ inline void addToBin(const Point centroid, const Point a, const Point b, vector<
  * and the other segments
  * Returns true if there are no intersections
  */
-bool checkIntersections(const Point polygon[], int numPoints, Point centroid) {
+/*bool checkIntersections(const Point polygon[], int numPoints, Point centroid) {
   Line lineSegments[numPoints];
   bool intersections[numPoints];
   vector<const Line*> angleBins[numBins];
@@ -124,8 +124,48 @@ bool checkIntersections(const Point polygon[], int numPoints, Point centroid) {
     }
   }
   return true;
+}*/
+vector<Range> checkIntersections(const Point* polygon, int numPoints, Point centroid) {
+  Line lineSegments[numPoints];
+  bool intersections[numPoints];
+  vector<Range> ranges;
+  vector<const Line*> angleBins[numBins];
+  for(int i = 0; i < numPoints-1; i++)
+  {
+    addToBin(centroid, polygon[i], polygon[i+1], angleBins, lineSegments, i);
+  }
+  addToBin(centroid, polygon[numPoints-1], polygon[0], angleBins, lineSegments, numPoints-1);
+  for(int i = 0; i < numPoints; i++)
+  {
+    Line centLine(centroid, polygon[i]);
+    int bin = getBin(centroid, polygon[i]);
+    intersections[i] = false;
+    for(const auto b: angleBins[bin])
+    {
+      if(intersection(centLine, *b))
+      {
+        intersections[i] = true;
+      }
+    }
+  }
+  bool inRange  = false;
+  int start, end;
+  for(int i = 0; i < numPoints; i++)
+  {
+    if(!inRange && intersections[i])
+    {
+      inRange = true;
+      start = i;
+    }
+    else if(inRange && !intersections[i])
+    {
+      inRange = false;
+      end = i-1;
+      ranges.push_back(Range(start, end));
+    }
+  }
+  return ranges;
 }
-
 //Point centroid<float>(float x[], float y[], int numPoints);
 //Point centroid<double>(double x[], double y[], int numPoints);
 
