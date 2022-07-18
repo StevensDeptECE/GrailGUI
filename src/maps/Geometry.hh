@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
+#include <vector>
 using namespace std;
 
 struct Point {
