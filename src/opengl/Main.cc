@@ -9,12 +9,13 @@ using namespace grail::utils;
 
 void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab);
 
-int main(int argc, char* argv[]) {
+void mainErrorHandling(const char title[], uint32_t width, uint32_t height,
+  uint32_t fgColor, uint32_t bgColor, int argc, char* argv[]) {
   try {
     CBenchmark<> b1("Grail Create GLWin");
 
     b1.start();
-    GLWin w(1024, 800, 0xFFFFFFFF, 0x000000FF, "Grail Window");
+    GLWin w(width, height, fgColor, bgColor, title);
     b1.endAndDisplay(prefs.shouldDisplay(LogLevel::INFO)); // How long to create the window ? 
     Tab* tab = w.currentTab();
 
@@ -27,7 +28,7 @@ int main(int argc, char* argv[]) {
     w.mainLoop();
     // g->t = thread(crun, g);
     // TODO: move this to GLWin::cleanup or destructor?  FontFace::emptyFaces();
-    return 0;
+    exit(0);
   } catch (const Ex& e) {
     cerr << e << '\n';
   } catch (const char* msg) {
@@ -37,5 +38,12 @@ int main(int argc, char* argv[]) {
   } catch (...) {
     cerr << "uncaught exception! (ouch)\n";
   }
-  return 1;  // if exception caught return error
+  exit(1);  // if exception caught return error
 }
+
+#if 0
+int main(int argc, char* argv[]) {
+  mainErrorHandling("Grail Window", 1024, 800, 0xFFFFFFFF, 0x000000FF, argc, argv);
+  return 0;
+}
+#endif
