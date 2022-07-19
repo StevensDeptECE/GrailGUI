@@ -77,7 +77,7 @@ void MapView2D::initLabels() {
   const Font* f = mt->getStyle()->f;
   const BlockMapLoader::Region* regions = bml->getRegions();
   // TODO: need to implement to get states
-  //const BlockMapLoader::RegionContainer* regionContainer = bml->getRegionContainer();
+  const BlockMapLoader::RegionContainer* regionContainer = bml->getRegionContainer();
   const uint32_t count = bdl->getNodeCount();
   const float* points = bml->getPoints();
   for (uint32_t i = 1; i < count; i++) {
@@ -97,6 +97,9 @@ void MapView2D::initLabels() {
       //float x = (r.bounds.xMax + r.bounds.xMin)/2*textScale;
       //float y = (r.bounds.yMax + r.bounds.yMin)/2*-textScale;
       mt->addCentered(x, y, f, tempName); // +2 and -2 to remove the appended state abbr.
+    }
+    else { // these are state names
+
     }
   }
 //  mt->addCentered(0,0,f,"testing", 7);
@@ -215,8 +218,10 @@ void debug(const glm::mat4& m, float x, float y, float z) {
 }
 
 void MapView2D::render(glm::mat4& trans) {
-  renderOutline(trans);
-  renderFill(trans);
+  if (((MapViewer*)parentCanvas)->getDisplayFill())
+    renderFill(trans);
+  if (((MapViewer*)parentCanvas)->getDisplayOutline())
+    renderOutline(trans);
 }
 
 void MapView2D::renderOutline(glm::mat4& trans) {

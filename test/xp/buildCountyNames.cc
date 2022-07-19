@@ -1,10 +1,7 @@
 #include <iostream>
-#include "util/Benchmark.hh"
 #include "maps/MapNames.hh"
-
+#include <vector>
 using namespace std;
-using namespace grail::utils;
-
 
 const char* FIPsToPostal[100];
 BLHashMap<uint32_t> postalToFIPs(200, 128, 128);
@@ -80,6 +77,12 @@ void buildPostalAbbr() {
   build2wayPostal("WY", 56);
 }
 
+struct compareNamedEntries {
+  bool operator() (const NamedMapEntry &a, const NamedMapEntry &b) { 
+    return (strcmp(a.countyName, b.countyName) < 0);
+  }
+};
+
 // building map dictionary from .dbf
 // https://support.esri.com/en/technical-article/000010834
 void buildMapDict(const char filename[]) {
@@ -95,6 +98,9 @@ void buildMapDict(const char filename[]) {
   int NAME = DBFGetFieldIndex(dbf, "NAME"); // county name
   int STATE_NAME = DBFGetFieldIndex(dbf, "STATE_NAME"); // state name of county
   int STATE_FIPS = DBFGetFieldIndex(dbf, "STATE_FIPS"); // state id
+
+   vector<NamedMapEntry> sortedEntries(recordCount);
+
   for (int i = 0; i < recordCount; i++) {
     const int fieldNum = DBFReadIntegerAttribute(dbf, i, FID);
     // array size determined from metadata: max length + 1 (for null)
@@ -108,6 +114,12 @@ void buildMapDict(const char filename[]) {
          << county << '\t'
          << state << '\t'
          << stateNum << '\n';
+
+    sortedEntries[i].countyEntry = MapEntry{ENT_COUNTY, FEAT_LOCAL, static_cast<uint32_t>(fieldNum-1)};
+    sortedEntries[i].stateEntry = MapEntry{ENT_STATE, FEAT_STATE, static_cast<uint32_t>(fieldNum-1)};
+    strcpy(sortedEntries[i].countyName, county);
+    strcpy(sortedEntries[i].stateName, county);
+  #if 0
 //    uint32_t symbolSize = mapDict.getSymbolSize();
     mapDict.add(county, MapEntry{
       //symbolSize, (uint32_t)strlen(county), 
@@ -116,6 +128,14 @@ void buildMapDict(const char filename[]) {
 //      symbolSize = mapDict.getSymbolSize();
       mapDict.add(state, MapEntry{
         ENT_STATE, FEAT_STATE, static_cast<uint32_t>(stateNum-1)}); // decrement by 1 since FIPS starts at 1, not 0
+    }
+  #endif
+  }
+  sort(sortedEntries.begin(), sortedEntries.end(), compareNamedEntries());
+  for (int i = 0; i < recordCount; i++) {
+    mapDict.add(sortedEntries[i].countyName, sortedEntries[i].countyEntry);
+    if (mapDict.get(sortedEntries[i].stateName) == nullptr) {
+      mapDict.add(sortedEntries[i].stateName, sortedEntries[i].stateEntry);
     }
   }
   mapDict.writeFile("res/maps/uscounties.bdl");

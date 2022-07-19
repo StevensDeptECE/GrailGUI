@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "data/BlockMapLoader.hh"
 #include "opengl/GLWin.hh"
@@ -20,12 +21,14 @@ string getFile(const char defaultDir[], const char defaultFilename[], int argc,
 }
 
 void loadFromESRITest(const char *shapefile) {
-  BlockMapLoader bml = BlockMapLoader::loadFromESRI(shapefile);
+  vector<NamedMapEntry> sortedEntries = BlockMapLoader::buildMapDict("res/maps/USA_Counties.dbf");
+  BlockMapLoader bml = BlockMapLoader::loadFromESRI(shapefile, sortedEntries);
 }
 
 void ESRILoadMeanTest(const char *shapefile) {
   float meanx, meany;
-  BlockMapLoader bml = BlockMapLoader::loadFromESRI(shapefile);
+  vector<NamedMapEntry> sortedEntries = BlockMapLoader::buildMapDict("res/maps/USA_Counties.dbf");
+  BlockMapLoader bml = BlockMapLoader::loadFromESRI(shapefile, sortedEntries);
   bml.mean(&meanx, &meany);
 }
 
@@ -34,7 +37,8 @@ int main(int argc, char **argv) {
       getFile("/test/res/maps/", "USA_Counties.shp", argc, argv);
 
   int seg = argc > 2 ? atoi(argv[2]) : -1;
-  BlockMapLoader bml = BlockMapLoader::loadFromESRI(shapefile.c_str());
+  vector<NamedMapEntry> sortedEntries = BlockMapLoader::buildMapDict("res/maps/USA_Counties.dbf");
+  BlockMapLoader bml = BlockMapLoader::loadFromESRI(shapefile.c_str(), sortedEntries);
   // if (seg >= 0) bml.dumpSegment(seg);
   // shapefile = getFile("/test/res/maps/", "uscounties.bml", 0, nullptr);
   float meanx, meany;

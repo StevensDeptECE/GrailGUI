@@ -45,9 +45,10 @@ static uint32_t getFileSize(const char filename[]) {
 BlockMapLoader::BlockMapLoader(const char filename[]) : BlockLoader(filename, getFileSize(filename)) {
   blockMapHeader =
       (BlockMapHeader*)getSpecificHeader();  //((char*)mem + getHeaderSize());
-  // TODO: add RegionContainer and NamedEntities
-  regionContainers = nullptr;
-  regions = (Region*)((char*)blockMapHeader + sizeof(BlockMapHeader));
+  // TODO: add NamedEntities
+  regionContainers = (RegionContainer*)((char*)blockMapHeader + sizeof(BlockMapHeader));
+  regions = 
+      (Region*)((char*)regionContainers + blockMapHeader->numRegionContainers * sizeof(RegionContainer));
   segments =
       (Segment*)((char*)regions + blockMapHeader->numRegions * sizeof(Region));
   points =

@@ -16,7 +16,7 @@ MapViewer::MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint3
 
     // NOTE: mt MUST be created first becuase mv needs it
     this->textScale = textScale;
-    displayText = true, displaySegments = true;
+    displayText = true, displayOutline = true, displayFill = true;
     mt = new MultiText(this, style, 12);
     mv = new MapView2D(this, style, mt, bml, bdl, 1/textScale);
     tab->addCanvas(this); // register ourselves in the tab
@@ -37,8 +37,7 @@ void MapViewer::init() {
 
 void MapViewer::render() {
   Canvas::render();
-  if (displaySegments)
-    mv->render(trans);
+  mv->render(trans);
   if (displayText) {
     // scale x and y coordinates by 1/factor in MapView2D
     glm::mat4 textTrans = glm::scale(trans, glm::vec3(textScale, -textScale, 1));
@@ -140,8 +139,13 @@ void MapViewer::toggleDisplayText() {
   setView();
 }
 
-void MapViewer::toggleDisplaySegments() {
-  displaySegments = !displaySegments;
+void MapViewer::toggleDisplayOutline() {
+  displayOutline = !displayOutline;
+  setView();
+}
+
+void MapViewer::toggleDisplayFill() {
+  displayFill = !displayFill;
   setView();
 }
 
@@ -189,6 +193,6 @@ void MapViewer::displayAllSegments() {
 }
 
 void MapViewer::displayFirstSegment() {
-  mv->setWhichSegmentsToDisplay(0,1);
+  mv->setWhichSegmentsToDisplay(50,100);
   setView();
 }

@@ -4,6 +4,7 @@
 
 #include "opengl/Canvas.hh"
 #include "opengl/MultiShape2D.hh"
+#include "data/BlockMapLoader.hh"
 #include "maps/MapNames.hh"
 
 class MultiText;
@@ -22,7 +23,7 @@ class MapViewer : public Canvas {
   // not great style, but C++ does not allow us an easy way out
   MapView2D* mv;
   float textScale;
-  bool displayText, displaySegments;
+  bool displayText, displayOutline, displayFill;
 
  public:
   MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint32_t vpY,
@@ -49,7 +50,8 @@ class MapViewer : public Canvas {
   void increaseTextSize(float factor);
   void decreaseTextSize(float factor);
   void toggleDisplayText();
-  void toggleDisplaySegments();
+  void toggleDisplayOutline();
+  void toggleDisplayFill();
   void zoomInOnMouse(float factor);
   void zoomOutOnMouse(float factor);
   void incSegment();
@@ -58,4 +60,6 @@ class MapViewer : public Canvas {
   void decNumSegments();
   void displayAllSegments();
   void displayFirstSegment();
+  bool getDisplayOutline() const {return displayOutline; }
+  bool getDisplayFill() const { return displayFill; }
 };

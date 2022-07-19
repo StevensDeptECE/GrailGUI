@@ -1,10 +1,8 @@
 #pragma once
 
 #include "util/BLHashMap.hh"
-#include "data/BlockMapLoader.hh"
 #include "libshape/shapefil.h"
 #include "util/FileUtil.hh"
-#include "util/BLHashMap.hh"
 
 /*
 Represents the relationship between a name in a HashMap and
@@ -21,6 +19,15 @@ struct MapEntry {
     // for now, we know all US postal abbrs are size 2
 };
 
+struct NamedMapEntry {
+  MapEntry countyEntry;
+  MapEntry stateEntry;
+  char countyName[24];
+  char stateName[21];
+};
+
+ enum class EntityType { REGION_CONTAINER, REGION, SEGMENT, POINT };
+
 enum class MapFeatureType {
   LOCAL,
   STATE,
@@ -33,5 +40,5 @@ enum class MapFeatureType {
 
 const uint8_t FEAT_LOCAL = (uint8_t)MapFeatureType::LOCAL;
 const uint8_t FEAT_STATE = (uint8_t)MapFeatureType::STATE;
-const uint8_t ENT_COUNTY = (uint8_t)BlockMapLoader::EntityType::REGION;
-const uint8_t ENT_STATE = (uint8_t)BlockMapLoader::EntityType::REGION_CONTAINER;
+const uint8_t ENT_COUNTY = (uint8_t)EntityType::REGION;
+const uint8_t ENT_STATE = (uint8_t)EntityType::REGION_CONTAINER;

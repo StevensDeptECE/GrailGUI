@@ -1,6 +1,8 @@
 #pragma once
 #include "data/BlockLoader.hh"
 #include "data/BoundRect.hh"
+#include "maps/MapNames.hh"
+#include <vector>
 class BlockMapLoader : public BlockLoader {
  public:
   struct BlockMapHeader {
@@ -26,7 +28,6 @@ class BlockMapLoader : public BlockLoader {
     RegionContainers
   */
 
-  enum class EntityType { REGION_CONTAINER, REGION, SEGMENT, POINT };
   struct NamedEntry {
     uint32_t nameOffset;  // starting byte of the name;
     uint8_t len;          // length of the name (< 256 bytes)
@@ -107,11 +108,10 @@ class BlockMapLoader : public BlockLoader {
 
   // load and convert an ESRI .shp to BlockMap format
   BlockMapLoader(const char filename[], const char[]);
-  static BlockMapLoader loadFromESRI(const char filename[], bool toggleDateLine = true);
+  static std::vector<NamedMapEntry> buildMapDict(const char filename[]);
+  static BlockMapLoader loadFromESRI(const char filename[], std::vector<NamedMapEntry> sortedEntries, bool toggleDateLine = true);
   static BlockMapLoader loadCompressed(const char filename[]);
-  // TODO: const RegionContainers* getRegionContainers() const { return
-  // regionContainers; }
-
+  const RegionContainer* getRegionContainer() const { return regionContainers; }
   const Region* getRegions() const { return regions; }
   const Segment* getSegments() const { return segments; }
   // save a fast blockmap file
