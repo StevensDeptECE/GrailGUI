@@ -9,8 +9,8 @@ set(grail-opengl
     Document.cc
     DocView.cc
     ErrNames.cc
-    ESRIPolygon.cc
-    ESRIShape.cc
+    # ESRIPolygon.cc
+    # ESRIShape.cc
 #    GapMinderWidget.cc
     GraphWidget.cc
     GLWin.cc
@@ -31,7 +31,7 @@ set(grail-opengl
     Shader.cc
     Shape.cc
     Shape2D.cc
-    Shapefile.cc
+    # Shapefile.cc
     SparklineWidget.cc
     StyledMultiShape2D.cc
     Tab.cc
