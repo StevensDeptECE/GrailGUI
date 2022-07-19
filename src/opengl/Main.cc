@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
     CBenchmark<> b1("Grail Create GLWin");
 
     b1.start();
-    GLWin w(1024, 800, 0xFFFFFFFF, 0x000000FF, "Grail Window");
+    GLWin w(prefs.getPreferredWidth(), prefs.getPreferredHeight(), 0xFFFFFFFF, 0x000000FF, "Grail Window");
     b1.endAndDisplay(prefs.shouldDisplay(LogLevel::INFO)); // How long to create the window ? 
     Tab* tab = w.currentTab();
 
