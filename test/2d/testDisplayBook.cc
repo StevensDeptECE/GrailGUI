@@ -52,11 +52,11 @@ BookViewer::BookViewer(Tab *tab, const char filename[])
   const Font *font = FontFace::get("TIMES", 30, 0);
   Style *s = new Style(font, 1, 1, 1, 0, 0, 0, 1);
   Canvas *c = tab->getMainCanvas();
-  c->addLayer(new Image(c, 0, 5, 320, 32, "res/toolbar1.png"));
+//  c->addLayer(new Image(c, 0, 5, 320, 32, "res/toolbar1.png"));
   StyledMultiShape2D *m = new StyledMultiShape2D(c, s);
-  m->fillTriangle(350, 5, 380, 0, 360, 30, green);
-  m->fillRoundRect(400, 5, 950, 40, 10, 10, lightblue);
-  m->fillRoundRect(405, 7, 940, 36, 10, 10, lightgrey);
+  //m->fillTriangle(350, 5, 380, 0, 360, 30, green);
+  //m->fillRoundRect(400, 5, 950, 40, 10, 10, lightblue);
+  //m->fillRoundRect(405, 7, 940, 36, 10, 10, lightgrey);
   c->addLayer(m);
 
   PageLayout layout(10, 70, 1350, 1100, 1360, 40, 10, 40, font, 1500);
@@ -71,4 +71,8 @@ BookViewer::BookViewer(Tab *tab, const char filename[])
 void grailmain(int argc, char *argv[], GLWin *w, Tab *defaultTab) {
   const char *filename = argc < 2 ? "res/Annatest.txt" : argv[1];
   new BookViewer(defaultTab, filename);
+}
+
+int main(int argc, char *argv[]) {
+  mainErrorHandling("Book Reader", 2000, 1300, 0xFFFFFFFF, 0x000000FF, argc, argv);  
 }
