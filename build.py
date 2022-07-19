@@ -10,6 +10,7 @@ import re
 
 console_log_level = logging.INFO
 file_log_level = logging.DEBUG
+version = "0.2.0"
 
 
 class MyParser(argparse.ArgumentParser):
@@ -28,6 +29,7 @@ def parse():
     """
 
     parser = MyParser(description="Build and run GrailGUI")
+    parser.add_argument("-v", "--version", action="version", version=version)
     subparsers = parser.add_subparsers(help="subcommands",
                                        required=True,
                                        dest="subcommand")
@@ -42,11 +44,47 @@ def parse():
                           help="Use a different generator for CMake",
                           default="",
                           dest="generator")
-
+    generate.add_argument("-f",
+                          "--force",
+                          action="store_true",
+                          dest="force",
+                          default=False)
     generate.add_argument("-b",
                           help="Change the build mode",
                           default="",
                           dest="mode")
+    generate.add_argument("--c-compiler",
+                          default="",
+                          dest="c_compiler",
+                          type=str,
+                          help="Set C compiler to use")
+    generate.add_argument("--cxx-compiler",
+                          default="",
+                          dest="cxx_compiler",
+                          type=str,
+                          help="Set C++ compiler to use")
+    generate.add_argument("--linker",
+                          default="",
+                          dest="linker",
+                          type=str,
+                          help="Set linker to use")
+    generate.add_argument("--list-options",
+                          action="store_true",
+                          dest="list_options",
+                          default=False)
+    generate.add_argument("--dump-options",
+                          action="store_true",
+                          dest="dump_options",
+                          default=False)
+    generate.add_argument("--dump-option",
+                          action="store_true",
+                          dest="dump_option",
+                          default=False)
+    generate.add_argument("-c",
+                          "--config",
+                          action="append",
+                          dest="config",
+                          default=None)
 
     generate.add_argument(
         "cmake_args",
@@ -120,18 +158,24 @@ def parse():
     return args
 
 
-def execute_generate(args: argparse.Namespace, rest: list[str]):
+def execute_generate(args: argparse.Namespace, rest: "list[str]"):
     """Generates a new compile environment via CMake
 
     Args:
         args (argparse.Namespace): A parsed namespace to work from
         rest (list[str]): A list of extra arguments (to pass to CMake)
     """
-    check_grail_dir()
+    check_dir()
 
     # Generate a new configuration if no build files are generated
-    if "build" not in os.listdir():
-        logger.debug("Build folder does not exist, generating from scratch")
+    if "build" not in os.listdir() or args.force:
+        if not args.force:
+            logger.debug(
+                "Build folder does not exist, generating from scratch")
+        else:
+            logger.debug(
+                "Build folder exists, but '--force' is set. Generating regardless."
+            )
         gen = args.generator if args.generator else "Ninja"
         _args = ["cmake", "-B", "build", "-G", gen]
         if args.mode:
@@ -178,6 +222,9 @@ def process_target(args: argparse.Namespace):
     Returns:
         str: The target to build
     """
+    if not args.target:
+        logger.info("No target specified, using 'all' as default target")
+        args.target = "all"
     logger.debug(f"Target is {args.target}")
     target = args.target
     if args.dir:
@@ -187,48 +234,63 @@ def process_target(args: argparse.Namespace):
     return target
 
 
-def check_grail_dir(dir: str = ".", has_logging: bool = True):
-    """Recursively checks to see if the root of Grail is in any parent folder
+def check_dir(has_logging: bool = True):
+    """Changes to the directory containing the script
 
     Args:
-        dir (str, optional): The starting directory. Defaults to ".".
         has_logging (bool, optional): Enables logging. Defaults to True.
     """
-    # dir = os.path.abspath(dir)
-    # if has_logging:
-    #     logger.debug(f"Checking directory: {dir}")
-    # assert (
-    #     dir != "/"
-    # ), "Build script is not in any parent directory from current working directory to root"
-    # if "build.py" not in os.listdir(dir):
-    #     check_grail_dir(os.path.dirname(dir))
-    # else:
-    #     if has_logging:
-    #         logger.info(f"{dir} found in {dir}")
-    print(os.path.dirname(__file__))
+    dir = os.path.dirname(__file__)
+    if has_logging:
+        logger.info(f"going to {dir}")
     os.chdir(os.path.dirname(__file__))
 
 
-def get_target_list() -> (list[str], list[str]):
-    _cache_dump = []
+def get_grail_params() -> dict:
+    cache_dump = []
     with open("build/CMakeCache.txt", "r") as f:
-        _cache_dump = f.readlines()
+        cache_dump = f.readlines()
     target_regex = re.compile(r"(\S+):.+=(.+)\n")
 
-    _caches = filter(
+    caches = filter(
         lambda x: x is not None,
         map(
             lambda x: y.groups() if (y := target_regex.match(x)) else None,
             filter(lambda x: not any([x.startswith("//"), x == "\n"]),
-                   _cache_dump),
+                   cache_dump),
         ),
     )
-    _cache_dict = dict(_caches)
+    cache_dict_ = dict(caches)
 
-    targets = _cache_dict["GRAIL_TEST_TARGETS"].split(";")
-    dirs = _cache_dict["GRAIL_TEST_DIRS_REL"].split(";")
-    print(_cache_dict["CMAKE_BUILD_TYPE"])
+    cache_dict = {
+        key: value
+        for (key, value) in cache_dict_.items() if key.startswith("GRAIL")
+    }
+    cache_dict += cache_dict_['CMAKE_CXX_COMPILER']
+    cache_dict += cache_dict_['CMAKE_C_COMPILER']
+    cache_dict += cache_dict_['CMAKE_LINKER']
+    cache_dict += cache_dict_['CMAKE_BUILD_TYPE']
+
+    return cache_dict
+
+
+def get_target_list() -> (list[str], list[str]):
+    cache_dict = get_grail_params()
+    targets = cache_dict["GRAIL_TEST_TARGETS"].split(";")
+    dirs = cache_dict["GRAIL_TEST_DIRS_REL"].split(";")
     return targets, dirs
+
+
+def config(args: argparse.Namespace()) -> None:
+    config_regex = re.compile(r"^([\w\-]+)=([\w\-]+)$")
+    check_dir()
+    has_generated = os.path.exists("./build")
+
+    if has_generated and any(
+        [args.c_compiler, args.linker, args.cxx_compiler, args.mode]):
+        raise RuntimeError(
+            """Build has already been generated, but pre-build options have been specified.\nPlease either run the 'nuke' subcommand before specifying these options or do not modify them.\nThe following options cannot be specified after CMake generation has taken place (-b, --c-compiler, --c-linker, --cxx-compiler)"""
+        )
 
 
 def execute_build(target: str, args: argparse.Namespace, rest: list[str]):
@@ -243,7 +305,7 @@ def execute_build(target: str, args: argparse.Namespace, rest: list[str]):
         args.cmake_args = []
         execute_generate(args, rest)
     else:
-        check_grail_dir()
+        check_dir()
 
     if args.list:
         logger.debug("Listing targets that can be compiled")
@@ -293,7 +355,7 @@ def execute_run(target: str, args: list[str]):
         target (str): The target to run
         args (list[str]): A parsed namespace to work from
     """
-    check_grail_dir()
+    check_dir()
     logger.debug("chdir'ing to test directory")
     os.chdir("test")
     logger.debug(f"running ../bin/{target} with args {args}")
@@ -316,7 +378,7 @@ def execute_clean(args: argparse.Namespace):
 
 def execute_nuke():
     """Deep cleans (or 'nukes') all folder generated by the build process (except for ./logs)"""
-    check_grail_dir()
+    check_dir()
     dirs = ["bin", "build", "buildbuild", "external", "libs"]
     d2s = ", ".join(dirs)
     status = input(
@@ -332,11 +394,11 @@ def execute_nuke():
 
 def main():
     args, rest = parse()
-    print(__file__)
     logger.debug(f"Command args: {args}")
     logger.debug(f"Leftover args: {rest}")
     if args.subcommand == "generate":
         logger.debug("Entering generation state")
+        config(args)
         execute_generate(args, rest)
     elif args.subcommand == "build":
         logger.debug("Entering build state")
@@ -361,7 +423,7 @@ if __name__ == "__main__":
     fh = None
 
     try:
-        check_grail_dir(has_logging=False)
+        check_dir(has_logging=False)
 
         # Create the log folder
         if not os.path.exists("logs"):

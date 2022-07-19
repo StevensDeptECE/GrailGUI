@@ -6,18 +6,18 @@ project(
   DESCRIPTION "Grail"
   LANGUAGES C CXX)
 
-set(CMAKE_BINARY_DIR ${PROJECT_SOURCE_DIR}/bin)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/libs)
-set(CMAKE_FILES_DIRECTORY build)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/libs)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/libs)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/modules)
-set(CMAKE_CXX_STANDARD 20)
-option(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+option(CMAKE_C_EXTENSIONS OFF)
 option(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS
     ON
     CACHE INTERNAL "")
 option(CMAKE_LINK_WHAT_YOU_USE ON)
+
 option(GRAIL_EXPERIMENTAL ON)
 option(GRAIL_EXTRA_DEBUG_WARNINGS OFF)
 option(GRAIL_WERROR OFF)
@@ -53,7 +53,10 @@ else()
 
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
   include(CheckIPOSupported)
-  check_ipo_supported(RESULT supported OUTPUT supported_output LANGUAGES C CXX)
+  check_ipo_supported(
+    RESULT supported
+    OUTPUT supported_output
+    LANGUAGES C CXX)
 
   if(supported)
     message(STATUS "IPO / LTO enabled")
@@ -151,13 +154,13 @@ target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/external/stats)
 target_include_directories(grail
                            PUBLIC ${PROJECT_SOURCE_DIR}/external/fmt/include)
 target_include_directories(grail PUBLIC ${PROJECT_SOURCE_DIR}/external)
+target_compile_features(grail PUBLIC cxx_std_20)
 
 # target_include_directories(grailserver PUBLIC ${PROJECT_SOURCE_DIR}/src)
 # target_include_directories(grailserver PUBLIC ${PROJECT_SOURCE_DIR}/include)
-# target_include_directories(grailserver
-#                            PUBLIC ${PROJECT_SOURCE_DIR}/external/glm)
-# target_include_directories(grailserver
-#                            PUBLIC ${PROJECT_SOURCE_DIR}/external/fmt/include)
+# target_include_directories(grailserver PUBLIC
+# ${PROJECT_SOURCE_DIR}/external/glm) target_include_directories(grailserver
+# PUBLIC ${PROJECT_SOURCE_DIR}/external/fmt/include)
 # target_include_directories(grailserver PUBLIC ${PROJECT_SOURCE_DIR}/external)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
@@ -166,4 +169,4 @@ endif()
 
 add_subdirectory(test)
 
-#dump_cmake_variables()
+# dump_cmake_variables()
