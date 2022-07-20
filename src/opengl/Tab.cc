@@ -8,6 +8,8 @@
 #include "opengl/MultiText.hh"
 #include "opengl/Style.hh"
 #include "opengl/StyledMultiShape2D.hh"
+#include "util/Prefs.hh"
+
 //#include <time.h>
 
 //#ifdef _WIN32
@@ -192,6 +194,59 @@ void Tab::addSelectObject3D() {}
 void Tab::toggleSelectObject3D() {}
 void Tab::resetProjection3D() {}
 
+void Tab::increaseLogLevel(){
+  prefs.setLogLevel(prefs.getLogLevel() == Prefs::FATAL ? Prefs::FATAL : Prefs::LogLevel(prefs.getLogLevel() + 1));
+}
+
+void Tab::decreaseLogLevel(){
+  prefs.setLogLevel(prefs.getLogLevel() == Prefs::ALL ? Prefs::ALL : Prefs::LogLevel(prefs.getLogLevel() -1));
+}
+
+void Tab::onlyErrorLogLevel(){
+  prefs.setLogLevel(Prefs::CRITICAL);
+}
+
+void Tab::bindUtilityCommmands() {
+  bindEvent(Inputs::KP_ADD|Inputs::CTRL, [=,this]() { increaseLogLevel();  });
+  bindEvent(Inputs::KP_SUB|Inputs::CTRL, [=,this]() { decreaseLogLevel();  });
+}
+
+void Tab::bindDocumentCommands() {
+
+}
+
+void Tab::bind3DCommands() {
+
+}
+
+void Tab::bind2dMapCommands() {
+#if 0
+//TODO: in order to make this work we would have to implement a lot of methods in tab.
+// this would require some more private data here, but would simplify the code
+// alternative would be to make different kinds of tab, but if so how to create the right kind of tab in the right kind of applciation?
+// this would have to be passed in by the Member somewhow. Will brainstorm before trying to implement
+  bindEvent(Inputs::WHEELUP, [=,this]() {return zoomIn(1.2f);});//TODO: should be a private variable instead of hardcoding 1.2f
+  bindEvent(Inputs::WHEELDOWN, [=,this]() { return zoomOut(1.2f); });
+  bindEvent(Inputs::RARROW, [=,this]() { return translatePercent(0, 0.2); });
+  bindEvent(Inputs::LARROW, [=,this]() { return translatePercent(0, -0.2); });
+  bindEvent(Inputs::UPARROW, [=,this]() { return translatePercent(0.2, 0); });
+  bindEvent(Inputs::DOWNARROW, [=,this]() { return translatePercent(-0.2, 0); });
+  bindEvent(Inputs::MOUSE2, [=,this]() {return resetToOriginal();});
+  bindEvent(Inputs::INSERT, [=,this]() {return increaseTextSize(1.2f);});
+  bindEvent(Inputs::DEL, [=,this]() {return decreaseTextSize(1.2f);});
+  bindEvent(Inputs::HOME, [=,this]() {return toggleDisplayText();});
+  bindEvent(Inputs::MOUSE0_RELEASE, [=,this]() {return zoomInOnMouse(1.2f);});
+  bindEvent(Inputs::MOUSE1, [=,this]() {return zoomOutOnMouse(1.2f);});
+  bindEvent(Inputs::F1, [=,this]() {return displayAllSegments();});
+  bindEvent(Inputs::F2, [=,this]() {return incSegment();});
+  bindEvent(Inputs::F3, [=,this]() {return decSegment();});
+  bindEvent(Inputs::F4, [=,this]() {return incNumSegments();});
+  bindEvent(Inputs::F5, [=,this]() {return displayFirstSegment();});
+  bindEvent(Inputs::F9, [=,this]() {return displayFirstSegment();});
+#endif
+}
+
+
 void Tab::loadBindings() {
   using namespace std::placeholders;
   using CBSec = CallbackHandler::Security;
@@ -199,6 +254,10 @@ void Tab::loadBindings() {
   registerAction(CBSec::RESTRICTED, &GLWin::quit, parent);
   registerAction(CBSec::SAFE, &GLWin::refresh, parent);
   registerAction(CBSec::ASK, &GLWin::saveFrame, parent);
+
+  registerAction(CBSec::SAFE, &Tab::increaseLogLevel, this);
+  registerAction(CBSec::SAFE, &Tab::decreaseLogLevel, this);
+  registerAction(CBSec::SAFE, &Tab::onlyErrorLogLevel, this);
 
   registerAction(CBSec::SAFE, &Tab::gotoStartTime, this);
   registerAction(CBSec::SAFE, &Tab::gotoEndTime, this);

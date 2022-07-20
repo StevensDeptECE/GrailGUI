@@ -114,6 +114,8 @@ class CallbackHandler {
     F10 = 299,
     F11 = 300,
     F12 = 301,
+    KP_ADD = 334,
+    KP_SUB = 333,
     WHEELUP = 401,
     WHEELDOWN = 399,
     MOUSE1 = 1,

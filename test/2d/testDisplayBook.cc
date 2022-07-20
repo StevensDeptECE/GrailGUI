@@ -73,6 +73,8 @@ void grailmain(int argc, char *argv[], GLWin *w, Tab *defaultTab) {
   new BookViewer(defaultTab, filename);
 }
 
+#if 0
 int main(int argc, char *argv[]) {
   mainErrorHandling("Book Reader", 2000, 1300, 0xFFFFFFFF, 0x000000FF, argc, argv);  
 }
+#endif

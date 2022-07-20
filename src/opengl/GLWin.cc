@@ -95,7 +95,9 @@ void GLWin::windowFocusCallback(GLFWwindow *win, int focused) {
 void GLWin::keyCallback(GLFWwindow *win, int key, int scancode, int action,
                         int mods) {
   uint32_t input = (mods << 11) | (action << 9) | key;
-  cerr << "key: " << key << " mods: " << mods << " input=" << input << '\n';
+  if (prefs.shouldDisplay(Prefs::ALL)) {
+    cerr << "key: " << key << " mods: " << mods << " input=" << input << '\n';
+  }
   winMap[win]->currentTab()->doit(input);
 }
 
@@ -233,7 +235,7 @@ void GLWin::startWindow() {
   // TODO: is there any more elegant way?
   if (!hasBeenInitialized) {
     baseDir = prefs.getBaseDir();
-    CBenchmark<>::benchOnce("Grail load fonts", prefs.shouldDisplay(LogLevel::INFO),
+    CBenchmark<>::benchOnce("Grail load fonts", prefs.shouldDisplay(Prefs::INFO),
     []() { FontFace::initAll(); }
     );
   }
@@ -330,16 +332,16 @@ GLWin::~GLWin() {
 void GLWin::mainLoop() {
   needsRender = true;
   CBenchmark<>::benchOnce("Grail GLWin init",
-                          prefs.shouldDisplay(LogLevel::INFO), [this]() {
+                          prefs.shouldDisplay(Prefs::INFO), [this]() {
                             init(); /* call the child class method to set up */
                           });
   CBenchmark<>::benchOnce(
-      "Grail GLWin shaders", prefs.shouldDisplay(LogLevel::INFO), [this]() {
+      "Grail GLWin shaders", prefs.shouldDisplay(Prefs::INFO), [this]() {
         shaderInit(); /* call grails initialization for shaders */
       });
 
   CBenchmark<>::benchOnce("Grail init tabs",
-                          prefs.shouldDisplay(LogLevel::INFO), [this]() {
+                          prefs.shouldDisplay(Prefs::INFO), [this]() {
                             for (auto i = 0; i < tabs.size(); i++) {
                               tabs[i]->init();
                             }
@@ -368,7 +370,7 @@ void GLWin::mainLoop() {
       if (frameCount >= 150) {
         double endTime = glfwGetTime();
         double elapsed = endTime - startTime;
-        if (prefs.shouldDisplay(LogLevel::INFO)) {
+        if (prefs.shouldDisplay(Prefs::INFO)) {
           cerr << "Elapsed=" << elapsed << " FPS= " << frameCount / elapsed
                << " render=" << renderTime << '\n';
         }

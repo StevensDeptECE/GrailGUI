@@ -85,7 +85,7 @@ class Camera {
     // << std::endl;
     glm::mat4 temp = projection * view;
     // std::cout << std::string glm::to_string(temp) << std::endl;
-    if(prefs.shouldDisplay(LogLevel::ALL)){
+    if(prefs.shouldDisplay(Prefs::ALL)){
       std::cout << "-------------------" << std::endl;
       for (int i = 0; i < temp.length(); i++) {
         std::cout << "column " << i << ": " << temp[i].x << ", " << temp[i].y

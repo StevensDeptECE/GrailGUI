@@ -104,6 +104,10 @@ void setUpdate() const { parent->setUpdate(); }
   void render();
   void cleanup();
 
+  void increaseLogLevel();
+  void decreaseLogLevel();
+  void onlyErrorLogLevel();
+
   void gotoStartTime();
   void gotoEndTime();
   void speedTime();
@@ -142,4 +146,26 @@ void setUpdate() const { parent->setUpdate(); }
   void selectObject3D();
   void addSelectObject3D();
   void toggleSelectObject3D();
+
+
+  /* bind the utility functions presumably useful to all applications
+     these include increasing/reducing the log level dynamically, dumping projection matrix
+     anything that is generic not dependent on the specific kind of application
+  */
+  void bindUtilityCommmands();
+
+  /*
+     Bind commands for a document type of applcation including scroll up/down, page up/down, top, bottom, etc.
+  */
+  void bindDocumentCommands();
+
+  /*
+     Bind commands for a 3dapplication including zoom in/out
+  */
+ void bind3DCommands();
+
+ /*
+     Bind commands for a 2d map type application including pan/zoom, display/no display text change text size, etc
+  */
+ void bind2dMapCommands();
 };

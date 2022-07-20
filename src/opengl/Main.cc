@@ -15,16 +15,15 @@ void mainErrorHandling(const char title[], uint32_t width, uint32_t height,
     CBenchmark<> b1("Grail Create GLWin");
 
     b1.start();
-    GLWin w(width, height, fgColor, bgColor, title);
-    b1.endAndDisplay(prefs.shouldDisplay(LogLevel::INFO)); // How long to create the window ? 
+    GLWin w(prefs.getPreferredWidth(), prefs.getPreferredHeight(), 0xFFFFFFFF, 0x000000FF, "Grail Window");
+    b1.endAndDisplay(prefs.shouldDisplay(Prefs::INFO)); // How long to create the window ? 
     Tab* tab = w.currentTab();
 
     CBenchmark<> b2("Grail run grailmain");
     b2.start();
     tab->loadBindings();
     grailmain(argc, argv, &w, tab);
-    b2.endAndDisplay(prefs.shouldDisplay(LogLevel::INFO));  // How long to run grailmain?
-
+    b2.endAndDisplay(prefs.shouldDisplay(Prefs::INFO));  // How long to run grailmain?
     w.mainLoop();
     // g->t = thread(crun, g);
     // TODO: move this to GLWin::cleanup or destructor?  FontFace::emptyFaces();
@@ -36,14 +35,14 @@ void mainErrorHandling(const char title[], uint32_t width, uint32_t height,
   } catch (const std::exception& e) {
     cerr << e.what() << endl;
   } catch (...) {
-    cerr << "uncaught exception! (ouch)\n";
+    cerr << "uncaught exception! (please try to identify the cause and find the uncaught error. All errors should be reported using our standard exception mechanism Ex.hh)\n";
   }
   exit(1);  // if exception caught return error
 }
 
-#if 0
+//#if 0
 int main(int argc, char* argv[]) {
   mainErrorHandling("Grail Window", 1024, 800, 0xFFFFFFFF, 0x000000FF, argc, argv);
   return 0;
 }
-#endif
+//#endif

@@ -2,12 +2,12 @@
 
 #include <cstdint>
 #include <string>
-enum class LogLevel {
-  ALL = 0, INFO = 1, WARNING = 3, CRITICAL = 4, FATAL = 5
-};
 
 class Prefs {
   public:
+  enum LogLevel { // name Prefs::LogLevel
+    ALL = 0, INFO = 1, WARNING = 3, CRITICAL = 4, FATAL = 5 // specifically not enum class so name is Prefs::ALL
+  };
  private:
   std::string baseDir;                       // location of all grail files
   uint32_t preferredWidth, preferredHeight;  // desired window size
@@ -38,7 +38,9 @@ class Prefs {
   bool getFastLoadShaders() const { return shaderBinaryFormat != 0; }
   void setFastLoadShaders(uint32_t fmt) { shaderBinaryFormat = fmt; }
   uint32_t getLogLevel() const { return logLevel; }
+  void setLogLevel(LogLevel level) { logLevel = level; }
   bool shouldDisplay(LogLevel level) const { return logLevel <= static_cast<uint32_t>(level);}
+  //void benchmark();
 };
 
 extern Prefs prefs;
