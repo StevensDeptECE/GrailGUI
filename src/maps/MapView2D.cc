@@ -87,7 +87,7 @@ void MapView2D::initLabels() {
     uint32_t len = strlen(name);
     const MapEntry* mapInfo = bdl->getValueAt(i);
     if (mapInfo->entityType == ENT_COUNTY) {
-      const BlockMapLoader::Region& r = regions[mapInfo->offset];
+      const BlockMapLoader::Region& r = regions[i-1];//mapInfo->offset];
       // scale x and y by 1/factor of projection downscale
       #if 1
       const float* centroidLoc = bml->getSegmentCentroid(r.segmentStart);

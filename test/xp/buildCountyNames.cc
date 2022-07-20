@@ -118,7 +118,7 @@ void buildMapDict(const char filename[]) {
     sortedEntries[i].countyEntry = MapEntry{ENT_COUNTY, FEAT_LOCAL, static_cast<uint32_t>(fieldNum-1)};
     sortedEntries[i].stateEntry = MapEntry{ENT_STATE, FEAT_STATE, static_cast<uint32_t>(fieldNum-1)};
     strcpy(sortedEntries[i].countyName, county);
-    strcpy(sortedEntries[i].stateName, county);
+    strcpy(sortedEntries[i].stateName, state);
   #if 0
 //    uint32_t symbolSize = mapDict.getSymbolSize();
     mapDict.add(county, MapEntry{
@@ -128,7 +128,7 @@ void buildMapDict(const char filename[]) {
 //      symbolSize = mapDict.getSymbolSize();
       mapDict.add(state, MapEntry{
         ENT_STATE, FEAT_STATE, static_cast<uint32_t>(stateNum-1)}); // decrement by 1 since FIPS starts at 1, not 0
-    }
+  }
   #endif
   }
   sort(sortedEntries.begin(), sortedEntries.end(), compareNamedEntries());

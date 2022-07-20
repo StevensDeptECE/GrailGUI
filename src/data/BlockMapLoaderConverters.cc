@@ -123,7 +123,8 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], vector<NamedM
       //Point center = centroid(&bml.points[pointOffset - (numSegPoints*2)], numSegPoints);
       bml.points[pointOffset++] = center.x;
       bml.points[pointOffset++] = center.y;
-      vector<Range> ranges = checkIntersections((Point*)(&bml.points[pointOffset - 2 - 2*numSegPoints]), numSegPoints, center);
+      // TODO: currently broken
+      //vector<Range> ranges = checkIntersections((Point*)(&bml.points[pointOffset - 2 - 2*numSegPoints]), numSegPoints, center);
       
       //bml.points[pointOffset++] = (bounds.xMin + bounds.xMin)/2;
       //bml.points[pointOffset++] = (bounds.yMin + bounds.yMin)/2;
@@ -381,7 +382,7 @@ vector<NamedMapEntry> BlockMapLoader::buildMapDict(const char filename[]) {
     sortedEntries[i].countyEntry = MapEntry{ENT_COUNTY, FEAT_LOCAL, static_cast<uint32_t>(fieldNum-1)};
     sortedEntries[i].stateEntry = MapEntry{ENT_STATE, FEAT_STATE, static_cast<uint32_t>(fieldNum-1)};
     strcpy(sortedEntries[i].countyName, county);
-    strcpy(sortedEntries[i].stateName, county);
+    strcpy(sortedEntries[i].stateName, state);
   #if 0
 //    uint32_t symbolSize = mapDict.getSymbolSize();
     mapDict.add(county, MapEntry{
@@ -397,9 +398,11 @@ vector<NamedMapEntry> BlockMapLoader::buildMapDict(const char filename[]) {
   sort(sortedEntries.begin(), sortedEntries.end(), compareNamedEntries());
   for (int i = 0; i < recordCount; i++) {
     mapDict.add(sortedEntries[i].countyName, sortedEntries[i].countyEntry);
+    #if 0
     if (mapDict.get(sortedEntries[i].stateName) == nullptr) {
       mapDict.add(sortedEntries[i].stateName, sortedEntries[i].stateEntry);
     }
+    #endif
   }
   mapDict.writeFile("res/maps/uscounties.bdl");
   DBFClose(dbf);
