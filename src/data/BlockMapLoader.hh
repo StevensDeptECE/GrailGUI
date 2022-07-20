@@ -108,8 +108,8 @@ class BlockMapLoader : public BlockLoader {
 
   // load and convert an ESRI .shp to BlockMap format
   BlockMapLoader(const char filename[], const char[]);
-  static std::vector<NamedMapEntry> buildMapDict(const char filename[]);
-  static BlockMapLoader loadFromESRI(const char filename[], std::vector<NamedMapEntry> sortedEntries, bool toggleDateLine = true);
+  static std::vector<NamedMapEntry> buildMapDict(const char filename[], uint32_t &stateCount);
+  static BlockMapLoader loadFromESRI(const char filename[], std::vector<NamedMapEntry> sortedEntries, const uint32_t stateCount, bool toggleDateLine = true);
   static BlockMapLoader loadCompressed(const char filename[]);
   const RegionContainer* getRegionContainer() const { return regionContainers; }
   const Region* getRegions() const { return regions; }

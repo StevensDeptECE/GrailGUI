@@ -12,7 +12,7 @@ using namespace std;
 
 // extra parameter calls loader from ESRI Shapefile
 // TODO: BlockMapLoader BlockMapLoader::loadESRI(const char filename[])
-BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], vector<NamedMapEntry> sortedEntries, bool toggleDateLine) {
+BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], vector<NamedMapEntry> sortedEntries, const uint32_t stateCount, bool toggleDateLine) {
   SHPHandle shapeHandle = SHPOpen(filename, "rb");
   // Load basic information
   int nEntities = shapeHandle->nRecords;
@@ -27,7 +27,7 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], vector<NamedM
     maxBounds[i] = shapeHandle->adBoundsMax[i];
   }
 
-  uint32_t numRegionContainers = 0;
+  uint32_t numRegionContainers = stateCount;
   uint64_t numPoints = 0;
   uint32_t numSegments = 0;
   vector<SHPObject*> shapes(nEntities); // each county shape is a list of polygons
@@ -74,7 +74,19 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], vector<NamedM
   uint32_t pointOffset = 0;  // track current point
   uint32_t exactMatch = 0;
 
+  uint32_t regionContainerCount = 0;
+  if (sortedEntries.size() == 0) { // probably unnecessary check since you wouldn't be running this code without entries
+    bml.regionContainers[regionContainerCount].startRegion = 0;
+  }
+
   for (uint32_t i = 0; i < sortedEntries.size(); i++) {
+    if (strcmp(sortedEntries[i].stateName,sortedEntries[i+1].stateName) != 0) {
+      bml.regionContainers[regionContainerCount].endRegion = i;
+      regionContainerCount++;
+      if (regionContainerCount < stateCount)
+        bml.regionContainers[regionContainerCount].startRegion = i+1;
+    }
+
     uint32_t offset = sortedEntries[i].countyEntry.offset;
     int* start = shapes[offset]->panPartStart;
     if (start == nullptr && shapes[offset]->nParts != 0) {
@@ -141,6 +153,14 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], vector<NamedM
         bml.segments[segCount].numPoints--;
       }
       #endif
+    }
+  }
+  for (uint32_t j = 0; j < numRegionContainers; j++)  {
+    uint32_t end = bml.regionContainers[j].endRegion;
+    BoundRect& containerBounds = bml.regionContainers[j].bounds;
+    containerBounds = bml.regions[end].bounds;
+    for (uint32_t k = bml.regionContainers[j].startRegion; k < end; k++) {
+      containerBounds = BoundRect::merge(containerBounds, bml.regions[k].bounds);
     }
   }
   #if 0
@@ -349,7 +369,7 @@ struct compareNamedEntries {
 
 // building map dictionary from .dbf
 // https://support.esri.com/en/technical-article/000010834
-vector<NamedMapEntry> BlockMapLoader::buildMapDict(const char filename[]) {
+vector<NamedMapEntry> BlockMapLoader::buildMapDict(const char filename[], uint32_t &stateCount) {
   buildPostalAbbr();
   uint32_t itemCount = 10000;
   uint32_t symbolCapacity = 100000;
@@ -363,7 +383,8 @@ vector<NamedMapEntry> BlockMapLoader::buildMapDict(const char filename[]) {
   int STATE_NAME = DBFGetFieldIndex(dbf, "STATE_NAME"); // state name of county
   int STATE_FIPS = DBFGetFieldIndex(dbf, "STATE_FIPS"); // state id
 
-   vector<NamedMapEntry> sortedEntries(recordCount);
+  vector<NamedMapEntry> sortedEntries(recordCount);
+  stateCount = 0;
 
   for (int i = 0; i < recordCount; i++) {
     const int fieldNum = DBFReadIntegerAttribute(dbf, i, FID);
@@ -398,11 +419,13 @@ vector<NamedMapEntry> BlockMapLoader::buildMapDict(const char filename[]) {
   sort(sortedEntries.begin(), sortedEntries.end(), compareNamedEntries());
   for (int i = 0; i < recordCount; i++) {
     mapDict.add(sortedEntries[i].countyName, sortedEntries[i].countyEntry);
-    #if 0
+  }
+  // adding states in another loop to sequentially add it at the end of the blockloader
+  for (int i = 0; i < recordCount; i++) {
     if (mapDict.get(sortedEntries[i].stateName) == nullptr) {
+      stateCount++;
       mapDict.add(sortedEntries[i].stateName, sortedEntries[i].stateEntry);
     }
-    #endif
   }
   mapDict.writeFile("res/maps/uscounties.bdl");
   DBFClose(dbf);

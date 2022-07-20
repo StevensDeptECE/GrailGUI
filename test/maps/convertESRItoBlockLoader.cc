@@ -22,8 +22,9 @@ int main(int argc, char **argv) {
       getFile("/test/res/maps/", "USA_Counties.shp", argc, argv);
 
   int seg = argc > 2 ? atoi(argv[2]) : -1;
-  vector<NamedMapEntry> sortedEntries = BlockMapLoader::buildMapDict("res/maps/USA_Counties.dbf");
-  BlockMapLoader bml = BlockMapLoader::loadFromESRI(shapefile.c_str(), sortedEntries);
+  uint32_t stateCount;
+  vector<NamedMapEntry> sortedEntries = BlockMapLoader::buildMapDict("res/maps/USA_Counties.dbf", stateCount);
+  BlockMapLoader bml = BlockMapLoader::loadFromESRI(shapefile.c_str(), sortedEntries, stateCount);
   if (seg >= 0) bml.dumpSegment(seg);
   shapefile = getFile("/test/res/maps/", "uscounties.bml", 0, nullptr);
   bml.save(shapefile.c_str());

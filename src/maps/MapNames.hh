@@ -26,7 +26,7 @@ struct NamedMapEntry {
   char stateName[21];
 };
 
- enum class EntityType { REGION_CONTAINER, REGION, SEGMENT, POINT };
+enum class MapEntityType { REGION_CONTAINER, REGION, SEGMENT, POINT };
 
 enum class MapFeatureType {
   LOCAL,
@@ -40,5 +40,5 @@ enum class MapFeatureType {
 
 const uint8_t FEAT_LOCAL = (uint8_t)MapFeatureType::LOCAL;
 const uint8_t FEAT_STATE = (uint8_t)MapFeatureType::STATE;
-const uint8_t ENT_COUNTY = (uint8_t)EntityType::REGION;
-const uint8_t ENT_STATE = (uint8_t)EntityType::REGION_CONTAINER;
+const uint8_t ENT_COUNTY = (uint8_t)MapEntityType::REGION;
+const uint8_t ENT_STATE = (uint8_t)MapEntityType::REGION_CONTAINER;
