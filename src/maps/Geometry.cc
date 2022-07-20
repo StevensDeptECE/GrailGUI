@@ -7,7 +7,7 @@
 #include <vector>
 
 //constexpr float inf = INFINITY;
-constexpr uint32_t numBins = 16;
+constexpr uint32_t numBins = 1600;
 constexpr double binSize = 2*numbers::pi/numBins;
 constexpr double inverseBinSize = 1/binSize;
 
@@ -78,7 +78,10 @@ Point centroid(const float xy[], const int numPoints){ // Calculates the centroi
 }
 inline int getBin(Point centroid, Point p)
 {
-  return (int)(atan2(p.y-centroid.y, p.x - centroid.x) * inverseBinSize);
+  double angle = atan2(p.y-centroid.y, p.x - centroid.x);
+  if (angle < 0)
+    angle += 2*numbers::pi;
+  return (int)(angle * inverseBinSize);
 }
 inline void addToBin(const Point centroid, const Point a, const Point b, vector<const Line*> angleBins[], Line lineSegments[], int i){
     
