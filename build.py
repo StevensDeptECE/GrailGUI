@@ -240,7 +240,10 @@ def check_dir(has_logging: bool = True):
     Args:
         has_logging (bool, optional): Enables logging. Defaults to True.
     """
-    dir = os.path.dirname(__file__)
+    dir = os.path.abspath(os.path.dirname(__file__))
+    if os.path.abspath(".") == dir:
+        return
+    print(os.path.dirname("."))
     if has_logging:
         logger.info(f"going to {dir}")
     os.chdir(os.path.dirname(__file__))
