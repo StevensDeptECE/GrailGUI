@@ -55,7 +55,7 @@ class ChessBoard {
   void save(const char filename[]);
   void load(const char filename[]);
   void move(const char moveLocation[]);
-  void move(char fromRow, int8_t fromColumn, char toRow, int8_t toColumn);
-  void move(uint16_t from, uint16_t to);
+  // void move(char fromRow, int8_t fromColumn, char toRow, int8_t toColumn);
+  // void move(uint16_t from, uint16_t to);
   friend std::ostream& operator<<(std::ostream& s, ChessBoard& b);
 };

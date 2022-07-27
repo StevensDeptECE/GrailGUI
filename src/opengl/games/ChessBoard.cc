@@ -95,24 +95,24 @@ void ChessBoard::load(const char filename[]) {
   ifstream loadFile(filename);
   getline(loadFile, ChessPosition);
 
-  vector<int32_t> symbolList;
+  vector<int32_t> rowList;
 
   for (auto ch : ChessPosition) {
-    symbolList.push_back(ch);
+    rowList.push_back(ch);
   }
 
-  /*for (int i = 0; i < symbolList.size(); i++) {
-    cout << symbolList[i] << " ";
+  /*for (int i = 0; i     rowList.size(); i++) {
+    cout <    rowList[i] << " ";
   }*/
 
   int rowCounter = 0;
   int columnCounter = 0;
 
-  for (int i = 0; i < symbolList.size(); i++) {
+  for (int i = 0; i < rowList.size(); i++) {
     // 32 = SPACE
-    if (symbolList[i] == 32) {
+    if (rowList[i] == 32) {
       // 98 = b
-      if (symbolList[i + 1] == 98) {
+      if (rowList[i + 1] == 98) {
         turn = 'b';
         break;
       } else {
@@ -121,132 +121,132 @@ void ChessBoard::load(const char filename[]) {
       }
     }
     // 47 = /
-    else if (symbolList[i] == 47) {
+    else if (rowList[i] == 47) {
       columnCounter++;
       rowCounter = 0;
     }
     // 49 = 1
-    else if (symbolList[i] == 49) {
+    else if (rowList[i] == 49) {
       board_position[columnCounter][rowCounter].piece = 0;
       rowCounter++;
     }
     // 50 = 2
-    else if (symbolList[i] == 50) {
+    else if (rowList[i] == 50) {
       for (int i = 0; i < 2; i++) {
         board_position[columnCounter][rowCounter].piece = 0;
         rowCounter++;
       }
     }
     // 51 = 3
-    else if (symbolList[i] == 51) {
+    else if (rowList[i] == 51) {
       for (int i = 0; i < 3; i++) {
         board_position[columnCounter][rowCounter].piece = 0;
         rowCounter++;
       }
     }
     // 52 = 4
-    else if (symbolList[i] == 52) {
+    else if (rowList[i] == 52) {
       for (int i = 0; i < 4; i++) {
         board_position[columnCounter][rowCounter].piece = 0;
         rowCounter++;
       }
     }
     // 53 = 5
-    else if (symbolList[i] == 53) {
+    else if (rowList[i] == 53) {
       for (int i = 0; i < 5; i++) {
         board_position[columnCounter][rowCounter].piece = 0;
         rowCounter++;
       }
     }
     // 54 = 6
-    else if (symbolList[i] == 54) {
+    else if (rowList[i] == 54) {
       for (int i = 0; i < 6; i++) {
         board_position[columnCounter][rowCounter].piece = 0;
         rowCounter++;
       }
     }
     // 55 = 7
-    else if (symbolList[i] == 55) {
+    else if (rowList[i] == 55) {
       for (int i = 0; i < 7; i++) {
         board_position[columnCounter][rowCounter].piece = 0;
         rowCounter++;
       }
     }
     // 56 = 8
-    else if (symbolList[i] == 56) {
+    else if (rowList[i] == 56) {
       for (int i = 0; i < 8; i++) {
         board_position[columnCounter][rowCounter].piece = 0;
         rowCounter++;
       }
     }
     // 66 = B
-    else if (symbolList[i] == 66) {
+    else if (rowList[i] == 66) {
       board_position[columnCounter][rowCounter].piece = 3;
       board_position[columnCounter][rowCounter].color = 1;
       rowCounter++;
     }
     // 75 = K
-    else if (symbolList[i] == 75) {
+    else if (rowList[i] == 75) {
       board_position[columnCounter][rowCounter].piece = 5;
       board_position[columnCounter][rowCounter].color = 1;
       rowCounter++;
     }
     // 79 = N
-    else if (symbolList[i] == 78) {
+    else if (rowList[i] == 78) {
       board_position[columnCounter][rowCounter].piece = 2;
       board_position[columnCounter][rowCounter].color = 1;
       rowCounter++;
     }
     // 80 = P
-    else if (symbolList[i] == 80) {
+    else if (rowList[i] == 80) {
       board_position[columnCounter][rowCounter].piece = 6;
       board_position[columnCounter][rowCounter].color = 1;
       rowCounter++;
     }
     // 81 = Q
-    else if (symbolList[i] == 81) {
+    else if (rowList[i] == 81) {
       board_position[columnCounter][rowCounter].piece = 4;
       board_position[columnCounter][rowCounter].color = 1;
       rowCounter++;
     }
     // 82 = R
-    else if (symbolList[i] == 82) {
+    else if (rowList[i] == 82) {
       board_position[columnCounter][rowCounter].piece = 1;
       board_position[columnCounter][rowCounter].color = 1;
       rowCounter++;
     }
     // 98 = b
-    else if (symbolList[i] == 98) {
+    else if (rowList[i] == 98) {
       board_position[columnCounter][rowCounter].piece = 3;
       board_position[columnCounter][rowCounter].color = 0;
       rowCounter++;
     }
     // 107 = k
-    else if (symbolList[i] == 107) {
+    else if (rowList[i] == 107) {
       board_position[columnCounter][rowCounter].piece = 5;
       board_position[columnCounter][rowCounter].color = 0;
       rowCounter++;
     }
     // 110 = n
-    else if (symbolList[i] == 110) {
+    else if (rowList[i] == 110) {
       board_position[columnCounter][rowCounter].piece = 2;
       board_position[columnCounter][rowCounter].color = 0;
       rowCounter++;
     }
     // 112 = p
-    else if (symbolList[i] == 112) {
+    else if (rowList[i] == 112) {
       board_position[columnCounter][rowCounter].piece = 6;
       board_position[columnCounter][rowCounter].color = 0;
       rowCounter++;
     }
     // 113 = q
-    else if (symbolList[i] == 113) {
+    else if (rowList[i] == 113) {
       board_position[columnCounter][rowCounter].piece = 4;
       board_position[columnCounter][rowCounter].color = 0;
       rowCounter++;
     }
     // 114 = r
-    else if (symbolList[i] == 114) {
+    else if (rowList[i] == 114) {
       board_position[columnCounter][rowCounter].piece = 1;
       board_position[columnCounter][rowCounter].color = 0;
       rowCounter++;
@@ -254,12 +254,98 @@ void ChessBoard::load(const char filename[]) {
   }
 }
 
-void ChessBoard::move(const char moveLocation[]) {}
+void ChessBoard::move(const char moveLocation[]) {
+  // TODO:IGNORES FIDE NOTATION, TAKES FIRST TWO CHARACTERS AS THE FROM AND THE
+  // NEXT TWO AS THE TO
+  vector<int32_t> rowList;
+  vector<int32_t> columnList;
 
-void ChessBoard::move(char fromRow, int8_t fromColumn, char toRow,
+  // Note: The first row on a chessboard labeled by the number one
+  // corresponds to the seventh row of the matrix in board_position
+  for (int i = 0; moveLocation[i] != 0; i++) {
+    // 49 = 1
+    if (moveLocation[i] == 49) {
+      rowList.push_back(7);
+    }
+    // 50 = 2
+    else if (moveLocation[i] == 50) {
+      rowList.push_back(6);
+    }
+    // 51 = 3
+    else if (moveLocation[i] == 51) {
+      rowList.push_back(5);
+    }
+    // 52 = 4
+    else if (moveLocation[i] == 52) {
+      rowList.push_back(4);
+    }
+    // 53 = 5
+    else if (moveLocation[i] == 53) {
+      rowList.push_back(3);
+    }
+    // 54 = 6
+    else if (moveLocation[i] == 54) {
+      rowList.push_back(2);
+    }
+    // 55 = 7
+    else if (moveLocation[i] == 55) {
+      rowList.push_back(1);
+    }
+    // 56 = 8
+    else if (moveLocation[i] == 56) {
+      rowList.push_back(0);
+    }
+    // a = 97 = first column
+    else if (moveLocation[i] == 97) {
+      columnList.push_back(0);
+    }
+    // b = 98 = second column
+    else if (moveLocation[i] == 98) {
+      columnList.push_back(1);
+    }
+    // c = 99 = third column
+    else if (moveLocation[i] == 99) {
+      columnList.push_back(2);
+    }
+    // d = 100 = fourth column
+    else if (moveLocation[i] == 100) {
+      columnList.push_back(3);
+    }
+    // e = 101 = fifth column
+    else if (moveLocation[i] == 101) {
+      columnList.push_back(4);
+    }
+    // f = 102 = sixth column
+    else if (moveLocation[i] == 102) {
+      columnList.push_back(5);
+    }
+    // g = 103 = seventh column
+    else if (moveLocation[i] == 103) {
+      columnList.push_back(6);
+    }
+    // h = 104 = eigth column
+    else if (moveLocation[i] == 104) {
+      columnList.push_back(7);
+    }
+  }
+
+  board_position[rowList[1]][columnList[1]].piece =
+      board_position[rowList[0]][columnList[0]].piece;
+  board_position[rowList[1]][columnList[1]].color =
+      board_position[rowList[0]][columnList[0]].color;
+  board_position[rowList[0]][columnList[0]].piece = 0;
+  board_position[rowList[0]][columnList[0]].color = 0;
+
+  if (turn == 'w')
+    turn = 'b';
+  else
+    turn = 'w';
+}
+
+/*void ChessBoard::move(char fromRow, int8_t fromColumn, char toRow,
                       int8_t toColumn) {}
 
-void ChessBoard::move(uint16_t from, uint16_t to) {}
+void ChessBoard::move(uint16_t from, uint16_t to) {}*/
 
 ostream& operator<<(ostream& s, ChessBoard& b) {
   for (uint32_t i = 0; i < 8; i++) {
