@@ -17,6 +17,7 @@ MapViewer::MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint3
     // NOTE: mt MUST be created first becuase mv needs it
     this->textScale = textScale;
     displayText = true, displayOutline = true, displayFill = true;
+    displayCountyNames = true, displayStateNames = true;
     mt = new MultiText(this, style, 12);
     mv = new MapView2D(this, style, mt, bml, bdl, 1/textScale);
     tab->addCanvas(this); // register ourselves in the tab
@@ -137,6 +138,20 @@ void MapViewer::decreaseTextSize(float factor) {
 void MapViewer::toggleDisplayText() {
   displayText = !displayText;
   setView();
+}
+
+void MapViewer::toggleDisplayCountyNames() {
+  if (displayText) { // don't bother if text is not even being displayed
+    displayCountyNames = !displayCountyNames;
+    setTextScale(textScale); // this clears and reinitializes our text for us
+  }
+}
+
+void MapViewer::toggleDisplayStateNames() {
+  if (displayText) { // don't bother if text is not even being displayed
+    displayStateNames = !displayStateNames;
+    setTextScale(textScale); // this clears and reinitializes our text for us
+  }
 }
 
 void MapViewer::toggleDisplayOutline() {

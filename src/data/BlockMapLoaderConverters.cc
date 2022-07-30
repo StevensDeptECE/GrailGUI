@@ -75,7 +75,7 @@ BlockMapLoader BlockMapLoader::loadFromESRI(const char filename[], vector<NamedM
   uint32_t exactMatch = 0;
 
   uint32_t regionContainerCount = 0;
-  if (sortedEntries.size() == 0) { // probably unnecessary check since you wouldn't be running this code without entries
+  if (numRegionContainers != 0) { // probably unnecessary check since you wouldn't be running this code without entries
     bml.regionContainers[regionContainerCount].startRegion = 0;
   }
 

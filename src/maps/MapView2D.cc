@@ -81,36 +81,40 @@ void MapView2D::initLabels() {
   const uint32_t count = bdl->getNodeCount();
   const float* points = bml->getPoints();
   uint32_t i;
-  for (i = 1; i < bml->getNumRegions() + 1; i++) {
-    const char* name = bdl->getNameAt(i);
-    string tempName = name + 2;
-    tempName += ":" + to_string(i);
-    uint32_t len = strlen(name);
-    const MapEntry* mapInfo = bdl->getValueAt(i);
-    const BlockMapLoader::Region& r = regions[i-1];//mapInfo->offset];
-    // scale x and y by 1/factor of projection downscale
-    #if 1
-    const float* centroidLoc = bml->getSegmentCentroid(r.segmentStart);
-    float x = centroidLoc[0]*textScale;
-    float y = centroidLoc[1]*-textScale;
-    #endif
-    //float x = (r.bounds.xMax + r.bounds.xMin)/2*textScale;
-    //float y = (r.bounds.yMax + r.bounds.yMin)/2*-textScale;
-    mt->addCentered(x, y, f, tempName); // +2 and -2 to remove the appended state abbr.
+  if (((MapViewer*)parentCanvas)->getDisplayCountyNames()) {
+    for (i = 1; i < bml->getNumRegions() + 1; i++) {
+      const char* name = bdl->getNameAt(i);
+      string tempName = name + 2;
+      tempName += ":" + to_string(i);
+      uint32_t len = strlen(name);
+      const MapEntry* mapInfo = bdl->getValueAt(i);
+      const BlockMapLoader::Region& r = regions[i-1];//mapInfo->offset];
+      // scale x and y by 1/factor of projection downscale
+      #if 1
+      const float* centroidLoc = bml->getSegmentCentroid(r.segmentStart);
+      float x = centroidLoc[0]*textScale;
+      float y = centroidLoc[1]*-textScale;
+      #endif
+      //float x = (r.bounds.xMax + r.bounds.xMin)/2*textScale;
+      //float y = (r.bounds.yMax + r.bounds.yMin)/2*-textScale;
+      mt->addCentered(x, y, f, tempName); // +2 and -2 to remove the appended state abbr.
+    }
   }
-  // now i is at the end of counties and at the start of states
-  uint32_t rcCounter = 0;
-  for (; i < count; i++) { // these are state names
-    const char* name = bdl->getNameAt(i);
-    string tempName = name;
-    tempName += ":" + to_string(i);
-    uint32_t len = strlen(name);
-    const MapEntry* mapInfo = bdl->getValueAt(i);
-    const BlockMapLoader::RegionContainer& rc = regionContainer[rcCounter];
-    float x = (rc.bounds.xMax + rc.bounds.xMin)/2*textScale;
-    float y = (rc.bounds.yMax + rc.bounds.yMin)/2*-textScale;
-    rcCounter++;
-    mt->addCentered(x, y, f, tempName);
+  if (((MapViewer*)parentCanvas)->getDisplayStateNames()) {
+    // now i is at the end of counties and at the start of states
+    uint32_t rcCounter = 0;
+    for (i = bml->getNumRegions() + 1; i < count; i++) { // these are state names
+      const char* name = bdl->getNameAt(i);
+      string tempName = name;
+      tempName += ":" + to_string(i);
+      uint32_t len = strlen(name);
+      const MapEntry* mapInfo = bdl->getValueAt(i);
+      const BlockMapLoader::RegionContainer& rc = regionContainer[rcCounter];
+      float x = (rc.bounds.xMax + rc.bounds.xMin)/2*textScale;
+      float y = (rc.bounds.yMax + rc.bounds.yMin)/2*-textScale;
+      rcCounter++;
+      mt->addCentered(x, y, f, tempName);
+    }
   }
 }
 

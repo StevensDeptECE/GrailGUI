@@ -92,6 +92,8 @@ class CallbackHandler {
   void bind2DOrtho();
   void bind3D();
 
+  // https://www.glfw.org/docs/latest/group__keys
+  // https://www.glfw.org/docs/3.3/group__buttons.html
   enum Inputs {
     INSERT = 260,
     DEL = 261,
@@ -124,8 +126,11 @@ class CallbackHandler {
     KEY_REPEAT = 1024,
     MOUSE0_PRESS = 8,
     MOUSE0_RELEASE = 0,
-    CTRL = 2048,
-    SHIFT = 4096,
-    ALT = 8192
+    LSHIFT = 340,
+    LCTRL = 341,
+    LALT = 342,
+    RSHIFT = 344,
+    RCTRL = 345,
+    RALT = 346
   };
 };

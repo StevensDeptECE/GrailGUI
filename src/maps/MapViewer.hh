@@ -23,7 +23,7 @@ class MapViewer : public Canvas {
   // not great style, but C++ does not allow us an easy way out
   MapView2D* mv;
   float textScale;
-  bool displayText, displayOutline, displayFill;
+  bool displayText, displayCountyNames, displayStateNames, displayOutline, displayFill;
 
  public:
   MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint32_t vpY,
@@ -50,6 +50,8 @@ class MapViewer : public Canvas {
   void increaseTextSize(float factor);
   void decreaseTextSize(float factor);
   void toggleDisplayText();
+  void toggleDisplayCountyNames();
+  void toggleDisplayStateNames();
   void toggleDisplayOutline();
   void toggleDisplayFill();
   void zoomInOnMouse(float factor);
@@ -60,6 +62,8 @@ class MapViewer : public Canvas {
   void decNumSegments();
   void displayAllSegments();
   void displayFirstSegment();
-  bool getDisplayOutline() const {return displayOutline; }
+  bool getDisplayCountyNames() const { return displayCountyNames; }
+  bool getDisplayStateNames() const { return displayStateNames; }
+  bool getDisplayOutline() const { return displayOutline; }
   bool getDisplayFill() const { return displayFill; }
 };

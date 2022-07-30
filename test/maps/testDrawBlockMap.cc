@@ -43,6 +43,8 @@ class TestDrawBlockMap : public Member {
     tab->bindEvent(Tab::Inputs::HOME, [=,this]() {return viewer->toggleDisplayText();});
     tab->bindEvent(Tab::Inputs::PAGEUP, [=,this]() {return viewer->toggleDisplayOutline();});
     tab->bindEvent(Tab::Inputs::PAGEDOWN, [=,this]() {return viewer->toggleDisplayFill();});
+    tab->bindEvent(Tab::Inputs::LCTRL, [=,this]() {return viewer->toggleDisplayCountyNames();});
+    tab->bindEvent(Tab::Inputs::LALT, [=,this]() {return viewer->toggleDisplayStateNames();});
     tab->bindEvent(Tab::Inputs::MOUSE0_RELEASE, [=,this]() {return viewer->zoomInOnMouse(1.2f);});
     tab->bindEvent(Tab::Inputs::MOUSE1, [=,this]() {return viewer->zoomOutOnMouse(1.2f);});
     
