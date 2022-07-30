@@ -60,10 +60,11 @@ class MapView2D : public Shape {
   void setTextScale(float countyTextScale, float stateTextScale);
   void update() override;
   void dump();
+  void setWhichSegmentsToDisplay(uint32_t start, uint32_t end);
   void displayAllSegments();
   void incSegment();
   void decSegment();
   void incNumSegments();
   void decNumSegments();
-  void setWhichSegmentsToDisplay(uint32_t start, uint32_t end);
+  void displayState(const char stateName[]);
 };

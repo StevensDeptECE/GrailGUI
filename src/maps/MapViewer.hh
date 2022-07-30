@@ -63,6 +63,7 @@ class MapViewer : public Canvas {
   void decNumSegments();
   void displayAllSegments();
   void displayFirstSegment();
+  void displayState(const char stateName[]);
   bool getDisplayCountyNames() const { return displayCountyNames; }
   bool getDisplayStateNames() const { return displayStateNames; }
   bool getDisplayOutline() const { return displayOutline; }

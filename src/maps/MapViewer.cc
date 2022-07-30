@@ -222,3 +222,8 @@ void MapViewer::displayFirstSegment() {
   mv->setWhichSegmentsToDisplay(50,100);
   setView();
 }
+
+void MapViewer::displayState(const char stateName[]) {
+  mv->displayState(stateName);
+  setView();
+}

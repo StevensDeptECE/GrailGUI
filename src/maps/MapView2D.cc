@@ -365,3 +365,21 @@ void MapView2D::incNumSegments() {
 void MapView2D::decNumSegments() {
   setWhichSegmentsToDisplay(startSegment, endSegment-1);  
 }
+
+void MapView2D::displayState(const char stateName[]) {
+  //NOTE: is there a better way to find which regionContainer the stateName is?
+  const BlockMapLoader::Region* regions = bml->getRegions();
+  const BlockMapLoader::RegionContainer* regionContainer = bml->getRegionContainer();
+  const uint32_t count = bdl->getNodeCount();
+  uint32_t rcCounter = 0;
+  for (uint32_t i = bml->getNumRegions() + 1; i < count; i++) {
+    const char* name = bdl->getNameAt(i);
+    if (strcmp(name, stateName) == 0) {
+      uint32_t startRegion = regionContainer[rcCounter].startRegion;
+      uint32_t endRegion = regionContainer[rcCounter].endRegion + 1; // want 1 region past the end
+      setWhichSegmentsToDisplay(regions[startRegion].segmentStart, 
+                                regions[endRegion].segmentStart); // would -1, but its not end-inclusive
+    }
+    rcCounter++;
+  }
+}
