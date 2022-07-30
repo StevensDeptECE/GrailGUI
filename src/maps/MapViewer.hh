@@ -19,10 +19,11 @@ class MapViewer : public Canvas {
  private:
   float centerLat, centerLon, scaleLat, scaleLon, shiftLat, shiftLon;
   float origCenterLat, origCenterLon, origScaleLat, origScaleLon, origShiftLat, origShiftLon;
-  MultiText* mt; //WARNING: mt MUST COME BEFORE mv because it is used in it!!!
+  MultiText* mtCounties; 
+  MultiText* mtStates; //WARNING: mt MUST COME BEFORE mv because it is used in it!!!
   // not great style, but C++ does not allow us an easy way out
   MapView2D* mv;
-  float textScale;
+  float countyTextScale, stateTextScale;
   bool displayText, displayCountyNames, displayStateNames, displayOutline, displayFill;
 
  public:
@@ -46,7 +47,7 @@ class MapViewer : public Canvas {
   void resetToOriginal();
   void setOriginalCoords(float centerLat, float centerLon, float scaleLat, float scaleLon, float shiftLon, float shiftLat);
   void setOrigBounds(float minLat, float maxLat, float minLon, float maxLon);
-  void setTextScale(float textScale);
+  void setTextScale(float countyTextScale, float stateTextScale);
   void increaseTextSize(float factor);
   void decreaseTextSize(float factor);
   void toggleDisplayText();

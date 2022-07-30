@@ -27,7 +27,7 @@ class MapView2D : public Shape {
 
 
   const Style* style;
-  float textScale;
+  float countyTextScale, stateTextScale;
   //float centerX, centerY, shiftX, shiftY, scaleX, scaleY;
   //glm::mat4 originalTransform;
   //glm::mat4 transform;
@@ -37,11 +37,12 @@ class MapView2D : public Shape {
   BLHashMap<MapEntry>* bdl;
   uint32_t numLineIndicesToDraw;
   uint32_t numFillIndicesToDraw;
-  MultiText* mt;
+  MultiText* mtCounties;
+  MultiText* mtStates;
 
  public:
-  MapView2D(MapViewer* parent, const Style* s, MultiText* mt,
-   BlockMapLoader* bml = nullptr, BLHashMap<MapEntry>* bdl = nullptr, float textScale = 1);
+  MapView2D(MapViewer* parent, const Style* s, MultiText* mtCounties, MultiText* mtStates,
+   BlockMapLoader* bml = nullptr, BLHashMap<MapEntry>* bdl = nullptr, float countyTextScale = 1, float stateTextScale = 1);
   ~MapView2D();
   MapView2D(const MapView2D& orig) = delete;
   MapView2D& operator= (const MapView2D& orig) = delete;
@@ -56,7 +57,7 @@ class MapView2D : public Shape {
   void renderLabels(glm::mat4& trans);
   void renderFill(glm::mat4& trans);
 
-  void setTextScale(float textScale);
+  void setTextScale(float countyTextScale, float stateTextScale);
   void update() override;
   void dump();
   void displayAllSegments();
