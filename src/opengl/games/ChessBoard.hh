@@ -4,12 +4,16 @@
 #include <iostream>
 #include <vector>
 
+#include "opengl/games/ChessController.hh"
 extern const char PieceDisplayw[] = " RNBQKP";
 extern const char PieceDisplayb[] = " rnbqkp";
 
-enum class Color { black = 0, white = 1 };
+class ChessVisual;
+class ChessController;
 
-enum class ChessPieceType {
+enum class ChessColor { black = 0, white = 1 };
+
+enum class ChessPieceType : uint8_t {
   empty = 0,
   rook = 1,
   knight = 2,
@@ -23,6 +27,7 @@ class BoardPosition {
  private:
   friend class ChessBoard;
   friend class ostream;
+  friend class ChessController;
 #if 0
   uint8_t color : 1;
   uint8_t piece : 7;
@@ -30,7 +35,7 @@ class BoardPosition {
 
  public:
 #if 1
-  uint8_t color : 1;  // TODO: ostream access issue
+  uint8_t color : 2;  // TODO: ostream access issue
   uint8_t piece : 7;
 #endif
 
@@ -38,7 +43,7 @@ class BoardPosition {
     color = 0;
     piece = 0;
   }
-  BoardPosition(Color color, ChessPieceType piece)
+  BoardPosition(ChessColor color, ChessPieceType piece)
       : color(uint8_t(color)), piece(uint8_t(piece)){};
 };
 /**
@@ -47,7 +52,9 @@ class BoardPosition {
  */
 class ChessBoard {
  private:
-  char turn = 'w';
+  char turn;
+  friend ChessVisual;
+  friend ChessController;
   BoardPosition board_position[8][8];
 
  public:
@@ -55,7 +62,25 @@ class ChessBoard {
   void save(const char filename[]);
   void load(const char filename[]);
   void move(const char moveLocation[]);
-  // void move(char fromRow, int8_t fromColumn, char toRow, int8_t toColumn);
-  // void move(uint16_t from, uint16_t to);
+  // Possible best method internally?:
+  // void move(char fromColumn, int8_t fromRow, char toColumn, int8_t toRow);
+  void move(int8_t oldColumn, int8_t oldRow, int8_t newColumn, int8_t newRow);
+  void remove(const char pieceLocation[]);
+  void remove(char Column, int8_t Row);
+
   friend std::ostream& operator<<(std::ostream& s, ChessBoard& b);
+
+  // util
+#if 0
+  std::vector<vector<BoardPosition>> getBoardPosition(ChessBoard& b);
+
+  template <typename T, int N>
+  struct vector_wrapper {
+    vector_wrapper(T (&a)[N]) { std::copy(a, a + N, std::back_inserter(v)); }
+
+    std::vector<T> v;
+  };
+
+  std::vector<vector_wrapper<BoardPosition, 8>> getBoardPosition();
+#endif
 };

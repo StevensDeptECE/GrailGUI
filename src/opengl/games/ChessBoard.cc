@@ -2,9 +2,6 @@
 using namespace std;
 
 ChessBoard::ChessBoard() {
-  // TODO: How do you represent black or white pieces?
-  //  How to represent all the kinds of pieces
-  //  How do you setup the whole board?
   for (int i = 0; i < 8; i++) {
     int piecekind = 0;
     int piececounter = 0;
@@ -29,11 +26,13 @@ ChessBoard::ChessBoard() {
       }
     }
   }
+
+  turn = 'w';
 }
 
 // Saves games using
 void ChessBoard::save(const char filename[]) {
-  // TODO: add active color, castling availability, and enpassant targets
+  // TODO: castling availability, and enpassant targets
   ofstream saveFile(filename);
 
   for (int i = 0; i < 8; i++) {
@@ -91,6 +90,7 @@ void ChessBoard::save(const char filename[]) {
 void ChessBoard::load(const char filename[]) {
   // TODO: Current load supports only FEN notation, perhaps add PGN in the
   // future
+  // TODO: After creating rules, load castling and en passant tags
   string ChessPosition;
   ifstream loadFile(filename);
   getline(loadFile, ChessPosition);
@@ -257,8 +257,8 @@ void ChessBoard::load(const char filename[]) {
 void ChessBoard::move(const char moveLocation[]) {
   // TODO:IGNORES FIDE NOTATION, TAKES FIRST TWO CHARACTERS AS THE FROM AND THE
   // NEXT TWO AS THE TO
-  vector<int32_t> rowList;
-  vector<int32_t> columnList;
+  vector<int8_t> rowList;
+  vector<int8_t> columnList;
 
   // Note: The first row on a chessboard labeled by the number one
   // corresponds to the seventh row of the matrix in board_position
@@ -334,7 +334,6 @@ void ChessBoard::move(const char moveLocation[]) {
   board_position[rowList[1]][columnList[1]].color =
       board_position[rowList[0]][columnList[0]].color;
   board_position[rowList[0]][columnList[0]].piece = 0;
-  board_position[rowList[0]][columnList[0]].color = 0;
 
   if (turn == 'w')
     turn = 'b';
@@ -342,10 +341,213 @@ void ChessBoard::move(const char moveLocation[]) {
     turn = 'w';
 }
 
-/*void ChessBoard::move(char fromRow, int8_t fromColumn, char toRow,
-                      int8_t toColumn) {}
+#if 0
+void ChessBoard::move(char fromColumn, int8_t fromRow, char toColumn,
+                      int8_t toRow) {
+  char symbolArray[] = {fromColumn, toColumn, 0};
+  vector<int8_t> columnList;
 
-void ChessBoard::move(uint16_t from, uint16_t to) {}*/
+  for (int i = 0; symbolArray[i] != 0; i++) {
+    // a = 97 = first column
+    if (symbolArray[i] == 97) {
+      columnList.push_back(0);
+    }
+    // b = 98 = second column
+    else if (symbolArray[i] == 98) {
+      columnList.push_back(1);
+    }
+    // c = 99 = third column
+    else if (symbolArray[i] == 99) {
+      columnList.push_back(2);
+    }
+    // d = 100 = fourth column
+    else if (symbolArray[i] == 100) {
+      columnList.push_back(3);
+    }
+    // e = 101 = fifth column
+    else if (symbolArray[i] == 101) {
+      columnList.push_back(4);
+    }
+    // f = 102 = sixth column
+    else if (symbolArray[i] == 102) {
+      columnList.push_back(5);
+    }
+    // g = 103 = seventh column
+    else if (symbolArray[i] == 103) {
+      columnList.push_back(6);
+    }
+    // h = 104 = eigth column
+    else if (symbolArray[i] == 104) {
+      columnList.push_back(7);
+    }
+  }
+
+  // Equations to account for the flipping of the chessboard
+  // and also the fact that the board is structured 1-8 not 0-7 like the array
+  fromRow = fromRow - 8 + ((-1) * (2 * (fromRow - 8)));
+  toRow = toRow - 8 + ((-1) * (2 * (toRow - 8)));
+
+  board_position[toRow][columnList[1]].piece =
+      board_position[fromRow][columnList[0]].piece;
+  board_position[toRow][columnList[1]].color =
+      board_position[fromRow][columnList[0]].color;
+  board_position[fromRow][columnList[0]].piece = 0;
+
+  if (turn == 'w')
+    turn = 'b';
+  else
+    turn = 'w';
+}
+#endif
+
+void ChessBoard::move(int8_t oldColumn, int8_t oldRow, int8_t newColumn,
+                      int8_t newRow) {
+  // specify the actual positions within the array in parameters rather than in
+  // chess notation
+  // 2d mapped into 1d --> array[width * height] To find the
+  // number in the array --> array[width * row + column]
+
+  board_position[newColumn][newRow].piece =
+      board_position[oldColumn][oldRow].piece;
+  board_position[newColumn][newRow].color =
+      board_position[oldColumn][oldRow].color;
+  board_position[oldColumn][oldRow].piece = 0;
+  if (turn == 'w')
+    turn = 'b';
+  else
+    turn = 'w';
+}
+
+void ChessBoard::remove(const char pieceLocation[]) {
+  int8_t row;
+  int8_t column;
+
+  for (int i = 0; pieceLocation[i] != 0; i++) {
+    // 49 = 1
+    if (pieceLocation[i] == 49) {
+      row = 7;
+    }
+    // 50 = 2
+    else if (pieceLocation[i] == 50) {
+      row = 6;
+    }
+    // 51 = 3
+    else if (pieceLocation[i] == 51) {
+      row = 5;
+    }
+    // 52 = 4
+    else if (pieceLocation[i] == 52) {
+      row = 4;
+    }
+    // 53 = 5
+    else if (pieceLocation[i] == 53) {
+      row = 3;
+    }
+    // 54 = 6
+    else if (pieceLocation[i] == 54) {
+      row = 2;
+    }
+    // 55 = 7
+    else if (pieceLocation[i] == 55) {
+      row = 1;
+    }
+    // 56 = 8
+    else if (pieceLocation[i] == 56) {
+      row = 0;
+    }
+    // a = 97 = first column
+    else if (pieceLocation[i] == 97) {
+      column = 0;
+    }
+    // b = 98 = second column
+    else if (pieceLocation[i] == 98) {
+      column = 1;
+    }
+    // c = 99 = third column
+    else if (pieceLocation[i] == 99) {
+      column = 2;
+    }
+    // d = 100 = fourth column
+    else if (pieceLocation[i] == 100) {
+      column = 3;
+    }
+    // e = 101 = fifth column
+    else if (pieceLocation[i] == 101) {
+      column = 4;
+    }
+    // f = 102 = sixth column
+    else if (pieceLocation[i] == 102) {
+      column = 5;
+    }
+    // g = 103 = seventh column
+    else if (pieceLocation[i] == 103) {
+      column = 6;
+    }
+    // h = 104 = eigth column
+    else if (pieceLocation[i] == 104) {
+      column = 7;
+    }
+  }
+
+  board_position[row][column].piece = 0;
+}
+
+void ChessBoard::remove(char Column, int8_t Row) {
+  int8_t column;
+
+  // a = 97 = first column
+  if (Column == 97) {
+    column = 0;
+  }
+  // b = 98 = second column
+  else if (Column == 98) {
+    column = 1;
+  }
+  // c = 99 = third column
+  else if (Column == 99) {
+    column = 2;
+  }
+  // d = 100 = fourth column
+  else if (Column == 100) {
+    column = 3;
+  }
+  // e = 101 = fifth column
+  else if (Column == 101) {
+    column = 4;
+  }
+  // f = 102 = sixth column
+  else if (Column == 102) {
+    column = 5;
+  }
+  // g = 103 = seventh column
+  else if (Column == 103) {
+    column = 6;
+  }
+  // h = 104 = eigth column
+  else if (Column == 104) {
+    column = 7;
+  }
+
+  board_position[Row][column].piece = 0;
+}
+
+/*vector<vector<BoardPosition>> getBoardPosition(ChessBoard& b) {
+  vector<vector<BoardPosition>> copy_boardposition;
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
+      uint8_t color = board_position[i][j].color;
+      uint8_t piece = board_position[i][j].piece;
+      copy_boardposition[i].push_back(BoardPosition(piece, color));
+    }
+  }
+}*/
+
+/*vector<vector_wrapper<BoardPosition, 8>> ChessBoard::getBoardPosition() {
+  vector<vector_wrapper<BoardPosition, 8>> copy_vector;
+  copy(board_position, board_position + 8, back_inserter(copy_vector));
+
+  return copy_vector;
+}*/
 
 ostream& operator<<(ostream& s, ChessBoard& b) {
   for (uint32_t i = 0; i < 8; i++) {
