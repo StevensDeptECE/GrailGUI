@@ -32,26 +32,25 @@ void ChessVisual::calculateSquares(float xstart, float ystart,
 
 Image* ChessVisual::addImage(MainCanvas* c, float xstart, float ystart,
                              float width, float height, const char* filePath) {
-  Image* m = c->addLayer(new Image(c, xstart, ystart, width, height, filePath));
-  m->init();
+  Image* m = new Image(c, xstart, ystart, width, height, filePath);
   return m;
 }
 
 void ChessVisual::clearSquare(int row, int column) {
   visual_board[row][column].currentPiece = nullptr;
-  visual_board[row][column].filepath = "";
 }
+// Called when you drop the piece on the board
 void ChessVisual::updateSquare(int row, int column) {
-  visual_board[row][column].currentPiece =
-      addImage(c, visual_board[row][column].xposition,
-               visual_board[row][column].yposition, sizeSquares, sizeSquares,
-               &selectedPath[0]);
-  visual_board[row][column].filepath = selectedPath;
+  selectedPiece->translate(selectedxPos * -1, selectedyPos * -1, 0);
+  selectedPiece->translate(visual_board[row][column].xposition,
+                           visual_board[row][column].yposition, 0);
+  visual_board[row][column].currentPiece = selectedPiece;
 }
 
 void ChessVisual::updateSelected(int row, int column) {
   selectedPiece = visual_board[row][column].currentPiece;
-  selectedPath = visual_board[row][column].filepath;
+  selectedxPos = visual_board[row][column].xposition;
+  selectedyPos = visual_board[row][column].yposition;
 }
 
 void ChessVisual::clearSelected() {
@@ -83,14 +82,21 @@ void ChessVisual::checkLocation(GLWin* w) {
 }
 
 void ChessVisual::setKeyBinds(Tab* tab, GLWin* w) {
-  tab->bindEvent(Tab::MOUSE0_PRESS, [w, this]() { press(w); });
+  tab->bindEvent(Tab::MOUSE0_PRESS, [w, this]() {
+    press(w);
+    save();
+    load();
+  });
   tab->bindEvent(Tab::MOUSE0_RELEASE, [w, this]() { release(w); });
 }
 
-ChessVisual::ChessVisual(ChessController* controller, MainCanvas* c,
-                         GLWin* window, Tab* tab, float xstart, float ystart,
-                         float w, float h)
+ChessVisual::ChessVisual(ChessBoard* chess_pieces, MainCanvas* c, GLWin* window,
+                         Tab* tab, float xstart, float ystart, float w, float h)
     : board(c->addLayer(
+          new StyledMultiShape2D(c, tab->getDefaultStyle(), 0, 0, 0))),
+      saveButton(c->addLayer(
+          new StyledMultiShape2D(c, tab->getDefaultStyle(), 0, 0, 0))),
+      loadButton(c->addLayer(
           new StyledMultiShape2D(c, tab->getDefaultStyle(), 0, 0, 0))),
       c(c),
       window(window),
@@ -98,71 +104,144 @@ ChessVisual::ChessVisual(ChessController* controller, MainCanvas* c,
       height(h),
       xstart(xstart),
       ystart(ystart),
-      controller(controller) {
+      chess_pieces(chess_pieces) {
   sizeSquares = w / 8;
   calculateSquares(xstart, ystart, sizeSquares);
 
   //============Drawing Initial ChessBoard========//
+  loadButton->fillDrawRectangle(xstart * 8, ystart, 125, 70, green, red);
+  saveButton->fillDrawRectangle(xstart * 8, ystart + 100, 125, 70, green, red);
   board->fillDrawRectangle(xstart * 0.55, ystart * 0.55, w * 1.15, h * 1.15,
                            gray, black);
   board->CheckeredGrid(xstart, ystart, w, h, 8, 8, black, darkgreen, lightgrey);
+  //===========Drawing Letters=======///
+  MultiText* letters =
+      c->addLayer(new MultiText(c, tab->getDefaultStyle(), 0, 0, 0));
+  letters->add(xstart * 8, ystart + 50, c->getStyle()->f, "load");
+  letters->add(xstart * 8, ystart + 150, c->getStyle()->f, "save");
 
-  // store filepaths//
-  for (int i = 0; i < 8; i++) {
-    for (int j = 0; j < 8; j++) {
-      if (controller->getColor(i, j) == 0 && controller->getPiece(i, j) == 6) {
-        visual_board[i][j].filepath = "ChessTextures/bpawn.webp";
-      } else if (controller->getColor(i, j) == 1 &&
-                 controller->getPiece(i, j) == 6) {
-        visual_board[i][j].filepath = "ChessTextures/wpawn.webp";
-      } else if (controller->getColor(i, j) == 0 &&
-                 controller->getPiece(i, j) == 3) {
-        visual_board[i][j].filepath = "ChessTextures/bbishop.webp";
-      } else if (controller->getColor(i, j) == 0 &&
-                 controller->getPiece(i, j) == 4) {
-        visual_board[i][j].filepath = "ChessTextures/bqueen.webp";
-      } else if (controller->getColor(i, j) == 0 &&
-                 controller->getPiece(i, j) == 5) {
-        visual_board[i][j].filepath = "ChessTextures/bking.webp";
-      } else if (controller->getColor(i, j) == 0 &&
-                 controller->getPiece(i, j) == 2) {
-        visual_board[i][j].filepath = "ChessTextures/bknight.webp";
-      } else if (controller->getColor(i, j) == 0 &&
-                 controller->getPiece(i, j) == 1) {
-        visual_board[i][j].filepath = "ChessTextures/brook.webp";
-      } else if (controller->getColor(i, j) == 1 &&
-                 controller->getPiece(i, j) == 2) {
-        visual_board[i][j].filepath = "ChessTextures/wknight.webp";
-      } else if (controller->getColor(i, j) == 1 &&
-                 controller->getPiece(i, j) == 3) {
-        visual_board[i][j].filepath = "ChessTextures/wbishop.webp";
-      } else if (controller->getColor(i, j) == 1 &&
-                 controller->getPiece(i, j) == 4) {
-        visual_board[i][j].filepath = "ChessTextures/wqueen.webp";
-      } else if (controller->getColor(i, j) == 1 &&
-                 controller->getPiece(i, j) == 5) {
-        visual_board[i][j].filepath = "ChessTextures/wking.webp";
-      } else if (controller->getColor(i, j) == 1 &&
-                 controller->getPiece(i, j) == 1) {
-        visual_board[i][j].filepath = "ChessTextures/wrook.webp";
-      }
-      // add images to board with position variables
-      if (visual_board[i][j].filepath != "") {
-        visual_board[i][j].currentPiece = addImage(
-            c, visual_board[i][j].xposition, visual_board[i][j].yposition,
-            sizeSquares, sizeSquares, &visual_board[i][j].filepath[0]);
-      }
+  for (int i = 0; i < 12; i++) {
+    switch (i) {
+      case 0:
+        piecetype[i] = addImage(c, 0, 0, sizeSquares, sizeSquares,
+                                "ChessTextures/brook.webp");
+        break;
+      case 1:
+        piecetype[i] = addImage(c, 0, 0, sizeSquares, sizeSquares,
+                                "ChessTextures/bknight.webp");
+        break;
+      case 2:
+        piecetype[i] = addImage(c, 0, 0, sizeSquares, sizeSquares,
+                                "ChessTextures/bbishop.webp");
+        break;
+      case 3:
+        piecetype[i] = addImage(c, 0, 0, sizeSquares, sizeSquares,
+                                "ChessTextures/bqueen.webp");
+        break;
+      case 4:
+        piecetype[i] = addImage(c, 0, 0, sizeSquares, sizeSquares,
+                                "ChessTextures/bking.webp");
+        break;
+      case 5:
+        piecetype[i] = addImage(c, 0, 0, sizeSquares, sizeSquares,
+                                "ChessTextures/bpawn.webp");
+        break;
+      case 6:
+        piecetype[i] = addImage(c, 0, 0, sizeSquares, sizeSquares,
+                                "ChessTextures/wrook.webp");
+        break;
+      case 7:
+        piecetype[i] = addImage(c, 0, 0, sizeSquares, sizeSquares,
+                                "ChessTextures/wknight.webp");
+        break;
+      case 8:
+        piecetype[i] = addImage(c, 0, 0, sizeSquares, sizeSquares,
+                                "ChessTextures/wbishop.webp");
+        break;
+      case 9:
+        piecetype[i] = addImage(c, 0, 0, sizeSquares, sizeSquares,
+                                "ChessTextures/wqueen.webp");
+        break;
+      case 10:
+        piecetype[i] = addImage(c, 0, 0, sizeSquares, sizeSquares,
+                                "ChessTextures/wking.webp");
+        break;
+      case 11:
+        piecetype[i] = addImage(c, 0, 0, sizeSquares, sizeSquares,
+                                "ChessTextures/wpawn.webp");
+        break;
     }
   }
+
+  for (int i = 0; i < 8; i++)
+    for (int j = 0; j < 8; j++) {
+      if (chess_pieces->getPiece(i, j) > 0) {
+        int8_t piecekind = (chess_pieces->getColor(i, j) * numpieces +
+                            chess_pieces->getPiece(i, j)) -
+                           1;
+        c->addLayer(visual_board[i][j].currentPiece =
+                        new Transform(c, piecetype[piecekind]));
+        visual_board[i][j].currentPiece->translate(
+            visual_board[i][j].xposition, visual_board[i][j].yposition, 0);
+      }
+    }
 
   setKeyBinds(tab, window);  // set key binds for program
 };
 
+void ChessVisual::clearBoard() {
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
+      if (chess_pieces->getPiece(i, j) > 0) {
+        c->removeLayer(visual_board[i][j].currentPiece);
+        visual_board[i][j].currentPiece = nullptr;
+      }
+    }
+  }
+}
+
+void ChessVisual::redrawBoard() {
+  for (int i = 0; i < 8; i++)
+    for (int j = 0; j < 8; j++) {
+      if (chess_pieces->getPiece(i, j) > 0) {
+        int8_t piecekind = (chess_pieces->getColor(i, j) * numpieces +
+                            chess_pieces->getPiece(i, j)) -
+                           1;
+        c->addLayer(visual_board[i][j].currentPiece =
+                        new Transform(c, piecetype[piecekind]));
+        visual_board[i][j].currentPiece->translate(
+            visual_board[i][j].xposition, visual_board[i][j].yposition, 0);
+      }
+    }
+}
+
+void ChessVisual::load() {
+  if (window->mouseX < xstart * 8 + 100 && window->mouseX > xstart * 8 &&
+      window->mouseY < ystart + 50 && window->mouseY > ystart) {
+    clearBoard();
+    chess_pieces->load("Chess.yourmomsfattits");
+    redrawBoard();
+  }
+}
+
+void ChessVisual::save() {
+  if (window->mouseX < xstart * 8 + 100 && window->mouseX > xstart * 8 &&
+      window->mouseY < ystart + 150 && window->mouseY > ystart + 100) {
+    chess_pieces->save("Chess.yourmomsfattits");
+  }
+}
+
 void ChessVisual::update() {
   if (hasclicked) {
+    int8_t piecekind =
+        (chess_pieces->getColor(selectedRow, selectedColumn) * numpieces +
+         chess_pieces->getPiece(selectedRow, selectedColumn)) -
+        1;
     c->removeLayer(selectedPiece);
-    selectedPiece = addImage(c, window->mouseX, window->mouseY, sizeSquares,
-                             sizeSquares, &selectedPath[0]);
+    c->addLayer(selectedPiece = new Transform(c, piecetype[piecekind]));
+    selectedPiece->translate(window->mouseX, window->mouseY, 0);
+    selectedxPos = window->mouseX;
+    selectedyPos = window->mouseY;
   }
 }
 
@@ -175,29 +254,34 @@ void ChessVisual::press(GLWin* w) {
         return;
       } else if (visual_board[selectedRow][selectedColumn].currentPiece ==
                  nullptr) {
-        c->removeLayer(visual_board[previousRow][previousColumn].currentPiece);
+        // c->removeLayer(visual_board[previousRow][previousColumn].currentPiece);
+        selectedPiece = clickPiece;
+        selectedxPos = visual_board[previousRow][previousColumn].xposition;
+        selectedyPos = visual_board[previousRow][previousColumn].yposition;
         clearSquare(previousRow, previousColumn);
         updateSquare(selectedRow, selectedColumn);
         clearSelected();
         clickPiece = nullptr;
+        selectedPiece = nullptr;
         clickmove = false;
         hasclicked = false;
         // TODO:MESSAGE TO CONTROLLER TO MAKE MOVE
-        controller->setMove(previousColumn, previousRow, selectedColumn,
-                            selectedRow);
+        chess_pieces->move(previousColumn, previousRow, selectedColumn,
+                           selectedRow);
         return;
       } else if (visual_board[selectedRow][selectedColumn].currentPiece !=
                      nullptr &&
-                 controller->getColor(selectedRow, selectedColumn) ==
-                     controller->getTurn()) {
+                 chess_pieces->getColor(selectedRow, selectedColumn) ==
+                     chess_pieces->getTurn()) {
         clearSelected();
         clickPiece = nullptr;
+        selectedPiece = nullptr;
         clickmove = false;
         hasclicked = false;
       }
     }
-    if (!hasclicked && controller->getColor(selectedRow, selectedColumn) ==
-                           controller->getTurn()) {
+    if (!hasclicked && chess_pieces->getColor(selectedRow, selectedColumn) ==
+                           chess_pieces->getTurn()) {
       if (visual_board[selectedRow][selectedColumn].currentPiece != nullptr) {
         updateSelected(selectedRow, selectedColumn);
         clearSquare(selectedRow, selectedColumn);
@@ -218,7 +302,7 @@ void ChessVisual::release(GLWin* w) {
       return;
     } else if (visual_board[selectedRow][selectedColumn].currentPiece ==
                nullptr) {
-      c->removeLayer(selectedPiece);
+      // c->removeLayer(selectedPiece);
       updateSquare(selectedRow, selectedColumn);
       if (visual_board[selectedRow][selectedColumn].xposition ==
               PreviousSquare[0][0]->xposition &&
@@ -232,19 +316,19 @@ void ChessVisual::release(GLWin* w) {
       }
       clearSelected();
       // TODO:MESSAGE TO CONTROLLER TO MAKE MOVE
-      controller->setMove(previousColumn, previousRow, selectedColumn,
-                          selectedRow);
+      chess_pieces->move(previousColumn, previousRow, selectedColumn,
+                         selectedRow);
       hasclicked = false;
     } else if (visual_board[selectedRow][selectedColumn].currentPiece !=
                nullptr) {
-      c->removeLayer(selectedPiece);
+      // c->removeLayer(selectedPiece);
       updateSquare(previousRow, previousColumn);
       hasclicked = false;
       clickmove = false;
       clearSelected();
     }
   } else if (hasclicked && !checkBounds()) {
-    c->removeLayer(selectedPiece);
+    // c->removeLayer(selectedPiece);
     updateSquare(previousRow, previousColumn);
     hasclicked = false;
     clickmove = false;

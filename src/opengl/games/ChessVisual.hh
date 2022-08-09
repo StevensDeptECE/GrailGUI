@@ -3,10 +3,12 @@
 
 #include <string>
 
+#include "CAD/Transform.hh"
+#include "opengl/GrailGUI.hh"
 #include "opengl/Image.hh"
 #include "opengl/MultiText.hh"
 #include "opengl/StyledMultiShape2D.hh"
-#include "opengl/games/ChessController.hh"
+#include "opengl/games/ChessBoard.hh"
 
 /*
 ⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠛⠛⠋⠉⠈⠉⠉⠉⠉⠛⠻⢿⣿⣿⣿⣿⣿⣿⣿
@@ -45,14 +47,16 @@ class ChessVisual {
     float ytop;
     float xright;
     float ybot;
-    Image* currentPiece = nullptr;
-    string filepath = "";
+    Transform* currentPiece = nullptr;
+    std::string filepath = "";
   };
 
-  ChessController* controller;
+  ChessBoard* chess_pieces;
   GLWin* window;
   MainCanvas* c;
   StyledMultiShape2D* board;
+  StyledMultiShape2D* saveButton;
+  StyledMultiShape2D* loadButton;
   SquareData visual_board[8][8];
 
   //======BOUNDS CHECKING VARIABLES=====//
@@ -67,25 +71,29 @@ class ChessVisual {
 
   //====PRESS AND RELEASE VARIABLES=====//
   SquareData* PreviousSquare[1][1];
-  Image* selectedPiece = nullptr;
-  Image* clickPiece = nullptr;
+  Transform* selectedPiece = nullptr;
+  Transform* clickPiece = nullptr;
   bool hasclicked = false;
   bool clickmove = false;
   uint8_t turn = 1;  // SAME STANDARD AS MODEL 0 = BLACK, 1 = WHITE
 
   //=====================================//
+  int8_t numpieces = 6;
   int8_t selectedRow;
   int8_t selectedColumn;
-  string selectedPath;
-  string selectedTypeOfPiece;
-  string selectedPathClick;
+  int selectedxPos;
+  int selectedyPos;
+  std::string selectedPath;
+  std::string selectedTypeOfPiece;
+  std::string selectedPathClick;
   char selectedColor;
   int8_t previousRow;
   int8_t previousColumn;
+  Image* piecetype[12];
 
  public:
-  ChessVisual(ChessController* controller, MainCanvas* c, GLWin* window,
-              Tab* tab, float xstart, float ystart, float w, float h);
+  ChessVisual(ChessBoard* chess_pieces, MainCanvas* c, GLWin* window, Tab* tab,
+              float xstart, float ystart, float w, float h);
   void setKeyBinds(Tab* tab, GLWin* w);
   void getPosition(GLWin* w);
   void update();
@@ -102,4 +110,8 @@ class ChessVisual {
   void removeImage(Tab* tab, MainCanvas* c, Image* imageHandle);
   void checkLocation(GLWin* w);
   bool checkBounds();
+  void clearBoard();
+  void redrawBoard();
+  void load();
+  void save();
 };

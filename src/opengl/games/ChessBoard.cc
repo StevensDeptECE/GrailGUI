@@ -30,10 +30,33 @@ ChessBoard::ChessBoard() {
   turn = 'w';
 }
 
+int8_t ChessBoard::getColor(int8_t row, int8_t column) {
+  return board_position[row][column].color;
+}
+
+int8_t ChessBoard::getPiece(int8_t row, int8_t column) {
+  return board_position[row][column].piece;
+}
+
+int8_t ChessBoard::getTurn() {
+  if (turn == 'w')
+    return 1;
+  else
+    return 0;
+}
+
+bool ChessBoard::checkTurn(int8_t row, int8_t column) {
+  if (getTurn() == board_position[row][column].color) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 // Saves games using
 void ChessBoard::save(const char filename[]) {
   // TODO: castling availability, and enpassant targets
-  ofstream saveFile(filename);
+  ofstream saveFile(filename, ios::out | ofstream::trunc);
 
   for (int i = 0; i < 8; i++) {
     int emptySquareCount = 0;
@@ -42,6 +65,7 @@ void ChessBoard::save(const char filename[]) {
         emptySquareCount++;
         if (board_position[i][j + 1].piece != 0 || j == 7) {
           saveFile << emptySquareCount;
+          emptySquareCount = 0;
         }
       } else if (board_position[i][j].piece == 1 &&
                  board_position[i][j].color == 0)
@@ -407,11 +431,11 @@ void ChessBoard::move(int8_t oldColumn, int8_t oldRow, int8_t newColumn,
   // 2d mapped into 1d --> array[width * height] To find the
   // number in the array --> array[width * row + column]
 
-  board_position[newColumn][newRow].piece =
-      board_position[oldColumn][oldRow].piece;
-  board_position[newColumn][newRow].color =
-      board_position[oldColumn][oldRow].color;
-  board_position[oldColumn][oldRow].piece = 0;
+  board_position[newRow][newColumn].piece =
+      board_position[oldRow][oldColumn].piece;
+  board_position[newRow][newColumn].color =
+      board_position[oldRow][oldColumn].color;
+  board_position[oldRow][oldColumn].piece = 0;
   if (turn == 'w')
     turn = 'b';
   else
@@ -530,24 +554,6 @@ void ChessBoard::remove(char Column, int8_t Row) {
 
   board_position[Row][column].piece = 0;
 }
-
-/*vector<vector<BoardPosition>> getBoardPosition(ChessBoard& b) {
-  vector<vector<BoardPosition>> copy_boardposition;
-  for (int i = 0; i < 8; i++) {
-    for (int j = 0; j < 8; j++) {
-      uint8_t color = board_position[i][j].color;
-      uint8_t piece = board_position[i][j].piece;
-      copy_boardposition[i].push_back(BoardPosition(piece, color));
-    }
-  }
-}*/
-
-/*vector<vector_wrapper<BoardPosition, 8>> ChessBoard::getBoardPosition() {
-  vector<vector_wrapper<BoardPosition, 8>> copy_vector;
-  copy(board_position, board_position + 8, back_inserter(copy_vector));
-
-  return copy_vector;
-}*/
 
 ostream& operator<<(ostream& s, ChessBoard& b) {
   for (uint32_t i = 0; i < 8; i++) {

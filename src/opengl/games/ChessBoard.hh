@@ -4,12 +4,13 @@
 #include <iostream>
 #include <vector>
 
-#include "opengl/games/ChessController.hh"
 extern const char PieceDisplayw[] = " RNBQKP";
 extern const char PieceDisplayb[] = " rnbqkp";
 
 class ChessVisual;
 class ChessController;
+class ChessBoard;
+class ChessRules;
 
 enum class ChessColor { black = 0, white = 1 };
 
@@ -26,19 +27,12 @@ enum class ChessPieceType : uint8_t {
 class BoardPosition {
  private:
   friend class ChessBoard;
-  friend class ostream;
-  friend class ChessController;
-#if 0
+  friend std::ostream& operator<<(std::ostream& s, ChessBoard& b);
+
   uint8_t color : 1;
   uint8_t piece : 7;
-#endif
 
  public:
-#if 1
-  uint8_t color : 2;  // TODO: ostream access issue
-  uint8_t piece : 7;
-#endif
-
   BoardPosition() {
     color = 0;
     piece = 0;
@@ -46,15 +40,31 @@ class BoardPosition {
   BoardPosition(ChessColor color, ChessPieceType piece)
       : color(uint8_t(color)), piece(uint8_t(piece)){};
 };
+
+class Observer {
+ public:
+  void update();
+};
+class Data {
+ private:
+  std::vector<Observer*> observers;
+
+ public:
+  void changed() {
+    for (auto obs : observers) obs->update();
+  }
+  void addObserver(Observer* obs) { observers.push_back(obs); }
+};
+
 /**
  * @brief Internal representation utilizing FEN specification
  *
  */
-class ChessBoard {
+class ChessBoard : public Data {
  private:
   char turn;
   friend ChessVisual;
-  friend ChessController;
+  friend ChessRules;
   BoardPosition board_position[8][8];
 
  public:
@@ -67,20 +77,9 @@ class ChessBoard {
   void move(int8_t oldColumn, int8_t oldRow, int8_t newColumn, int8_t newRow);
   void remove(const char pieceLocation[]);
   void remove(char Column, int8_t Row);
-
+  int8_t getPiece(int8_t row, int8_t column);
+  int8_t getColor(int8_t row, int8_t column);
+  int8_t getTurn();
+  bool checkTurn(int8_t row, int8_t column);
   friend std::ostream& operator<<(std::ostream& s, ChessBoard& b);
-
-  // util
-#if 0
-  std::vector<vector<BoardPosition>> getBoardPosition(ChessBoard& b);
-
-  template <typename T, int N>
-  struct vector_wrapper {
-    vector_wrapper(T (&a)[N]) { std::copy(a, a + N, std::back_inserter(v)); }
-
-    std::vector<T> v;
-  };
-
-  std::vector<vector_wrapper<BoardPosition, 8>> getBoardPosition();
-#endif
 };
