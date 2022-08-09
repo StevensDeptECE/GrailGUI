@@ -241,5 +241,5 @@ class MultiText : public Shape {
   }
   const Style* getStyle();
   void update() override;
-  void render() override;
+  void render(glm::mat4& trans) override;
 };

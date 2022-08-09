@@ -280,7 +280,7 @@ static uint32_t pow10(uint32_t v) {
 static uint32_t pow10arr[10] = {
     0, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
 
-void MultiText2::render() {
+void MultiText2::render(glm::mat4& trans) {
   glBindVertexArray(vao);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);

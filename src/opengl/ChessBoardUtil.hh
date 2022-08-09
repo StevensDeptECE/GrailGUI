@@ -38,7 +38,7 @@ using namespace grail;
 class ChessBoard {
  private:
   struct squareLocation {
-    float xposition = 0;
+    float xposition;
     float yposition;
     float xleft;
     float ytop;
@@ -189,7 +189,7 @@ class ChessBoard {
                  c->getStyle()->f, "8");
   }
 
-  void GetPosition(GLWin* w) {
+  void getPosition(GLWin* w) {
     xpos = w->mouseX;
     ypos = w->mouseY;
   }
@@ -203,7 +203,7 @@ class ChessBoard {
   }
 
   void press(GLWin* w) {
-    GetPosition(w);
+    getPosition(w);
     checkSquare(w);
     if (checkBounds()) {
       if (clickmove) {
@@ -243,7 +243,7 @@ class ChessBoard {
   }
 
   void release(GLWin* w) {
-    GetPosition(w);
+    getPosition(w);
     if (checkBounds()) {
       checkSquare(w);
       if (selectedPiece == nullptr) {

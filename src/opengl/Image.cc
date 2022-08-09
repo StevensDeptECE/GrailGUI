@@ -127,13 +127,13 @@ void Image::init() {
                         (void*)(2 * sizeof(float)));
 }
 
-void Image::render() {
+void Image::render(glm::mat4& trans) {
   glBindVertexArray(vao);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
 
   Shader* s = Shader::useShader(GLWin::TEXTURE_SHADER);
-  s->setMat4("projection", *(parentCanvas->getProjection()));
+  s->setMat4("projection", trans);
   s->setInt("ourTexture", 0);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, textureID);

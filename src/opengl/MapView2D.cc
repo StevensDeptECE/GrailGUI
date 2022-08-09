@@ -53,7 +53,7 @@ void debug(const glm::mat4& m, float x, float y, float z) {
   v = m * v;
   cout << v.x << "," << v.y << "," << v.z << '\n';
 }
-void MapView2D::render() {
+void MapView2D::render(glm::mat4& trans) {
   Shader* shader = Shader::useShader(GLWin::COMMON_SHADER);
   shader->setVec4("solidColor", style->getFgColor());
 

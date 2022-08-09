@@ -6,9 +6,9 @@ using namespace std;
 void testChessBoard() {
   ChessBoard b;          // Create a chessboard 8x8
   b.save("test.Chess");  // TODO: lookup standard chess format
-  b.move("b2b4");
-  // b.move('b', 2, 'b', 4);
-  // b.move(10, 26);
+                         // b.move("b2b4");
+  //  b.move('b', 2, 'b', 4);
+  b.move(1, 6, 1, 4);
   cout << b << "\n";
   b.load("test.Chess");
   cout << b << "\n";

@@ -27,7 +27,6 @@ class ModifiableMultiShape : public StyledMultiShape2D {
 
  public:
   // create a rectangle, returning a handle to delete it if needed?
-
   ModifiableMultiShape(Canvas* c, const Style* s, Tab* tab,
                        uint32_t solidListCount = 1024,
                        uint32_t lineListCount = 1024)

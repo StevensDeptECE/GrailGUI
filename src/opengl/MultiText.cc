@@ -391,7 +391,7 @@ const Style* MultiText::getStyle() { return style; }
 
 void MultiText::update() {}
 
-void MultiText::render() {
+void MultiText::render(glm::mat4& trans) {
   glBindVertexArray(vao);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);

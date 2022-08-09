@@ -163,5 +163,5 @@ class MultiText2 : public Shape {
   void init() override;
   const Style* getStyle();
   void update() override;
-  void render() override;
+  void render(glm::mat4& trans) override;
 };

@@ -11,7 +11,7 @@ class TestChessBoard : public Member {
   ChessBoard* chess;
 
  public:
-  TestChessBoard(Tab* tab, GLWin* w) : Member(tab, 0, 1) {
+  TestChessBoard(Tab* tab, GLWin* w) : Member(tab, 0, 0.1) {
     chess = new ChessBoard(c, w, tab, 100, 100, 600, 600);
     tab->bindEvent(Tab::MOUSE0_PRESS, [w, this]() { chess->press(w); });
     tab->bindEvent(Tab::MOUSE0_RELEASE, [w, this]() { chess->release(w); });

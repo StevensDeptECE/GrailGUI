@@ -15,6 +15,30 @@ using namespace std;
 
 Canvas::Canvas(Tab* tab) : Canvas(tab->getParentWin(), tab) {}
 
+Canvas::Canvas(GLWin* w, Tab* tab, const Style* style, uint32_t vpX,
+               uint32_t vpY, uint32_t vpW, uint32_t vpH, uint32_t pX,
+               uint32_t pY)
+    :  // viewport, projection
+      w(w),
+      tab(tab),
+      layers(4),
+      style(style),
+      vpX(vpX),
+      vpY(vpY),
+      vpW(vpW),
+      vpH(vpH),
+      pX(pX),
+      pY(pY),
+      cam(nullptr) {
+  trans =
+      glm::ortho(0.0f, static_cast<float>(pX), static_cast<float>(pY), 0.0f);
+  originalTrans = trans;
+  tab->addCanvas(this);
+  //    projection = glm::scale(projection, glm::vec3(16, -16, 1));
+  //    projection = glm::translate(projection, glm::vec3(180, -90, 0));
+  // calling glm::ortho..., show init and render, works with z=0 and not with
+  // z!=0
+}
 Canvas::~Canvas() { cleanup(); }
 
 void Canvas::cleanup() {
@@ -28,10 +52,12 @@ void Canvas::cleanup() {
 
 void Canvas::render() {
   // std::cout << projection << std::endl;
-  Shader::useShader(style->getShaderIndex())->setMat4("projection", projection);
+
+  // TODO: All objects using OpenGL must call Shader::useShader to select.
+  // Shader::useShader(style->getShaderIndex())->setMat4("projection", trans);
   glViewport(vpX, w->height - vpH - vpY, vpW, vpH);
 
-  for (uint32_t i = 0; i < layers.size(); i++) layers[i]->render();
+  for (uint32_t i = 0; i < layers.size(); i++) layers[i]->render(trans);
 }
 
 Camera* Canvas::setLookAtProjection(float eyeX, float eyeY, float eyeZ,
@@ -93,10 +119,10 @@ void MainCanvas::init() {
 void MainCanvas::render() {
   Canvas::render();  // call parent's render
   // then render the GUI layer on top of everything
-  gui->render();
-  guiText->render();
-  menu->render();
-  menuText->render();
+  gui->render(trans);
+  guiText->render(trans);
+  menu->render(trans);
+  menuText->render(trans);
 }
 
 void MainCanvas::cleanup() {

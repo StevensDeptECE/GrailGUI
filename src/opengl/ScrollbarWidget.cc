@@ -30,7 +30,9 @@ void ScrollbarWidget::init() {
   // update();
 }
 
-void ScrollbarWidget::render() { StyledMultiShape2D::render(); }
+void ScrollbarWidget::render(glm::mat4& trans) {
+  StyledMultiShape2D::render(trans);
+}
 void ScrollbarWidget::update() {
   clear();
   draw();

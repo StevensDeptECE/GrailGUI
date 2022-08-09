@@ -2,3 +2,5 @@
 
 add_grail_executable(SRC testfmt.cc LIBS grail)
 add_grail_executable(SRC testMultiTab.cc LIBS grail)
+add_grail_executable(SRC testBoard.cc LIBS grail)
+#add_grail_executable(SRC testVisualBoard.cc)

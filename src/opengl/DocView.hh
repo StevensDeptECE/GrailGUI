@@ -77,5 +77,5 @@ class DocView : public Shape {
   void init();
   void process_input(Inputs* in, float dt);
   void update();
-  void render();
+  void render(glm::mat4& trans);
 };

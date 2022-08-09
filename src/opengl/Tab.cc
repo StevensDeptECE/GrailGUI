@@ -85,9 +85,13 @@ void Tab::cleanup() {
 }
 
 void Tab::render() {
+// TODO: does it make sense to render a member? They normally just assemble
+// components, they don't render anything themselves
+#if 0
   for (int i = 0; i < members.size(); ++i) {
     members[i]->render();
   }
+#endif
 
   for (int i = 0; i < canvases.size(); ++i) {
     canvases[i]->render();
@@ -111,7 +115,6 @@ Canvas *Tab::addCanvas(const Style *style, uint32_t vpX, uint32_t vpY,
   If you don't want time in your application, just ignore this.
   However, the minimal amount of code provides very useful
   API for anyone interested in moving through data in time.
-
   TODO: We could add an action to go to a particular point in time but
   we don't currently have a way to pass parameters to actions
   This is going to change.

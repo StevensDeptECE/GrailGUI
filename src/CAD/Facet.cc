@@ -30,7 +30,7 @@ void Facet::connect(
 
 void Facet::init() {}
 
-void Facet::render() {}
+void Facet::render(glm::mat4& trans) {}
 
 // int main(){
 //   cout << "in main" << endl;

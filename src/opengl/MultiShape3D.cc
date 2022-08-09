@@ -1,5 +1,7 @@
 #include "opengl/MultiShape3D.hh"
 
+#include <glm/gtx/string_cast.hpp>
+
 using namespace std;
 
 void MultiShape3D::addRect(uint32_t i1, uint32_t i2, uint32_t i3, uint32_t i4,
@@ -308,7 +310,7 @@ void MultiShape3D::init() {
   }
 }
 
-void MultiShape3D::render() {
+void MultiShape3D::render(glm::mat4 &trans) {
   // Enable depth test
   glEnable(GL_DEPTH_TEST);
   // Accept fragment if it closer to the camera than the former one
@@ -321,7 +323,11 @@ void MultiShape3D::render() {
     texture->bindImage(i);
   }
 
-  const glm::mat4 mvp = camera->getViewProjection() * transform->getTransform();
+  cout << glm::to_string(trans) << endl;
+
+  //  const glm::mat4 mvp = camera->getViewProjection() *
+  //  transform->getTransform();
+  const glm::mat4 mvp = trans * transform->getTransform();
 
   shader->setMat4("projection", *(&mvp));
 

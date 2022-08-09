@@ -78,7 +78,7 @@ class Image : public Shape {
    * @brief Renders the image to the screen, called by the parent tab
    *
    */
-  void render() override;
+  void render(glm::mat4& trans) override;
 
   /**
    * @brief If the image is to be modified, update may be written

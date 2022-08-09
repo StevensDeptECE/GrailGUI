@@ -28,7 +28,7 @@ StyledMultiShape2D::~StyledMultiShape2D() {}
 
 // TODO: Maybe add a different render calls that loops through array of either
 // the render of style or the super render Shape2D
-void StyledMultiShape2D::render() {
+void StyledMultiShape2D::render(glm::mat4& trans) {
   // Get Shader based on style
   Shader* shader = Shader::useShader(GLWin::PER_VERTEX_SHADER);
   shader->setMat4("projection", *parentCanvas->getProjection() * transform);

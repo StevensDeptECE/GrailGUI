@@ -62,7 +62,7 @@ void Curve::init() {
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 }
 
-void Curve::render() {
+void Curve::render(glm::mat4& trans) {
   // for(int i=0; i<drawingPoints.size(); i++){
   //   cout << drawingPoints[i] << " " ;
   // }
