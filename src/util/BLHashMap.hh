@@ -263,6 +263,7 @@ class BLHashMap : public BlockLoader {
   BLHashMap& operator=(const BLHashMap& orig) = delete;
 
   void checkGrow() {
+    // TODO: should check if there are enough symbols 
     if (nodeCount * 2 <= tableCapacity) return;
     // need to copy everything to another block of memory
     // then expand the BLHashMap and copy it back in   

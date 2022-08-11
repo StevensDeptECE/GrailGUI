@@ -15,76 +15,74 @@ using namespace grail::utils;
 constexpr uint32_t overflowSize = 256;
 void loadAndCompare(const char filename[], uint64_t bufferSize) {
   uint32_t itemCount = 10000;
-  uint32_t symbolCapacity = 100000;
-  NamedLocationData temp(0, "", 0, 0, 0);
+  // 100000 symbols was not big enough, overflowed into nodes before the hashmap was able to grow
+  uint32_t symbolCapacity = 300000;
+  NamedLocationData temp(0, 0, 0, 0);
   BLHashMap<NamedLocationData> mapLocDict("xp/data/uscities.bdl");
 
-	char* prebuf = new char[overflowSize + bufferSize];
-	char* buf = prebuf + overflowSize;
-	int fh = open(filename, O_RDONLY); //| O_BINARY);
-	if (fh < 0)
+	char buf[1024];
+	ifstream f(filename);
+	if (!f.good())
 		throw "fastReadFile: Can't open file";
-	uint32_t bytesRead;
 	regex r("\"([^\"]*)\",\"[^\"]*\",\"([^\"]*)\",\"([^\"]*)\",\"[^\"]*\",\"[^\"]*\",\"[^\"]*\",\"([^\"]*)\",\"[^\"]*\",\"([^\"]*)\",\"[^\"]*\"");
-					
 	cmatch m;
 
-	const char* p = buf;
-
-	uint32_t remaining = 0;
-	while ((bytesRead = read(fh, buf, bufferSize) + remaining) != 0) {
+  uint32_t nameOffset = 0;
+  uint16_t mismatchCounter = 0;
+  uint16_t notFoundCounter = 0;
+	while ((f.getline(buf, sizeof(buf)))) {
 		// process an entire block of ascii
-		char cityName[32];
-		uint32_t nameOffset = 0;
+		// char cityName[32];
 		// 2 bytes of padding to align lat
 		float lat,lon;
-		char stateName[21];
+		// char stateName[21];
 		uint32_t population;
+    char locationName[54];
+    uint32_t tempOffset;
 		
-		while (regex_search (p,m,r)) {
+		if (regex_search (buf,m,r)) {
+      tempOffset = 0;
 			if (m.length(1) > 32) {
-				cerr << string(p, m.length(0)) <<
+				cerr << string(buf, m.length(0)) <<
 					"City name should not be longer than 64!\n";
 			}
-			strncpy(cityName, p+m.position(1), m.length(1));
-      cityName[m.length(1)] = '\0';
-			lat = atof(p+m.position(2));
-			lon = atof(p+m.position(3));
+			strncpy(locationName, buf+m.position(1), m.length(1));
+      // cityName[m.length(1)] = '\0';
+      tempOffset += m.length(1);
+      strncpy(locationName + tempOffset, ", ", 2);
+      tempOffset += 2;
+      
+			lat = atof(buf+m.position(2));
+			lon = atof(buf+m.position(3));
 			if (m.length(5) > 21) {
-				cerr << string(p, m.length(0)) <<
+				cerr << string(buf, m.length(0)) <<
 					"State name should not be longer than 64!\n";
 			}			
-			strncpy(stateName, p+m.position(4), m.length(4));
-      stateName[m.length(4)] = '\0';
-			population = atoi(p+m.position(5));
+			strncpy(locationName + tempOffset, buf+m.position(4), m.length(4));
+      tempOffset += m.length(4);
+      locationName[tempOffset] = '\0';
+			population = atoi(buf+m.position(5));
 
-      // cerr << cityName << "\t" << stateName << "\t" << lat << "\t" << lon << "\t" << population << "\n";
-      
+      // cerr << locationName << "\t" << lat << "\t" << lon << "\t" << population << "\n";
+
       // CHECKING PART =======================================================
-      if (mapLocDict.get(cityName, &temp)) {
-        if (!(temp == NamedLocationData(nameOffset, stateName, lat, lon, population)))
-          cout << cityName << " data mismatch.\n";
+      if (mapLocDict.get(locationName, &temp)) {
+        if (!(temp == NamedLocationData(nameOffset, lat, lon, population))) {
+          cout << locationName << " data mismatch.\n";
+          mismatchCounter++;
+          // there will be data mismatches since there are multiple data for the same location
+        }
       } else {
-        cout << cityName << " not found.\n";
+        cout << locationName << " not found.\n";
+        notFoundCounter++;
       }
 
-      uint16_t tempAdvance = m.position() + m.length();
-			p = p + tempAdvance; // advance p beyond the end and repeat
-      nameOffset = nameOffset + tempAdvance;
+      nameOffset = nameOffset + m.position() + m.length();
 			//out.write(...);
 		}
-	  uint32_t remaining = buf + bufferSize - p; // example: 32768 - 32700
-		if (remaining > overflowSize)
-			cerr << "Failing on line with " << remaining << " bytes left "
-					 << p << endl;
-		else {
-			// copy the bytes back
-			memcpy(buf - remaining, p, remaining);
-			p = buf - remaining;
-		}
 	}
-	delete[] prebuf;
-	close(fh);
+  cout << "Total mismatches: " << mismatchCounter << '\n';
+  cout << "Total not found: " << notFoundCounter << '\n';
 }
 
 void testLoadMapBlockDict(const char filename[]) {

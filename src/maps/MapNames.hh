@@ -28,20 +28,20 @@ struct NamedMapEntry {
 
 struct NamedLocationData {
   uint32_t offset;
-  char stateName[21];
+  // char stateName[21];
   float lat;
   float lon;
   uint32_t population;
 
-  NamedLocationData(uint32_t offset, const char stateName[21], float lat, float lon, uint32_t population)
+  NamedLocationData(uint32_t offset, float lat, float lon, uint32_t population)
   : offset(offset), lat(lat), lon(lon), population(population) {
-    strncpy(this->stateName, stateName, 21);
+    // strncpy(this->stateName, stateName, 21);
   }
 
   bool operator== (const NamedLocationData&b) {
     return (
       offset == b.offset &&
-      strcmp(stateName, b.stateName) == 0 &&
+      // strcmp(stateName, b.stateName) == 0 &&
       lat == b.lat &&
       lon == b.lon &&
       population == b.population
