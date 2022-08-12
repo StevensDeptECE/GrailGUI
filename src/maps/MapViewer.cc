@@ -15,10 +15,13 @@ MapViewer::MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint3
     : Canvas(w, tab, style, vpX, vpY, vpW, vpH, pX, pY) {
 
     // NOTE: mt MUST be created first becuase mv needs it
-    this->textScale = textScale;
+    this->countyTextScale = textScale;
+    this->stateTextScale = textScale * 2.0f;
     displayText = true, displayOutline = true, displayFill = true;
-    mt = new MultiText(this, style, 12);
-    mv = new MapView2D(this, style, mt, bml, bdl, 1/textScale);
+    displayCountyNames = true, displayStateNames = true;
+    mtCounties = new MultiText(this, style, 12);
+    mtStates = new MultiText(this, style, 12);
+    mv = new MapView2D(this, style, mtCounties, mtStates, bml, bdl, 1/countyTextScale, 1/stateTextScale);
     tab->addCanvas(this); // register ourselves in the tab
     // MapView2D automatically sets bounds on this object (the MapViewer)
 
@@ -32,7 +35,8 @@ MapViewer::~MapViewer() {}
 
 void MapViewer::init() {
   mv->init();
-  mt->init();
+  mtCounties->init();
+  mtStates->init();
 }
 
 void MapViewer::render() {
@@ -40,8 +44,14 @@ void MapViewer::render() {
   mv->render(trans);
   if (displayText) {
     // scale x and y coordinates by 1/factor in MapView2D
-    glm::mat4 textTrans = glm::scale(trans, glm::vec3(textScale, -textScale, 1));
-    mt->render(textTrans);
+    if (displayCountyNames) {
+      glm::mat4 countyTextTrans = glm::scale(trans, glm::vec3(countyTextScale, -countyTextScale, 1));
+      mtCounties->render(countyTextTrans);
+    }
+    if (displayStateNames) {
+      glm::mat4 stateTextTrans = glm::scale(trans, glm::vec3(stateTextScale, -stateTextScale, 1));
+      mtStates->render(stateTextTrans);
+    }
   }
 }
 
@@ -119,15 +129,17 @@ void MapViewer::setOrigBounds(float minLat, float maxLat, float minLon, float ma
   resetToOriginal();
 }
 
-void MapViewer::setTextScale(float textScale) {
-  this->textScale = textScale;
-  mv->setTextScale(1/textScale);
+void MapViewer::setTextScale(float countyTextScale, float stateTextScale) {
+  this->countyTextScale = countyTextScale;
+  this->stateTextScale = stateTextScale;
+  mv->setTextScale(1/countyTextScale, 1/stateTextScale);
   setView();
 }
 
 void MapViewer::increaseTextSize(float factor) {
-  textScale *= factor;
-  setTextScale(textScale);
+  countyTextScale *= factor;
+  stateTextScale *= factor;
+  setTextScale(countyTextScale, stateTextScale);
 }
 
 void MapViewer::decreaseTextSize(float factor) {
@@ -137,6 +149,20 @@ void MapViewer::decreaseTextSize(float factor) {
 void MapViewer::toggleDisplayText() {
   displayText = !displayText;
   setView();
+}
+
+void MapViewer::toggleDisplayCountyNames() {
+  if (displayText) { // don't bother if text is not even being displayed
+    displayCountyNames = !displayCountyNames;
+    setView();
+  }
+}
+
+void MapViewer::toggleDisplayStateNames() {
+  if (displayText) { // don't bother if text is not even being displayed
+    displayStateNames = !displayStateNames;
+    setView();
+  }
 }
 
 void MapViewer::toggleDisplayOutline() {
@@ -194,5 +220,10 @@ void MapViewer::displayAllSegments() {
 
 void MapViewer::displayFirstSegment() {
   mv->setWhichSegmentsToDisplay(50,100);
+  setView();
+}
+
+void MapViewer::displayState(const char stateName[]) {
+  mv->displayState(stateName);
   setView();
 }

@@ -19,11 +19,12 @@ class MapViewer : public Canvas {
  private:
   float centerLat, centerLon, scaleLat, scaleLon, shiftLat, shiftLon;
   float origCenterLat, origCenterLon, origScaleLat, origScaleLon, origShiftLat, origShiftLon;
-  MultiText* mt; //WARNING: mt MUST COME BEFORE mv because it is used in it!!!
+  MultiText* mtCounties; 
+  MultiText* mtStates; //WARNING: mt MUST COME BEFORE mv because it is used in it!!!
   // not great style, but C++ does not allow us an easy way out
   MapView2D* mv;
-  float textScale;
-  bool displayText, displayOutline, displayFill;
+  float countyTextScale, stateTextScale;
+  bool displayText, displayCountyNames, displayStateNames, displayOutline, displayFill;
 
  public:
   MapViewer(GLWin* w, Tab* tab, const Style* style, uint32_t vpX, uint32_t vpY,
@@ -46,10 +47,12 @@ class MapViewer : public Canvas {
   void resetToOriginal();
   void setOriginalCoords(float centerLat, float centerLon, float scaleLat, float scaleLon, float shiftLon, float shiftLat);
   void setOrigBounds(float minLat, float maxLat, float minLon, float maxLon);
-  void setTextScale(float textScale);
+  void setTextScale(float countyTextScale, float stateTextScale);
   void increaseTextSize(float factor);
   void decreaseTextSize(float factor);
   void toggleDisplayText();
+  void toggleDisplayCountyNames();
+  void toggleDisplayStateNames();
   void toggleDisplayOutline();
   void toggleDisplayFill();
   void zoomInOnMouse(float factor);
@@ -60,6 +63,9 @@ class MapViewer : public Canvas {
   void decNumSegments();
   void displayAllSegments();
   void displayFirstSegment();
-  bool getDisplayOutline() const {return displayOutline; }
+  void displayState(const char stateName[]);
+  bool getDisplayCountyNames() const { return displayCountyNames; }
+  bool getDisplayStateNames() const { return displayStateNames; }
+  bool getDisplayOutline() const { return displayOutline; }
   bool getDisplayFill() const { return displayFill; }
 };
