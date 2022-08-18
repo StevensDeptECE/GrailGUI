@@ -9,6 +9,7 @@ void testChessBoard() {
                          // b.move("b2b4");
   //  b.move('b', 2, 'b', 4);
   b.move(1, 6, 1, 4);
+  b.remove(0, 0);
   cout << b << "\n";
   b.load("test.Chess");
   cout << b << "\n";

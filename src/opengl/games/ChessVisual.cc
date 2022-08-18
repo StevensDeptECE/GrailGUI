@@ -109,8 +109,9 @@ ChessVisual::ChessVisual(ChessBoard* chess_pieces, MainCanvas* c, GLWin* window,
   calculateSquares(xstart, ystart, sizeSquares);
 
   //============Drawing Initial ChessBoard========//
-  loadButton->fillDrawRectangle(xstart * 8, ystart, 125, 70, green, red);
-  saveButton->fillDrawRectangle(xstart * 8, ystart + 100, 125, 70, green, red);
+  loadButton->fillDrawRectangle(xstart * 8 - 5, ystart, 125, 70, green, red);
+  saveButton->fillDrawRectangle(xstart * 8 - 5, ystart + 100, 125, 70, green,
+                                red);
   board->fillDrawRectangle(xstart * 0.55, ystart * 0.55, w * 1.15, h * 1.15,
                            gray, black);
   board->CheckeredGrid(xstart, ystart, w, h, 8, 8, black, darkgreen, lightgrey);
@@ -219,7 +220,7 @@ void ChessVisual::load() {
   if (window->mouseX < xstart * 8 + 100 && window->mouseX > xstart * 8 &&
       window->mouseY < ystart + 50 && window->mouseY > ystart) {
     clearBoard();
-    chess_pieces->load("Chess.yourmomsfattits");
+    chess_pieces->load("Chess.txt");
     redrawBoard();
   }
 }
@@ -227,7 +228,7 @@ void ChessVisual::load() {
 void ChessVisual::save() {
   if (window->mouseX < xstart * 8 + 100 && window->mouseX > xstart * 8 &&
       window->mouseY < ystart + 150 && window->mouseY > ystart + 100) {
-    chess_pieces->save("Chess.yourmomsfattits");
+    chess_pieces->save("Chess.txt");
   }
 }
 
@@ -254,7 +255,6 @@ void ChessVisual::press(GLWin* w) {
         return;
       } else if (visual_board[selectedRow][selectedColumn].currentPiece ==
                  nullptr) {
-        // c->removeLayer(visual_board[previousRow][previousColumn].currentPiece);
         selectedPiece = clickPiece;
         selectedxPos = visual_board[previousRow][previousColumn].xposition;
         selectedyPos = visual_board[previousRow][previousColumn].yposition;
@@ -266,13 +266,34 @@ void ChessVisual::press(GLWin* w) {
         clickmove = false;
         hasclicked = false;
         // TODO:MESSAGE TO CONTROLLER TO MAKE MOVE
+
         chess_pieces->move(previousColumn, previousRow, selectedColumn,
                            selectedRow);
+
         return;
       } else if (visual_board[selectedRow][selectedColumn].currentPiece !=
                      nullptr &&
                  chess_pieces->getColor(selectedRow, selectedColumn) ==
                      chess_pieces->getTurn()) {
+        clearSelected();
+        clickPiece = nullptr;
+        selectedPiece = nullptr;
+        clickmove = false;
+        hasclicked = false;
+      } else if (visual_board[selectedRow][selectedColumn].currentPiece !=
+                 nullptr) {
+        // click piece delete no rules implementation
+        selectedPiece = clickPiece;
+        selectedxPos = visual_board[previousRow][previousColumn].xposition;
+        selectedyPos = visual_board[previousRow][previousColumn].yposition;
+        chess_pieces->remove(selectedRow, selectedColumn);
+        chess_pieces->move(previousColumn, previousRow, selectedColumn,
+                           selectedRow);
+        Transform* pieceRemove =
+            visual_board[selectedRow][selectedColumn].currentPiece;
+        c->removeLayer(pieceRemove);
+        clearSquare(previousRow, previousColumn);
+        updateSquare(selectedRow, selectedColumn);
         clearSelected();
         clickPiece = nullptr;
         selectedPiece = nullptr;
@@ -302,7 +323,6 @@ void ChessVisual::release(GLWin* w) {
       return;
     } else if (visual_board[selectedRow][selectedColumn].currentPiece ==
                nullptr) {
-      // c->removeLayer(selectedPiece);
       updateSquare(selectedRow, selectedColumn);
       if (visual_board[selectedRow][selectedColumn].xposition ==
               PreviousSquare[0][0]->xposition &&
@@ -321,15 +341,39 @@ void ChessVisual::release(GLWin* w) {
       hasclicked = false;
     } else if (visual_board[selectedRow][selectedColumn].currentPiece !=
                nullptr) {
-      // c->removeLayer(selectedPiece);
+// DEMO CAPTURE WITHOUT RULE IMPLEMENTATION
+#if 1
+      if (chess_pieces->getColor(selectedRow, selectedColumn) ==
+          chess_pieces->getTurn()) {
+        updateSquare(previousRow, previousColumn);
+        hasclicked = false;
+        clickmove = false;
+        clearSelected();
+      } else {
+        chess_pieces->remove(selectedRow, selectedColumn);
+        chess_pieces->move(previousColumn, previousRow, selectedColumn,
+                           selectedRow);
+        Transform* pieceRemove =
+            visual_board[selectedRow][selectedColumn].currentPiece;
+        c->removeLayer(pieceRemove);
+        updateSquare(selectedRow, selectedColumn);
+        hasclicked = false;
+        clickmove = false;
+        clearSelected();
+      }
+#endif
+
+#if 0
+      // previous implementation where the piece is returned to its original
+      // position
       updateSquare(previousRow, previousColumn);
       hasclicked = false;
       clickmove = false;
       clearSelected();
+#endif
     }
   } else if (hasclicked && !checkBounds()) {
-    // c->removeLayer(selectedPiece);
-    updateSquare(previousRow, previousColumn);
+    updateSquare(selectedRow, selectedColumn);
     hasclicked = false;
     clickmove = false;
     clearSelected();
