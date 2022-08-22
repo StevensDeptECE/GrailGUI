@@ -31,6 +31,22 @@ class FileUtil {
     return buf;
   }
 
+  static void readComplete(char*& p, uint32_t& len, const char filename[]) {
+    int fh = open(filename, O_RDONLY);
+    if (fh < 0) return;
+    struct stat info;
+    fstat(fh, &info);
+    const uint32_t size = info.st_size;
+    if (size > len) {
+      delete [] p;
+      p = new char[size+1];
+      len = size;
+    }
+    p[size] = '\0';
+    uint32_t bytesRead = read(fh, p, size);
+    close(fh);
+  }
+
   static void readComplete(char** p, uint32_t* len, const char filename[]) {
     int fh = open(filename, O_RDONLY);
     if (fh < 0) return;
