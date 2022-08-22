@@ -25,6 +25,7 @@ set(grail-opengl
     MultiText2.cc
     NavigationBar.cc
     PopupMenu.cc
+    Rect.cc
     Scale.cc
     ScrollbarWidget.cc
     Shader.cc
