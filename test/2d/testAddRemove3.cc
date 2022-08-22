@@ -26,7 +26,6 @@ class ReactingToInput : public Member {
     rect = m->addfillRectangle(50, 100, 100, 100, red);
     roundRect = m->addfillRoundRect(300, 200, 100, 100, 50, 50, green);
     triangle = m->addfillTriangle(550, 200, 500, 250, 600, 250, blue);
-    m->removeSolid(triangle);
 
     /*brook1 = c->addLayer(
         new Image(c, 100, 100, 200, 200, "ChessTextures/brook.webp"));*/
@@ -55,7 +54,6 @@ class ReactingToInput : public Member {
       rect = m->addfillRectangle(50, 100, 100, 100, red);
       recton = true;
     }
-
     tab->getParentWin()->setUpdate();
   }
 

@@ -112,8 +112,9 @@ void MainCanvas::init() {
   menuText->init();
   tab->registerCallback(Tab::Inputs::MOUSE0_PRESS, "Widget Callback- Press",
                         Tab::Security::SAFE, bind(&MainCanvas::click, this));
-  tab->registerCallback(Tab::Inputs::MOUSE0_RELEASE, "Widget Callback- Release",
-                        Tab::Security::SAFE, bind(&MainCanvas::click, this));
+  // WHY IS THIS HERE FOR BUTTON WIDGET????
+  /*tab->registerCallback(Tab::Inputs::MOUSE0_RELEASE, "Widget Callback-
+     Release", Tab::Security::SAFE, bind(&MainCanvas::click, this));*/
 }
 
 void MainCanvas::render() {
