@@ -66,7 +66,7 @@ void StyledMultiShape2D::init() {
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0],
-               GL_DYNAMIC_DRAW);
+               GL_STATIC_DRAW);
   // Describe how information is received in shaders
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
@@ -78,7 +78,7 @@ void StyledMultiShape2D::init() {
   glGenBuffers(1, &sbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sbo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * solidIndices.size(),
-               &solidIndices[0], GL_DYNAMIC_DRAW);
+               &solidIndices[0], GL_STATIC_DRAW);
 
   // Create LBO
   // Create an object to hold the order at which the vertices are drawn(from
@@ -99,7 +99,7 @@ void StyledMultiShape2D::init() {
   glGenBuffers(1, &pbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pbo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * pointIndices.size(),
-               &pointIndices[0], GL_DYNAMIC_DRAW);
+               &pointIndices[0], GL_STATIC_DRAW);
 
   // glGenBuffers(1,&cbo);
   // glBindBuffer(GL_ARRAY_BUFFER,cbo);
@@ -111,13 +111,13 @@ void StyledMultiShape2D::init() {
 void StyledMultiShape2D::updatePoints() {
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0],
-               GL_DYNAMIC_DRAW);
+               GL_STATIC_DRAW);
 }
 
 void StyledMultiShape2D::updateIndices() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lbo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * lineIndices.size(),
-               &lineIndices[0], GL_DYNAMIC_DRAW);
+               &lineIndices[0], GL_STATIC_DRAW);
 }
 
 // Solid Primitives
