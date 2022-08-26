@@ -193,7 +193,7 @@ void benchmarkEverything(const char filename[]) {
   FileUtil::readComplete(&f, &length, filename);
   char* word = strtok(f, "\n");
   // create hashmap and load dictionary in with a unique integer for each word
-  BLHashMap<uint32_t> dict = BLHashMap<uint32_t>(length, 1024, 1024);//length/5, length/5);
+  BLHashMap<uint32_t> dict = BLHashMap<uint32_t>(length, length/5, length/5);//1024, 1024);
   // test checkGrow()
   while (word != nullptr)
   {
@@ -206,10 +206,10 @@ void benchmarkEverything(const char filename[]) {
       "Loading ASCII Dictionary (Makes BLHashMap)", 1e2, [&]() { loadAsciiDictionary(filename); });
 #if 1
   CBenchmark<>::benchmark(
-      "Loading unordered_map", 10, [&]() { testLoadUnorderedMap(filename); });
+      "Loading unordered_map", 1e2, [&]() { testLoadUnorderedMap(filename); });
 
   CBenchmark<>::benchmark(
-      "Loading unordered_map + ifstream", 10, [&]() { testLoadUnorderedMapIfstream(filename); });
+      "Loading unordered_map + ifstream", 1e2, [&]() { testLoadUnorderedMapIfstream(filename); });
 
   CBenchmark<>::benchmark(
       "Convert ASCII Dictionary to BLHashMap", 1e2, [&]() { convertAsciiDictionaryToBlockLoader(filename); });

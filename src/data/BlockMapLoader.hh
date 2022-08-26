@@ -6,7 +6,7 @@
 class BlockMapLoader : public BlockLoader {
  public:
   struct BlockMapHeader {
-    uint32_t numNamedEntities;
+    uint32_t numNamedEntities; // TODO: NOT BEING USED
     uint32_t numRegionContainers;
     uint32_t numRegions;
     uint32_t numSegments;
@@ -36,7 +36,7 @@ class BlockMapLoader : public BlockLoader {
     uint32_t offset;      // if entityType=REGION_CONTAINER, then offset into
                           // regionContainers, ...
   };
-  struct NamedEntities {
+  struct NamedEntities { // TODO: NOT BEING USED
     uint32_t numNames;  // TODO: redundant with the number in the BlockMapHeader
     uint32_t nameSizes;  // amount of memory used for all names
     NamedEntry entry[];
