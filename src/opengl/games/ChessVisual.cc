@@ -323,7 +323,12 @@ void ChessVisual::release(GLWin* w) {
       return;
     } else if (visual_board[selectedRow][selectedColumn].currentPiece ==
                nullptr) {
-      updateSquare(selectedRow, selectedColumn);
+      bool legal = chess_pieces->move(previousColumn, previousRow,
+                                      selectedColumn, selectedRow);
+      if (legal)
+        updateSquare(selectedRow, selectedColumn);
+      else
+        updateSquare(previousRow, previousColumn);
       if (visual_board[selectedRow][selectedColumn].xposition ==
               PreviousSquare[0][0]->xposition &&
           visual_board[selectedRow][selectedColumn].yposition ==
@@ -336,8 +341,7 @@ void ChessVisual::release(GLWin* w) {
       }
       clearSelected();
       // TODO:MESSAGE TO CONTROLLER TO MAKE MOVE
-      chess_pieces->move(previousColumn, previousRow, selectedColumn,
-                         selectedRow);
+
       hasclicked = false;
     } else if (visual_board[selectedRow][selectedColumn].currentPiece !=
                nullptr) {

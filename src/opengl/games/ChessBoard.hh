@@ -74,12 +74,15 @@ class ChessBoard : public Data {
   void move(const char moveLocation[]);
   // Possible best method internally?:
   // void move(char fromColumn, int8_t fromRow, char toColumn, int8_t toRow);
-  void move(int8_t oldColumn, int8_t oldRow, int8_t newColumn, int8_t newRow);
+  bool move(int8_t oldColumn, int8_t oldRow, int8_t newColumn, int8_t newRow);
   void remove(const char pieceLocation[]);
   void remove(char Column, int8_t Row);
   int8_t getPiece(int8_t row, int8_t column);
   int8_t getColor(int8_t row, int8_t column);
   int8_t getTurn();
   bool checkTurn(int8_t row, int8_t column);
+  uint64_t checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color);
+  bool checkLegalMove(uint64_t bitboard, uint8_t row, uint8_t column);
+  uint64_t changeBitBoard(uint64_t bitboard, uint8_t row, uint8_t column);
   friend std::ostream& operator<<(std::ostream& s, ChessBoard& b);
 };

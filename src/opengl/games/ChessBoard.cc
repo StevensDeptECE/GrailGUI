@@ -424,22 +424,30 @@ void ChessBoard::move(char fromColumn, int8_t fromRow, char toColumn,
 }
 #endif
 
-void ChessBoard::move(int8_t oldColumn, int8_t oldRow, int8_t newColumn,
+bool ChessBoard::move(int8_t oldColumn, int8_t oldRow, int8_t newColumn,
                       int8_t newRow) {
   // specify the actual positions within the array in parameters rather than in
   // chess notation
   // 2d mapped into 1d --> array[width * height] To find the
   // number in the array --> array[width * row + column]
+  uint64_t bitboard = checkPossibleMoves(
+      oldRow, oldColumn, board_position[oldColumn][oldRow].color);
+  bool possibleMove = checkLegalMove(bitboard, newRow, newColumn);
+  if (possibleMove) {
+    board_position[newRow][newColumn].piece =
+        board_position[oldRow][oldColumn].piece;
+    board_position[newRow][newColumn].color =
+        board_position[oldRow][oldColumn].color;
+    board_position[oldRow][oldColumn].piece = 0;
+    if (turn == 'w')
+      turn = 'b';
+    else
+      turn = 'w';
 
-  board_position[newRow][newColumn].piece =
-      board_position[oldRow][oldColumn].piece;
-  board_position[newRow][newColumn].color =
-      board_position[oldRow][oldColumn].color;
-  board_position[oldRow][oldColumn].piece = 0;
-  if (turn == 'w')
-    turn = 'b';
-  else
-    turn = 'w';
+    return true;
+  } else {
+    return false;
+  }
 }
 
 void ChessBoard::remove(const char pieceLocation[]) {
@@ -566,4 +574,147 @@ ostream& operator<<(ostream& s, ChessBoard& b) {
     s << "\n";
   }
   return s;
+}
+
+uint64_t ChessBoard::checkPossibleMoves(uint8_t row, uint8_t column,
+                                        uint8_t color) {
+  uint64_t bitboard = 0;
+  // rook
+  if (board_position[row][column].piece == 1 ||
+      board_position[row][column].piece == 4) {
+    // down
+    for (uint8_t i = row + 1; i < 8; i++) {
+      if (board_position[i][column].piece != 0 &&
+          board_position[i][column].color == color) {
+        break;
+      } else if (board_position[i][column].piece != 0 &&
+                 board_position[i][column].color != color) {
+        bitboard = changeBitBoard(bitboard, i, column);
+        break;
+      } else {
+        bitboard = changeBitBoard(bitboard, i, column);
+      }
+    }
+
+    // up
+    for (uint8_t i = row - 1; i >= 0; i--) {
+      if (board_position[i][column].piece != 0 &&
+          board_position[i][column].color == color) {
+        break;
+      } else if (board_position[i][column].piece != 0 &&
+                 board_position[i][column].color != color) {
+        bitboard = changeBitBoard(bitboard, i, column);
+        break;
+      } else {
+        bitboard = changeBitBoard(bitboard, i, column);
+      }
+    }
+
+    // left
+    for (uint8_t j = column - 1; j >= 0; j--) {
+      if (board_position[row][j].piece != 0 &&
+          board_position[row][j].color == color) {
+        break;
+      } else if (board_position[row][j].piece != 0 &&
+                 board_position[row][j].color != color) {
+        bitboard = changeBitBoard(bitboard, row, j);
+        break;
+      } else {
+        bitboard = changeBitBoard(bitboard, row, j);
+      }
+    }
+
+    // right
+    for (uint8_t j = column + 1; j < 8; j++) {
+      if (board_position[row][j].piece != 0 &&
+          board_position[row][j].color == color) {
+        break;
+      } else if (board_position[row][j].piece != 0 &&
+                 board_position[row][j].color != color) {
+        bitboard = changeBitBoard(bitboard, row, j);
+        break;
+      } else {
+        bitboard = changeBitBoard(bitboard, row, j);
+      }
+    }
+  }
+  if (board_position[row][column].piece == 3 ||
+      board_position[row][column].piece == 4) {
+    for (uint8_t i = row + 1, j = column + 1; i < 8 && j < 8; i++, j++) {
+      if (board_position[i][j].piece != 0 &&
+          board_position[i][j].color == color) {
+        break;
+      } else if (board_position[i][j].piece != 0 &&
+                 board_position[i][j].color != color) {
+        bitboard = changeBitBoard(bitboard, i, j);
+        break;
+      } else {
+        bitboard = changeBitBoard(bitboard, i, j);
+      }
+    }
+    for (uint8_t i = row - 1, j = column + 1; i >= 0 && j < 8; i--, j++) {
+      if (board_position[i][j].piece != 0 &&
+          board_position[i][j].color == color) {
+        break;
+      } else if (board_position[i][j].piece != 0 &&
+                 board_position[i][j].color != color) {
+        bitboard = changeBitBoard(bitboard, i, j);
+        break;
+      } else {
+        bitboard = changeBitBoard(bitboard, i, j);
+      }
+    }
+    for (uint8_t i = row + 1, j = column - 1; i < 8 && j >= 0; i++, j--) {
+      if (board_position[i][j].piece != 0 &&
+          board_position[i][j].color == color) {
+        break;
+      } else if (board_position[i][j].piece != 0 &&
+                 board_position[i][j].color != color) {
+        bitboard = changeBitBoard(bitboard, i, j);
+        break;
+      } else {
+        bitboard = changeBitBoard(bitboard, i, j);
+      }
+    }
+    for (uint8_t i = row - 1, j = column - 1; i >= 0 && j >= 0; i--, j--) {
+      if (board_position[i][j].piece != 0 &&
+          board_position[i][j].color == color) {
+        break;
+      } else if (board_position[i][j].piece != 0 &&
+                 board_position[i][j].color != color) {
+        bitboard = changeBitBoard(bitboard, i, j);
+        break;
+      } else {
+        bitboard = changeBitBoard(bitboard, i, j);
+      }
+    }
+  }
+  if (board_position[row][column].piece == 2 ||
+      board_position[row][column].piece == 5 ||
+      board_position[row][column].piece == 6) {
+    bitboard = ~0;
+  }
+  return bitboard;
+}
+
+bool ChessBoard::checkLegalMove(uint64_t bitboard, uint8_t row,
+                                uint8_t column) {
+  uint64_t place = 1;
+  uint64_t spot = row * 8 + column;
+  place = place << spot;
+  place = bitboard & place;
+  if (place != 0) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+uint64_t ChessBoard::changeBitBoard(uint64_t bitboard, uint8_t row,
+                                    uint8_t column) {
+  uint64_t place = 1;
+  uint64_t spot = row * 8 + column;
+  place = place << spot;
+  place = bitboard ^ place;
+  return place;
 }
