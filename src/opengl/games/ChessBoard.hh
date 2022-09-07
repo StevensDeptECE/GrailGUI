@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 
+#include "opengl/games/ChessPieces.hh"
+
 extern const char PieceDisplayw[] = " RNBQKP";
 extern const char PieceDisplayb[] = " rnbqkp";
 
@@ -11,6 +13,7 @@ class ChessVisual;
 class ChessController;
 class ChessBoard;
 class ChessRules;
+class Pieces;
 
 enum class ChessColor { black = 0, white = 1 };
 
@@ -31,14 +34,15 @@ class BoardPosition {
 
   uint8_t color : 1;
   uint8_t piece : 7;
+  Piece* chesspiece;
 
  public:
   BoardPosition() {
     color = 0;
     piece = 0;
   }
-  BoardPosition(ChessColor color, ChessPieceType piece)
-      : color(uint8_t(color)), piece(uint8_t(piece)){};
+  BoardPosition(ChessColor color, ChessPieceType piece, Piece* chesspiece)
+      : color(uint8_t(color)), piece(uint8_t(piece)), chesspiece(chesspiece){};
 };
 
 class Observer {
@@ -65,6 +69,7 @@ class ChessBoard : public Data {
   char turn;
   friend ChessVisual;
   friend ChessRules;
+  friend Piece;
   BoardPosition board_position[8][8];
 
  public:

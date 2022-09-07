@@ -17,12 +17,30 @@ ChessBoard::ChessBoard() {
           piecekind--;
         }
         board_position[i][j].piece = piecekind;
+        switch (piecekind) {
+          case 1:
+            board_position[i][j].chesspiece = new Rook(this);
+            break;
+          case 2:
+            board_position[i][j].chesspiece = new Knight(this);
+            break;
+          case 3:
+            board_position[i][j].chesspiece = new Bishop(this);
+            break;
+          case 4:
+            board_position[i][j].chesspiece = new Queen(this);
+            break;
+          case 5:
+            board_position[i][j].chesspiece = new King(this);
+            break;
+        }
       }
       if (i == 1 || i == 6) {
         if (i == 1) board_position[i][j].color = 0;
         if (i == 6) board_position[i][j].color = 1;
         piecekind = 6;
         board_position[i][j].piece = piecekind;
+        board_position[i][j].chesspiece = new Pawn(this);
       }
     }
   }
@@ -430,8 +448,9 @@ bool ChessBoard::move(int8_t oldColumn, int8_t oldRow, int8_t newColumn,
   // chess notation
   // 2d mapped into 1d --> array[width * height] To find the
   // number in the array --> array[width * row + column]
-  uint64_t bitboard = checkPossibleMoves(
-      oldRow, oldColumn, board_position[oldColumn][oldRow].color);
+  uint64_t bitboard =
+      board_position[oldRow][oldColumn].chesspiece->checkPossibleMoves(
+          oldRow, oldColumn, board_position[oldRow][oldColumn].color);
   bool possibleMove = checkLegalMove(bitboard, newRow, newColumn);
   if (possibleMove) {
     board_position[newRow][newColumn].piece =
@@ -439,6 +458,9 @@ bool ChessBoard::move(int8_t oldColumn, int8_t oldRow, int8_t newColumn,
     board_position[newRow][newColumn].color =
         board_position[oldRow][oldColumn].color;
     board_position[oldRow][oldColumn].piece = 0;
+    board_position[newRow][newColumn].chesspiece =
+        board_position[oldRow][oldColumn].chesspiece;
+    board_position[oldRow][oldColumn].chesspiece = nullptr;
     if (turn == 'w')
       turn = 'b';
     else
@@ -689,6 +711,7 @@ uint64_t ChessBoard::checkPossibleMoves(uint8_t row, uint8_t column,
       }
     }
   }
+  // knight
   if (board_position[row][column].piece == 2 ||
       board_position[row][column].piece == 5 ||
       board_position[row][column].piece == 6) {
