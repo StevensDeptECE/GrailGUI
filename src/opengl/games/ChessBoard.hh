@@ -4,8 +4,6 @@
 #include <iostream>
 #include <vector>
 
-#include "opengl/games/ChessPieces.hh"
-
 extern const char PieceDisplayw[] = " RNBQKP";
 extern const char PieceDisplayb[] = " rnbqkp";
 
@@ -13,7 +11,55 @@ class ChessVisual;
 class ChessController;
 class ChessBoard;
 class ChessRules;
-class Pieces;
+
+class Piece {
+ protected:
+  ChessBoard* board;
+  uint64_t bitboard = 0;
+
+ public:
+  Piece(ChessBoard* board) : board(board){};
+  virtual uint64_t checkPossibleMoves(uint8_t row, uint8_t column,
+                                      uint8_t color);
+  bool checkLegalMove(uint64_t bitboard, uint8_t row, uint8_t column);
+  uint64_t changeBitBoard(uint64_t bitboard, uint8_t row, uint8_t column);
+};
+
+class Rook : public Piece {
+ public:
+  Rook(ChessBoard* board) : Piece(board){};
+  uint64_t checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color);
+};
+
+class Knight : public Piece {
+ public:
+  Knight(ChessBoard* board) : Piece(board){};
+  // uint64_t checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color){};
+};
+
+class Pawn : public Piece {
+ public:
+  Pawn(ChessBoard* board) : Piece(board){};
+  // uint64_t checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color){};
+};
+
+class Bishop : public Piece {
+ public:
+  Bishop(ChessBoard* board) : Piece(board){};
+  // uint64_t checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color){};
+};
+
+class King : public Piece {
+ public:
+  King(ChessBoard* board) : Piece(board){};
+  // uint64_t checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color){};
+};
+
+class Queen : public Piece {
+ public:
+  Queen(ChessBoard* board) : Piece(board){};
+  // uint64_t checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color){};
+};
 
 enum class ChessColor { black = 0, white = 1 };
 
@@ -79,7 +125,8 @@ class ChessBoard : public Data {
   void move(const char moveLocation[]);
   // Possible best method internally?:
   // void move(char fromColumn, int8_t fromRow, char toColumn, int8_t toRow);
-  bool move(int8_t oldColumn, int8_t oldRow, int8_t newColumn, int8_t newRow);
+  bool move(uint8_t oldColumn, uint8_t oldRow, uint8_t newColumn,
+            uint8_t newRow);
   void remove(const char pieceLocation[]);
   void remove(char Column, int8_t Row);
   int8_t getPiece(int8_t row, int8_t column);
