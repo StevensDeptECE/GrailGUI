@@ -46,7 +46,7 @@ class Pawn : public Piece {
 class Bishop : public Piece {
  public:
   Bishop(ChessBoard* board) : Piece(board){};
-  // uint64_t checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color){};
+  uint64_t checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color);
 };
 
 class King : public Piece {
@@ -58,7 +58,7 @@ class King : public Piece {
 class Queen : public Piece {
  public:
   Queen(ChessBoard* board) : Piece(board){};
-  // uint64_t checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color){};
+  uint64_t checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color);
 };
 
 enum class ChessColor { black = 0, white = 1 };

@@ -600,149 +600,6 @@ ostream& operator<<(ostream& s, ChessBoard& b) {
   return s;
 }
 
-uint64_t ChessBoard::checkPossibleMoves(uint8_t row, uint8_t column,
-                                        uint8_t color) {
-  uint64_t bitboard = 0;
-  // rook
-  if (board_position[row][column].piece == 1 ||
-      board_position[row][column].piece == 4) {
-    // down
-    for (uint8_t i = row + 1; i < 8; i++) {
-      if (board_position[i][column].piece != 0 &&
-          board_position[i][column].color == color) {
-        break;
-      } else if (board_position[i][column].piece != 0 &&
-                 board_position[i][column].color != color) {
-        bitboard = changeBitBoard(bitboard, i, column);
-        break;
-      } else {
-        bitboard = changeBitBoard(bitboard, i, column);
-      }
-    }
-
-    // up
-    for (uint8_t i = row - 1; i >= 0; i--) {
-      if (board_position[i][column].piece != 0 &&
-          board_position[i][column].color == color) {
-        break;
-      } else if (board_position[i][column].piece != 0 &&
-                 board_position[i][column].color != color) {
-        bitboard = changeBitBoard(bitboard, i, column);
-        break;
-      } else {
-        bitboard = changeBitBoard(bitboard, i, column);
-      }
-    }
-
-    // left
-    for (uint8_t j = column - 1; j >= 0; j--) {
-      if (board_position[row][j].piece != 0 &&
-          board_position[row][j].color == color) {
-        break;
-      } else if (board_position[row][j].piece != 0 &&
-                 board_position[row][j].color != color) {
-        bitboard = changeBitBoard(bitboard, row, j);
-        break;
-      } else {
-        bitboard = changeBitBoard(bitboard, row, j);
-      }
-    }
-
-    // right
-    for (uint8_t j = column + 1; j < 8; j++) {
-      if (board_position[row][j].piece != 0 &&
-          board_position[row][j].color == color) {
-        break;
-      } else if (board_position[row][j].piece != 0 &&
-                 board_position[row][j].color != color) {
-        bitboard = changeBitBoard(bitboard, row, j);
-        break;
-      } else {
-        bitboard = changeBitBoard(bitboard, row, j);
-      }
-    }
-  }
-  if (board_position[row][column].piece == 3 ||
-      board_position[row][column].piece == 4) {
-    for (uint8_t i = row + 1, j = column + 1; i < 8 && j < 8; i++, j++) {
-      if (board_position[i][j].piece != 0 &&
-          board_position[i][j].color == color) {
-        break;
-      } else if (board_position[i][j].piece != 0 &&
-                 board_position[i][j].color != color) {
-        bitboard = changeBitBoard(bitboard, i, j);
-        break;
-      } else {
-        bitboard = changeBitBoard(bitboard, i, j);
-      }
-    }
-    for (uint8_t i = row - 1, j = column + 1; i >= 0 && j < 8; i--, j++) {
-      if (board_position[i][j].piece != 0 &&
-          board_position[i][j].color == color) {
-        break;
-      } else if (board_position[i][j].piece != 0 &&
-                 board_position[i][j].color != color) {
-        bitboard = changeBitBoard(bitboard, i, j);
-        break;
-      } else {
-        bitboard = changeBitBoard(bitboard, i, j);
-      }
-    }
-    for (uint8_t i = row + 1, j = column - 1; i < 8 && j >= 0; i++, j--) {
-      if (board_position[i][j].piece != 0 &&
-          board_position[i][j].color == color) {
-        break;
-      } else if (board_position[i][j].piece != 0 &&
-                 board_position[i][j].color != color) {
-        bitboard = changeBitBoard(bitboard, i, j);
-        break;
-      } else {
-        bitboard = changeBitBoard(bitboard, i, j);
-      }
-    }
-    for (uint8_t i = row - 1, j = column - 1; i >= 0 && j >= 0; i--, j--) {
-      if (board_position[i][j].piece != 0 &&
-          board_position[i][j].color == color) {
-        break;
-      } else if (board_position[i][j].piece != 0 &&
-                 board_position[i][j].color != color) {
-        bitboard = changeBitBoard(bitboard, i, j);
-        break;
-      } else {
-        bitboard = changeBitBoard(bitboard, i, j);
-      }
-    }
-  }
-  // knight
-  if (board_position[row][column].piece == 2 ||
-      board_position[row][column].piece == 5 ||
-      board_position[row][column].piece == 6) {
-    bitboard = ~0;
-  }
-  return bitboard;
-}
-
-bool ChessBoard::checkLegalMove(uint64_t bitboard, uint8_t row,
-                                uint8_t column) {
-  uint64_t place = 1;
-  uint64_t spot = row * 8 + column;
-  place = place << spot;
-  place = bitboard & place;
-  if (place != 0) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-uint64_t ChessBoard::changeBitBoard(uint64_t bitboard, uint8_t row,
-                                    uint8_t column) {
-  uint64_t place = 1;
-  uint64_t spot = row * 8 + column;
-  place = place << spot;
-  place = bitboard ^ place;
-  return place;
-}
 uint64_t Piece::checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color) {
   bitboard = ~0;
   return bitboard;
@@ -770,7 +627,7 @@ uint64_t Piece::changeBitBoard(uint64_t bitboard, uint8_t row, uint8_t column) {
 
 uint64_t Rook::checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color) {
   bitboard = 0;
-  for (uint8_t i = row + 1; i < 8; i++) {
+  for (int8_t i = row + 1; i < 8; i++) {
     if (board->getPiece(i, column) != 0 &&
         board->getColor(i, column) == color) {
       break;
@@ -784,7 +641,7 @@ uint64_t Rook::checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color) {
   }
 
   // up
-  for (uint8_t i = row - 1; i >= 0; i--) {
+  for (int8_t i = row - 1; i >= 0; i--) {
     if (board->getPiece(i, column) != 0 &&
         board->getColor(i, column) == color) {
       break;
@@ -798,7 +655,7 @@ uint64_t Rook::checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color) {
   }
 
   // left
-  for (uint8_t j = column - 1; j >= 0; j--) {
+  for (int8_t j = column - 1; j >= 0; j--) {
     if (board->getPiece(row, j) != 0 && board->getColor(row, j) == color) {
       break;
     } else if (board->getPiece(row, j) != 0 &&
@@ -811,7 +668,7 @@ uint64_t Rook::checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color) {
   }
 
   // right
-  for (uint8_t j = column + 1; j < 8; j++) {
+  for (int8_t j = column + 1; j < 8; j++) {
     if (board->getPiece(row, j) != 0 && board->getColor(row, j) == color) {
       break;
     } else if (board->getPiece(row, j) != 0 &&
@@ -820,6 +677,149 @@ uint64_t Rook::checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color) {
       break;
     } else {
       bitboard = changeBitBoard(bitboard, row, j);
+    }
+  }
+  return bitboard;
+}
+
+uint64_t Bishop::checkPossibleMoves(uint8_t row, uint8_t column,
+                                    uint8_t color) {
+  bitboard = 0;
+  for (int8_t i = row + 1, j = column + 1; i < 8 && j < 8; i++, j++) {
+    if (board->getPiece(i, j) != 0 && board->getColor(i, j) == color) {
+      break;
+    } else if (board->getPiece(i, j) != 0 && board->getColor(i, j) != color) {
+      bitboard = changeBitBoard(bitboard, i, j);
+      break;
+    } else {
+      bitboard = changeBitBoard(bitboard, i, j);
+    }
+  }
+  for (int8_t i = row - 1, j = column + 1; i >= 0 && j < 8; i--, j++) {
+    if (board->getPiece(i, j) != 0 && board->getColor(i, j) == color) {
+      break;
+    } else if (board->getPiece(i, j) != 0 && board->getColor(i, j) != color) {
+      bitboard = changeBitBoard(bitboard, i, j);
+      break;
+    } else {
+      bitboard = changeBitBoard(bitboard, i, j);
+    }
+  }
+  for (int8_t i = row + 1, j = column - 1; i < 8 && j >= 0; i++, j--) {
+    if (board->getPiece(i, j) != 0 && board->getColor(i, j) == color) {
+      break;
+    } else if (board->getPiece(i, j) != 0 && board->getColor(i, j) != color) {
+      bitboard = changeBitBoard(bitboard, i, j);
+      break;
+    } else {
+      bitboard = changeBitBoard(bitboard, i, j);
+    }
+  }
+  for (int8_t i = row - 1, j = column - 1; i >= 0 && j >= 0; i--, j--) {
+    if (board->getPiece(i, j) != 0 && board->getColor(i, j) == color) {
+      break;
+    } else if (board->getPiece(i, j) != 0 && board->getColor(i, j) != color) {
+      bitboard = changeBitBoard(bitboard, i, j);
+      break;
+    } else {
+      bitboard = changeBitBoard(bitboard, i, j);
+    }
+  }
+  return bitboard;
+}
+
+uint64_t Queen::checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color) {
+  bitboard = 0;
+  for (int8_t i = row + 1; i < 8; i++) {
+    if (board->getPiece(i, column) != 0 &&
+        board->getColor(i, column) == color) {
+      break;
+    } else if (board->getPiece(i, column) != 0 &&
+               board->getColor(i, column) != color) {
+      bitboard = changeBitBoard(bitboard, i, column);
+      break;
+    } else {
+      bitboard = changeBitBoard(bitboard, i, column);
+    }
+  }
+
+  // up
+  for (int8_t i = row - 1; i >= 0; i--) {
+    if (board->getPiece(i, column) != 0 &&
+        board->getColor(i, column) == color) {
+      break;
+    } else if (board->getPiece(i, column) != 0 &&
+               board->getColor(i, column) != color) {
+      bitboard = changeBitBoard(bitboard, i, column);
+      break;
+    } else {
+      bitboard = changeBitBoard(bitboard, i, column);
+    }
+  }
+
+  // left
+  for (int8_t j = column - 1; j >= 0; j--) {
+    if (board->getPiece(row, j) != 0 && board->getColor(row, j) == color) {
+      break;
+    } else if (board->getPiece(row, j) != 0 &&
+               board->getColor(row, j) != color) {
+      bitboard = changeBitBoard(bitboard, row, j);
+      break;
+    } else {
+      bitboard = changeBitBoard(bitboard, row, j);
+    }
+  }
+
+  // right
+  for (int8_t j = column + 1; j < 8; j++) {
+    if (board->getPiece(row, j) != 0 && board->getColor(row, j) == color) {
+      break;
+    } else if (board->getPiece(row, j) != 0 &&
+               board->getColor(row, j) != color) {
+      bitboard = changeBitBoard(bitboard, row, j);
+      break;
+    } else {
+      bitboard = changeBitBoard(bitboard, row, j);
+    }
+  }
+  for (int8_t i = row + 1, j = column + 1; i < 8 && j < 8; i++, j++) {
+    if (board->getPiece(i, j) != 0 && board->getColor(i, j) == color) {
+      break;
+    } else if (board->getPiece(i, j) != 0 && board->getColor(i, j) != color) {
+      bitboard = changeBitBoard(bitboard, i, j);
+      break;
+    } else {
+      bitboard = changeBitBoard(bitboard, i, j);
+    }
+  }
+  for (int8_t i = row - 1, j = column + 1; i >= 0 && j < 8; i--, j++) {
+    if (board->getPiece(i, j) != 0 && board->getColor(i, j) == color) {
+      break;
+    } else if (board->getPiece(i, j) != 0 && board->getColor(i, j) != color) {
+      bitboard = changeBitBoard(bitboard, i, j);
+      break;
+    } else {
+      bitboard = changeBitBoard(bitboard, i, j);
+    }
+  }
+  for (int8_t i = row + 1, j = column - 1; i < 8 && j >= 0; i++, j--) {
+    if (board->getPiece(i, j) != 0 && board->getColor(i, j) == color) {
+      break;
+    } else if (board->getPiece(i, j) != 0 && board->getColor(i, j) != color) {
+      bitboard = changeBitBoard(bitboard, i, j);
+      break;
+    } else {
+      bitboard = changeBitBoard(bitboard, i, j);
+    }
+  }
+  for (int8_t i = row - 1, j = column - 1; i >= 0 && j >= 0; i--, j--) {
+    if (board->getPiece(i, j) != 0 && board->getColor(i, j) == color) {
+      break;
+    } else if (board->getPiece(i, j) != 0 && board->getColor(i, j) != color) {
+      bitboard = changeBitBoard(bitboard, i, j);
+      break;
+    } else {
+      bitboard = changeBitBoard(bitboard, i, j);
     }
   }
   return bitboard;

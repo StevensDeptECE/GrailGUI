@@ -258,18 +258,22 @@ void ChessVisual::press(GLWin* w) {
         selectedPiece = clickPiece;
         selectedxPos = visual_board[previousRow][previousColumn].xposition;
         selectedyPos = visual_board[previousRow][previousColumn].yposition;
-        clearSquare(previousRow, previousColumn);
-        updateSquare(selectedRow, selectedColumn);
-        clearSelected();
-        clickPiece = nullptr;
-        selectedPiece = nullptr;
-        clickmove = false;
-        hasclicked = false;
-        // TODO:MESSAGE TO CONTROLLER TO MAKE MOVE
-
-        chess_pieces->move(previousColumn, previousRow, selectedColumn,
-                           selectedRow);
-
+        if (chess_pieces->move(previousColumn, previousRow, selectedColumn,
+                               selectedRow)) {
+          clearSquare(previousRow, previousColumn);
+          updateSquare(selectedRow, selectedColumn);
+          clearSelected();
+          clickPiece = nullptr;
+          selectedPiece = nullptr;
+          clickmove = false;
+          hasclicked = false;
+        } else {
+          clearSelected();
+          clickPiece = nullptr;
+          selectedPiece = nullptr;
+          clickmove = false;
+          hasclicked = false;
+        }
         return;
       } else if (visual_board[selectedRow][selectedColumn].currentPiece !=
                      nullptr &&
@@ -280,25 +284,37 @@ void ChessVisual::press(GLWin* w) {
         selectedPiece = nullptr;
         clickmove = false;
         hasclicked = false;
+        return;
       } else if (visual_board[selectedRow][selectedColumn].currentPiece !=
-                 nullptr) {
+                     nullptr &&
+                 chess_pieces->getColor(selectedRow, selectedColumn) !=
+                     chess_pieces->getTurn()) {
         // click piece delete no rules implementation
         selectedPiece = clickPiece;
-        selectedxPos = visual_board[previousRow][previousColumn].xposition;
-        selectedyPos = visual_board[previousRow][previousColumn].yposition;
-        chess_pieces->remove(selectedRow, selectedColumn);
-        chess_pieces->move(previousColumn, previousRow, selectedColumn,
-                           selectedRow);
-        Transform* pieceRemove =
-            visual_board[selectedRow][selectedColumn].currentPiece;
-        c->removeLayer(pieceRemove);
-        clearSquare(previousRow, previousColumn);
-        updateSquare(selectedRow, selectedColumn);
-        clearSelected();
-        clickPiece = nullptr;
-        selectedPiece = nullptr;
-        clickmove = false;
-        hasclicked = false;
+        if (chess_pieces->move(previousColumn, previousRow, selectedColumn,
+                               selectedRow)) {
+          selectedxPos = visual_board[previousRow][previousColumn].xposition;
+          selectedyPos = visual_board[previousRow][previousColumn].yposition;
+          Transform* pieceRemove =
+              visual_board[selectedRow][selectedColumn].currentPiece;
+          c->removeLayer(pieceRemove);
+          clearSquare(previousRow, previousColumn);
+          updateSquare(selectedRow, selectedColumn);
+          clearSelected();
+          clickPiece = nullptr;
+          selectedPiece = nullptr;
+          clickmove = false;
+          hasclicked = false;
+          return;
+        } else {
+          updateSquare(previousRow, previousColumn);
+          clearSelected();
+          clickPiece = nullptr;
+          selectedPiece = nullptr;
+          clickmove = false;
+          hasclicked = false;
+          return;
+        }
       }
     }
     if (!hasclicked && chess_pieces->getColor(selectedRow, selectedColumn) ==
@@ -323,25 +339,25 @@ void ChessVisual::release(GLWin* w) {
       return;
     } else if (visual_board[selectedRow][selectedColumn].currentPiece ==
                nullptr) {
-      bool legal = chess_pieces->move(previousColumn, previousRow,
-                                      selectedColumn, selectedRow);
-      if (legal)
-        updateSquare(selectedRow, selectedColumn);
-      else
-        updateSquare(previousRow, previousColumn);
       if (visual_board[selectedRow][selectedColumn].xposition ==
               PreviousSquare[0][0]->xposition &&
           visual_board[selectedRow][selectedColumn].yposition ==
               PreviousSquare[0][0]->yposition) {
+        updateSquare(selectedRow, selectedColumn);
         clickmove = true;
         clickPiece = visual_board[selectedRow][selectedColumn].currentPiece;
         selectedPiece = nullptr;
         hasclicked = false;
         return;
       }
+      bool legal = chess_pieces->move(previousColumn, previousRow,
+                                      selectedColumn, selectedRow);
+      if (legal) {
+        updateSquare(selectedRow, selectedColumn);
+      } else {
+        updateSquare(previousRow, previousColumn);
+      }
       clearSelected();
-      // TODO:MESSAGE TO CONTROLLER TO MAKE MOVE
-
       hasclicked = false;
     } else if (visual_board[selectedRow][selectedColumn].currentPiece !=
                nullptr) {
@@ -354,16 +370,20 @@ void ChessVisual::release(GLWin* w) {
         clickmove = false;
         clearSelected();
       } else {
-        chess_pieces->remove(selectedRow, selectedColumn);
-        chess_pieces->move(previousColumn, previousRow, selectedColumn,
-                           selectedRow);
-        Transform* pieceRemove =
-            visual_board[selectedRow][selectedColumn].currentPiece;
-        c->removeLayer(pieceRemove);
-        updateSquare(selectedRow, selectedColumn);
-        hasclicked = false;
-        clickmove = false;
-        clearSelected();
+        if (chess_pieces->move(previousColumn, previousRow, selectedColumn,
+                               selectedRow)) {
+          Transform* pieceRemove =
+              visual_board[selectedRow][selectedColumn].currentPiece;
+          c->removeLayer(pieceRemove);
+          updateSquare(selectedRow, selectedColumn);
+          hasclicked = false;
+          clickmove = false;
+          clearSelected();
+        } else {
+          updateSquare(previousRow, previousColumn);
+          clearSelected();
+          hasclicked = false;
+        }
       }
 #endif
 
