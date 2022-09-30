@@ -7,15 +7,16 @@ import shutil
 import subprocess
 import os
 import re
+import sys
 
 console_log_level = logging.INFO
 file_log_level = logging.DEBUG
-version = "0.2.0"
+version = "0.3.0"
 
 
 class MyParser(argparse.ArgumentParser):
     def error(self, message: str):
-        logger.error("error: %s" % message)
+        logger.error("error: %s", message)
         self.print_help()
         exit(2)
 
@@ -30,9 +31,9 @@ def parse():
 
     parser = MyParser(description="Build and run GrailGUI")
     parser.add_argument("-v", "--version", action="version", version=version)
-    subparsers = parser.add_subparsers(help="subcommands",
-                                       required=True,
-                                       dest="subcommand")
+    subparsers = parser.add_subparsers(
+        help="subcommands", required=True, dest="subcommand"
+    )
 
     generate = subparsers.add_parser(
         "generate",
@@ -40,51 +41,44 @@ def parse():
         description="When called with no additional arguments, generates a\
         valid configuration for Grail using the Ninja build system.",
     )
-    generate.add_argument("-G",
-                          help="Use a different generator for CMake",
-                          default="",
-                          dest="generator")
-    generate.add_argument("-f",
-                          "--force",
-                          action="store_true",
-                          dest="force",
-                          default=False)
-    generate.add_argument("-b",
-                          help="Change the build mode",
-                          default="",
-                          dest="mode")
-    generate.add_argument("--c-compiler",
-                          default="",
-                          dest="c_compiler",
-                          type=str,
-                          help="Set C compiler to use")
-    generate.add_argument("--cxx-compiler",
-                          default="",
-                          dest="cxx_compiler",
-                          type=str,
-                          help="Set C++ compiler to use")
-    generate.add_argument("--linker",
-                          default="",
-                          dest="linker",
-                          type=str,
-                          help="Set linker to use")
-    generate.add_argument("--list-options",
-                          action="store_true",
-                          dest="list_options",
-                          default=False)
-    generate.add_argument("--dump-options",
-                          action="store_true",
-                          dest="dump_options",
-                          default=False)
-    generate.add_argument("--dump-option",
-                          action="store_true",
-                          dest="dump_option",
-                          default=False)
-    generate.add_argument("-c",
-                          "--config",
-                          action="append",
-                          dest="config",
-                          default=None)
+    generate.add_argument(
+        "-G", help="Use a different generator for CMake", default="", dest="generator"
+    )
+    generate.add_argument(
+        "-f", "--force", action="store_true", dest="force", default=False
+    )
+    generate.add_argument("-b", help="Change the build mode", default="", dest="mode")
+    generate.add_argument(
+        "--c-compiler",
+        default="",
+        dest="c_compiler",
+        type=str,
+        help="Set C compiler to use",
+    )
+    generate.add_argument(
+        "--cxx-compiler",
+        default="",
+        dest="cxx_compiler",
+        type=str,
+        help="Set C++ compiler to use",
+    )
+    generate.add_argument(
+        "--linker", default="", dest="linker", type=str, help="Set linker to use"
+    )
+    generate.add_argument(
+        "--list-options", action="store_true", dest="list_options",
+        default=False, help="List options configurable by CMake from this tool"
+    )
+    generate.add_argument(
+        "--dump-options", action="store_true", dest="dump_options",
+        default=False, help="List options configurable by CMake from this tool (with their current values)"
+    )
+    generate.add_argument(
+        "--dump-option", default="", dest="dump_option", help="List the value of one option"
+    )
+    generate.add_argument(
+        "-c", "--config", action="append", dest="config", default=None
+    )
 
     generate.add_argument(
         "cmake_args",
@@ -102,14 +96,12 @@ def parse():
             exists, then a new one will be generated using the Ninja build
             system.""",
     )
-    build.add_argument("-d",
-                       "--dir",
-                       action="store_true",
-                       help="Compile test subdirectory")
-    build.add_argument("-l",
-                       "--list",
-                       action="store_true",
-                       help="List available targets")
+    build.add_argument(
+        "-d", "--dir", action="store_true", help="Compile test subdirectory"
+    )
+    build.add_argument(
+        "-l", "--list", action="store_true", help="List available targets"
+    )
     build.add_argument(
         "target",
         nargs="?",
@@ -158,7 +150,11 @@ def parse():
     return args
 
 
-def execute_generate(args: argparse.Namespace, rest: "list[str]"):
+def execute_generate(
+    args: argparse.Namespace,
+    rest: "list[str]",
+    config: "tuple[dict[str,str],list[str]]" = ({}, []),
+):
     """Generates a new compile environment via CMake
 
     Args:
@@ -170,19 +166,20 @@ def execute_generate(args: argparse.Namespace, rest: "list[str]"):
     # Generate a new configuration if no build files are generated
     if "build" not in os.listdir() or args.force:
         if not args.force:
-            logger.debug(
-                "Build folder does not exist, generating from scratch")
+            logger.debug("Build folder does not exist, generating " +
+                         "from scratch")
         else:
             logger.debug(
-                "Build folder exists, but '--force' is set. Generating regardless."
+                "Build folder exists, but '--force' is set. " +
+                "Generating regardless."
             )
+        env, post_args = config
         gen = args.generator if args.generator else "Ninja"
         _args = ["cmake", "-B", "build", "-G", gen]
-        if args.mode:
-            _args.append("-DCMAKE_BUILD_TYPE=" + args.mode)
-        _args = _args + args.cmake_args + rest
+        _args = _args + args.cmake_args + rest + post_args
         logger.debug(f"Generating with {_args}")
-        status = subprocess.run(_args)
+        env = {**os.environ.copy(), **env}
+        status = subprocess.run(_args, env=env)
         logger.debug(f"Generation status: ${status}")
         if status.returncode != 0:
             exit(status)
@@ -192,21 +189,22 @@ def execute_generate(args: argparse.Namespace, rest: "list[str]"):
         _args = ["cmake", "-B", "build"]
         if args.mode:
             if args.mode.lower() not in [
-                    "debug",
-                    "release",
-                    "relwithdebinfo",
-                    "minsizerel",
+                "debug",
+                "release",
+                "relwithdebinfo",
+                "minsizerel",
             ]:
                 raise ValueError(
                     """Unknown build mode, please specify one of the following
-                    [Debug, Release, RelWithDebInfo, MinSizeRel]""")
+                    [Debug, Release, RelWithDebInfo, MinSizeRel]"""
+                )
             _args.append("-DCMAKE_BUILD_TYPE=" + args.mode)
         _args = _args + args.cmake_args + rest
-        logger.debug(f"Generating with {_args}")
+        logger.debug("Generating with %s", (_args))
         status = subprocess.run(_args)
-        logger.debug(f"Generation status: ${status}")
+        logger.debug("Generation status: %d", status)
         if status.returncode != 0:
-            exit(status)
+            sys.exit(status)
     # No notable changes being made, check to see that someone isn't changing the generator on us
     else:
         assert not args.generator, "Generator option cannot be set when a build exists"
@@ -256,44 +254,76 @@ def get_grail_params() -> dict:
     target_regex = re.compile(r"(\S+):.+=(.+)\n")
 
     caches = filter(
-        lambda x: x is not None,
+        None,
         map(
-            lambda x: y.groups() if (y := target_regex.match(x)) else None,
-            filter(lambda x: not any([x.startswith("//"), x == "\n"]),
-                   cache_dump),
+            lambda x: y.groups() if (y := target_regex.match(x)) else "",
+            filter(lambda x: not any([x.startswith("//"), x == "\n"]), cache_dump),
         ),
     )
-    cache_dict_ = dict(caches)
 
+    extra_keys = [
+        "CMAKE_CXX_COMPILER",
+        "CMAKE_C_COMPILER",
+        "CMAKE_LINKER",
+        "CMAKE_BUILD_TYPE",
+    ]
     cache_dict = {
         key: value
-        for (key, value) in cache_dict_.items() if key.startswith("GRAIL")
+        for (key, value) in caches
+        if any([key.startswith("GRAIL"), key in extra_keys])
     }
-    cache_dict += cache_dict_['CMAKE_CXX_COMPILER']
-    cache_dict += cache_dict_['CMAKE_C_COMPILER']
-    cache_dict += cache_dict_['CMAKE_LINKER']
-    cache_dict += cache_dict_['CMAKE_BUILD_TYPE']
 
     return cache_dict
 
 
-def get_target_list() -> (list[str], list[str]):
+def get_target_list() -> "tuple[list[str], list[str]]":
     cache_dict = get_grail_params()
     targets = cache_dict["GRAIL_TEST_TARGETS"].split(";")
     dirs = cache_dict["GRAIL_TEST_DIRS_REL"].split(";")
     return targets, dirs
 
 
-def config(args: argparse.Namespace()) -> None:
-    config_regex = re.compile(r"^([\w\-]+)=([\w\-]+)$")
+def config(args: argparse.Namespace) -> "tuple[dict[str,str], list[str]]":
+    # config_regex = re.compile(r"^([\w\-]+)=([\w\-]+)$")
     check_dir()
     has_generated = os.path.exists("./build")
 
     if has_generated and any(
-        [args.c_compiler, args.linker, args.cxx_compiler, args.mode]):
+        [args.c_compiler, args.linker, args.cxx_compiler, args.mode]
+    ):
         raise RuntimeError(
             """Build has already been generated, but pre-build options have been specified.\nPlease either run the 'nuke' subcommand before specifying these options or do not modify them.\nThe following options cannot be specified after CMake generation has taken place (-b, --c-compiler, --c-linker, --cxx-compiler)"""
         )
+
+    # list options that can be dumped to stdout
+    if args.list_options:
+        print(get_grail_params().keys())
+        return
+    # dump all options
+    if args.dump_options:
+        logger.info("Dumping entire config and exiting")
+        for (c, v) in get_grail_params().items():
+            logger.info(f"{c}: {v}")
+        return
+    # dump one option
+    logger.info(dump_option)
+    if args.dump_option:
+        logger.info("Dump option flag set. Dumping config and exiting")
+        logger.info(f"{args.dump_option}: {get_grail_params()[args.dump_option]}")
+        return
+    # configure options
+
+    env = {}
+    post_args: list[str] = []
+    if args.c_compiler:
+        env["CC"] = args.c_compiler
+    if args.cxx_compiler:
+        env["CXX"] = args.cxx_compiler
+    if args.linker:
+        post_args += [f'-DCMAKE_CXX_FLAGS="-fuse-ld={args.linker}"']
+    if args.mode:
+        post_args += [f"-DCMAKE_BUILD_TYPE={args.mode}"]
+    return (env, post_args)
 
 
 def execute_build(target: str, args: argparse.Namespace, rest: list[str]):
@@ -401,8 +431,8 @@ def main():
     logger.debug(f"Leftover args: {rest}")
     if args.subcommand == "generate":
         logger.debug("Entering generation state")
-        config(args)
-        execute_generate(args, rest)
+        config_params = config(args)
+        execute_generate(args, rest, config_params)
     elif args.subcommand == "build":
         logger.debug("Entering build state")
         target = process_target(args)
@@ -417,8 +447,7 @@ def main():
         logger.debug("Entering nuke state")
         execute_nuke()
     else:
-        raise NotImplementedError(
-            f"command '{args.subcommand}' is not yet supported")
+        raise NotImplementedError(f"command '{args.subcommand}' is not yet supported")
 
 
 if __name__ == "__main__":
@@ -443,7 +472,8 @@ if __name__ == "__main__":
 
         # Create formatter
         formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
 
         # Add formatter to fh
         fh.setFormatter(formatter)
