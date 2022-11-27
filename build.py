@@ -11,7 +11,7 @@ import sys
 
 console_log_level = logging.INFO
 file_log_level = logging.DEBUG
-version = "0.3.0"
+version = "0.3.1"
 
 
 class MyParser(argparse.ArgumentParser):
@@ -42,12 +42,14 @@ def parse():
         valid configuration for Grail using the Ninja build system.",
     )
     generate.add_argument(
-        "-G", help="Use a different generator for CMake", default="", dest="generator"
+        "-G", help="Use a different generator for CMake", default="",
+        dest="generator"
     )
     generate.add_argument(
         "-f", "--force", action="store_true", dest="force", default=False
     )
-    generate.add_argument("-b", help="Change the build mode", default="", dest="mode")
+    generate.add_argument("-b", help="Change the build mode", default="",
+                          dest="mode")
     generate.add_argument(
         "--c-compiler",
         default="",
@@ -63,7 +65,8 @@ def parse():
         help="Set C++ compiler to use",
     )
     generate.add_argument(
-        "--linker", default="", dest="linker", type=str, help="Set linker to use"
+        "--linker", default="", dest="linker", type=str,
+        help="Set linker to use"
     )
     generate.add_argument(
         "--list-options", action="store_true", dest="list_options",
@@ -71,10 +74,12 @@ def parse():
     )
     generate.add_argument(
         "--dump-options", action="store_true", dest="dump_options",
-        default=False, help="List options configurable by CMake from this tool (with their current values)"
+        default=False, help="List options configurable by CMake"
+        " from this tool (with their current values)"
     )
     generate.add_argument(
-        "--dump-option", default="", dest="dump_option", help="List the value of one option"
+        "--dump-option", default="", dest="dump_option",
+        help="List the value of one option"
     )
     generate.add_argument(
         "-c", "--config", action="append", dest="config", default=None
@@ -101,6 +106,12 @@ def parse():
     )
     build.add_argument(
         "-l", "--list", action="store_true", help="List available targets"
+    )
+    # --force doesn't actually do anything at compile-time,
+    # but forces a regeneration.
+    # Small but important distinction
+    build.add_argument(
+        "-f", "--force", action="store_true", dest="force", default=False
     )
     build.add_argument(
         "target",
@@ -205,14 +216,17 @@ def execute_generate(
         logger.debug("Generation status: %d", status)
         if status.returncode != 0:
             sys.exit(status)
-    # No notable changes being made, check to see that someone isn't changing the generator on us
+    # No notable changes being made, check to see that someone isn't changing
+    # the generator on us
     else:
-        assert not args.generator, "Generator option cannot be set when a build exists"
+        assert not args.generator, "Generator option cannot be set when"\
+                                   " a build exists"
         logger.info("No action necessary, no flags specified")
 
 
 def process_target(args: argparse.Namespace):
-    """Optionally format folder targets (ie. test/xdl/all instead of all or simpleXDLServer)
+    """Optionally format folder targets
+    ex. test/xdl/all instead of all or simpleXDLServer
 
     Args:
         args (argparse.Namespace): A parsed namespace to work from
@@ -226,7 +240,8 @@ def process_target(args: argparse.Namespace):
     logger.debug(f"Target is {args.target}")
     target = args.target
     if args.dir:
-        logger.debug(f"args.dir subdirectory argument is set, fixing target")
+        logger.debug("args.dir subdirectory argument is set, fixing"
+                     f" target: {target}")
         target = f"test/{target}/all"
         logger.debug(f"New target is {target}")
     return target
@@ -257,7 +272,8 @@ def get_grail_params() -> dict:
         None,
         map(
             lambda x: y.groups() if (y := target_regex.match(x)) else "",
-            filter(lambda x: not any([x.startswith("//"), x == "\n"]), cache_dump),
+            filter(lambda x: not any([x.startswith("//"), x == "\n"]),
+                   cache_dump),
         ),
     )
 
@@ -286,13 +302,25 @@ def get_target_list() -> "tuple[list[str], list[str]]":
 def config(args: argparse.Namespace) -> "tuple[dict[str,str], list[str]]":
     # config_regex = re.compile(r"^([\w\-]+)=([\w\-]+)$")
     check_dir()
-    has_generated = os.path.exists("./build")
+    has_generated = os.path.exists("./build/CMakeCache.txt")
 
     if has_generated and any(
         [args.c_compiler, args.linker, args.cxx_compiler, args.mode]
     ):
         raise RuntimeError(
-            """Build has already been generated, but pre-build options have been specified.\nPlease either run the 'nuke' subcommand before specifying these options or do not modify them.\nThe following options cannot be specified after CMake generation has taken place (-b, --c-compiler, --c-linker, --cxx-compiler)"""
+            "Build has already been generated, but pre-build options have"
+            " been specified. Please either run the 'nuke' subcommand before"
+            " specifying these options or do not modify them.\nThe following"
+            " options cannot be specified after CMake generation has taken"
+            " place (-b, --c-compiler, --c-linker, --cxx-compiler)"
+        )
+
+    if not has_generated and any(
+        [args.list_options, args.dump_options, args.dump_option]
+    ):
+        raise RuntimeError(
+            "Build directory does not exist.\nPlease generate before"
+            " interacting with project options."
         )
 
     # list options that can be dumped to stdout
@@ -306,10 +334,10 @@ def config(args: argparse.Namespace) -> "tuple[dict[str,str], list[str]]":
             logger.info(f"{c}: {v}")
         return
     # dump one option
-    logger.info(dump_option)
     if args.dump_option:
         logger.info("Dump option flag set. Dumping config and exiting")
-        logger.info(f"{args.dump_option}: {get_grail_params()[args.dump_option]}")
+        logger.info(f"{args.dump_option}: "
+                    f"{get_grail_params()[args.dump_option]}")
         return
     # configure options
 
@@ -343,7 +371,7 @@ def execute_build(target: str, args: argparse.Namespace, rest: list[str]):
     if args.list:
         logger.debug("Listing targets that can be compiled")
         _line_size: int = 72
-        _char_lim = re.compile(rf"(.{_line_size})")
+        # _char_lim = re.compile(rf"(.{_line_size})")
         _targets, _dirs = get_target_list()
         _max_target_len = max(len(x) for x in _targets) + 2
         _num_per_target = _line_size // _max_target_len
@@ -357,7 +385,8 @@ def execute_build(target: str, args: argparse.Namespace, rest: list[str]):
             _dir_str += f"{_dir:<{_max_dir_len}}"
 
         logger.critical(
-            f"\nTo compile all targets in a directory, specify one of the following with -d:{_dir_str}"
+            "\nTo compile all targets in a directory, "
+            f"specify one of the following with -d:{_dir_str}"
         )
 
         _target_str = ""
@@ -367,7 +396,8 @@ def execute_build(target: str, args: argparse.Namespace, rest: list[str]):
             _target_str += f"{target:<{_max_target_len}}"
 
         logger.critical(
-            f"\nTo compile a specific target, specify one of the following:{_target_str}"
+            "\nTo compile a specific target, "
+            f"specify one of the following:{_target_str}"
         )
         return
 
@@ -410,12 +440,13 @@ def execute_clean(args: argparse.Namespace):
 
 
 def execute_nuke():
-    """Deep cleans (or 'nukes') all folder generated by the build process (except for ./logs)"""
+    """Deep cleans (or 'nukes') all folders created by Grail (except for ./logs)"""
     check_dir()
     dirs = ["bin", "build", "buildbuild", "external", "libs"]
     d2s = ", ".join(dirs)
     status = input(
-        f"This will wipe out the following directories: {d2s}\nAre you sure you want to do this? (y/N)\t"
+        f"This will wipe out the following directories: {d2s}"
+        "\nAre you sure you want to do this? (y/N)\t"
     )
     if status.lower() != "y":
         logger.info("Canceling nuke")
@@ -447,7 +478,8 @@ def main():
         logger.debug("Entering nuke state")
         execute_nuke()
     else:
-        raise NotImplementedError(f"command '{args.subcommand}' is not yet supported")
+        raise NotImplementedError(f"command '{args.subcommand}'"
+                                  " is not yet supported")
 
 
 if __name__ == "__main__":

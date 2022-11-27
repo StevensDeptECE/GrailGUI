@@ -107,7 +107,10 @@ FetchContent_Declare(
   glm
   GIT_REPOSITORY https://github.com/g-truc/glm.git
   # 0.9.9.8 does not have C++ 20 fix yet, so master branch is currently used
-  # GIT_TAG        bf71a834948186f4097caa076cd2663c69a10e1e # 0.9.9.8
+  # Nov 2022: It has been 2 years since the last glm update... safe to say we're
+  # sticking to the main branch since that still gets some updates
+  # GIT_TAG bf71a834948186f4097caa076cd2663c69a10e1e # 0.9.9.8
+  GIT_SHALLOW ON
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/glm)
 FetchContent_GetProperties(glm)
 if(NOT glm_POPULATED)
@@ -133,6 +136,7 @@ FetchContent_Declare(
   fmt
   GIT_REPOSITORY https://github.com/fmtlib/fmt.git
   GIT_TAG d141cdbeb0fb422a3fb7173b285fd38e0d1772dc # v8.0.1
+  GIT_SHALLOW ON
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/external/fmt)
 FetchContent_MakeAvailable(fmt)
 
