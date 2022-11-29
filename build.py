@@ -325,17 +325,17 @@ def config(args: argparse.Namespace) -> "tuple[dict[str,str], list[str]]":
 
     # list options that can be dumped to stdout
     if args.list_options:
-        print(get_grail_params().keys())
+        logger.info("Available options: %s", ", ".join(get_grail_params().keys()))
         return
     # dump all options
     if args.dump_options:
-        logger.info("Dumping entire config and exiting")
+        logger.debug("Dumping entire config and exiting")
         for (c, v) in get_grail_params().items():
             logger.info(f"{c}: {v}")
         return
     # dump one option
     if args.dump_option:
-        logger.info("Dump option flag set. Dumping config and exiting")
+        logger.debug("Dump option flag set. Dumping config and exiting")
         logger.info(f"{args.dump_option}: "
                     f"{get_grail_params()[args.dump_option]}")
         return
