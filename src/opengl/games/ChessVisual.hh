@@ -9,6 +9,7 @@
 #include "opengl/MultiText.hh"
 #include "opengl/StyledMultiShape2D.hh"
 #include "opengl/games/ChessBoard.hh"
+#include "opengl/games/ChessServer.hh"
 
 /*
 ⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠛⠛⠋⠉⠈⠉⠉⠉⠉⠛⠻⢿⣿⣿⣿⣿⣿⣿⣿
@@ -90,6 +91,7 @@ class ChessVisual {
   int8_t previousRow;
   int8_t previousColumn;
   Image* piecetype[12];
+  ChessServer* server;
 
  public:
   ChessVisual(ChessBoard* chess_pieces, MainCanvas* c, GLWin* window, Tab* tab,

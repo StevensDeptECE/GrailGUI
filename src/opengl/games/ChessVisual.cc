@@ -291,10 +291,10 @@ void ChessVisual::press(GLWin* w) {
                      chess_pieces->getTurn()) {
         // click piece delete no rules implementation
         selectedPiece = clickPiece;
+        selectedxPos = visual_board[previousRow][previousColumn].xposition;
+        selectedyPos = visual_board[previousRow][previousColumn].yposition;
         if (chess_pieces->move(previousColumn, previousRow, selectedColumn,
                                selectedRow)) {
-          selectedxPos = visual_board[previousRow][previousColumn].xposition;
-          selectedyPos = visual_board[previousRow][previousColumn].yposition;
           Transform* pieceRemove =
               visual_board[selectedRow][selectedColumn].currentPiece;
           c->removeLayer(pieceRemove);
@@ -379,6 +379,7 @@ void ChessVisual::release(GLWin* w) {
           hasclicked = false;
           clickmove = false;
           clearSelected();
+
         } else {
           updateSquare(previousRow, previousColumn);
           clearSelected();
