@@ -3,7 +3,6 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-
 extern const char PieceDisplayw[] = " RNBQKP";
 extern const char PieceDisplayb[] = " rnbqkp";
 
@@ -87,7 +86,7 @@ class BoardPosition {
 
   uint8_t color : 1;
   uint8_t piece : 7;
-  Piece* chesspiece;
+  Piece* chesspiece = nullptr;
 
  public:
   BoardPosition() {

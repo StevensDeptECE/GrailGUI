@@ -44,7 +44,6 @@ ChessBoard::ChessBoard() {
       }
     }
   }
-
   turn = 'w';
 }
 
@@ -170,12 +169,16 @@ void ChessBoard::load(const char filename[]) {
     // 49 = 1
     else if (rowList[i] == 49) {
       board_position[columnCounter][rowCounter].piece = 0;
+      delete board_position[columnCounter][rowCounter].chesspiece;
+      board_position[columnCounter][rowCounter].chesspiece = nullptr;
       rowCounter++;
     }
     // 50 = 2
     else if (rowList[i] == 50) {
       for (int i = 0; i < 2; i++) {
         board_position[columnCounter][rowCounter].piece = 0;
+        delete board_position[columnCounter][rowCounter].chesspiece;
+        board_position[columnCounter][rowCounter].chesspiece = nullptr;
         rowCounter++;
       }
     }
@@ -183,6 +186,8 @@ void ChessBoard::load(const char filename[]) {
     else if (rowList[i] == 51) {
       for (int i = 0; i < 3; i++) {
         board_position[columnCounter][rowCounter].piece = 0;
+        delete board_position[columnCounter][rowCounter].chesspiece;
+        board_position[columnCounter][rowCounter].chesspiece = nullptr;
         rowCounter++;
       }
     }
@@ -190,6 +195,8 @@ void ChessBoard::load(const char filename[]) {
     else if (rowList[i] == 52) {
       for (int i = 0; i < 4; i++) {
         board_position[columnCounter][rowCounter].piece = 0;
+        delete board_position[columnCounter][rowCounter].chesspiece;
+        board_position[columnCounter][rowCounter].chesspiece = nullptr;
         rowCounter++;
       }
     }
@@ -197,6 +204,8 @@ void ChessBoard::load(const char filename[]) {
     else if (rowList[i] == 53) {
       for (int i = 0; i < 5; i++) {
         board_position[columnCounter][rowCounter].piece = 0;
+        delete board_position[columnCounter][rowCounter].chesspiece;
+        board_position[columnCounter][rowCounter].chesspiece = nullptr;
         rowCounter++;
       }
     }
@@ -204,6 +213,8 @@ void ChessBoard::load(const char filename[]) {
     else if (rowList[i] == 54) {
       for (int i = 0; i < 6; i++) {
         board_position[columnCounter][rowCounter].piece = 0;
+        delete board_position[columnCounter][rowCounter].chesspiece;
+        board_position[columnCounter][rowCounter].chesspiece = nullptr;
         rowCounter++;
       }
     }
@@ -211,6 +222,8 @@ void ChessBoard::load(const char filename[]) {
     else if (rowList[i] == 55) {
       for (int i = 0; i < 7; i++) {
         board_position[columnCounter][rowCounter].piece = 0;
+        delete board_position[columnCounter][rowCounter].chesspiece;
+        board_position[columnCounter][rowCounter].chesspiece = nullptr;
         rowCounter++;
       }
     }
@@ -218,6 +231,8 @@ void ChessBoard::load(const char filename[]) {
     else if (rowList[i] == 56) {
       for (int i = 0; i < 8; i++) {
         board_position[columnCounter][rowCounter].piece = 0;
+        delete board_position[columnCounter][rowCounter].chesspiece;
+        board_position[columnCounter][rowCounter].chesspiece = nullptr;
         rowCounter++;
       }
     }
@@ -225,72 +240,96 @@ void ChessBoard::load(const char filename[]) {
     else if (rowList[i] == 66) {
       board_position[columnCounter][rowCounter].piece = 3;
       board_position[columnCounter][rowCounter].color = 1;
+      delete board_position[columnCounter][rowCounter].chesspiece;
+      board_position[columnCounter][rowCounter].chesspiece = new Bishop(this);
       rowCounter++;
     }
     // 75 = K
     else if (rowList[i] == 75) {
       board_position[columnCounter][rowCounter].piece = 5;
       board_position[columnCounter][rowCounter].color = 1;
+      delete board_position[columnCounter][rowCounter].chesspiece;
+      board_position[columnCounter][rowCounter].chesspiece = new King(this);
       rowCounter++;
     }
     // 79 = N
     else if (rowList[i] == 78) {
       board_position[columnCounter][rowCounter].piece = 2;
       board_position[columnCounter][rowCounter].color = 1;
+      delete board_position[columnCounter][rowCounter].chesspiece;
+      board_position[columnCounter][rowCounter].chesspiece = new Knight(this);
       rowCounter++;
     }
     // 80 = P
     else if (rowList[i] == 80) {
       board_position[columnCounter][rowCounter].piece = 6;
       board_position[columnCounter][rowCounter].color = 1;
+      delete board_position[columnCounter][rowCounter].chesspiece;
+      board_position[columnCounter][rowCounter].chesspiece = new Pawn(this);
       rowCounter++;
     }
     // 81 = Q
     else if (rowList[i] == 81) {
       board_position[columnCounter][rowCounter].piece = 4;
       board_position[columnCounter][rowCounter].color = 1;
+      delete board_position[columnCounter][rowCounter].chesspiece;
+      board_position[columnCounter][rowCounter].chesspiece = new Queen(this);
       rowCounter++;
     }
     // 82 = R
     else if (rowList[i] == 82) {
       board_position[columnCounter][rowCounter].piece = 1;
       board_position[columnCounter][rowCounter].color = 1;
+      delete board_position[columnCounter][rowCounter].chesspiece;
+      board_position[columnCounter][rowCounter].chesspiece = new Rook(this);
       rowCounter++;
     }
     // 98 = b
     else if (rowList[i] == 98) {
       board_position[columnCounter][rowCounter].piece = 3;
       board_position[columnCounter][rowCounter].color = 0;
+      delete board_position[columnCounter][rowCounter].chesspiece;
+      board_position[columnCounter][rowCounter].chesspiece = new Bishop(this);
       rowCounter++;
     }
     // 107 = k
     else if (rowList[i] == 107) {
       board_position[columnCounter][rowCounter].piece = 5;
       board_position[columnCounter][rowCounter].color = 0;
+      delete board_position[columnCounter][rowCounter].chesspiece;
+      board_position[columnCounter][rowCounter].chesspiece = new King(this);
       rowCounter++;
     }
     // 110 = n
     else if (rowList[i] == 110) {
       board_position[columnCounter][rowCounter].piece = 2;
       board_position[columnCounter][rowCounter].color = 0;
+      delete board_position[columnCounter][rowCounter].chesspiece;
+      board_position[columnCounter][rowCounter].chesspiece = new Knight(this);
       rowCounter++;
     }
     // 112 = p
     else if (rowList[i] == 112) {
       board_position[columnCounter][rowCounter].piece = 6;
       board_position[columnCounter][rowCounter].color = 0;
+      delete board_position[columnCounter][rowCounter].chesspiece;
+      board_position[columnCounter][rowCounter].chesspiece = new Pawn(this);
       rowCounter++;
     }
     // 113 = q
     else if (rowList[i] == 113) {
       board_position[columnCounter][rowCounter].piece = 4;
       board_position[columnCounter][rowCounter].color = 0;
+      delete board_position[columnCounter][rowCounter].chesspiece;
+      board_position[columnCounter][rowCounter].chesspiece = new Queen(this);
       rowCounter++;
     }
     // 114 = r
     else if (rowList[i] == 114) {
       board_position[columnCounter][rowCounter].piece = 1;
       board_position[columnCounter][rowCounter].color = 0;
+      delete board_position[columnCounter][rowCounter].chesspiece;
+      board_position[columnCounter][rowCounter].chesspiece = new Rook(this);
       rowCounter++;
     }
   }
@@ -448,6 +487,9 @@ bool ChessBoard::move(uint8_t oldColumn, uint8_t oldRow, uint8_t newColumn,
   // chess notation
   // 2d mapped into 1d --> array[width * height] To find the
   // number in the array --> array[width * row + column]
+  uint8_t piecePlaceHolder = board_position[newRow][newColumn].piece;
+  uint8_t colorPlaceHolder = board_position[newRow][newColumn].color;
+  Piece* placeholder = board_position[newRow][newColumn].chesspiece;
   uint64_t bitboard =
       board_position[oldRow][oldColumn].chesspiece->checkPossibleMoves(
           oldRow, oldColumn, board_position[oldRow][oldColumn].color, 0);
@@ -463,12 +505,41 @@ bool ChessBoard::move(uint8_t oldColumn, uint8_t oldRow, uint8_t newColumn,
     board_position[newRow][newColumn].chesspiece =
         board_position[oldRow][oldColumn].chesspiece;
     board_position[oldRow][oldColumn].chesspiece = nullptr;
-    if (turn == 'w')
-      turn = 'b';
-    else
-      turn = 'w';
+    uint64_t threatmap = 0;
+    int8_t kingRow, kingColumn;
+    for (int8_t i = 0; i < 8; i++) {
+      for (int8_t j = 0; j < 8; j++) {
+        if (board_position[i][j].piece != 0 &&
+            board_position[i][j].color != getTurn()) {
+          threatmap = board_position[i][j].chesspiece->checkPossibleMoves(
+              i, j, board_position[i][j].color, threatmap);
+        }
+        if (board_position[i][j].piece == 5 &&
+            board_position[i][j].color == getTurn()) {
+          kingRow = i;
+          kingColumn = j;
+        }
+      }
+    }
+    if (checkLegalMove(threatmap, kingRow, kingColumn)) {
+      board_position[oldRow][oldColumn].piece =
+          board_position[newRow][newColumn].piece;
+      board_position[oldRow][oldColumn].color =
+          board_position[newRow][newColumn].color;
+      board_position[oldRow][oldColumn].chesspiece =
+          board_position[newRow][newColumn].chesspiece;
+      board_position[newRow][newColumn].piece = piecePlaceHolder;
+      board_position[newRow][newColumn].color = colorPlaceHolder;
+      board_position[newRow][newColumn].chesspiece = placeholder;
+      return false;
+    } else {
+      if (turn == 'w')
+        turn = 'b';
+      else
+        turn = 'w';
 
-    return true;
+      return true;
+    }
   } else {
     return false;
   }
@@ -607,6 +678,18 @@ uint64_t Piece::checkPossibleMoves(uint8_t row, uint8_t column, uint8_t color,
 }
 
 bool Piece::checkLegalMove(uint64_t bitboard, uint8_t row, uint8_t column) {
+  uint64_t place = 1;
+  uint64_t spot = row * 8 + column;
+  place = place << spot;
+  place = bitboard & place;
+  if (place != 0) {
+    return true;
+  } else {
+    return false;
+  }
+}
+bool ChessBoard::checkLegalMove(uint64_t bitboard, uint8_t row,
+                                uint8_t column) {
   uint64_t place = 1;
   uint64_t spot = row * 8 + column;
   place = place << spot;
