@@ -13,5 +13,5 @@ using namespace grail;
 void grailmain(int argc, char* argv[], GLWin* w, Tab* defaultTab) {
   w->setTitle("Test filldraw");
   MainCanvas* c = defaultTab->getMainCanvas();
-  new ChessGame(defaultTab, w, c);
+  new ChessGame(defaultTab, w, c, 0);
 }

@@ -9,7 +9,6 @@
 #include "opengl/MultiText.hh"
 #include "opengl/StyledMultiShape2D.hh"
 #include "opengl/games/ChessBoard.hh"
-#include "opengl/games/ChessServer.hh"
 
 /*
 ⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠛⠛⠋⠉⠈⠉⠉⠉⠉⠛⠻⢿⣿⣿⣿⣿⣿⣿⣿
@@ -94,8 +93,9 @@ class ChessVisual {
   ChessServer* server;
 
  public:
-  ChessVisual(ChessBoard* chess_pieces, MainCanvas* c, GLWin* window, Tab* tab,
-              float xstart, float ystart, float w, float h);
+  ChessVisual(ChessServer* server, ChessBoard* chess_pieces, MainCanvas* c,
+              GLWin* window, Tab* tab, float xstart, float ystart, float w,
+              float h);
   void setKeyBinds(Tab* tab, GLWin* w);
   void getPosition(GLWin* w);
   void update();
@@ -116,4 +116,6 @@ class ChessVisual {
   void redrawBoard();
   void load();
   void save();
+  void sendVisual();
+  void recvVisual();
 };

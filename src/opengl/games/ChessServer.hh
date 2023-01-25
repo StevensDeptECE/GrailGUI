@@ -11,19 +11,22 @@ class ChessServer {
  private:
   SOCKET serverSocket;
   LPCWSTR ip;
-  bool accepting;
 
  public:
+  bool accepting;
   bool acceptit = true;
   bool sent = false;
-  char sendBuffer[200];
-  char recvBuffer[200];
-  char lastRecv[200];
-  ChessServer(LPCWSTR ip, bool accepting) : ip(ip), accepting(accepting){};
+  char sendBuffer[200] = {0};
+  char recvBuffer[200] = {0};
+  char lastRecv[200] = {0};
   void initServer(LPCWSTR ip, bool accepting);
-  void sendit(char message[], int size);
+  ChessServer(LPCWSTR ip, bool accepting) : ip(ip), accepting(accepting) {
+    initServer(ip, accepting);
+  }
   void recvit(char message[], int size);
   void cleanup() { WSACleanup(); }
+  ~ChessServer() { cleanup(); }
+  void sendit(char message[], int size);
 };
 
 // when turn changes call recv

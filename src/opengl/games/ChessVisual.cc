@@ -1,5 +1,5 @@
+#pragma once
 #include "opengl/games/ChessVisual.hh"
-
 using namespace std;
 using namespace grail;
 
@@ -90,9 +90,11 @@ void ChessVisual::setKeyBinds(Tab* tab, GLWin* w) {
   tab->bindEvent(Tab::MOUSE0_RELEASE, [w, this]() { release(w); });
 }
 
-ChessVisual::ChessVisual(ChessBoard* chess_pieces, MainCanvas* c, GLWin* window,
-                         Tab* tab, float xstart, float ystart, float w, float h)
-    : board(c->addLayer(
+ChessVisual::ChessVisual(ChessServer* server, ChessBoard* chess_pieces,
+                         MainCanvas* c, GLWin* window, Tab* tab, float xstart,
+                         float ystart, float w, float h)
+    : server(server),
+      board(c->addLayer(
           new StyledMultiShape2D(c, tab->getDefaultStyle(), 0, 0, 0))),
       saveButton(c->addLayer(
           new StyledMultiShape2D(c, tab->getDefaultStyle(), 0, 0, 0))),
@@ -187,8 +189,32 @@ ChessVisual::ChessVisual(ChessBoard* chess_pieces, MainCanvas* c, GLWin* window,
       }
     }
 
-  setKeyBinds(tab, window);  // set key binds for program
+  setKeyBinds(tab, window);
+  if (!server->accepting) {
+    recvVisual();
+  }  // set key binds for program
 };
+
+void ChessVisual::sendVisual() {
+  server->sendBuffer[0] = previousRow;
+  server->sendBuffer[1] = previousColumn;
+  server->sendBuffer[2] = selectedRow;
+  server->sendBuffer[3] = selectedColumn;
+  server->sendit(server->sendBuffer, 200);
+}
+
+void ChessVisual::recvVisual() {
+  server->recvit(server->lastRecv, 200);
+  previousRow = server->lastRecv[0];
+  previousColumn = server->lastRecv[1];
+  selectedRow = server->lastRecv[2];
+  selectedColumn = server->lastRecv[3];
+  updateSelected(previousRow, previousColumn);
+  chess_pieces->move(previousColumn, previousRow, selectedColumn, selectedRow);
+  clearSquare(previousRow, previousColumn);
+  updateSquare(selectedRow, selectedColumn);
+  clearSelected();
+}
 
 void ChessVisual::clearBoard() {
   for (int i = 0; i < 8; i++) {
@@ -262,6 +288,8 @@ void ChessVisual::press(GLWin* w) {
                                selectedRow)) {
           clearSquare(previousRow, previousColumn);
           updateSquare(selectedRow, selectedColumn);
+          sendVisual();
+          recvVisual();
           clearSelected();
           clickPiece = nullptr;
           selectedPiece = nullptr;
@@ -354,6 +382,8 @@ void ChessVisual::release(GLWin* w) {
                                       selectedColumn, selectedRow);
       if (legal) {
         updateSquare(selectedRow, selectedColumn);
+        sendVisual();
+        recvVisual();
       } else {
         updateSquare(previousRow, previousColumn);
       }

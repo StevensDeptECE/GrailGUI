@@ -1,4 +1,4 @@
-#include <ChessServer.hh>
+#include <opengl/games/ChessServer.hh>
 
 void ChessServer::sendit(char message[], int size) {
   int byteCount = send(serverSocket, message, size, 0);
@@ -46,7 +46,7 @@ void ChessServer::initServer(LPCWSTR ip, bool accepting) {
   InetPtonW(AF_INET, ip, &service.sin_addr.s_addr);
   service.sin_port = htons(port);
   if (accepting) {
-    if (bind(serverSocket, (SOCKADDR*)&service, sizeof(service)) ==
+    if (bind(serverSocket, (SOCKADDR *)&service, sizeof(service)) ==
         SOCKET_ERROR) {
       cout << "bind failed" << WSAGetLastError() << endl;
       closesocket(serverSocket);
@@ -69,7 +69,7 @@ void ChessServer::initServer(LPCWSTR ip, bool accepting) {
     }
     cout << "accepted connection" << endl;
   } else {
-    if (connect(serverSocket, (SOCKADDR*)&service, sizeof(service)) ==
+    if (connect(serverSocket, (SOCKADDR *)&service, sizeof(service)) ==
         SOCKET_ERROR) {
       cout << "connect failed" << WSAGetLastError() << endl;
       closesocket(serverSocket);
