@@ -9,16 +9,27 @@ import os
 import re
 import sys
 
-console_log_level = logging.INFO
-file_log_level = logging.DEBUG
-version = "0.3.1"
+CONSOLE_LOG_LEVEL = logging.INFO
+FILE_LOG_LEVEL = logging.DEBUG
+VERSION = "0.3.1"
 
 
 class MyParser(argparse.ArgumentParser):
+    """
+    Wrapper on ArgumentParser to log errors and exit
+
+    ...
+
+    Methods:
+    --------
+    error(message: str):
+        Overrides the parent error method
+        Prints the error, prints the parser help, and exits
+    """
     def error(self, message: str):
         logger.error("error: %s", message)
         self.print_help()
-        exit(2)
+        sys.exit(2)
 
 
 def parse():
@@ -30,7 +41,7 @@ def parse():
     """
 
     parser = MyParser(description="Build and run GrailGUI")
-    parser.add_argument("-v", "--version", action="version", version=version)
+    parser.add_argument("-v", "--version", action="version", version=VERSION)
     subparsers = parser.add_subparsers(
         help="subcommands", required=True, dest="subcommand"
     )
@@ -495,12 +506,12 @@ if __name__ == "__main__":
 
         # Create console handler and set message level
         ch = logging.StreamHandler()
-        ch.setLevel(console_log_level)
+        ch.setLevel(CONSOLE_LOG_LEVEL)
 
         # Create file handler and set message level
         fh = logging.FileHandler("logs/build.log")
-        fh.setLevel(file_log_level)
-        logger.setLevel(file_log_level)
+        fh.setLevel(FILE_LOG_LEVEL)
+        logger.setLevel(FILE_LOG_LEVEL)
 
         # Create formatter
         formatter = logging.Formatter(
