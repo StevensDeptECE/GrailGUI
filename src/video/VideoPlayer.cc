@@ -128,7 +128,7 @@ VideoPlayer::~VideoPlayer() {
   // is still running, the video track will be deselected.
   mpv_render_context_free(mpv_gl);
   // destroy the mpv handle
-  mpv_detach_destroy(mpv);
+  mpv_destroy(mpv);
   // indictes that we've cleaned up everything that VideoPlayer created
   printf("videoplayer has terminated succesfully\n");
 }
