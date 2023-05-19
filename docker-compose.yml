@@ -1,0 +1,12 @@
+version: "3"
+services:
+  build_env:
+    container_name: "grail_build_environment"
+    image: "grail"
+    stdin_open: true
+    tty: true
+    environment:
+      - DISPLAY
+    volumes:
+      - ./:/home/grail/grail
+      - /tmp/.X11-unix:/tmp/.X11-unix
