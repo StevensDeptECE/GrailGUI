@@ -21,3 +21,5 @@ RUN groupadd -g $GID -o $USER && useradd -l -m -u "$UID" -g "$GID" -o -s /bin/ba
 USER $USER
 RUN mkdir /home/${USER}/grail
 WORKDIR /home/${USER}/grail
+ENV GRAIL=/home/${USER}/grail
+ENV PATH="${GRAIL}/bin:${PATH}"
