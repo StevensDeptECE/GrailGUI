@@ -1,4 +1,3 @@
-<!-- omit in toc -->
 # Grail
 
 GrailGUI is a prototype of a replacement for web programming (HTTP, HTML, CSS,
@@ -11,46 +10,48 @@ retain data on the client should that be necessary. Encrypted communications
 For more info see [our writeup from Summer 2021.](docs/Grail.md)
 
 <!-- omit in toc -->
+
 ## Table of Contents
 
-<!-- toc -->
+<!--toc:start-->
 
-- [Summer 2022 TODO's](#summer-2022-todos)
-- [How to build Grail on Linux and Windows](#how-to-build-grail-on-linux-and-windows)
-  - [Getting Set Up - Windows](#getting-set-up---windows)
-    - [MSYS2](#msys2)
-    - [Windows Subsystem for Linux (WSL2)](#windows-subsystem-for-linux-wsl2)
-  - [Getting Set Up - Ubuntu](#getting-set-up---ubuntu)
-    - [Ubuntu 18.04](#ubuntu-1804)
-    - [Ubuntu 20.04](#ubuntu-2004)
-  - [Getting Set Up - Arch-Based Linux](#getting-set-up---arch-based-linux)
-  - [Compiling](#compiling)
-  - [Running](#running)
-- [Frequent Issues](#frequent-issues)
-  - [Need to create an SSH key to push into the repository](#need-to-create-an-ssh-key-to-push-into-the-repository)
-  - [Cloned the repository using HTTPS, but now have to push to the repository](#cloned-the-repository-using-https-but-now-have-to-push-to-the-repository)
-  - [Runtime Error: `Failed to open GLFW window`](#runtime-error-failed-to-open-glfw-window)
-  - [git: 'remote-https' is not found or can't run program](#git-remote-https-is-not-found-or-cant-run-program)
-  - [Everything Else](#everything-else)
+- [Grail](#grail)
+  - [Table of Contents](#table-of-contents)
+  - [Summer 2023 TODO's](#summer-2023-todos)
+  - [How to build Grail on Linux and Windows](#how-to-build-grail-on-linux-and-windows)
+    - [Windows](#windows)
+      - [MSYS2](#msys2)
+      - [Windows Subsystem for Linux (WSL2)](#windows-subsystem-for-linux-wsl2)
+    - [Linux](#linux)
+      - [Debian and Ubuntu](#debian-and-ubuntu)
+      - [Arch Linux](#arch-linux)
+    - [Compiling](#compiling)
+    - [Running](#running)
+  - [Frequent Issues](#frequent-issues)
+    - [Need to create an SSH key to push into the repository](#need-to-create-an-ssh-key-to-push-into-the-repository)
+    - [Cloned the repository using HTTPS, but now have to push to the repository](#cloned-the-repository-using-https-but-now-have-to-push-to-the-repository)
+    - [Runtime Error: `Failed to open GLFW window`](#runtime-error-failed-to-open-glfw-window)
+    - [git: 'remote-https' is not found or can't run program](#git-remote-https-is-not-found-or-cant-run-program)
+    - [Everything Else](#everything-else)
 
-<!-- tocstop -->
+<!--toc:end-->
 
-## Summer 2022 TODO's
+## Summer 2023 TODO's
 
-See [this](docs/s22-tasks.md) for tasks to do.
+We'll be managing the things we want to get done with GitHub Issues and Pull
+Requests. Check there for a good place to start contributing.
 
 ## How to build Grail on Linux and Windows
 
-This document describes how to build Grail on a number of different platforms.
-Grail requires a number of cutting edge tools, so the default ones may have to
-be replaced. Specifically, we need:
+We are using C++20 features, so you'll need a compiler with full C++17 support
+and a decent amount of C++20. Our current recommendation is gcc-10, but up to
+date versions of clang should be fine as well.
 
-- gcc-10, or another compiler that supports C++17 fully and has most features of
-  C++20. We use C++20 language features such as the numbers header and concepts
-  for templates, as well as C++17 variadic templates.
-- CMake version 3.16 or later.
+We use CMake to build the project, you'll need vertion 3.16 or later.
 
-Libraries
+We vendor some of our dependencies either directly committed to version control,
+or pulled from GitHub with CMake fetchcontent. The dependencies you'll need from
+your system package manager are the following:
 
 - GLFW to manage windows
 - freetype to read fonts
@@ -65,48 +66,80 @@ Other Utilities
 - VS Code uses clang-format by default when working with C++, so it's a good
   place to start off if you're looking for an editor. We also often use it to
   edit collaboratively as well.
-- [Doom Emacs](https://github.com/hlissner/doom-emacs) is another popular choice
-  for an editor, and is well documented for getting up and running editing C++.
 
-If you'd like to begin working on Grail, the easiest way to do so would be to
-install a copy of Ubuntu 20.04 LTS or newer, or MSYS2 if you are using Windows.
-It is possible to make Linux distributions with older package versions work, but
-it will require additional setup, and some parts of Grail may not work (mainly
-audio and video).
-
-[![CMake](https://github.com/StevensDeptECE/GrailGUI/actions/workflows/cmake.yml/badge.svg?branch=main)](https://github.com/StevensDeptECE/GrailGUI/actions/workflows/cmake.yml)
-
-### Getting Set Up - Windows
+### Windows
 
 #### MSYS2
 
 1. [Install MSYS2](https://www.msys2.org/)
 
-1. Run MSYS2: `MSYS2 MinGW 64-bit` from the Windows Start Menu.
+You shouldn't need to do anything special during the install, just keep clicking
+next.
 
-   - Make sure you are running the correct executable or else you will have
-     trouble with the C++ compiler not recognizing your system correctly.
+2. Run MSYS2: `MSYS2 UCRT64` from the Windows Start Menu.
 
-1. Install dependencies
+This shell should have a yellow / gold MSYS2 logo. Make sure you're using this
+one in the future, as if you run the wrong one your C++ compiler will have
+trouble finding the right libraries.
 
-   ```shell
-   pacman -S git nano make mingw64/mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb mingw-w64-x86_64-gcc mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-zlib mingw-w64-x86_64-freetype mingw-w64-x86_64-glfw mingw-w64-x86_64-mpv mingw-w64-x86_64-youtube-dl bison flex mingw-w64-x86_64-xz
-   ```
+3. Install dependencies
 
-1. Edit `~/.bashrc` to include `export GRAIL=/path/to/GRAIL` and
-   `export PATH=$PATH:$GRAIL/bin` on the following line. `source ~/.bashrc` the
-   first time.
+```bash
+pacman -Syyu
+pacman -S mingw-w64-ucrt-x86_64-gcc
+pacman -S pactoys
+pacman -S git
+pacboy -S cmake:p
+pacboy -S freetype:p
+pacboy -S glfw:p
+pacboy -S mpv:p
+pacboy -S youtube-dl:p
+pacboy -S github-cli:p
+pacboy -S gdb:p
+```
 
-<!-- The above section may be possible to remove in the very near future, I've nearly removed all -->
-<!-- references to the the environment variable from core parts of Grail. DK-->
+4. Authenticate with GitHub CLI
 
-If the MSYS2 method does not work, or there are issues, try the method below.
+If you know how to add an ssh key to GitHub, and you've done it for MSYS2 before
+then you can skip this step. If you have no idea what ssh is or how to add a key
+to GitHub, just use the cli tools for authentication.
+
+```bash
+gh auth login
+```
+
+Just follow the prompts and you'll be good to go.
+
+5. Optional: Setup the GRAIL Environment Variable
+
+The way sources in Grail are layed out means that you'll need to be in the
+`test/` directory to run the tests, but when the project builds the test
+executables will be places in `bin/`. You can deal with this in a couple of
+ways:
+
+- Just use relative paths
+
+```bash
+# when you're in the test folder
+../bin/<executable you want to run here>
+# example
+../bin/Globe.exe
+```
+
+- Add an environment variable
+
+Edit `~/.bashrc` to include `export GRAIL=/path/to/GRAIL` and
+`export PATH=$PATH:$GRAIL/bin` on the following line. Restart your terminal that
+should be it.
+
+If the MSYS2 method does not work, or there are issues, you can try the method
+below, but support for it will be limited.
 
 #### Windows Subsystem for Linux (WSL2)
 
 1. Follow [this guide](https://docs.microsoft.com/en-us/windows/wsl/install) to
    install WSL.
-1. In Windows Powershell, type the following command to install Ubuntu 20.04 as
+2. In Windows Powershell, type the following command to install Ubuntu 20.04 as
    the default WSL distribution.
 
    ```bash
@@ -117,23 +150,28 @@ If the MSYS2 method does not work, or there are issues, try the method below.
    - Note: If you have an error about version mismatch, use command `wsl -l` to
      show what the name of the Ubuntu LTS is.
 
-1. Download the x server [here](https://sourceforge.net/projects/vcxsrv/). To
+3. Download the x server [here](https://sourceforge.net/projects/vcxsrv/). To
    finish the install click Next -> Next -> Finish.
-1. Once installation is complete, right click on the desktop and create a new shortcut.
-1. In the shortcut's properties, fill in the target field with the following and apply the changes
+4. Once installation is complete, right click on the desktop and create a new
+   shortcut.
+5. In the shortcut's properties, fill in the target field with the following and
+   apply the changes
 
    ```powershell
    "C:\Program Files\VcXsrv\vcxsrv.exe" :0 -ac -terminate -lesspointer -multiwindow -clipboard -dpi auto
    ```
 
-1. Double-click the shortcut to run VcXsrv, there should now be an icon for it in your taskbar's tray.
-1. In the WSL2 shell, edit the `~/.bashrc` file and add the following line. This allows WSL2 to connect to VcXsrv.
+6. Double-click the shortcut to run VcXsrv, there should now be an icon for it
+   in your taskbar's tray.
+7. In the WSL2 shell, edit the `~/.bashrc` file and add the following line. This
+   allows WSL2 to connect to VcXsrv.
 
    ```bash
    export DISPLAY="`grep nameserver /etc/resolv.conf | sed 's/nameserver //'`:0"
    ```
 
-1. To test VcXsrv, run the following commands. These should make a pair of eyes appear on your screen, followed by a calculator.
+8. To test VcXsrv, run the following commands. These should make a pair of eyes
+   appear on your screen, followed by a calculator.
 
    ```bash
    sudo apt install x11-apps
@@ -141,128 +179,61 @@ If the MSYS2 method does not work, or there are issues, try the method below.
    xcalc
    ```
 
-1. Install dependencies by referring to the [Ubuntu 20.04 setup](#ubuntu-2004).
-1. Edit the `~/.bashrc` file the same way as the [step above](#msys2).
+9. Install dependencies by referring to the
+   [Debian and Ubuntu setup](#debian-and-ubuntu).
+10. Edit the `~/.bashrc` file the same way as the [step above](#msys2).
 
-### Getting Set Up - Ubuntu
+### Linux
 
-#### Ubuntu 18.04
+#### Debian and Ubuntu
 
-1. Install gcc-11 and g++-11
+The oldest Linux distribution we've tested to build successfully on is Debian 11
+Bullseye. It has a C++20 compatible compiler and recent enough versions of
+packages. Anything derived from it should be fine, as well as somewhat recent
+versions of Ubuntu. Run the following to get everything you should need:
 
-   ```shell
-   sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-   sudo apt-get update
-   sudo apt-get install gcc-11 g++-11
-   ```
+```bash
+sudo apt update && sudo apt install \
+    build-essential \
+    cmake \
+    ca-certificates \
+    git \
+    ninja-build \
+    libglfw3-dev \
+    libfreetype-dev \
+    libmpv-dev \
+    liblzma-dev \
+    pkg-config
+```
 
-   - Preferred, but optional
+As with MSYS2, optionally edit your `~/.bashrc` as described [here](#msys2).
 
-     1. Set gcc-11 and g++-11 as default compiler
-
-        ```shell
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 11
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 11
-        ```
-
-     2. Confirm that the default versions of gcc and g++ are correct
-
-        ```shell
-        sudo update-alternatives --config gcc
-        sudo update-alternatives --config g++
-        ```
-
-2. If the default version of CMake is installed, purge it from `apt`
-
-   ```shell
-   sudo apt purge --auto-remove cmake
-   ```
-
-3. Install the latest version of CMake
-
-   ```shell
-   wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-   echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ bionic main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
-   sudo rm /etc/apt/trusted.gpg.d/kitware.gpg
-   sudo apt update
-   sudo apt install kitware-archive-keyring
-   sudo apt update
-   sudo apt install cmake
-   ```
-
-4. Install other dependencies
-
-   ```shell
-   sudo apt install ninja-build libglfw3-dev libfreetype6-dev mpv libmpv-dev liblzma-dev flex bison pkg-config
-   ```
-
-5. Refer to step 4 of [MSYS2](#msys2) to set up the environment variables.
-
-#### Ubuntu 20.04
-
-1. Install gcc-10 and g++-10
-
-   ```shell
-   sudo apt-get install gcc-10 g++-10
-   ```
-
-   - Preferred, but optional
-
-     1. Set gcc-10 and g++-10 as default compiler
-
-        ```shell
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
-        ```
-
-     2. Confirm that the default versions of gcc and g++ are correct
-
-        ```shell
-        sudo update-alternatives --config gcc
-        sudo update-alternatives --config g++
-        ```
-
-2. Install dependencies
-
-   ```shell
-   sudo apt install make cmake ninja-build libglfw3-dev libfreetype-dev mpv libmpv-dev liblzma-dev flex bison pkg-config
-   ```
-
-3. Refer to step 4 of [MSYS2](#msys2) to set up the environment variables.
-
-### Getting Set Up - Arch-Based Linux
+#### Arch Linux
 
 1. Install dependencies
 
-   ```shell
-   sudo pacman -S glfw-x11 freetype2 base-devel cmake ninja mpv youtube-dl
+```shell
+sudo pacman -S glfw-x11 freetype2 base-devel cmake ninja mpv youtube-dl
+```
 
-   ```
-
-   - If you are using Wayland, then install `glfw-wayland` instead of
-     `glfw-x11`. Wayland support is currently unconfirmed.
+If you are using Wayland, then install `glfw-wayland` instead of `glfw-x11`.
+Wayland support is currently unconfirmed.
 
 2. Refer to step 4 of [MSYS2](#msys2) to set up the environment variables.
 
 ### Compiling
 
-- To compile one test with default settings, run `./build.sh <testname>`
-  - To compile all tests with default settings, run `./build.sh`
-- For those who want to modify the default configuration and compile themselves,
-  we use the following:
+To compile one test with default settings, run `./build.sh <testname>`
 
-  ```shell
-  cmake -S . -Bbuild -GNinja
-  cmake --build build
-  ```
+To compile all tests with default settings, run `./build.sh`
 
-- For versions of Ubuntu with custom versions of gcc, but did not set the
-  default compiler with update-alternatives:
+For those who want to modify the default configuration and compile themselves,
+we use the following:
 
-  ```shell
-  CC=gcc-11 CXX=g++-11 cmake -S . -Bbuild -GNinja
-  cmake --build build
-  ```
+```shell
+cmake -S . -Bbuild -GNinja
+cmake --build build
+```
 
 For building performance-tuned with optimization with debug:
 
@@ -294,7 +265,8 @@ cmake --build build
 GitHub has a great guide on how to do this!
 [This guide](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
 will show you how to load `ssh-agent` when your terminal starts and add a new
-SSH key to `ssh-agent` and GitHub
+SSH key to `ssh-agent` and GitHub. If you've authenticated with GitHub CLI, then
+no need to worry about doing this.
 
 ### Cloned the repository using HTTPS, but now have to push to the repository
 
@@ -313,14 +285,21 @@ git remote set-url origin git@github.com:StevensDeptECE/GrailGUI.git
 
 This error is most commonly seen when attempting to run Grail on a Windows
 virtual machine. If your use-case is different, please open an issue with the
-details of your environment. As far as the project team is aware, this error can
-be traced to a lack of OpenGL compatibility on Windows virtual machines. This
-means that the issues is a driver problem that cannot be resolved until there is
-better OpenGL support in virtual video drivers. If you need a virtual machine,
-but do not need Windows, a virtual machine running Ubuntu Linux should work.
-Otherwise, until there is sufficient OpenGL support for virtual Windows, you
-will have to resort to a dual boot or alternative computer to run Grail and
-Grail-based programs.
+details of your environment.
+
+As far as the project team is aware, this error can be traced to a lack of
+OpenGL compatibility on Windows virtual machines. The virtual video drivers are
+only compatible with the ancient OpenGL 1.1, and we're using much more modern
+version of OpenGL. We've tried installing newer standalone video drivers and
+Grail programs are able to launch, but immediately segfault once shaders are
+loaded.
+
+This means that the issue is a driver problem that cannot be resolved until
+there is better OpenGL support in virtual video drivers. If you need a virtual
+machine, but do not need Windows, a virtual machine running Ubuntu or Debian
+should work. Otherwise, until there is sufficient OpenGL support for virtual
+Windows, you will have to resort to a dual boot or alternative computer to run
+Grail and Grail-based programs.
 
 ### git: 'remote-https' is not found or can't run program
 
