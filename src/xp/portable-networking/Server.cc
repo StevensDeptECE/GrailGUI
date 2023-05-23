@@ -15,10 +15,12 @@ Log srvlog;  // log all important events for security and debugging
 
 int main(int argc, char* argv[]) {
   try {
+    Socket::classInit();
     IPV4Socket s(8000);
     CSPRequest req;
     s.attach(&req);
     s.wait();  // main server wait loop
+    Socket::classCleanup();
   } catch (const Ex& e) {
     cerr << e << '\n';
   }

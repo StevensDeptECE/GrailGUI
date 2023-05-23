@@ -18,6 +18,7 @@ int main(int argc, char* argv[]) {
   try {
     const char* ipaddr = argc >= 2 ? argv[1] : "127.0.0.1";
     const int port = argc >= 3 ? atoi(argv[2]) : 8000;
+    Socket::classInit();
     IPV4Socket s(ipaddr, port);
 
     constexpr uint32_t test = 0x01020304U; // little endian 4 3 2 1
@@ -70,7 +71,7 @@ int main(int argc, char* argv[]) {
       }
       #endif
     }
-
+  Socket::classCleanup();
   } catch (const Ex& e) {
     cerr << e << '\n';
   }
