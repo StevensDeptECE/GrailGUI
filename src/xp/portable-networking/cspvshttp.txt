@@ -1,0 +1,22 @@
+Here is a sample http request:
+
+GET /xyz/testing/mydir/yourdir/testing.html HTTP/1.1
+Host: localhost:8000
+Connection: keep-alive
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/58.0.3029.110 Chrome/58.0.3029.110 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+DNT: 1
+Accept-Encoding: gzip, deflate, sdch, br
+Accept-Language: en-US,en;q=0.8
+
+
+CSP:
+
+b1b2b3b4 = 0 0 0 0 --> 0
+
+uint32_t ind = buffer.readUint32();
+servlets[ind]->request(req);
+
+
