@@ -64,7 +64,7 @@ IPV4Socket::IPV4Socket(uint16_t port) : Socket(port) {
   sockaddr_in *sockAddr = (sockaddr_in *)sockaddress;
   sockAddr->sin_family = AF_INET;
   sockAddr->sin_addr.s_addr = INADDR_ANY;
-  sockAddr->sin_port = htons(port);
+  sockAddr->sin_port = htons(port); // 1025 = 00000000 00000000 00000100 00000001 0x00000401
   ::bind(sckt, (struct sockaddr *)sockAddr, sizeof(sockaddr_in));
   testResult(listen(sckt, 20), __FILE__, __LINE__, Errcode::LISTEN);
 }
