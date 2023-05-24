@@ -3,7 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "C:\\msys64\\mingw64\\include"
             ],
             "defines": [
                 "_DEBUG",
@@ -18,15 +18,17 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "C:\\msys64\\mingw64\\include",
+                "C:\\msys64\\home\\Joeyc\\GrailGUI\\**",
+                "C:\\msys64\\ucrt64\\include\\**"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
             ],
-            "compilerPath": "C:\\msys64\\mingw64\\bin\\gcc.exe",
-            "cStandard": "gnu17", // No gnu20 std exists yet
+            "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
+            "cStandard": "gnu17",
             "intelliSenseMode": "windows-gcc-x64",
             "cppStandard": "gnu++20"
         }
