@@ -46,8 +46,9 @@ jobs:
         # Build your program with the given configuration
         run: cmake --build build --config ${{ matrix.build-type }}
 
-  build-ubuntu-18:
-    runs-on: ubuntu-18.04
+  build-ubuntu-prev:
+    # keeping this separate from latest for now despite having same steps as dependencies occasionally change
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         build-type: [Debug, Release]
@@ -69,7 +70,7 @@ jobs:
 
       - name: Install Grail dependencies
         run:
-          sudo apt install libglfw3-dev libfreetype6-dev mpv libmpv-dev
+          sudo apt install libglfw3-dev libfreetype-dev mpv libmpv-dev
           liblzma-dev
 
       - name: Configure CMake
