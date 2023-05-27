@@ -20,7 +20,7 @@ WSADATA Socket::wsaData;
 
 using namespace std;
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
 inline void testResult(int result, const char *file, int lineNum, Errcode err) {
   if (result < 0) {
     throw Ex(file, lineNum, err);
@@ -51,7 +51,7 @@ void Socket::classCleanup() {
 #endif
 }
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
 // Constructor for HTTP server
 IPV4Socket::IPV4Socket(uint16_t port) : Socket(port) {
   int yes = 1;
@@ -71,25 +71,29 @@ IPV4Socket::IPV4Socket(uint16_t port) : Socket(port) {
 
 // Constructor for csp/http client
 IPV4Socket::IPV4Socket(const char *addr, uint16_t port) : Socket(addr, port) {
-  struct hostent *server;
-  testResult(sckt = socket(AF_INET, SOCK_STREAM, 0), __FILE__, __LINE__,
-             Errcode::SOCKET);
-  server = gethostbyname(address);
+  struct addrinfo hints, *res;
+  int errcode;
+  char port_str[6];  // Enough to hold all digits of an uint16_t
 
-  if (server == nullptr) {
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+  sprintf(port_str, "%u", port);
+
+  errcode = getaddrinfo(address, port_str, &hints, &res);
+  if (errcode != 0) {
     throw Ex(__FILE__, __LINE__, Errcode::SERVER_INVALID);
   }
 
-  sockaddr_in *sockAddr = (sockaddr_in *)sockaddress;
-  sockAddr->sin_family = AF_INET;
-  //    bcopy((char *)server->h_addr, (char *)&sockaddress.sin_addr.s_addr,
-  //    server->h_length);
-  sockAddr->sin_addr.s_addr = inet_addr(address);
-  sockAddr->sin_port = htons(port);
+  testResult(sckt = socket(res->ai_family, res->ai_socktype, res->ai_protocol), __FILE__, __LINE__,
+             Errcode::SOCKET);
 
-  if (connect(sckt, (struct sockaddr *)sockaddress, sizeof(sockaddr_in)) < 0) {
+  if (connect(sckt, res->ai_addr, res->ai_addrlen) < 0) {
+    freeaddrinfo(res);
     throw Ex(__FILE__, __LINE__, Errcode::CONNECTION_FAILURE);
   }
+
+  freeaddrinfo(res);
 }
 
 // Server side

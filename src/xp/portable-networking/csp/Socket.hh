@@ -29,7 +29,7 @@ class Socket {
  protected:
   const char* address;
   uint16_t port;
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
   char sockaddress[16];  // placeholder big enough to hold sockaddr_in structure
 #elif _WIN32
   static WSADATA wsaData;

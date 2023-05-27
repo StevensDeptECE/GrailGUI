@@ -27,7 +27,7 @@ using socket_t = decltype(socket(0, 0, 0));
 
 class SocketIO {
  private:
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
   const static int err_code = -1;
 #elif _WIN32
   const static int err_code = SOCKET_ERROR;
