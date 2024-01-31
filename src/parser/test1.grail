@@ -1,0 +1,10 @@
+<grail>
+<p class="x">this is text<span class="y">this is more
+<h1 class="z">this is a header</h1>
+<ref class="z">this is a link</ref>
+<ref class="z"><img src="foo.png"></ref>
+<rect class="a" x=0 y=0 w=100 h=100>
+<circle class="b" cx=50 cy=50 r=50>
+<ellipse class="c" x=50 y=50 w=50 h=50>
+
+
