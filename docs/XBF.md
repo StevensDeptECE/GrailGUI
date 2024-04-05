@@ -6,22 +6,37 @@ XBF supports key features not in CORBA, protobuf, or any other protocol.
 
 CORBA IDL primarily defined interfaces, method calls that could be invoked remotely.
 It also defined structures representing compound data types that could be sent between computers.
+CORBA was designed to use "receiver makes right" on the premise that if the server is little-endian,
+and the client is little-endian, then nothing needs to be done.
+XBF has a better concept: client makes right. The server is the side that is busy. It is shared and in
+contention, so the best throughput results from asking the server to do the least.
+However, since most computers today are little-endian, we have ignored this for now. Everything is
+simply little-endian.
 
-Google protobuf supports definition of data and automatically generates custom code on either side to transmit the data.
+Google protobuf supports definition of data and automatically generates custom code on either side to transmit and receive the data.
 
-XBF extends the concepts in these two to include more data types, metadata so a client does not need to know what the data is to deal with it in certain contexts, automated processing on the client side,
+XBF extends the concepts in these two APIs to include:
+* More data types
+* Metadata to describe the meaning of a binary stream
+* Metadata allows a client to know what the data is and process in generic ways without compilation
+  * Examples of metadata use include displaying tables of data with numeric formatting
+  * Graphing data
+  * It should be possible to display data on a web client without knowing what the data is.
+  * Translation of variable names
+     - It should be possible to display data with an explanation in the local language without programming
+  * Internal field names in XBF are not merely for programmers because they can be used to display column names in a local language
+  * Translation dictionaries are supported to local languages, and should be automatically generated using AI, but reviewed by humans until AI is sufficiently good.
 
-1. Support for more integer data sizes up to 256 bits.
-2. Formal specification of Date types.
+
+
+1. Support for more integer data sizes up to 256 bits to support cryptographic primitives among others
+2. Formal specification of Date types for transport of dates between computers and languages.
 3. Bit vectors to support efficient transport of compact data without requiring custom encoding.
-4. Definition of Metadata to describe a stream so that the receiver does not have to know the structure of what is sent.
-   * It should be possible to display data on a web client without knowing what the data is.
-   * It should be possible to display data with an explanation in the local language without programming
-      * Internal field names in XBF are not merely for programmers because they can be used to display column names in a local language
-      * Translation dictionaries are supported to local languages, and should be automatically generated using AI, but reviewed by humans until AI is sufficiently good.
+
+
 5. In order to reduce repetition, XBF includes the notion of functions and subroutines that can be defined compactly. The language is restricted for safety
       * All code in XBF is Turing analyzable. That is, halting is guaranteed and the cost of the code can be computed at load time.
-      * In order to achieve this, there are only constant iteration loops, and loops over a list. The number of iterations is always known.
+      * In order to achieve this, there are only constant iteration loops, and loops over a list. The number of iterations is always known at program load time.
       *  Functions may call other functions, but recursion is forbidden.
       * Mutual recursion is impossible because functions may only call previously defined functions.
       * The resulting language is safe but can be used to reduce the complexity of complex data containing patterns.
@@ -30,23 +45,8 @@ XBF extends the concepts in these two to include more data types, metadata so a 
 
 All tokens in XBF are 1-byte. The following list shows each token and its corresponding value.
 
-%table(multicol)
-U8,0
-U16
-U24
-U32
-U64
-U128
-U256
-STRING8
-STRING16
-STRING32
-LIST8
-LIST16
-LIST32
-MAP
-UPDATE
-%endtable
+
+// TODO: need to add metadata F32 and F64
 
 | Tag | Val | Tag | Val | Tag | Val |
 | --- | --- | --- | --- | --- | --- |
@@ -62,14 +62,52 @@ UPDATE
 |LIST16|16|STRUCT|22|FOREACH|29|
 |LIST32|17|FUNC|23|IF|2A|
 |MAP|18|LIBCALL|24|SET|2B|
-|SYNCLIST|19|CALL|25|VAR|2C|
-|SYNCMAP|20|LCALL|26|
+|COPYLIST|19|CALL|25|VAR|2C|
+|SYNCMAP|20|LCALL|26|UPDATE1| 2D |
 
-Data Management
+
+List of UPDATE operations
+| Tag      | Val | Tag | Val | Tag | Val |
+| ---      | --- | --- | --- | --- | --- |
+| APPEND8  | 00  |     |     |     |     |
+| REM_END8 | 01  |     |     |     |     |
+| INSERT8  | 02  |     |     |     |     |
+
+
+### Examples
+
+We assume at present that structures have a fieldlength of 8 bits.
+All named types have names with a length of 8 bits
+
+| c++                    | XBF Metadata | Hex Metadata |XBF Data |
+| ---                    | ---          | ---          | ---     |
+| uint64_t a = 1;        | U64          | 04           |01 00 00 00 00 00 00 00 |
+| List<uint32_t> b = {5,7};      | LIST16 U32   | 16 03        |02 00 05 00 00 00 07 00 00 00 |
+| class A { int x,y; } A a1(16,512);          | STRUCT 01 A 02 U32 U32 | 22 01 41 02 03 03 | 10 00 00 00 00 02 00 00 |
+| client.copyLocal("xyz", b) | COPYLIST LIST16 U32 03 x y z 02 10 00 00 00 00 02 00 00 | 19 16 03 ... | |
+| b.append(11); b.update("xyz"); | UPDATE1 03 x y z APPEND 01 0B 00 00 00 |
+| b.removeEnd(2); b.update("xyz"); | UPDATE1 03 x y z REMOVEEND 02 | only the 5 remains |
+
+Equivalent of some of the above in JSON
+```json
+{
+  "x": 16,
+  "y": 512
+}
+```
+### Data Management
+
 MSGSEND     send XBF to other
 MSGRECV     wait to receive XBF
 STORE       save to local storage
 UPLOAD      load changes from local storage back to server
+
+### Scope Primitives
+
+PAGE  lasts only while this page is loaded
+SESSION     lasts as long as the user stays logged in
+APP         lasts as long as the app is installed
+MANUAL      lasts until the user deletes it
 
 ### Type Modifiers
 
@@ -107,9 +145,10 @@ fn build_2(x1: f32, x2: f32, y1: f32, y2: f32,
       build_1(x2, y2, s4);
 }
 ```
-
+TODO: Should there be a fixed length list (Array?) with the 
+length in the metadata?
 ```
-[DEF] 01 [STRUCT] 05 P o i n t 03 F64 1 x F64 1 y F64 1
+[DEF] 01 [STRUCT] 05 P o i n t 03 F64 1 x F64 1 y F64 1 z
 [LIST] 03 00 00 00
 point is defined as type=256, first user-defined type
 [LIST] 00 01 00 00
@@ -171,3 +210,15 @@ party. It is not just a programmer internal detail. Accordingly, there
 is a formal specification of how to display data including the name of
 the variables, which can be translated into local languages.
 
+# Binary Download of Code and Deltas
+
+Suppose we have code on the server. It must be downloaded to the client
+
+index.grail -->         0 = index.grb
+getstudents.grail -->   1 = getstudents.grb
+
+LMS.lzma    is a compressed file containing each .grb file
+download
+
+suppose later, index.grail is updated, changing index.grb
+binary delta algorithms (patch)
