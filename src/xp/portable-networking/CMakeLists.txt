@@ -17,3 +17,6 @@ target_link_libraries (client LINK_PUBLIC portable_networking)
 
 add_executable (server server.cc)
 target_link_libraries (server LINK_PUBLIC portable_networking)
+
+add_executable (testbuffer testbuffer.cc)
+target_link_libraries (testbuffer LINK_PUBLIC portable_networking)
